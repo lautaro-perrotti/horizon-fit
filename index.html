@@ -270,23 +270,30 @@
     @media (max-width: 768px) {
       .nav__icon-btn--mobile-left{ display: flex; }
       .nav__icon-btn--desktop{ display: none; }
+      .brand{
+        position: relative;
+        min-height: 24px;
+      }
       .brand__isotipo{
         height: 24px;
+        opacity: 0; /* mobile must start with logotipo visible */
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         transition: opacity 0.4s ease;
       }
       .brand__logotipo{
         position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         height: 14px;
         margin-left: 0;
-        opacity: 0;
+        opacity: 1;
         transition: opacity 0.4s ease;
       }
-      .brand{
-        position: relative;
-      }
       /* Alternar logos en mobile */
-      .brand__isotipo.is-hidden{ opacity: 0; }
-      .brand__logotipo.is-visible{ opacity: 1; }
+      .brand__isotipo.is-visible{ opacity: 1; }
+      .brand__logotipo.is-hidden{ opacity: 0; }
     }
 
     .hero{
@@ -2888,19 +2895,20 @@
         if (!isMobile()) return;
         showingLogotipo = !showingLogotipo;
         if (showingLogotipo) {
-          isotipo.classList.add("is-hidden");
-          logotipo.classList.add("is-visible");
+          isotipo.classList.remove("is-visible");
+          logotipo.classList.remove("is-hidden");
         } else {
-          isotipo.classList.remove("is-hidden");
-          logotipo.classList.remove("is-visible");
+          isotipo.classList.add("is-visible");
+          logotipo.classList.add("is-hidden");
         }
       }
 
       function startAnimation() {
         if (interval) clearInterval(interval);
         if (isMobile()) {
-          isotipo.classList.add("is-hidden");
-          logotipo.classList.add("is-visible");
+          // Ensure first paint in mobile is logotipo
+          isotipo.classList.remove("is-visible");
+          logotipo.classList.remove("is-hidden");
           showingLogotipo = true;
           interval = setInterval(toggleLogo, 3000);
         }
@@ -2908,8 +2916,8 @@
 
       function resetAnimation() {
         if (interval) clearInterval(interval);
-        isotipo.classList.remove("is-hidden");
-        logotipo.classList.remove("is-visible");
+        isotipo.classList.remove("is-visible");
+        logotipo.classList.remove("is-hidden");
         startAnimation();
       }
 
