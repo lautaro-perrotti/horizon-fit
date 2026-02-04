@@ -1,0 +1,286 @@
+/**
+ * HF-CAROUSEL Component
+ * Responsive slider with drag/swipe support
+ */
+
+.hf-carousel {
+  --carousel-gap: var(--s-4);
+  --carousel-items: 1;
+  --carousel-item-width: calc((100% - (var(--carousel-items) - 1) * var(--carousel-gap)) / var(--carousel-items));
+
+  position: relative;
+  width: 100%;
+}
+
+.hf-carousel__viewport {
+  overflow: hidden;
+  border-radius: var(--r-2);
+}
+
+.hf-carousel__track {
+  display: flex;
+  gap: var(--carousel-gap);
+  transition: transform var(--med) var(--ease);
+  cursor: grab;
+  user-select: none;
+}
+
+.hf-carousel__track.is-dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.hf-carousel__slide {
+  flex: 0 0 var(--carousel-item-width);
+  min-width: 0;
+}
+
+/* ========================================
+   NAVIGATION ARROWS
+======================================== */
+
+.hf-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease), opacity var(--fast) var(--ease);
+}
+
+.hf-carousel__nav:hover {
+  background: var(--surface-2);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.hf-carousel__nav:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.hf-carousel__nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: translateY(-50%);
+}
+
+.hf-carousel__nav--prev {
+  left: var(--s-3);
+}
+
+.hf-carousel__nav--next {
+  right: var(--s-3);
+}
+
+.hf-carousel__nav svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Hide nav on mobile by default (use swipe) */
+@media (max-width: 640px) {
+  .hf-carousel__nav {
+    display: none;
+  }
+
+  .hf-carousel--show-nav-mobile .hf-carousel__nav {
+    display: flex;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ========================================
+   PAGINATION DOTS
+======================================== */
+
+.hf-carousel__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+
+.hf-carousel__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.hf-carousel__dot:hover {
+  background: var(--muted);
+}
+
+.hf-carousel__dot:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.hf-carousel__dot[aria-selected="true"],
+.hf-carousel__dot.is-active {
+  background: var(--hf-primary);
+  transform: scale(1.25);
+}
+
+/* Line variant */
+.hf-carousel__dots--line .hf-carousel__dot {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.hf-carousel__dots--line .hf-carousel__dot.is-active {
+  transform: scaleX(1.2);
+}
+
+/* ========================================
+   RESPONSIVE ITEMS
+======================================== */
+
+/* 1 item on mobile (default) */
+.hf-carousel {
+  --carousel-items: 1;
+}
+
+/* 2 items on tablet */
+@media (min-width: 640px) {
+  .hf-carousel--responsive {
+    --carousel-items: 2;
+  }
+}
+
+/* 3 items on desktop */
+@media (min-width: 980px) {
+  .hf-carousel--responsive {
+    --carousel-items: 3;
+  }
+}
+
+/* 4 items on large screens */
+@media (min-width: 1280px) {
+  .hf-carousel--responsive {
+    --carousel-items: 4;
+  }
+}
+
+/* Fixed column variants */
+.hf-carousel--cols-2 { --carousel-items: 2; }
+.hf-carousel--cols-3 { --carousel-items: 3; }
+.hf-carousel--cols-4 { --carousel-items: 4; }
+
+@media (max-width: 640px) {
+  .hf-carousel--cols-2,
+  .hf-carousel--cols-3,
+  .hf-carousel--cols-4 {
+    --carousel-items: 1;
+  }
+}
+
+/* ========================================
+   GAP VARIANTS
+======================================== */
+
+.hf-carousel--gap-sm { --carousel-gap: var(--s-2); }
+.hf-carousel--gap-lg { --carousel-gap: var(--s-6); }
+.hf-carousel--gap-xl { --carousel-gap: var(--s-8); }
+
+/* ========================================
+   PEEK (Show next slide edge)
+======================================== */
+
+.hf-carousel--peek .hf-carousel__viewport {
+  overflow: visible;
+  margin-right: calc(-1 * var(--s-8));
+  padding-right: var(--s-8);
+}
+
+.hf-carousel--peek .hf-carousel__slide:last-child {
+  margin-right: var(--s-8);
+}
+
+/* ========================================
+   FADE EFFECT (instead of slide)
+======================================== */
+
+.hf-carousel--fade .hf-carousel__track {
+  position: relative;
+}
+
+.hf-carousel--fade .hf-carousel__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity var(--med) var(--ease);
+  pointer-events: none;
+}
+
+.hf-carousel--fade .hf-carousel__slide.is-active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========================================
+   AUTOPLAY INDICATOR
+======================================== */
+
+.hf-carousel__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--hf-primary);
+  border-radius: 0 2px 2px 0;
+  transition: width linear;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+.hf-carousel[aria-roledescription="carousel"] {
+  /* Screen reader hint */
+}
+
+.hf-carousel__slide[aria-roledescription="slide"] {
+  /* Screen reader hint */
+}
+
+/* Focus within */
+.hf-carousel:focus-within .hf-carousel__nav {
+  opacity: 1;
+}
+
+/* ========================================
+   DARK MODE
+======================================== */
+
+[data-theme="dark"] .hf-carousel__nav {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] .hf-carousel__dot {
+  background: var(--surface-2);
+}
+
+[data-theme="dark"] .hf-carousel__dot:hover {
+  background: var(--border);
+}

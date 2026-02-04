@@ -1,0 +1,285 @@
+/**
+ * HF-VIDEO-HERO Component
+ * Hero section with video background
+ */
+
+.hf-video-hero {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: var(--r-3);
+  background: var(--hf-black);
+}
+
+.hf-video-hero--full {
+  min-height: 100vh;
+  border-radius: 0;
+}
+
+.hf-video-hero--tall {
+  min-height: 600px;
+}
+
+/* ========================================
+   VIDEO / IMAGE BACKGROUND
+======================================== */
+
+.hf-video-hero__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.hf-video-hero__video {
+  opacity: 0;
+  transition: opacity var(--med) var(--ease);
+}
+
+.hf-video-hero__video.is-loaded {
+  opacity: 1;
+}
+
+.hf-video-hero__fallback {
+  z-index: 0;
+}
+
+/* ========================================
+   OVERLAY
+======================================== */
+
+.hf-video-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Gradient presets */
+.hf-video-hero__overlay--gradient {
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.1) 0%,
+    rgba(0,0,0,0.4) 50%,
+    rgba(0,0,0,0.7) 100%
+  );
+}
+
+.hf-video-hero__overlay--dark {
+  background: rgba(0,0,0,0.5);
+}
+
+.hf-video-hero__overlay--brand {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--hf-primary) 40%, transparent) 0%,
+    color-mix(in srgb, var(--hf-indigo) 50%, transparent) 100%
+  );
+}
+
+.hf-video-hero__overlay--warm {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--hf-warm) 20%, transparent) 0%,
+    rgba(0,0,0,0.6) 100%
+  );
+}
+
+/* ========================================
+   CONTENT
+======================================== */
+
+.hf-video-hero__content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  height: 100%;
+  min-height: inherit;
+  padding: var(--s-8);
+  color: var(--hf-white);
+}
+
+.hf-video-hero__content--center {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hf-video-hero__content--top {
+  justify-content: flex-start;
+}
+
+.hf-video-hero__badge {
+  margin-bottom: var(--s-3);
+}
+
+.hf-video-hero__title {
+  font-size: var(--h1);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--s-3);
+  max-width: 700px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.hf-video-hero__subtitle {
+  font-size: 18px;
+  opacity: 0.9;
+  margin: 0 0 var(--s-5);
+  max-width: 550px;
+  line-height: 1.6;
+}
+
+.hf-video-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+/* ========================================
+   PLAY/PAUSE BUTTON
+======================================== */
+
+.hf-video-hero__control {
+  position: absolute;
+  bottom: var(--s-5);
+  right: var(--s-5);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  color: var(--hf-white);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.hf-video-hero__control:hover {
+  background: rgba(0,0,0,0.6);
+  transform: scale(1.05);
+}
+
+.hf-video-hero__control:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.4);
+}
+
+.hf-video-hero__control svg {
+  width: 20px;
+  height: 20px;
+}
+
+.hf-video-hero__control--play .icon-pause,
+.hf-video-hero__control--pause .icon-play {
+  display: none;
+}
+
+.hf-video-hero__control--play .icon-play,
+.hf-video-hero__control--pause .icon-pause {
+  display: block;
+}
+
+/* Hide control when video is background-only */
+.hf-video-hero--no-control .hf-video-hero__control {
+  display: none;
+}
+
+/* ========================================
+   SCROLL INDICATOR
+======================================== */
+
+.hf-video-hero__scroll {
+  position: absolute;
+  bottom: var(--s-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--hf-white);
+  font-size: 12px;
+  opacity: 0.7;
+  animation: hf-hero-bounce 2s ease-in-out infinite;
+}
+
+.hf-video-hero__scroll svg {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes hf-hero-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* ========================================
+   REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .hf-video-hero__video {
+    display: none;
+  }
+
+  .hf-video-hero__fallback {
+    display: block !important;
+  }
+
+  .hf-video-hero__scroll {
+    animation: none;
+  }
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 640px) {
+  .hf-video-hero {
+    min-height: 320px;
+  }
+
+  .hf-video-hero--full {
+    min-height: 100vh;
+  }
+
+  .hf-video-hero__content {
+    padding: var(--s-6);
+  }
+
+  .hf-video-hero__title {
+    font-size: clamp(24px, 6vw, 36px);
+  }
+
+  .hf-video-hero__subtitle {
+    font-size: 15px;
+  }
+
+  .hf-video-hero__control {
+    width: 40px;
+    height: 40px;
+    bottom: var(--s-4);
+    right: var(--s-4);
+  }
+}
+
+/* ========================================
+   DARK MODE (adjustments)
+======================================== */
+
+[data-theme="dark"] .hf-video-hero {
+  /* Dark mode doesn't need much change for video hero */
+}

@@ -1,0 +1,14 @@
+Las dos versiones que le gustaron de color claro:
+
+Versión anterior (más sutil):
+
+
+--bg: #FDF8F3;
+--surface: #FFFCFA;
+--surface-2: #FAF6F2;
+Versión actual (punto medio):
+
+
+--bg: #FBF3E8;
+--surface: #FFF9F2;
+--surface-2: #F7EEE4;

@@ -1,0 +1,301 @@
+/**
+ * HF-PRODUCT-ITEM Component
+ * Product card for e-commerce grid listings
+ * Based on Touche Sport style
+ */
+
+/* ========================================
+   PRODUCT ITEM BASE
+======================================== */
+
+.hf-product-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+/* ========================================
+   PRODUCT IMAGE
+======================================== */
+
+.hf-product-item__media {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  aspect-ratio: 3/4;
+  border-radius: var(--r-2);
+}
+
+.hf-product-item__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--med) var(--ease);
+}
+
+.hf-product-item__image--primary {
+  z-index: 1;
+}
+
+.hf-product-item__image--secondary {
+  z-index: 0;
+  opacity: 0;
+}
+
+.hf-product-item:hover .hf-product-item__image--primary {
+  opacity: 0;
+}
+
+.hf-product-item:hover .hf-product-item__image--secondary {
+  opacity: 1;
+}
+
+/* ========================================
+   DISCOUNT BADGE
+======================================== */
+
+.hf-product-item__badge {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  padding: 6px 10px;
+  background: #c41e1e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  z-index: 2;
+}
+
+/* ========================================
+   PRODUCT BODY
+======================================== */
+
+.hf-product-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 0 0;
+}
+
+/* ========================================
+   SIZE SELECTOR
+======================================== */
+
+.hf-product-item__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hf-product-item__size {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+
+.hf-product-item__size:hover {
+  border-color: #999;
+}
+
+.hf-product-item__size[aria-pressed="true"],
+.hf-product-item__size.is-active {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--surface);
+}
+
+.hf-product-item__size:disabled,
+.hf-product-item__size.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* ========================================
+   BRAND & TITLE
+======================================== */
+
+.hf-product-item__brand {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hf-product-item__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ========================================
+   PRICING
+======================================== */
+
+.hf-product-item__pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.hf-product-item__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.hf-product-item__price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #c7417b;
+}
+
+.hf-product-item__price-original {
+  font-size: 13px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.hf-product-item__installments {
+  font-size: 12px;
+  color: #666;
+}
+
+.hf-product-item__installments-link {
+  color: #c7417b;
+  text-decoration: underline;
+}
+
+.hf-product-item__installments-value {
+  color: #c7417b;
+}
+
+.hf-product-item__transfer {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.hf-product-item__transfer-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: #666;
+}
+
+/* ========================================
+   PRODUCT GRID
+======================================== */
+
+.hf-product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-6);
+}
+
+@media (max-width: 1024px) {
+  .hf-product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .hf-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  .hf-product-item__size {
+    min-width: 28px;
+    height: 28px;
+    font-size: 10px;
+    padding: 0 6px;
+  }
+
+  .hf-product-item__title {
+    font-size: 12px;
+  }
+
+  .hf-product-item__price {
+    font-size: 13px;
+  }
+
+  .hf-product-item__brand {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hf-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
+  }
+
+  .hf-product-item__body {
+    padding: 10px 0 0;
+    gap: 6px;
+  }
+
+  .hf-product-item__badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .hf-product-item__sizes {
+    gap: 4px;
+  }
+
+  .hf-product-item__size {
+    min-width: 26px;
+    height: 26px;
+    font-size: 9px;
+    padding: 0 5px;
+  }
+
+  .hf-product-item__installments,
+  .hf-product-item__transfer-label {
+    font-size: 11px;
+  }
+}
+
+/* ========================================
+   DARK MODE
+======================================== */
+
+[data-theme="dark"] .hf-product-item__media {
+  background: var(--surface-2);
+}
+
+[data-theme="dark"] .hf-product-item__size {
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .hf-product-item__size:hover {
+  border-color: var(--text);
+}
+
+[data-theme="dark"] .hf-product-item__size[aria-pressed="true"],
+[data-theme="dark"] .hf-product-item__size.is-active {
+  background: var(--text);
+  color: var(--bg);
+}

@@ -1,0 +1,277 @@
+/**
+ * HF-GRID Advanced Grid System
+ * Flexible grid with filters, masonry support
+ */
+
+/* ========================================
+   BASE GRID
+======================================== */
+
+.hf-grid {
+  --grid-cols: 4;
+  --grid-gap: var(--s-6);
+  --grid-min-width: 280px;
+
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+/* Auto-fit variant */
+.hf-grid--auto {
+  grid-template-columns: repeat(auto-fit, minmax(var(--grid-min-width), 1fr));
+}
+
+/* Auto-fill variant */
+.hf-grid--fill {
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-min-width), 1fr));
+}
+
+/* ========================================
+   COLUMN VARIANTS
+======================================== */
+
+.hf-grid--cols-1 { --grid-cols: 1; }
+.hf-grid--cols-2 { --grid-cols: 2; }
+.hf-grid--cols-3 { --grid-cols: 3; }
+.hf-grid--cols-4 { --grid-cols: 4; }
+.hf-grid--cols-5 { --grid-cols: 5; }
+.hf-grid--cols-6 { --grid-cols: 6; }
+
+/* Responsive breakpoints */
+@media (max-width: 1280px) {
+  .hf-grid--cols-5,
+  .hf-grid--cols-6 { --grid-cols: 4; }
+}
+
+@media (max-width: 980px) {
+  .hf-grid--cols-4,
+  .hf-grid--cols-5,
+  .hf-grid--cols-6 { --grid-cols: 3; }
+}
+
+@media (max-width: 768px) {
+  .hf-grid--cols-3,
+  .hf-grid--cols-4,
+  .hf-grid--cols-5,
+  .hf-grid--cols-6 { --grid-cols: 2; }
+}
+
+@media (max-width: 480px) {
+  .hf-grid { --grid-cols: 1; }
+}
+
+/* ========================================
+   GAP VARIANTS
+======================================== */
+
+.hf-grid--gap-xs { --grid-gap: var(--s-2); }
+.hf-grid--gap-sm { --grid-gap: var(--s-3); }
+.hf-grid--gap-md { --grid-gap: var(--s-5); }
+.hf-grid--gap-lg { --grid-gap: var(--s-7); }
+.hf-grid--gap-xl { --grid-gap: var(--s-9); }
+
+/* ========================================
+   GRID ITEM SPANS
+======================================== */
+
+.hf-grid__item--span-2 { grid-column: span 2; }
+.hf-grid__item--span-3 { grid-column: span 3; }
+.hf-grid__item--span-4 { grid-column: span 4; }
+.hf-grid__item--span-full { grid-column: 1 / -1; }
+
+.hf-grid__item--row-2 { grid-row: span 2; }
+.hf-grid__item--row-3 { grid-row: span 3; }
+
+@media (max-width: 768px) {
+  .hf-grid__item--span-2,
+  .hf-grid__item--span-3,
+  .hf-grid__item--span-4 {
+    grid-column: span 1;
+  }
+}
+
+/* ========================================
+   MASONRY (JS-enhanced)
+======================================== */
+
+.hf-grid--masonry {
+  display: block;
+  column-count: var(--grid-cols);
+  column-gap: var(--grid-gap);
+}
+
+.hf-grid--masonry > * {
+  break-inside: avoid;
+  margin-bottom: var(--grid-gap);
+}
+
+/* ========================================
+   COLLECTION GRID PATTERN
+======================================== */
+
+.hf-collection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+/* Filters bar */
+.hf-collection__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.hf-collection__filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* Filter chips */
+.hf-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+
+.hf-filter-chip:hover {
+  background: var(--surface-2);
+}
+
+.hf-filter-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.hf-filter-chip[aria-pressed="true"],
+.hf-filter-chip.is-active {
+  background: color-mix(in srgb, var(--hf-primary) 12%, var(--surface));
+  border-color: color-mix(in srgb, var(--hf-primary) 35%, var(--border));
+  color: var(--hf-primary-700);
+}
+
+.hf-filter-chip__count {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+}
+
+.hf-filter-chip.is-active .hf-filter-chip__count {
+  background: color-mix(in srgb, var(--hf-primary) 20%, transparent);
+}
+
+/* Sorting */
+.hf-collection__sort {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.hf-collection__sort-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.hf-collection__sort-select {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Results info */
+.hf-collection__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.hf-collection__count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Grid container */
+.hf-collection__grid {
+  /* Uses .hf-grid classes */
+}
+
+/* Empty state */
+.hf-collection__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--s-9) var(--s-6);
+  color: var(--muted);
+}
+
+.hf-collection__empty-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--s-4);
+  opacity: 0.5;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+.hf-grid[data-animate] > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--med) var(--ease), transform var(--med) var(--ease);
+}
+
+.hf-grid[data-animate].is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger animation */
+.hf-grid[data-animate].is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(2) { transition-delay: 50ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(3) { transition-delay: 100ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(4) { transition-delay: 150ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(5) { transition-delay: 200ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(6) { transition-delay: 250ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(7) { transition-delay: 300ms; }
+.hf-grid[data-animate].is-visible > *:nth-child(8) { transition-delay: 350ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hf-grid[data-animate] > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ========================================
+   DARK MODE
+======================================== */
+
+[data-theme="dark"] .hf-filter-chip {
+  background: var(--surface);
+}
+
+[data-theme="dark"] .hf-filter-chip:hover {
+  background: var(--surface-2);
+}

@@ -1,0 +1,1462 @@
+{
+  "root": "C:\\Users\\Lautaro\\Horizon Fit\\qa-artifacts",
+  "total": 182,
+  "items": [
+    {
+      "rel": "dark/desktop/baseline/components_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "components_baseline.png",
+      "size": 100121
+    },
+    {
+      "rel": "dark/desktop/baseline/components_baseline_2.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "components_baseline_2.png",
+      "size": 99973
+    },
+    {
+      "rel": "dark/desktop/baseline/dark_desktop_ecommerce.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "dark_desktop_ecommerce.png",
+      "size": 710097
+    },
+    {
+      "rel": "dark/desktop/baseline/dark_desktop_marketing.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "dark_desktop_marketing.png",
+      "size": 250329
+    },
+    {
+      "rel": "dark/desktop/baseline/dark_desktop_patterns.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "dark_desktop_patterns.png",
+      "size": 201195
+    },
+    {
+      "rel": "dark/desktop/baseline/dark_desktop_top.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "dark_desktop_top.png",
+      "size": 88814
+    },
+    {
+      "rel": "dark/desktop/baseline/ecommerce_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "ecommerce_baseline.png",
+      "size": 705173
+    },
+    {
+      "rel": "dark/desktop/baseline/hf_banner_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_banner_baseline.png",
+      "size": 324715
+    },
+    {
+      "rel": "dark/desktop/baseline/hf_carousel_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_carousel_baseline.png",
+      "size": 415469
+    },
+    {
+      "rel": "dark/desktop/baseline/hf_grid_filters_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_grid_filters_baseline.png",
+      "size": 1080269
+    },
+    {
+      "rel": "dark/desktop/baseline/hf_lightbox_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_lightbox_baseline.png",
+      "size": 618515
+    },
+    {
+      "rel": "dark/desktop/baseline/hf_video_hero_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_video_hero_baseline.png",
+      "size": 768032
+    },
+    {
+      "rel": "dark/desktop/baseline/marquee_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "marquee_baseline.png",
+      "size": 1432295
+    },
+    {
+      "rel": "dark/desktop/baseline/patterns_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "patterns_baseline.png",
+      "size": 198227
+    },
+    {
+      "rel": "dark/desktop/baseline/pdp_snippet_baseline.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "pdp_snippet_baseline.png",
+      "size": 464617
+    },
+    {
+      "rel": "dark/desktop/interaction/accordion_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "accordion_open.png",
+      "size": 99979
+    },
+    {
+      "rel": "dark/desktop/interaction/accordion_second_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "accordion_second_open.png",
+      "size": 100027
+    },
+    {
+      "rel": "dark/desktop/interaction/drawer_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "drawer_closed.png",
+      "size": 87534
+    },
+    {
+      "rel": "dark/desktop/interaction/drawer_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "drawer_open.png",
+      "size": 137366
+    },
+    {
+      "rel": "dark/desktop/interaction/ecommerce_quickshop_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_closed.png",
+      "size": 1039170
+    },
+    {
+      "rel": "dark/desktop/interaction/ecommerce_quickshop_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_open.png",
+      "size": 687223
+    },
+    {
+      "rel": "dark/desktop/interaction/hero_video_paused.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hero_video_paused.png",
+      "size": 1121162
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_banner_closed_attempt.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_banner_closed_attempt.png",
+      "size": 324542
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_banner_interaction.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_banner_interaction.png",
+      "size": 323543
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_carousel_dot2.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_carousel_dot2.png",
+      "size": 289844
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_carousel_next_clicked.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_carousel_next_clicked.png",
+      "size": 289281
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_grid_filter_calzas.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_calzas.png",
+      "size": 895472
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_grid_filter_todos.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_todos.png",
+      "size": 1071852
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_lightbox_arrowright.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_arrowright.png",
+      "size": 689590
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_lightbox_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_closed.png",
+      "size": 655549
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_lightbox_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_open.png",
+      "size": 690053
+    },
+    {
+      "rel": "dark/desktop/interaction/hf_video_hero_toggled.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_video_hero_toggled.png",
+      "size": 918315
+    },
+    {
+      "rel": "dark/desktop/interaction/modal_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "modal_closed.png",
+      "size": 100168
+    },
+    {
+      "rel": "dark/desktop/interaction/modal_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "modal_open.png",
+      "size": 103536
+    },
+    {
+      "rel": "dark/desktop/interaction/navbar_menu_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "navbar_menu_closed.png",
+      "size": 1110432
+    },
+    {
+      "rel": "dark/desktop/interaction/navbar_menu_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "navbar_menu_open.png",
+      "size": 1026579
+    },
+    {
+      "rel": "dark/desktop/interaction/pdp_add_to_cart_drawer_closed.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_closed.png",
+      "size": 101280
+    },
+    {
+      "rel": "dark/desktop/interaction/pdp_add_to_cart_drawer_open.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_open.png",
+      "size": 101211
+    },
+    {
+      "rel": "dark/desktop/interaction/pdp_qty_increased.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_qty_increased.png",
+      "size": 109840
+    },
+    {
+      "rel": "dark/desktop/interaction/pdp_size_xs_selected.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_size_xs_selected.png",
+      "size": 105512
+    },
+    {
+      "rel": "dark/desktop/interaction/slider_scrolled.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "slider_scrolled.png",
+      "size": 1110232
+    },
+    {
+      "rel": "dark/desktop/interaction/tabs_detalles.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tabs_detalles.png",
+      "size": 100099
+    },
+    {
+      "rel": "dark/desktop/interaction/tabs_envios.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tabs_envios.png",
+      "size": 100099
+    },
+    {
+      "rel": "dark/desktop/interaction/toast_after_4s.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "toast_after_4s.png",
+      "size": 106008
+    },
+    {
+      "rel": "dark/desktop/interaction/toast_info_ok_shown.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "toast_info_ok_shown.png",
+      "size": 118759
+    },
+    {
+      "rel": "dark/desktop/interaction/tooltip_hover.png",
+      "theme": "dark",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tooltip_hover.png",
+      "size": 105971
+    },
+    {
+      "rel": "dark/mobile/baseline/dark_mobile_ecommerce.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "dark_mobile_ecommerce.png",
+      "size": 342960
+    },
+    {
+      "rel": "dark/mobile/baseline/dark_mobile_marketing.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "dark_mobile_marketing.png",
+      "size": 58525
+    },
+    {
+      "rel": "dark/mobile/baseline/dark_mobile_patterns.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "dark_mobile_patterns.png",
+      "size": 133318
+    },
+    {
+      "rel": "dark/mobile/baseline/dark_mobile_top.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "dark_mobile_top.png",
+      "size": 41734
+    },
+    {
+      "rel": "dark/mobile/baseline/hf_banner_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "hf_banner_baseline.png",
+      "size": 60587
+    },
+    {
+      "rel": "dark/mobile/interaction/accordion_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "accordion_open.png",
+      "size": 64060
+    },
+    {
+      "rel": "dark/mobile/interaction/components_section.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "components_section.png",
+      "size": 70113
+    },
+    {
+      "rel": "dark/mobile/interaction/drawer_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "drawer_closed.png",
+      "size": 60435
+    },
+    {
+      "rel": "dark/mobile/interaction/drawer_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "drawer_open.png",
+      "size": 77782
+    },
+    {
+      "rel": "dark/mobile/interaction/ecommerce_quickshop_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_closed.png",
+      "size": 382293
+    },
+    {
+      "rel": "dark/mobile/interaction/ecommerce_quickshop_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_open.png",
+      "size": 121735
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_banner_apply_code_clicked.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_banner_apply_code_clicked.png",
+      "size": 61596
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_banner_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_banner_closed.png",
+      "size": 61101
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_carousel_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_baseline.png",
+      "size": 264756
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_carousel_dot2.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_dot2.png",
+      "size": 318963
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_carousel_next_clicked.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_next_clicked.png",
+      "size": 317158
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_grid_filters_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filters_baseline.png",
+      "size": 60175
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_grid_filter_calzas.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_calzas.png",
+      "size": 203560
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_grid_filter_todos.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_todos.png",
+      "size": 194617
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_lightbox_arrowright.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_arrowright.png",
+      "size": 364497
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_lightbox_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_baseline.png",
+      "size": 276677
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_lightbox_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_closed.png",
+      "size": 299089
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_lightbox_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_open.png",
+      "size": 364422
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_video_hero_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_video_hero_baseline.png",
+      "size": 197963
+    },
+    {
+      "rel": "dark/mobile/interaction/hf_video_hero_paused.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_video_hero_paused.png",
+      "size": 391435
+    },
+    {
+      "rel": "dark/mobile/interaction/modal_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "modal_closed.png",
+      "size": 60953
+    },
+    {
+      "rel": "dark/mobile/interaction/modal_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "modal_open.png",
+      "size": 74026
+    },
+    {
+      "rel": "dark/mobile/interaction/navbar_initial.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_initial.png",
+      "size": 41570
+    },
+    {
+      "rel": "dark/mobile/interaction/navbar_menu_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_menu_closed.png",
+      "size": 41857
+    },
+    {
+      "rel": "dark/mobile/interaction/navbar_menu_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_menu_open.png",
+      "size": 56214
+    },
+    {
+      "rel": "dark/mobile/interaction/pdp_add_to_cart_drawer_closed.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_closed.png",
+      "size": 66449
+    },
+    {
+      "rel": "dark/mobile/interaction/pdp_add_to_cart_drawer_open.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_open.png",
+      "size": 66411
+    },
+    {
+      "rel": "dark/mobile/interaction/pdp_qty_increased.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_qty_increased.png",
+      "size": 52919
+    },
+    {
+      "rel": "dark/mobile/interaction/pdp_size_xs_selected.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_size_xs_selected.png",
+      "size": 56592
+    },
+    {
+      "rel": "dark/mobile/interaction/pdp_snippet_baseline.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_snippet_baseline.png",
+      "size": 128109
+    },
+    {
+      "rel": "dark/mobile/interaction/tabs_detalles.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tabs_detalles.png",
+      "size": 63924
+    },
+    {
+      "rel": "dark/mobile/interaction/tabs_envios.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tabs_envios.png",
+      "size": 60953
+    },
+    {
+      "rel": "dark/mobile/interaction/toast_after_4s.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "toast_after_4s.png",
+      "size": 60094
+    },
+    {
+      "rel": "dark/mobile/interaction/tooltip_and_toast.png",
+      "theme": "dark",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tooltip_and_toast.png",
+      "size": 70931
+    },
+    {
+      "rel": "light/desktop/baseline/banner_promo_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "banner_promo_baseline.png",
+      "size": 137211
+    },
+    {
+      "rel": "light/desktop/baseline/components_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "components_baseline.png",
+      "size": 108345
+    },
+    {
+      "rel": "light/desktop/baseline/ecommerce_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "ecommerce_baseline.png",
+      "size": 719474
+    },
+    {
+      "rel": "light/desktop/baseline/hero_video_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hero_video_baseline.png",
+      "size": 89937
+    },
+    {
+      "rel": "light/desktop/baseline/hf_banner_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_banner_baseline.png",
+      "size": 121101
+    },
+    {
+      "rel": "light/desktop/baseline/hf_carousel_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_carousel_baseline.png",
+      "size": 98158
+    },
+    {
+      "rel": "light/desktop/baseline/hf_grid_filters_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_grid_filters_baseline.png",
+      "size": 894280
+    },
+    {
+      "rel": "light/desktop/baseline/hf_lightbox_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_lightbox_baseline.png",
+      "size": 537873
+    },
+    {
+      "rel": "light/desktop/baseline/hf_video_hero_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "hf_video_hero_baseline.png",
+      "size": 337200
+    },
+    {
+      "rel": "light/desktop/baseline/light_desktop_fullpage_ecommerce.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "light_desktop_fullpage_ecommerce.png",
+      "size": 719288
+    },
+    {
+      "rel": "light/desktop/baseline/light_desktop_fullpage_marketing.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "light_desktop_fullpage_marketing.png",
+      "size": 261390
+    },
+    {
+      "rel": "light/desktop/baseline/light_desktop_fullpage_patterns.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "light_desktop_fullpage_patterns.png",
+      "size": 215768
+    },
+    {
+      "rel": "light/desktop/baseline/light_desktop_fullpage_top.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "light_desktop_fullpage_top.png",
+      "size": 90670
+    },
+    {
+      "rel": "light/desktop/baseline/marquee_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "marquee_baseline.png",
+      "size": 259496
+    },
+    {
+      "rel": "light/desktop/baseline/navbar_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "navbar_baseline.png",
+      "size": 274340
+    },
+    {
+      "rel": "light/desktop/baseline/pdp_snippet_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "pdp_snippet_baseline.png",
+      "size": 472912
+    },
+    {
+      "rel": "light/desktop/baseline/slider_baseline.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "baseline",
+      "file": "slider_baseline.png",
+      "size": 520951
+    },
+    {
+      "rel": "light/desktop/interaction/accordion_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "accordion_open.png",
+      "size": 111500
+    },
+    {
+      "rel": "light/desktop/interaction/accordion_second_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "accordion_second_open.png",
+      "size": 113704
+    },
+    {
+      "rel": "light/desktop/interaction/banner_promo_hover.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "banner_promo_hover.png",
+      "size": 136568
+    },
+    {
+      "rel": "light/desktop/interaction/button_focus.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "button_focus.png",
+      "size": 102967
+    },
+    {
+      "rel": "light/desktop/interaction/drawer_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "drawer_closed.png",
+      "size": 109621
+    },
+    {
+      "rel": "light/desktop/interaction/drawer_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "drawer_open.png",
+      "size": 161326
+    },
+    {
+      "rel": "light/desktop/interaction/ecommerce_quickshop_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_closed.png",
+      "size": 721471
+    },
+    {
+      "rel": "light/desktop/interaction/ecommerce_quickshop_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_open.png",
+      "size": 542961
+    },
+    {
+      "rel": "light/desktop/interaction/form_focus_email.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "form_focus_email.png",
+      "size": 108813
+    },
+    {
+      "rel": "light/desktop/interaction/hero_cta_hover.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hero_cta_hover.png",
+      "size": 1122491
+    },
+    {
+      "rel": "light/desktop/interaction/hero_video_paused.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hero_video_paused.png",
+      "size": 1122585
+    },
+    {
+      "rel": "light/desktop/interaction/hf_banner_apply_code_clicked.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_banner_apply_code_clicked.png",
+      "size": 120886
+    },
+    {
+      "rel": "light/desktop/interaction/hf_banner_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_banner_closed.png",
+      "size": 117081
+    },
+    {
+      "rel": "light/desktop/interaction/hf_carousel_dot1.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_carousel_dot1.png",
+      "size": 183049
+    },
+    {
+      "rel": "light/desktop/interaction/hf_carousel_next_clicked.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_carousel_next_clicked.png",
+      "size": 182943
+    },
+    {
+      "rel": "light/desktop/interaction/hf_grid_filter_calzas.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_calzas.png",
+      "size": 591442
+    },
+    {
+      "rel": "light/desktop/interaction/hf_grid_filter_todos.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_todos.png",
+      "size": 859143
+    },
+    {
+      "rel": "light/desktop/interaction/hf_lightbox_arrowright.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_arrowright.png",
+      "size": 689380
+    },
+    {
+      "rel": "light/desktop/interaction/hf_lightbox_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_closed.png",
+      "size": 657994
+    },
+    {
+      "rel": "light/desktop/interaction/hf_lightbox_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_open.png",
+      "size": 689158
+    },
+    {
+      "rel": "light/desktop/interaction/hf_lightbox_thumb2.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_lightbox_thumb2.png",
+      "size": 398707
+    },
+    {
+      "rel": "light/desktop/interaction/hf_video_hero_paused.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "hf_video_hero_paused.png",
+      "size": 993328
+    },
+    {
+      "rel": "light/desktop/interaction/marquee_paused.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "marquee_paused.png",
+      "size": 259496
+    },
+    {
+      "rel": "light/desktop/interaction/modal_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "modal_closed.png",
+      "size": 109862
+    },
+    {
+      "rel": "light/desktop/interaction/modal_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "modal_open.png",
+      "size": 117389
+    },
+    {
+      "rel": "light/desktop/interaction/navbar_menu_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "navbar_menu_closed.png",
+      "size": 90256
+    },
+    {
+      "rel": "light/desktop/interaction/navbar_menu_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "navbar_menu_open.png",
+      "size": 100705
+    },
+    {
+      "rel": "light/desktop/interaction/pdp_add_to_cart_drawer_closed.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_closed.png",
+      "size": 472197
+    },
+    {
+      "rel": "light/desktop/interaction/pdp_add_to_cart_drawer_open.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_open.png",
+      "size": 395359
+    },
+    {
+      "rel": "light/desktop/interaction/pdp_qty_increased.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_qty_increased.png",
+      "size": 472237
+    },
+    {
+      "rel": "light/desktop/interaction/pdp_size_xs_selected.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "pdp_size_xs_selected.png",
+      "size": 472079
+    },
+    {
+      "rel": "light/desktop/interaction/slider_card_hover.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "slider_card_hover.png",
+      "size": 136605
+    },
+    {
+      "rel": "light/desktop/interaction/slider_scrolled.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "slider_scrolled.png",
+      "size": 138257
+    },
+    {
+      "rel": "light/desktop/interaction/tabs_detalles.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tabs_detalles.png",
+      "size": 111596
+    },
+    {
+      "rel": "light/desktop/interaction/tabs_envios.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tabs_envios.png",
+      "size": 109245
+    },
+    {
+      "rel": "light/desktop/interaction/toast_after_4s.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "toast_after_4s.png",
+      "size": 114821
+    },
+    {
+      "rel": "light/desktop/interaction/toast_info_shown.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "toast_info_shown.png",
+      "size": 114770
+    },
+    {
+      "rel": "light/desktop/interaction/toast_ok_shown.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "toast_ok_shown.png",
+      "size": 114821
+    },
+    {
+      "rel": "light/desktop/interaction/tooltip_hover.png",
+      "theme": "light",
+      "viewport": "desktop",
+      "bucket": "interaction",
+      "file": "tooltip_hover.png",
+      "size": 110161
+    },
+    {
+      "rel": "light/mobile/baseline/hf_banner_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "hf_banner_baseline.png",
+      "size": 70577
+    },
+    {
+      "rel": "light/mobile/baseline/light_mobile_ecommerce.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "light_mobile_ecommerce.png",
+      "size": 344832
+    },
+    {
+      "rel": "light/mobile/baseline/light_mobile_marketing.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "light_mobile_marketing.png",
+      "size": 63605
+    },
+    {
+      "rel": "light/mobile/baseline/light_mobile_patterns.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "light_mobile_patterns.png",
+      "size": 141650
+    },
+    {
+      "rel": "light/mobile/baseline/light_mobile_top.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "baseline",
+      "file": "light_mobile_top.png",
+      "size": 42350
+    },
+    {
+      "rel": "light/mobile/interaction/accordion_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "accordion_open.png",
+      "size": 62315
+    },
+    {
+      "rel": "light/mobile/interaction/accordion_second_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "accordion_second_open.png",
+      "size": 62594
+    },
+    {
+      "rel": "light/mobile/interaction/components_section.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "components_section.png",
+      "size": 72131
+    },
+    {
+      "rel": "light/mobile/interaction/drawer_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "drawer_closed.png",
+      "size": 62896
+    },
+    {
+      "rel": "light/mobile/interaction/drawer_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "drawer_open.png",
+      "size": 79033
+    },
+    {
+      "rel": "light/mobile/interaction/ecommerce_quickshop_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_closed.png",
+      "size": 382752
+    },
+    {
+      "rel": "light/mobile/interaction/ecommerce_quickshop_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "ecommerce_quickshop_open.png",
+      "size": 121128
+    },
+    {
+      "rel": "light/mobile/interaction/hf_banner_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_banner_closed.png",
+      "size": 102570
+    },
+    {
+      "rel": "light/mobile/interaction/hf_banner_interaction.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_banner_interaction.png",
+      "size": 70240
+    },
+    {
+      "rel": "light/mobile/interaction/hf_carousel_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_baseline.png",
+      "size": 267132
+    },
+    {
+      "rel": "light/mobile/interaction/hf_carousel_dot2.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_dot2.png",
+      "size": 321816
+    },
+    {
+      "rel": "light/mobile/interaction/hf_carousel_next_clicked.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_carousel_next_clicked.png",
+      "size": 321816
+    },
+    {
+      "rel": "light/mobile/interaction/hf_grid_filters_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filters_baseline.png",
+      "size": 61593
+    },
+    {
+      "rel": "light/mobile/interaction/hf_grid_filter_calzas.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_calzas.png",
+      "size": 204643
+    },
+    {
+      "rel": "light/mobile/interaction/hf_grid_filter_todos.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_grid_filter_todos.png",
+      "size": 195717
+    },
+    {
+      "rel": "light/mobile/interaction/hf_lightbox_arrowright.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_arrowright.png",
+      "size": 360837
+    },
+    {
+      "rel": "light/mobile/interaction/hf_lightbox_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_baseline.png",
+      "size": 276811
+    },
+    {
+      "rel": "light/mobile/interaction/hf_lightbox_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_closed.png",
+      "size": 298864
+    },
+    {
+      "rel": "light/mobile/interaction/hf_lightbox_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_lightbox_open.png",
+      "size": 360774
+    },
+    {
+      "rel": "light/mobile/interaction/hf_video_hero_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_video_hero_baseline.png",
+      "size": 200222
+    },
+    {
+      "rel": "light/mobile/interaction/hf_video_hero_paused.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "hf_video_hero_paused.png",
+      "size": 392735
+    },
+    {
+      "rel": "light/mobile/interaction/marketing_section.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "marketing_section.png",
+      "size": 63031
+    },
+    {
+      "rel": "light/mobile/interaction/modal_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "modal_closed.png",
+      "size": 62594
+    },
+    {
+      "rel": "light/mobile/interaction/modal_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "modal_open.png",
+      "size": 75283
+    },
+    {
+      "rel": "light/mobile/interaction/navbar_initial.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_initial.png",
+      "size": 42394
+    },
+    {
+      "rel": "light/mobile/interaction/navbar_menu_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_menu_closed.png",
+      "size": 42458
+    },
+    {
+      "rel": "light/mobile/interaction/navbar_menu_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "navbar_menu_open.png",
+      "size": 52695
+    },
+    {
+      "rel": "light/mobile/interaction/pdp_add_to_cart_drawer_closed.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_closed.png",
+      "size": 67209
+    },
+    {
+      "rel": "light/mobile/interaction/pdp_add_to_cart_drawer_open.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_add_to_cart_drawer_open.png",
+      "size": 67251
+    },
+    {
+      "rel": "light/mobile/interaction/pdp_qty_increased.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_qty_increased.png",
+      "size": 53725
+    },
+    {
+      "rel": "light/mobile/interaction/pdp_size_xs_selected.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_size_xs_selected.png",
+      "size": 58579
+    },
+    {
+      "rel": "light/mobile/interaction/pdp_snippet_baseline.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "pdp_snippet_baseline.png",
+      "size": 128819
+    },
+    {
+      "rel": "light/mobile/interaction/tabs_detalles.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tabs_detalles.png",
+      "size": 62138
+    },
+    {
+      "rel": "light/mobile/interaction/tabs_envios.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tabs_envios.png",
+      "size": 60312
+    },
+    {
+      "rel": "light/mobile/interaction/toast_after_4s.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "toast_after_4s.png",
+      "size": 62582
+    },
+    {
+      "rel": "light/mobile/interaction/tooltip_and_toast.png",
+      "theme": "light",
+      "viewport": "mobile",
+      "bucket": "interaction",
+      "file": "tooltip_and_toast.png",
+      "size": 71225
+    }
+  ]
+}

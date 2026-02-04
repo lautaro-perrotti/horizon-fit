@@ -1,0 +1,3094 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Horizon Fit — Design System (HTML/CSS/JS)</title>
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- Component CSS imports -->
+  <link rel="stylesheet" href="design-system/components/banner/banner.css" />
+  <link rel="stylesheet" href="design-system/components/marquee/marquee.css" />
+  <link rel="stylesheet" href="design-system/components/carousel/carousel.css" />
+  <link rel="stylesheet" href="design-system/components/video-hero/video-hero.css" />
+  <link rel="stylesheet" href="design-system/components/grid/grid.css" />
+  <link rel="stylesheet" href="design-system/components/card/card.css" />
+  <link rel="stylesheet" href="design-system/components/lightbox/lightbox.css" />
+  <link rel="stylesheet" href="design-system/components/product-item/product-item.css" />
+
+  <style>
+    /******************************************************************
+      HORIZON FIT — DESIGN SYSTEM (single file)
+      - Token-first via CSS variables
+      - Vanilla JS components (modal, drawer, tabs, accordion, dropdown, toast, tooltip)
+      - Ecommerce-ready examples
+    ******************************************************************/
+
+    /* -----------------------------
+      1) TOKENS (desde Identikit)
+      Paleta: #F1F2F6 #758AFD #FEECD4 #FF5E32 #CB4A00 #B6CF50 #406915 #4B0E26 #4561FC #27187D #000000 #D5C5B5
+    ------------------------------*/
+    :root{
+      /* Colors */
+      --hf-black: #000000;
+      --hf-white: #F1F2F6;
+
+      --hf-primary: #27187D;
+      --hf-primary-700: #1a1054;
+
+      --hf-accent: #758AFD;
+      --hf-accent-700: #4561FC;
+
+      --hf-warm: #FEECD4;
+      --hf-earth: #D5C5B5;
+
+      --hf-green: #B6CF50;
+      --hf-green-700: #406915;
+
+      --hf-purple: #4B0E26;
+      --hf-indigo: #27187D;
+
+      /* Brand (bolsas, etiquetas) */
+      --hf-brand-coral: #ED562D;
+      --hf-brand-indigo: #27187D;
+
+      /* Legacy orange (anterior primario) */
+      --hf-orange: #FF5E32;
+      --hf-orange-700: #CB4A00;
+
+      /* Semantic */
+      --bg: #FBF3E8;
+      --surface: #FFF9F2;
+      --surface-2: #F7EEE4;
+      --text: #0b0b0f;
+      --muted: rgba(11,11,15,.66);
+      --border: rgba(11,11,15,.12);
+      --shadow: 0 12px 40px rgba(0,0,0,.10);
+
+      --focus: 0 0 0 3px rgba(117,138,253,.35);
+
+      /* Typography */
+      --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* Type scale */
+      --h1: clamp(28px, 3.2vw, 44px);
+      --h2: clamp(22px, 2.2vw, 32px);
+      --h3: 20px;
+      --p: 16px;
+      --small: 13px;
+
+      /* Spacing */
+      --s-1: 4px;
+      --s-2: 8px;
+      --s-3: 12px;
+      --s-4: 16px;
+      --s-5: 20px;
+      --s-6: 24px;
+      --s-7: 32px;
+      --s-8: 40px;
+      --s-9: 56px;
+      --s-10: 72px;
+
+      /* Radius */
+      --r-1: 10px;
+      --r-2: 14px;
+      --r-3: 18px;
+      --r-pill: 999px;
+
+      /* Motion */
+      --ease: cubic-bezier(.4,0,.2,1);
+      --fast: 150ms;
+      --med: 240ms;
+      --slow: 380ms;
+
+      /* Layout */
+      --container: 1180px;
+    }
+
+    /* Dark mode */
+    [data-theme="dark"]{
+      --bg: #0b0b0f;
+      --surface: #121218;
+      --surface-2: #171722;
+      --text: #f2f3f6;
+      --muted: rgba(242,243,246,.70);
+      --border: rgba(242,243,246,.14);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --focus: 0 0 0 3px rgba(255,94,50,.25);
+    }
+
+    /* -----------------------------
+      2) BASE / RESET
+    ------------------------------*/
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    a{ color:inherit; text-decoration:none; }
+    button,input,select,textarea{ font:inherit; }
+    img{ max-width:100%; display:block; }
+    p{ margin:0; }
+    ::selection{ background: rgba(255,94,50,.25); }
+
+    .container{
+      width:min(100%, calc(var(--container) + 2*var(--s-6)));
+      margin-inline:auto;
+      padding-inline:var(--s-6);
+    }
+
+    .grid{
+      display:grid;
+      gap:var(--s-6);
+    }
+    .grid-2{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .grid-3{ grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .grid-4{ grid-template-columns:repeat(4, minmax(0,1fr)); }
+
+    @media (max-width: 980px){
+      .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; }
+    }
+
+    .section{
+      padding: var(--s-9) 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .h1{ font-size:var(--h1); letter-spacing:-.02em; margin:0 0 var(--s-3); }
+    .h2{ font-size:var(--h2); letter-spacing:-.02em; margin:0 0 var(--s-3); }
+    .h3{ font-size:var(--h3); margin:0 0 var(--s-2); }
+    .p{ font-size:var(--p); color:var(--muted); margin:0; }
+    .small{ font-size:var(--small); color:var(--muted); }
+    .mono{ font-family:var(--font-mono); }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:var(--r-pill);
+      border:1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      backdrop-filter: blur(10px);
+    }
+
+    .kbd{
+      font-family:var(--font-mono);
+      font-size:12px;
+      padding:2px 6px;
+      border:1px solid var(--border);
+      border-bottom-width:2px;
+      border-radius:8px;
+      background:var(--surface-2);
+      color:var(--text);
+    }
+
+    /* -----------------------------
+      3) NAVBAR + HERO (banner grande)
+    ------------------------------*/
+    .nav{
+      position:sticky; top:0; z-index:50;
+      background: color-mix(in srgb, var(--bg) 75%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav__inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0;
+      gap: var(--s-4);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.02em;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: radial-gradient(circle at 30% 30%, var(--hf-accent), var(--hf-indigo));
+      box-shadow: 0 8px 18px rgba(39,24,125,.25);
+    }
+    .nav__actions{ display:flex; align-items:center; gap:10px; }
+    .nav__links{ display:flex; align-items:center; gap:14px; }
+    .nav__links a{
+      padding:8px 10px; border-radius:10px;
+      color:var(--muted);
+    }
+    .nav__links a:hover{ background:var(--surface-2); color:var(--text); }
+    .nav__left{ display:flex; align-items:center; }
+    .nav__hamburger{
+      padding:8px;
+      border-radius:8px;
+      color: var(--hf-primary);
+    }
+    .nav__hamburger svg{ display:block; }
+
+    .nav__icon-btn{
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-2);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--hf-primary);
+      transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+    }
+    .nav__icon-btn:hover{
+      background: var(--surface-2);
+    }
+    .nav__icon-btn svg{
+      width: 22px;
+      height: 22px;
+    }
+
+    .hero{
+      padding: var(--s-10) 0 var(--s-9);
+    }
+    .hero__wrap{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: var(--s-7);
+      align-items:stretch;
+    }
+    .heroCard{
+      border:1px solid var(--border);
+      border-radius: var(--r-3);
+      overflow:hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .heroBanner{
+      min-height: 360px;
+      background:
+        radial-gradient(1400px 380px at 10% 30%, rgba(255,94,50,.35), transparent 60%),
+        radial-gradient(1000px 360px at 70% 10%, rgba(117,138,253,.28), transparent 55%),
+        linear-gradient(180deg, color-mix(in srgb, var(--hf-warm) 35%, transparent), transparent 55%),
+        linear-gradient(135deg, var(--surface), var(--surface-2));
+      padding: var(--s-8);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .heroMeta{
+      display:flex; flex-wrap:wrap; gap:10px;
+    }
+    .heroTitle{ margin-top: var(--s-5); }
+    .heroTitle .h1{ margin-bottom: var(--s-2); }
+    .heroCTA{ display:flex; flex-wrap:wrap; gap:12px; margin-top: var(--s-5); }
+
+    .heroSide{
+      display:flex;
+      flex-direction:column;
+      gap: var(--s-6);
+    }
+
+    /* -----------------------------
+      4) COMPONENT PRIMITIVES
+    ------------------------------*/
+    .card{
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--r-2);
+      box-shadow: 0 12px 30px rgba(0,0,0,.06);
+    }
+    .card__hd{ padding: var(--s-5) var(--s-5) 0; }
+    .card__bd{ padding: var(--s-5); }
+    .card__ft{ padding: 0 var(--s-5) var(--s-5); }
+
+    .divider{ height:1px; background: var(--border); margin: var(--s-4) 0; }
+
+    .row{ display:flex; flex-wrap:wrap; gap: var(--s-3); align-items:center; }
+    .stack{ display:flex; flex-direction:column; gap: var(--s-3); }
+    .spacer{ height: var(--s-3); }
+
+    /* Buttons */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      border:1px solid transparent;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast) var(--ease), border-color var(--fast) var(--ease), opacity var(--fast) var(--ease);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn:focus-visible{ outline:none; box-shadow: var(--focus); }
+
+    .btn--primary{
+      background: var(--hf-primary);
+      color: var(--hf-white);
+      box-shadow: 0 12px 26px rgba(255,94,50,.22);
+    }
+    .btn--primary:hover{ background: color-mix(in srgb, var(--hf-primary) 88%, var(--hf-primary-700)); }
+
+    .btn--secondary{
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn--secondary:hover{ background: var(--surface-2); }
+
+    .btn--ghost{
+      background: transparent;
+      border-color: transparent;
+      color: var(--text);
+    }
+    .btn--ghost:hover{ background: var(--surface-2); }
+
+    .btn--danger{
+      background: #ff3b3b;
+      color: var(--hf-white);
+    }
+
+    .btn--sm{ padding:10px 12px; border-radius:12px; font-weight:700; }
+    .btn--lg{ padding:14px 18px; border-radius:16px; font-size:16px; }
+
+    .btn[disabled], .btn.is-disabled{
+      opacity:.55; cursor:not-allowed; transform:none;
+    }
+
+    .btn .spinner{
+      width:16px; height:16px; border-radius:999px;
+      border:2px solid rgba(0,0,0,.22);
+      border-top-color: rgba(0,0,0,.0);
+      animation: spin .8s linear infinite;
+    }
+    .btn--primary .spinner,
+    .btn--danger .spinner{
+      border-color: rgba(241,242,246,.55);
+      border-top-color: rgba(241,242,246,.0);
+    }
+    [data-theme="dark"] .btn .spinner{
+      border-color: rgba(242,243,246,.35);
+      border-top-color: rgba(242,243,246,.0);
+    }
+    @keyframes spin { to{ transform: rotate(360deg); } }
+
+    /* Badges */
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius: var(--r-pill);
+      border:1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge--primary{ background: color-mix(in srgb, var(--hf-primary) 18%, var(--surface)); border-color: color-mix(in srgb, var(--hf-primary) 35%, var(--border)); }
+    .badge--accent{ background: color-mix(in srgb, var(--hf-accent) 18%, var(--surface)); border-color: color-mix(in srgb, var(--hf-accent) 35%, var(--border)); }
+    .badge--ok{ background: color-mix(in srgb, var(--hf-green) 18%, var(--surface)); border-color: color-mix(in srgb, var(--hf-green) 35%, var(--border)); }
+
+    /* Fields */
+    .field{ display:flex; flex-direction:column; gap:8px; }
+    .label{ font-weight:700; font-size:13px; color:var(--text); }
+    .hint{ font-size:12px; color:var(--muted); margin-top:-4px; }
+    .control{
+      width:100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: box-shadow var(--fast) var(--ease), border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+    }
+    .control:focus{ box-shadow: var(--focus); border-color: color-mix(in srgb, var(--hf-accent) 40%, var(--border)); }
+    .control:disabled{ opacity:.55; cursor:not-allowed; background: var(--surface-2); }
+    .control.is-error{ border-color: rgba(255,59,59,.6); box-shadow: 0 0 0 3px rgba(255,59,59,.18); }
+    .control.is-success{ border-color: rgba(64,105,21,.7); box-shadow: 0 0 0 3px rgba(182,207,80,.25); }
+
+    /* Check / radio */
+    .choice{
+      display:flex; align-items:flex-start; gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background: var(--surface);
+    }
+    .choice input{ margin-top: 3px; }
+    .choice b{ display:block; }
+    .choice small{ color:var(--muted); }
+
+    /* Switch */
+    .switch{
+      display:inline-flex; align-items:center; gap:10px;
+      user-select:none;
+    }
+    .switch__track{
+      width:48px; height:28px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background: var(--surface-2);
+      position:relative;
+      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+      cursor:pointer;
+    }
+    .switch__thumb{
+      width:22px; height:22px; border-radius:999px;
+      background: var(--surface);
+      position:absolute; top:2px; left:2px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      transition: transform var(--fast) var(--ease);
+    }
+    .switch input{ display:none; }
+    .switch input:checked + .switch__track{
+      background: color-mix(in srgb, var(--hf-accent) 26%, var(--surface));
+      border-color: color-mix(in srgb, var(--hf-accent) 40%, var(--border));
+    }
+    .switch input:checked + .switch__track .switch__thumb{
+      transform: translateX(20px);
+    }
+
+    /* Alerts */
+    .alert{
+      border-radius: var(--r-2);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 14px 14px;
+      display:flex;
+      gap: 12px;
+      align-items:flex-start;
+    }
+    .alert__dot{
+      width:10px; height:10px; border-radius:999px; margin-top: 6px;
+      background: var(--hf-accent);
+      box-shadow: 0 0 0 4px rgba(117,138,253,.18);
+    }
+    .alert--warn .alert__dot{ background: var(--hf-primary); box-shadow: 0 0 0 4px rgba(255,94,50,.18); }
+    .alert--ok .alert__dot{ background: var(--hf-green-700); box-shadow: 0 0 0 4px rgba(182,207,80,.18); }
+
+    /* -----------------------------
+      5) DROPDOWN / TOOLTIP
+    ------------------------------*/
+    .dropdown{ position:relative; display:inline-block; }
+    .menu{
+      position:absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 260px;
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display:none;
+      z-index:80;
+    }
+    .menu[aria-hidden="false"]{ display:block; }
+    .menu a, .menu button{
+      width:100%;
+      text-align:left;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:0;
+      background: transparent;
+      color: var(--text);
+      cursor:pointer;
+    }
+    .menu a:hover, .menu button:hover{ background: var(--surface-2); }
+    .menu hr{ border:0; height:1px; background: var(--border); margin:8px 0; }
+
+    .tooltip{
+      position:absolute;
+      pointer-events:none;
+      opacity:0;
+      transform: translateY(6px);
+      transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+      background: var(--text);
+      color: var(--bg);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size:12px;
+      max-width: 240px;
+      z-index:90;
+    }
+    .tooltip.is-on{
+      opacity:1;
+      transform: translateY(0);
+    }
+
+    /* -----------------------------
+      6) TABS / ACCORDION
+    ------------------------------*/
+    .tabs{
+      border:1px solid var(--border);
+      border-radius: var(--r-2);
+      background: var(--surface);
+      overflow:hidden;
+    }
+    .tabs__list{
+      display:flex; gap:6px;
+      padding: 8px;
+      border-bottom:1px solid var(--border);
+      background: var(--surface-2);
+      flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:800;
+      transition: background var(--fast) var(--ease), color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+    }
+    .tab[aria-selected="true"]{
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .tabs__panel{ padding: var(--s-5); display:none; }
+    .tabs__panel.is-active{ display:block; }
+
+    .accordion{
+      border:1px solid var(--border);
+      border-radius: var(--r-2);
+      background: var(--surface);
+      overflow:hidden;
+    }
+    .acc__item + .acc__item{ border-top:1px solid var(--border); }
+    .acc__btn{
+      width:100%;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 14px;
+      background: transparent;
+      border:0;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .acc__btn:hover{ background: var(--surface-2); }
+    .acc__panel{
+      display:grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--med) var(--ease);
+    }
+    .acc__panel > div{
+      overflow:hidden;
+      padding: 0 14px;
+    }
+    .acc__item[aria-expanded="true"] .acc__panel{ grid-template-rows: 1fr; }
+    .acc__item[aria-expanded="true"] .acc__panel > div{ padding: 0 14px 14px; }
+    .chev{ transition: transform var(--med) var(--ease); }
+    .acc__item[aria-expanded="true"] .chev{ transform: rotate(180deg); }
+
+    /* -----------------------------
+      7) MODAL / DRAWER
+    ------------------------------*/
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.48);
+      display:none;
+      z-index:100;
+    }
+    .overlay.is-on{ display:block; }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      z-index:110;
+      padding: var(--s-6);
+    }
+    .modal.is-on{ display:grid; }
+    .modal__dialog{
+      width:min(720px, 100%);
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transform: translateY(10px);
+      opacity:0;
+      transition: transform var(--med) var(--ease), opacity var(--med) var(--ease);
+    }
+    .modal.is-on .modal__dialog{ transform: translateY(0); opacity:1; }
+    .modal__hd{ padding: 16px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+    .modal__bd{ padding: 18px; }
+    .modal__ft{ padding: 16px 18px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+
+    .drawer{
+      position:fixed;
+      inset:0;
+      display:none;
+      z-index:120;
+    }
+    .drawer.is-on{ display:block; }
+    .drawer__panel{
+      position:absolute;
+      top:0; right:0;
+      height:100%;
+      width:min(420px, 92vw);
+      background: var(--surface);
+      border-left:1px solid var(--border);
+      box-shadow: var(--shadow);
+      transform: translateX(14px);
+      opacity:0;
+      transition: transform var(--med) var(--ease), opacity var(--med) var(--ease);
+      display:flex;
+      flex-direction:column;
+    }
+    .drawer.is-on .drawer__panel{ transform: translateX(0); opacity:1; }
+    .drawer__hd{ padding: 16px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
+    .drawer__bd{ padding: 16px 18px; overflow:auto; flex:1; }
+    .drawer__ft{ padding: 16px 18px; border-top:1px solid var(--border); }
+
+    /* -----------------------------
+      8) TOAST
+    ------------------------------*/
+    .toasts{
+      position:fixed;
+      right: 16px;
+      bottom: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      z-index:200;
+      pointer-events:none;
+    }
+    .toast{
+      pointer-events:auto;
+      width:min(360px, 92vw);
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 12px 12px;
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      animation: toastIn var(--med) var(--ease) both;
+    }
+    @keyframes toastIn{
+      from{ opacity:0; transform: translateY(10px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+    .toast__dot{ width:10px; height:10px; border-radius:999px; margin-top: 6px; background: var(--hf-primary); }
+    .toast--ok .toast__dot{ background: var(--hf-green-700); }
+    .toast--info .toast__dot{ background: var(--hf-accent); }
+    .toast__x{
+      margin-left:auto;
+      border:0;
+      background: transparent;
+      cursor:pointer;
+      padding:6px 8px;
+      border-radius:10px;
+    }
+    .toast__x:hover{ background: var(--surface-2); }
+
+    /* -----------------------------
+      9) ECOMMERCE COMPONENTS
+    ------------------------------*/
+    .productCard{
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 12px 26px rgba(0,0,0,.06);
+      display:flex;
+      flex-direction:column;
+    }
+    .productMedia{
+      aspect-ratio: 4/5;
+      background:
+        radial-gradient(500px 250px at 20% 20%, rgba(255,94,50,.22), transparent 60%),
+        radial-gradient(420px 220px at 80% 10%, rgba(117,138,253,.18), transparent 60%),
+        linear-gradient(135deg, var(--surface-2), var(--surface));
+      position:relative;
+      overflow:hidden;
+    }
+    .productMedia img{
+      transition: transform var(--med) var(--ease);
+    }
+    .productCard:hover .productMedia img{
+      transform: scale(1.05);
+    }
+    .productBadges{
+      position:absolute; top:12px; left:12px;
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .productBody{ padding: 14px 14px 12px; display:flex; flex-direction:column; gap:8px; }
+    .priceRow{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+    .price{ font-weight:950; font-size:18px; }
+    .priceOld{ color:var(--muted); text-decoration: line-through; font-size:13px; }
+    .swatches{ display:flex; gap:8px; flex-wrap:wrap; }
+    .swatch{
+      width:18px; height:18px; border-radius:999px;
+      border:1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .sizeGrid{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight:850;
+      cursor:pointer;
+      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+    }
+    .chip:hover{ background: var(--surface-2); }
+    .chip[aria-pressed="true"]{ border-color: color-mix(in srgb, var(--hf-primary) 45%, var(--border)); background: color-mix(in srgb, var(--hf-primary) 14%, var(--surface)); }
+    .chip.is-disabled{ opacity:.45; cursor:not-allowed; text-decoration: line-through; }
+
+    .stepper{
+      display:inline-flex;
+      align-items:center;
+      border:1px solid var(--border);
+      background: var(--surface);
+      border-radius: 14px;
+      overflow:hidden;
+    }
+    .stepper button{
+      width:40px; height:40px;
+      border:0;
+      background: transparent;
+      cursor:pointer;
+      font-size:18px;
+      font-weight:900;
+    }
+    .stepper button:hover{ background: var(--surface-2); }
+    .stepper input{
+      width:54px;
+      height:40px;
+      border:0;
+      text-align:center;
+      background: transparent;
+      color: var(--text);
+      outline:none;
+      font-weight:900;
+    }
+
+    .cartItem{
+      display:grid;
+      grid-template-columns: 78px 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom:1px solid var(--border);
+    }
+    .cartThumb{
+      width:78px; aspect-ratio: 4/5;
+      border-radius: 14px;
+      background:
+        radial-gradient(260px 130px at 30% 20%, rgba(182,207,80,.22), transparent 60%),
+        linear-gradient(135deg, var(--surface-2), var(--surface));
+      border:1px solid var(--border);
+    }
+    .cartMeta{ display:flex; flex-direction:column; gap:6px; }
+    .cartMeta b{ font-size:14px; }
+    .cartMeta .small{ font-size:12px; }
+    .cartRow{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+
+    /* Footer */
+    .footer{
+      padding: var(--s-8) 0;
+      color: var(--muted);
+    }
+    .footer__grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr .8fr .8fr;
+      gap: var(--s-6);
+    }
+    @media (max-width: 980px){ .footer__grid{ grid-template-columns:1fr; } }
+
+    /* Utility */
+    .muted{ color: var(--muted); }
+    .right{ margin-left:auto; }
+    .hide-sm{ display:inline-flex; }
+    @media (max-width: 720px){ .hide-sm{ display:none; } }
+
+    /* Demo anchors */
+    .anchor{
+      scroll-margin-top: 90px;
+    }
+
+    /* Hide scrollbar for slider */
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Bounce animation */
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+
+    /* Hover effect on slider cards */
+    #fullSlider article:hover img {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body data-theme="light">
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav__inner" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;max-width:100%;">
+      <!-- Izquierda: Hamburguesa -->
+      <div class="nav__left" style="flex:0 0 auto;">
+        <button class="btn btn--ghost btn--sm nav__hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" style="padding:8px;color:var(--hf-primary);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Centro: Logos -->
+      <a href="#" class="brand" style="text-decoration:none;display:flex;align-items:center;justify-content:center;color:var(--hf-primary);flex:1 1 auto;">
+        <svg style="height:28px;width:auto;" viewBox="0 0 190.96 65.91" fill="currentColor"><path d="M83.31,49.36c7.57,6.4,15.95,9.52,25.44,11.17-13.64,2.96-26.19-1.57-36.18-10.2l-22.48-19.4c-5.67-4.9-12.08-8.68-19.63-9.57-8.95-1.05-17.2,2.66-21.07,10.18s-3.12,16.79,3.22,22.89c4.25,4.09,9.97,6.14,15.35,4.94,5.26-1.17,10.36-4.8,11.93-10.37,1.72-6.07-.87-11.68-5.28-14.37-5.79-3.53-11.7-1.59-16.34,3.15,2.34-5.79,9.13-8.85,14.49-7.81,6.08,1.18,10.59,5.64,12.28,11.88,1.85,6.84-.67,13.97-5.66,18.44-5.25,4.69-12.54,6.9-20.05,4.89C6.74,61.79-1.18,49.02.14,35.83,1.98,17.47,16.81,4.12,35.28,2.84c24.62-1.71,44.63,17.08,61.77,32.22,15.12,13.35,27.63,23.87,48.62,24.27C94.1,77.46,73.04,7.84,30.33,15.22c10.39,1.43,19.42,5.76,27.31,12.43l25.67,21.72Z"/><path d="M190.96,27.37c-11.21,24.41-38.71,34.26-63.47,22.85C97.33,36.31,79.86,3.71,43.95.61c15.85-2.41,31.04,2.49,43.94,11.77l30.8,22.15c24.91,16.98,50.7,15.77,72.26-7.16Z"/><path d="M167.63,34.74c.58-.23,1.16-.47,1.75-.72,1.59-.69,4.03-1.95,5.34-3.11-.71.62-1.88,2.05-2.61,2.6-.81.62-1.65,1.2-2.52,1.74-1.66,1.04-3.41,1.93-5.23,2.65-3.49,1.39-7.21,2.13-10.96,2.28s-7.55-.32-11.21-1.22-7.43-2.33-10.91-4.05c-2.48-1.23-4.88-2.63-7.18-4.18l-25.69-17.21c-7.75-5.19-15.59-8.52-24.26-11.49,26.76,1.48,49.61,34.78,76.46,20.98-5.31,6.35-13.05,6.63-21.91,6.68.14,0,.47.3.59.38.23.15.47.3.7.44.45.28.91.55,1.37.81.91.52,1.84,1.01,2.79,1.47,1.87.91,3.8,1.69,5.78,2.34,3.92,1.28,8.01,2.01,12.14,2.13s8.42-.39,12.48-1.5c1.07-.29,2.08-.64,3.09-1.03Z"/></svg>
+        <svg class="hide-sm" style="height:16px;width:auto;margin-left:10px;" viewBox="0 0 303.31 34.95" fill="currentColor"><path d="M4.99.77h0v13.78h19.44V5.81c0-2.78,2.26-5.04,5.04-5.04h0v28.56c0,2.78-2.26,5.04-5.04,5.04h0v-15.03H4.99v10.03C4.99,32.14,2.76,34.37,0,34.37h0V5.76C0,3,2.24.77,4.99.77Z"/><path d="M33.6,17.52C33.6,6.48,40.75,0,51.26,0s17.76,6.48,17.76,17.43-6.96,17.52-17.76,17.52-17.67-6.48-17.67-17.43ZM63.89,17.52c0-8.16-4.37-12.91-12.63-12.91s-12.58,4.66-12.58,12.91,4.32,12.82,12.58,12.82,12.63-4.75,12.63-12.82Z"/><path d="M73.1,34.32V.77h13.39c7.15,0,13.73,2.16,13.73,9.79,0,4.18-2.06,7.2-6.24,8.83l8.45,14.98h-5.76l-7.54-13.87c-.91.1-1.82.14-2.78.14h-8.3v13.73l-4.94-.05ZM95.14,10.56c0-3.5-1.97-5.18-8.79-5.18h-8.3v10.66h8.69c6.58,0,8.4-1.78,8.4-5.47Z"/><path d="M111.36.77h0v33.6h-4.99V5.76c0-2.76,2.24-4.99,4.99-4.99Z"/><path d="M115.44,30.63l21.36-25.15h-21.03c0-2.6,2.11-4.7,4.7-4.7h23.33v3.79l-21.41,25.15h16.75c2.57,0,4.66,2.08,4.66,4.66h0s-28.37,0-28.37,0v-3.74Z"/><path d="M146.54,17.52c0-11.04,7.15-17.52,17.67-17.52s17.76,6.48,17.76,17.43-6.96,17.52-17.76,17.52-17.67-6.48-17.67-17.43ZM176.83,17.52c0-8.16-4.37-12.91-12.63-12.91s-12.58,4.66-12.58,12.91,4.32,12.82,12.58,12.82,12.63-4.75,12.63-12.82Z"/><path d="M186.05.77h4.46l20.02,25.59V5.66c0-2.7,2.19-4.9,4.9-4.9h0v33.6h-4.37l-20.16-25.44v20.59c0,2.68-2.17,4.85-4.85,4.85h0V.77Z"/><path d="M235.1.77h24.29v4.7h-19.3v9.07h18.15v4.7h-18.15v10.13c0,2.76-2.24,4.99-4.99,4.99h0V.77Z"/><path d="M268.51.77h0v33.6h-4.99V5.76c0-2.76,2.24-4.99,4.99-4.99Z"/><path d="M285.46,5.47h-12.87c0-2.6,2.11-4.7,4.7-4.7h26.02v4.7h-12.91v28.9h-4.94V5.47Z"/></svg>
+      </a>
+
+      <!-- Derecha: Iconos -->
+      <div class="nav__actions" style="flex:0 0 auto;display:flex;align-items:center;gap:4px;">
+        <!-- Search -->
+        <button class="nav__icon-btn" id="searchBtn" aria-label="Buscar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+        </button>
+        <!-- User -->
+        <button class="nav__icon-btn" id="userBtn" aria-label="Mi cuenta">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+          </svg>
+        </button>
+        <!-- Cart -->
+        <button class="nav__icon-btn" id="cartBtn" aria-label="Carrito">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="21" r="1"></circle>
+            <circle cx="19" cy="21" r="1"></circle>
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Menu oculto para funcionalidades (toggle theme, etc.) -->
+      <div class="menu" role="menu" aria-hidden="true" id="menu" style="display:none;">
+        <a role="menuitem" href="#marketing">Marketing</a>
+        <a role="menuitem" href="#ecommerce">E-commerce</a>
+        <a role="menuitem" href="#patterns">Patterns</a>
+        <hr/>
+        <button role="menuitem" id="openCartBtn">Abrir carrito (Drawer)</button>
+        <button role="menuitem" id="openModalBtn">Abrir modal</button>
+        <button role="menuitem" id="toastBtn">Mostrar toast</button>
+        <hr/>
+        <button role="menuitem" id="toggleThemeBtn">Toggle theme</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       FULL SCREEN COMPONENTS (sin márgenes)
+       ============================================ -->
+
+  <!-- ANNOUNCEMENT BANNER - FULL WIDTH (comentado)
+  <div class="hf-marquee hf-marquee--dark" data-hf="marquee" data-speed="20" style="position:relative;z-index:40;">
+    <div class="hf-marquee__track">
+      <div class="hf-marquee__content">
+        <span class="hf-marquee__item">🔥 DROP 01 — DISPONIBLE AHORA</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+        <span class="hf-marquee__item">ENVÍO GRATIS +$120.000</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+        <span class="hf-marquee__item">CAMBIOS SIN COSTO</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+        <span class="hf-marquee__item">🔥 DROP 01 — DISPONIBLE AHORA</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+        <span class="hf-marquee__item">ENVÍO GRATIS +$120.000</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+        <span class="hf-marquee__item">CAMBIOS SIN COSTO</span>
+        <span class="hf-marquee__separator" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+  -->
+
+  <!-- VIDEO HERO - FULL SCREEN 100vh -->
+  <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" style="min-height:100vh;border-radius:0;">
+    <video class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+      <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4">
+    </video>
+    <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;">
+    <div class="hf-video-hero__overlay" style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.8) 100%);"></div>
+    <div class="hf-video-hero__content" style="position:relative;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;min-height:100vh;padding:60px;max-width:800px;">
+      <span class="badge badge--primary" style="margin-bottom:16px;font-size:14px;">DROP 01</span>
+      <h1 style="font-size:clamp(36px,6vw,72px);font-weight:900;color:#fff;margin:0 0 20px;line-height:1.1;letter-spacing:-0.03em;">Más allá del entrenamiento.</h1>
+      <p style="font-size:clamp(16px,2vw,22px);color:rgba(255,255,255,0.85);margin:0 0 32px;line-height:1.6;">Activewear para la vida real. Del gym a la calle sin cortar la rutina.</p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <a href="#ecommerce" class="btn btn--primary btn--lg" style="padding:18px 32px;font-size:16px;">Ver colección</a>
+        <a href="#marketing" class="btn btn--lg" style="padding:18px 32px;font-size:16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;backdrop-filter:blur(10px);">Componentes</a>
+      </div>
+    </div>
+    <!-- Scroll indicator -->
+    <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.7);font-size:12px;animation:bounce 2s ease-in-out infinite;">
+      <span>Scroll</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+    <!-- Play/Pause -->
+    <button class="hf-video-hero__control hf-video-hero__control--pause" aria-label="Pausar video" onclick="const vid=this.closest('.hf-video-hero').querySelector('video');if(vid.paused){vid.play();this.classList.remove('hf-video-hero__control--play');this.classList.add('hf-video-hero__control--pause');}else{vid.pause();this.classList.remove('hf-video-hero__control--pause');this.classList.add('hf-video-hero__control--play');}">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+    </button>
+  </section>
+
+  <!-- FULL WIDTH SLIDER - PRODUCTOS -->
+  <section style="width:100%;background:var(--surface);padding:80px 0;overflow:hidden;">
+    <div style="max-width:1400px;margin:0 auto;padding:0 40px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;">
+        <div>
+          <span class="badge badge--accent" style="margin-bottom:12px;">Best Sellers</span>
+          <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Lo más vendido</h2>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <button class="btn btn--secondary" onclick="document.getElementById('fullSlider').scrollBy({left:-400,behavior:'smooth'})" aria-label="Anterior">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn--secondary" onclick="document.getElementById('fullSlider').scrollBy({left:400,behavior:'smooth'})" aria-label="Siguiente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Slider sin padding, full overflow -->
+    <div id="fullSlider" style="display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 40px 20px;scrollbar-width:none;-ms-overflow-style:none;" class="hide-scrollbar">
+      <!-- Slide 1 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=640&h=853&fit=crop" alt="Calza Range" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge badge--primary">Nuevo</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Calza Range</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Negro / Compresión media</p>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="color:#fff;font-weight:900;font-size:20px;">$59.900</span>
+              <span style="color:rgba(255,255,255,0.5);text-decoration:line-through;font-size:14px;">$74.900</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 2 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=640&h=853&fit=crop" alt="Top Motion" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge badge--accent">Best seller</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Top Motion</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Arena / Sujeción media</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$34.900</span>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 3 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=640&h=853&fit=crop" alt="Hoodie Cotidiano" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge">Essentials</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Hoodie Cotidiano</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Gris / Oversize</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$89.900</span>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 4 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=640&h=853&fit=crop" alt="Short Versátil" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge badge--primary">2x1</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Short Versátil</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Verde / Liviano</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$41.900</span>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 5 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=640&h=853&fit=crop" alt="Calza Flow" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge badge--ok">En stock</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Calza Flow</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Burgundy / High waist</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$54.900</span>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 6 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=640&h=853&fit=crop" alt="Top Essential" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Top Essential</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Crema / Básico</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$29.900</span>
+          </div>
+        </div>
+      </article>
+      <!-- Slide 7 -->
+      <article style="flex:0 0 320px;scroll-snap-align:start;">
+        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
+          <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=640&h=853&fit=crop" alt="Leggings Pro" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
+            <span class="badge badge--accent">Top 10</span>
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
+            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Leggings Pro</h3>
+            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Negro / Alta compresión</p>
+            <span style="color:#fff;font-weight:900;font-size:20px;">$64.900</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- BANNER PROMO FULL WIDTH -->
+  <section style="width:100%;background:linear-gradient(135deg,var(--hf-primary) 0%,var(--hf-primary-700) 100%);padding:60px 40px;text-align:center;">
+    <div style="max-width:800px;margin:0 auto;">
+      <span style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.2);border-radius:999px;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;">OFERTA LIMITADA</span>
+      <h2 style="font-size:clamp(32px,5vw,56px);font-weight:900;color:#fff;margin:0 0 16px;letter-spacing:-0.02em;">20% OFF en tu primera compra</h2>
+      <p style="font-size:18px;color:rgba(255,255,255,0.85);margin:0 0 32px;">Usá el código <strong style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:8px;">HF-20</strong> al finalizar tu compra.</p>
+      <a href="#ecommerce" class="btn btn--lg" style="padding:18px 40px;font-size:16px;background:#fff;color:var(--hf-primary-700);font-weight:800;">Comprar ahora</a>
+    </div>
+  </section>
+
+  <!-- HERO -->
+  <main>
+    <section class="hero">
+      <div class="container hero__wrap">
+        <div class="heroCard">
+          <div class="heroBanner">
+            <div class="heroMeta">
+              <span class="pill"><span class="badge badge--primary">E-commerce</span> <span class="small">Componentes listos</span></span>
+              <span class="pill"><span class="badge badge--accent">Vanilla</span> <span class="small">HTML/CSS/JS</span></span>
+              <span class="pill"><span class="badge badge--ok">Accesible</span> <span class="small">Keyboard + ARIA</span></span>
+            </div>
+
+            <div class="heroTitle">
+              <h1 class="h1">Un Design System para moverte rápido.</h1>
+              <p class="p">
+                Página única para preview y construcción de componentes. Estilo minimalista + banner grande (e-commerce),
+                con microinteracciones suaves “movimiento continuo”.
+              </p>
+              <div class="heroCTA">
+                <a class="btn btn--primary btn--lg" href="#ecommerce">Ver módulos E-commerce</a>
+                <button class="btn btn--secondary btn--lg" id="downloadHtmlBtn">Guardar como archivo</button>
+                <button class="btn btn--ghost btn--lg" id="openToastDemo">Probar interacciones</button>
+              </div>
+              <div class="spacer"></div>
+              <div class="small">
+                Tip: todo esto lo podés pegar en un bloque HTML en WordPress y listo.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="heroSide">
+          <div class="card">
+            <div class="card__hd">
+              <div class="badge badge--primary">Tokens</div>
+              <h3 class="h3" style="margin-top:10px;">Paleta y semántica</h3>
+              <p class="p">Colores base desde el Identikit.</p>
+            </div>
+            <div class="card__bd">
+              <div class="row" style="gap:10px; flex-wrap:wrap;">
+                <span class="badge" style="background:var(--hf-white); color:#111;">#F1F2F6</span>
+                <span class="badge" style="background:var(--hf-primary); color:var(--hf-white);">#FF5E32</span>
+                <span class="badge" style="background:var(--hf-primary-700); color:#fff;">#CB4A00</span>
+                <span class="badge" style="background:var(--hf-accent); color:var(--hf-white);">#758AFD</span>
+                <span class="badge" style="background:var(--hf-accent-700); color:#fff;">#4561FC</span>
+                <span class="badge" style="background:var(--hf-green); color:#111;">#B6CF50</span>
+                <span class="badge" style="background:var(--hf-green-700); color:#fff;">#406915</span>
+                <span class="badge" style="background:var(--hf-warm); color:#111;">#FEECD4</span>
+                <span class="badge" style="background:var(--hf-earth); color:#111;">#D5C5B5</span>
+                <span class="badge" style="background:var(--hf-purple); color:#fff;">#4B0E26</span>
+                <span class="badge" style="background:var(--hf-indigo); color:#fff;">#27187D</span>
+                <span class="badge" style="background:var(--hf-black); color:#fff;">#000000</span>
+                <span class="badge" style="background:var(--hf-brand-coral); color:#fff;">#ED562D</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <div class="badge badge--accent">Principios</div>
+              <h3 class="h3" style="margin-top:10px;">Cómo se traduce a UI</h3>
+              <p class="p">Movimientos suaves, componentes flexibles y tono cercano.</p>
+            </div>
+            <div class="card__bd">
+              <div class="stack">
+                <div class="alert">
+                  <div class="alert__dot"></div>
+                  <div>
+                    <b>Movimiento continuo</b>
+                    <div class="small">Transiciones 150–240ms, estados fluidos.</div>
+                  </div>
+                </div>
+                <div class="alert alert--warn">
+                  <div class="alert__dot"></div>
+                  <div>
+                    <b>Extender límites</b>
+                    <div class="small">Variantes + composición (chips, cards, grids).</div>
+                  </div>
+                </div>
+                <div class="alert alert--ok">
+                  <div class="alert__dot"></div>
+                  <div>
+                    <b>Cercanía y realidad</b>
+                    <div class="small">Copys claros, layouts reales, sin humo.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TOKENS -->
+    <section class="section anchor" id="tokens">
+      <div class="container">
+        <h2 class="h2">Tokens</h2>
+        <p class="p">Variables CSS como fuente de verdad: colores, spacing, radius, motion, tipografía.</p>
+
+        <div class="grid grid-2" style="margin-top:var(--s-6);">
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Spacing / Radius / Motion</h3>
+              <p class="p">Sistema consistente para construir cualquier layout.</p>
+            </div>
+            <div class="card__bd">
+              <div class="row">
+                <span class="badge">--s-4: 16px</span>
+                <span class="badge">--r-2: 14px</span>
+                <span class="badge">--fast: 150ms</span>
+                <span class="badge">--ease: cubic-bezier(.4,0,.2,1)</span>
+              </div>
+              <div class="divider"></div>
+              <div class="small mono">
+                Tip: si querés “más Zara / minimal”, bajá sombras y subí whitespace.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Tipografía</h3>
+              <p class="p">Escala simple (H1/H2/H3/body/small).</p>
+            </div>
+            <div class="card__bd">
+              <div class="h1" style="margin:0;">H1 — Horizon Fit</div>
+              <div class="h2" style="margin:8px 0 0;">H2 — Colección / Drop</div>
+              <div class="h3" style="margin:10px 0 0;">H3 — Detalles</div>
+              <p class="p" style="margin-top:10px;">Body — Texto de apoyo, descriptivo y claro.</p>
+              <div class="small" style="margin-top:8px;">Small — Metadatos, labels, hints.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section class="section anchor" id="components">
+      <div class="container">
+        <h2 class="h2">Componentes base</h2>
+        <p class="p">Botones, formularios, badges, alerts, dropdown, tabs, accordion, modal, toast.</p>
+
+        <div class="grid grid-2" style="margin-top:var(--s-6);">
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Buttons</h3>
+              <p class="p">Variantes + loading + disabled.</p>
+            </div>
+            <div class="card__bd">
+              <div class="row">
+                <button class="btn btn--primary">Comprar ahora</button>
+                <button class="btn btn--secondary">Agregar al carrito</button>
+                <button class="btn btn--ghost">Ver más</button>
+                <button class="btn btn--danger">Eliminar</button>
+              </div>
+              <div class="spacer"></div>
+              <div class="row">
+                <button class="btn btn--primary btn--sm">Small</button>
+                <button class="btn btn--primary">Medium</button>
+                <button class="btn btn--primary btn--lg">Large</button>
+              </div>
+              <div class="spacer"></div>
+              <div class="row">
+                <button class="btn btn--primary" id="loadingBtn">
+                  <span class="spinner" aria-hidden="true"></span>
+                  Cargando
+                </button>
+                <button class="btn btn--primary" disabled>Disabled</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Form fields</h3>
+              <p class="p">Inputs + select + textarea + estados.</p>
+            </div>
+            <div class="card__bd">
+              <div class="grid" style="gap:14px;">
+                <div class="field">
+                  <div class="label">Email</div>
+                  <input class="control" type="email" placeholder="hola@horizonfit.com" />
+                  <div class="hint">Usado para enviarte el tracking del pedido.</div>
+                </div>
+
+                <div class="field">
+                  <div class="label">Código de descuento</div>
+                  <div class="row" style="gap:10px;">
+                    <input class="control" type="text" placeholder="HF-15" style="flex:1;" />
+                    <button class="btn btn--secondary">Aplicar</button>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="label">País</div>
+                  <select class="control">
+                    <option>Argentina</option>
+                    <option>Chile</option>
+                    <option>Uruguay</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <div class="label">Notas</div>
+                  <textarea class="control" rows="3" placeholder="Indicaciones para el envío..."></textarea>
+                </div>
+
+                <div class="row">
+                  <label class="switch">
+                    <input type="checkbox" id="newsletterSwitch">
+                    <span class="switch__track"><span class="switch__thumb"></span></span>
+                    <span class="small">Recibir novedades</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Choices</h3>
+              <p class="p">Checkbox / radio con copy real.</p>
+            </div>
+            <div class="card__bd">
+              <label class="choice">
+                <input type="checkbox" checked />
+                <span>
+                  <b>Quiero guía de talles</b>
+                  <small>Te mostramos cómo elegir rápido sin vueltas.</small>
+                </span>
+              </label>
+              <div class="spacer"></div>
+              <label class="choice">
+                <input type="radio" name="ship" checked />
+                <span>
+                  <b>Envío estándar</b>
+                  <small>48–96 hs hábiles.</small>
+                </span>
+              </label>
+              <div class="spacer"></div>
+              <label class="choice">
+                <input type="radio" name="ship" />
+                <span>
+                  <b>Envío express</b>
+                  <small>24–48 hs hábiles.</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Dropdown / Tooltip / Toast</h3>
+              <p class="p">Interacciones suaves (movimiento continuo).</p>
+            </div>
+            <div class="card__bd">
+              <div class="row">
+                <button class="btn btn--secondary" id="toastBtn2">Toast info</button>
+                <button class="btn btn--secondary" id="toastBtnOk">Toast ok</button>
+                <button class="btn btn--secondary" data-tooltip="Tooltip: copy claro, sin humo">Hover tooltip</button>
+              </div>
+              <div class="divider"></div>
+              <div class="row">
+                <button class="btn btn--primary" id="openModalBtn2">Abrir modal</button>
+                <button class="btn btn--primary" id="openCartBtn2">Abrir drawer</button>
+              </div>
+              <div class="small" style="margin-top:10px;">
+                Accesible: <span class="kbd">ESC</span> cierra modal/drawer, click afuera también.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:var(--s-6);">
+          <div class="tabs" data-tabs>
+            <div class="tabs__list" role="tablist" aria-label="Demo tabs">
+              <button class="tab" role="tab" aria-selected="true" data-tab="tab-1">Descripción</button>
+              <button class="tab" role="tab" aria-selected="false" data-tab="tab-2">Detalles</button>
+              <button class="tab" role="tab" aria-selected="false" data-tab="tab-3">Envíos</button>
+            </div>
+            <div class="tabs__panel is-active" id="tab-1" role="tabpanel">
+              <b>Más allá del entrenamiento.</b>
+              <p class="p" style="margin-top:8px;">
+                Prendas cómodas y funcionales para extender tu día sin cambiar de plan.
+              </p>
+            </div>
+            <div class="tabs__panel" id="tab-2" role="tabpanel">
+              <div class="row">
+                <span class="badge">Tela: Supplex</span>
+                <span class="badge badge--accent">Compresión media</span>
+                <span class="badge badge--ok">Secado rápido</span>
+              </div>
+            </div>
+            <div class="tabs__panel" id="tab-3" role="tabpanel">
+              <p class="p">CABA/GBA 48–96 hs. Interior 3–6 días. Retiro: 24 hs.</p>
+            </div>
+          </div>
+
+          <div class="accordion" data-accordion>
+            <div class="acc__item" aria-expanded="true">
+              <button class="acc__btn">
+                ¿Cómo elijo mi talle?
+                <span class="chev">▾</span>
+              </button>
+              <div class="acc__panel"><div>
+                <p class="p" style="margin-top:0;">
+                  Elegí en base a tu talle habitual. Si estás entre dos, subí uno para mayor comodidad.
+                </p>
+              </div></div>
+            </div>
+            <div class="acc__item" aria-expanded="false">
+              <button class="acc__btn">
+                ¿Puedo cambiar si no me queda?
+                <span class="chev">▾</span>
+              </button>
+              <div class="acc__panel"><div>
+                <p class="p" style="margin-top:0;">
+                  Sí, tenés 10 días para cambios. La prenda debe estar sin uso y con etiqueta.
+                </p>
+              </div></div>
+            </div>
+            <div class="acc__item" aria-expanded="false">
+              <button class="acc__btn">
+                Cuidados de la prenda
+                <span class="chev">▾</span>
+              </button>
+              <div class="acc__panel"><div>
+                <p class="p" style="margin-top:0;">
+                  Lavar con agua fría, no usar blanqueador, secar a la sombra. No planchar estampas.
+                </p>
+              </div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MARKETING COMPONENTS -->
+    <section class="section anchor" id="marketing">
+      <div class="container">
+        <h2 class="h2">Marketing / Ecommerce Components</h2>
+        <p class="p">Componentes avanzados para landing pages, PDPs y experiencias de marca: banners, marquees, carousels, video heroes, grids y lightbox.</p>
+
+        <!-- MARQUEE -->
+        <div class="card" style="margin-top:var(--s-6);">
+          <div class="card__hd">
+            <div class="badge badge--accent">hf-marquee</div>
+            <h3 class="h3" style="margin-top:10px;">Marquee / Announcement Bar</h3>
+            <p class="p">Texto en movimiento continuo para anuncios. Pausa en hover/focus. Respeta prefers-reduced-motion.</p>
+          </div>
+          <div class="card__bd" style="padding:0;">
+            <!-- Marquee Demo -->
+            <div class="hf-marquee hf-marquee--primary" data-hf="marquee" data-speed="25">
+              <div class="hf-marquee__track">
+                <div class="hf-marquee__content">
+                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                  <span class="hf-marquee__item">DROP 01 disponible</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                  <span class="hf-marquee__item">Cambios sin costo</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                  <span class="hf-marquee__item">DROP 01 disponible</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                  <span class="hf-marquee__item">Cambios sin costo</span>
+                  <span class="hf-marquee__separator" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card__ft">
+            <div class="small mono">data-hf="marquee" data-speed="25" | Variantes: --primary, --accent, --dark | Velocidades: --slow, --fast</div>
+          </div>
+        </div>
+
+        <!-- BANNERS -->
+        <div class="grid grid-2" style="margin-top:var(--s-6);">
+          <div class="card">
+            <div class="card__hd">
+              <div class="badge badge--primary">hf-banner</div>
+              <h3 class="h3" style="margin-top:10px;">Banners</h3>
+              <p class="p">Variantes: info, promo, drop, warning, success. Dismissible con persistencia localStorage.</p>
+            </div>
+            <div class="card__bd">
+              <div class="stack" style="gap:var(--s-4);">
+                <!-- Info banner -->
+                <div class="hf-banner hf-banner--info" data-hf="banner" role="alert">
+                  <div class="hf-banner__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  </div>
+                  <div class="hf-banner__content">
+                    <p class="hf-banner__title">Info Banner</p>
+                    <p class="hf-banner__message">Información importante para el usuario.</p>
+                  </div>
+                </div>
+
+                <!-- Promo banner -->
+                <div class="hf-banner hf-banner--promo" data-hf="banner" data-dismissible="true" role="alert">
+                  <div class="hf-banner__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  </div>
+                  <div class="hf-banner__content">
+                    <p class="hf-banner__title">15% OFF en tu primera compra</p>
+                    <p class="hf-banner__message">Usá el código HF-15 al finalizar.</p>
+                    <div class="hf-banner__actions">
+                      <button class="btn btn--primary btn--sm">Aplicar código</button>
+                    </div>
+                  </div>
+                  <button class="hf-banner__dismiss" aria-label="Cerrar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+
+                <!-- Success banner -->
+                <div class="hf-banner hf-banner--success" data-hf="banner" role="alert">
+                  <div class="hf-banner__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <div class="hf-banner__content">
+                    <p class="hf-banner__title">Pedido confirmado</p>
+                    <p class="hf-banner__message">Te enviamos el tracking por email.</p>
+                  </div>
+                </div>
+
+                <!-- Warning banner -->
+                <div class="hf-banner hf-banner--warning" data-hf="banner" role="alert">
+                  <div class="hf-banner__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </div>
+                  <div class="hf-banner__content">
+                    <p class="hf-banner__title">Stock limitado</p>
+                    <p class="hf-banner__message">Solo quedan 3 unidades de este producto.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL -->
+          <div class="card">
+            <div class="card__hd">
+              <div class="badge badge--accent">hf-carousel</div>
+              <h3 class="h3" style="margin-top:10px;">Carousel / Slider</h3>
+              <p class="p">Drag/swipe, arrows, dots, autoplay opcional. Responsive: 1-4 items según breakpoint.</p>
+            </div>
+            <div class="card__bd">
+              <!-- Carousel Demo -->
+              <div class="hf-carousel hf-carousel--responsive" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":true,"gap":16}' aria-label="Productos destacados">
+                <div class="hf-carousel__viewport">
+                  <div class="hf-carousel__track">
+                    <div class="hf-carousel__slide">
+                      <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=500&fit=crop" alt="Leggings negros" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                    </div>
+                    <div class="hf-carousel__slide">
+                      <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top deportivo" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                    </div>
+                    <div class="hf-carousel__slide">
+                      <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=500&fit=crop" alt="Conjunto fitness" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                    </div>
+                    <div class="hf-carousel__slide">
+                      <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=500&fit=crop" alt="Ropa gym" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                    </div>
+                    <div class="hf-carousel__slide">
+                      <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=500&fit=crop" alt="Activewear" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card__ft">
+              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: ← →</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIDEO HERO -->
+        <div class="card" style="margin-top:var(--s-6);">
+          <div class="card__hd">
+            <div class="badge badge--primary">hf-video-hero</div>
+            <h3 class="h3" style="margin-top:10px;">Video Hero</h3>
+            <p class="p">Hero con video background, fallback imagen, overlay gradient. Respeta prefers-reduced-motion. Autoplay muted.</p>
+          </div>
+          <div class="card__bd" style="padding:0;overflow:hidden;border-radius:0 0 var(--r-2) var(--r-2);">
+            <!-- Video Hero Demo con video real -->
+            <div class="hf-video-hero" data-hf="video-hero" data-show-control style="min-height:400px;">
+              <!-- Video real de fitness -->
+              <video class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline>
+                <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4">
+              </video>
+              <!-- Fallback image -->
+              <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=800&fit=crop" alt="Gym workout" style="opacity:0;">
+              <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
+              <div class="hf-video-hero__content">
+                <span class="badge badge--primary hf-video-hero__badge">DROP 01</span>
+                <h2 class="hf-video-hero__title">Más allá del entrenamiento.</h2>
+                <p class="hf-video-hero__subtitle">Activewear para la vida real: cómodo, funcional y versátil. Del gym a la calle sin cortar la rutina.</p>
+                <div class="hf-video-hero__actions">
+                  <button class="btn btn--primary btn--lg">Ver colección</button>
+                  <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">Guía de talles</button>
+                </div>
+              </div>
+              <!-- Play/Pause button -->
+              <button class="hf-video-hero__control hf-video-hero__control--pause" aria-label="Pausar video" onclick="const vid2=this.closest('.hf-video-hero').querySelector('video');if(vid2.paused){vid2.play();this.classList.remove('hf-video-hero__control--play');this.classList.add('hf-video-hero__control--pause');}else{vid2.pause();this.classList.remove('hf-video-hero__control--pause');this.classList.add('hf-video-hero__control--play');}">
+                <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID + CARDS -->
+        <div class="card" style="margin-top:var(--s-6);">
+          <div class="card__hd">
+            <div class="badge badge--accent">hf-grid + hf-card</div>
+            <h3 class="h3" style="margin-top:10px;">Collection Grid con Filtros</h3>
+            <p class="p">Grid responsive con filtros por categoría. Product cards con hover actions, swatches y badges.</p>
+          </div>
+          <div class="card__bd">
+            <!-- Collection with filters -->
+            <div class="hf-collection" data-hf="collection">
+              <div class="hf-collection__filters">
+                <div class="hf-collection__filter-group">
+                  <button class="hf-filter-chip is-active" data-filter="all" aria-pressed="true">Todos <span class="hf-filter-chip__count">6</span></button>
+                  <button class="hf-filter-chip" data-filter="leggings" aria-pressed="false">Calzas <span class="hf-filter-chip__count">2</span></button>
+                  <button class="hf-filter-chip" data-filter="tops" aria-pressed="false">Tops <span class="hf-filter-chip__count">2</span></button>
+                  <button class="hf-filter-chip" data-filter="hoodies" aria-pressed="false">Hoodies <span class="hf-filter-chip__count">1</span></button>
+                  <button class="hf-filter-chip" data-filter="shorts" aria-pressed="false">Shorts <span class="hf-filter-chip__count">1</span></button>
+                </div>
+                <div class="hf-collection__sort">
+                  <span class="hf-collection__sort-label">Ordenar:</span>
+                  <select class="hf-collection__sort-select">
+                    <option value="newest">Más recientes</option>
+                    <option value="price-asc">Precio: menor a mayor</option>
+                    <option value="price-desc">Precio: mayor a menor</option>
+                    <option value="name-asc">Nombre A-Z</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="hf-collection__info">
+                <span class="hf-collection__count">6 productos</span>
+              </div>
+
+              <!-- Grid -->
+              <div class="hf-grid hf-grid--cols-3 hf-collection__grid" data-animate>
+                <!-- Card 1 -->
+                <article class="hf-card hf-card--product" data-category="leggings" data-price="59900" data-name="Calza Range">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=500&fit=crop" alt="Calza Range negra" loading="lazy">
+                    <div class="hf-card__badges">
+                      <span class="badge badge--primary">Nuevo</span>
+                    </div>
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                      <button class="hf-card__action" aria-label="Vista rápida">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Calza Range</h3>
+                        <p class="hf-card__subtitle">Negro / Compresión media</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$59.900</span>
+                      <span class="hf-card__price-original">$74.900</span>
+                      <span class="hf-card__price-discount">-20%</span>
+                    </div>
+                    <div class="hf-card__swatches">
+                      <button class="hf-card__swatch" style="background:#111;" aria-label="Negro" aria-selected="true"></button>
+                      <button class="hf-card__swatch" style="background:var(--hf-primary);" aria-label="Naranja"></button>
+                      <button class="hf-card__swatch" style="background:var(--hf-accent);" aria-label="Azul"></button>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="hf-card hf-card--product" data-category="tops" data-price="34900" data-name="Top Motion">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top Motion arena" loading="lazy">
+                    <div class="hf-card__badges">
+                      <span class="badge badge--accent">Best seller</span>
+                    </div>
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Top Motion</h3>
+                        <p class="hf-card__subtitle">Arena / Sujeción media</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$34.900</span>
+                    </div>
+                    <div class="hf-card__swatches">
+                      <button class="hf-card__swatch" style="background:var(--hf-earth);" aria-label="Arena" aria-selected="true"></button>
+                      <button class="hf-card__swatch" style="background:var(--hf-warm);" aria-label="Crema"></button>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="hf-card hf-card--product" data-category="hoodies" data-price="89900" data-name="Hoodie Cotidiano">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop" alt="Hoodie Cotidiano gris" loading="lazy">
+                    <div class="hf-card__badges">
+                      <span class="badge">Essentials</span>
+                    </div>
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Hoodie Cotidiano</h3>
+                        <p class="hf-card__subtitle">Gris / Oversize</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$89.900</span>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+
+                <!-- Card 4 -->
+                <article class="hf-card hf-card--product" data-category="shorts" data-price="41900" data-name="Short Versátil">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil verde" loading="lazy">
+                    <div class="hf-card__badges">
+                      <span class="badge badge--primary">2x1</span>
+                    </div>
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Short Versátil</h3>
+                        <p class="hf-card__subtitle">Verde / Liviano</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$41.900</span>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+
+                <!-- Card 5 -->
+                <article class="hf-card hf-card--product" data-category="leggings" data-price="54900" data-name="Calza Flow">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=500&fit=crop" alt="Calza Flow burgundy" loading="lazy">
+                    <div class="hf-card__badges">
+                      <span class="badge badge--ok">En stock</span>
+                    </div>
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Calza Flow</h3>
+                        <p class="hf-card__subtitle">Burgundy / High waist</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$54.900</span>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+
+                <!-- Card 6 -->
+                <article class="hf-card hf-card--product" data-category="tops" data-price="29900" data-name="Top Essential">
+                  <div class="hf-card__media">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=500&fit=crop" alt="Top Essential crema" loading="lazy">
+                    <div class="hf-card__actions">
+                      <button class="hf-card__action" aria-label="Agregar a favoritos">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="hf-card__body">
+                    <div class="hf-card__header">
+                      <div>
+                        <h3 class="hf-card__title">Top Essential</h3>
+                        <p class="hf-card__subtitle">Crema / Básico</p>
+                      </div>
+                    </div>
+                    <div class="hf-card__price">
+                      <span class="hf-card__price-current">$29.900</span>
+                    </div>
+                  </div>
+                  <div class="hf-card__footer">
+                    <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Empty state (hidden by default) -->
+              <div class="hf-collection__empty" style="display:none;">
+                <div class="hf-collection__empty-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </div>
+                <p>No encontramos productos con esos filtros.</p>
+                <button class="btn btn--secondary btn--sm" style="margin-top:var(--s-3);">Limpiar filtros</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LIGHTBOX / GALLERY -->
+        <div class="card" style="margin-top:var(--s-6);">
+          <div class="card__hd">
+            <div class="badge badge--primary">hf-lightbox</div>
+            <h3 class="h3" style="margin-top:10px;">Gallery / Lightbox</h3>
+            <p class="p">Galería para PDP con thumbnails, zoom modal, focus trap y navegación por teclado (← → ESC).</p>
+          </div>
+          <div class="card__bd">
+            <div class="grid grid-2" style="gap:var(--s-6);">
+              <!-- Gallery Demo -->
+              <div class="hf-gallery" data-hf="lightbox">
+                <div class="hf-gallery__main" tabindex="0">
+                  <img class="hf-gallery__main-image" src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=750&fit=crop" alt="Calza Range - Vista principal" data-lightbox-src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1200&h=1500&fit=crop">
+                  <div class="hf-gallery__zoom-hint">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+                    Click para ampliar
+                  </div>
+                </div>
+                <div class="hf-gallery__thumbs">
+                  <button class="hf-gallery__thumb is-active" aria-selected="true" aria-label="Imagen 1" data-lightbox-src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1200&h=1500&fit=crop">
+                    <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  </button>
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 2" data-lightbox-src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=1200&h=1500&fit=crop">
+                    <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  </button>
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 3" data-lightbox-src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=1500&fit=crop">
+                    <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  </button>
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 4" data-lightbox-src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1200&h=1500&fit=crop">
+                    <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  </button>
+                </div>
+              </div>
+
+              <!-- Do/Don't checklist -->
+              <div>
+                <h4 class="h3">Accesibilidad Checklist</h4>
+                <div class="stack" style="margin-top:var(--s-4);">
+                  <div class="alert alert--ok">
+                    <div class="alert__dot"></div>
+                    <div>
+                      <b>Focus trap en modal</b>
+                      <div class="small">Tab no sale del lightbox mientras está abierto.</div>
+                    </div>
+                  </div>
+                  <div class="alert alert--ok">
+                    <div class="alert__dot"></div>
+                    <div>
+                      <b>ESC cierra el modal</b>
+                      <div class="small">Comportamiento estándar esperado.</div>
+                    </div>
+                  </div>
+                  <div class="alert alert--ok">
+                    <div class="alert__dot"></div>
+                    <div>
+                      <b>Navegación ← →</b>
+                      <div class="small">Flechas para cambiar imagen.</div>
+                    </div>
+                  </div>
+                  <div class="alert alert--ok">
+                    <div class="alert__dot"></div>
+                    <div>
+                      <b>aria-modal="true"</b>
+                      <div class="small">Screen readers anuncian el modal.</div>
+                    </div>
+                  </div>
+                  <div class="alert">
+                    <div class="alert__dot"></div>
+                    <div>
+                      <b>Retorna focus al cerrar</b>
+                      <div class="small">Focus vuelve al elemento que abrió el modal.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component API Reference -->
+        <div class="card" style="margin-top:var(--s-6);">
+          <div class="card__hd">
+            <h3 class="h3">API Reference</h3>
+            <p class="p">Inicialización y métodos disponibles para cada componente.</p>
+          </div>
+          <div class="card__bd">
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead>
+                  <tr style="background:var(--surface-2);text-align:left;">
+                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Componente</th>
+                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Inicialización</th>
+                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">API</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-banner</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFBanner.init(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">dismiss(), show(), destroy()</code></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-marquee</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFMarquee.init(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">pause(), play(), destroy()</code></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-carousel</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFCarousel.create(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">next(), prev(), goTo(i), destroy(), play(), pause()</code></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-video-hero</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFVideoHero.init(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">play(), pause(), toggle(), destroy()</code></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-lightbox</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFLightbox.init(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">open(i), close(), next(), prev(), goTo(i), destroy()</code></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">hf-collection</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">HFGrid.initCollection(el, opts)</code></td>
+                    <td style="padding:12px 14px;border:1px solid var(--border);"><code class="mono">filterItems(), sortItems(fn), setFilter(f), clearFilters()</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ECOMMERCE -->
+    <section class="section anchor" id="ecommerce">
+      <div class="container">
+        <h2 class="h2">Módulos E-commerce</h2>
+        <p class="p">Product cards, grid, selector de variantes (talles), stepper de cantidad, mini-cart (drawer).</p>
+
+        <div class="grid grid-4" style="margin-top:var(--s-6);">
+          <!-- Product card 1 -->
+          <article class="productCard">
+            <div class="productMedia" style="background:none;">
+              <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=500&fit=crop" alt="Calza Range" style="width:100%;height:100%;object-fit:cover;">
+              <div class="productBadges">
+                <span class="badge badge--primary">Nuevo</span>
+                <span class="badge">Drop 01</span>
+              </div>
+            </div>
+            <div class="productBody">
+              <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                <div>
+                  <b>Calza Range</b>
+                  <div class="small">Negro / Compresión media</div>
+                </div>
+                <span class="badge badge--ok">En stock</span>
+              </div>
+
+              <div class="priceRow">
+                <div class="price">$ 59.900</div>
+                <div class="priceOld">$ 74.900</div>
+                <span class="badge badge--primary">-20%</span>
+              </div>
+
+              <div class="swatches" aria-label="Colores">
+                <span class="swatch" style="background:#111;"></span>
+                <span class="swatch" style="background:var(--hf-primary);"></span>
+                <span class="swatch" style="background:var(--hf-accent);"></span>
+              </div>
+
+              <button class="btn btn--secondary" data-quickshop="Calza Range">
+                Quick shop
+              </button>
+            </div>
+          </article>
+
+          <!-- Product card 2 -->
+          <article class="productCard">
+            <div class="productMedia" style="background:none;">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top Motion" style="width:100%;height:100%;object-fit:cover;">
+              <div class="productBadges">
+                <span class="badge badge--accent">Best seller</span>
+              </div>
+            </div>
+            <div class="productBody">
+              <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                <div>
+                  <b>Top Motion</b>
+                  <div class="small">Arena / Sujeción media</div>
+                </div>
+                <span class="badge">Últimos</span>
+              </div>
+              <div class="priceRow">
+                <div class="price">$ 34.900</div>
+              </div>
+              <div class="swatches">
+                <span class="swatch" style="background:var(--hf-earth);"></span>
+                <span class="swatch" style="background:var(--hf-warm);"></span>
+              </div>
+              <button class="btn btn--secondary" data-quickshop="Top Motion">Quick shop</button>
+            </div>
+          </article>
+
+          <!-- Product card 3 -->
+          <article class="productCard">
+            <div class="productMedia" style="background:none;">
+              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop" alt="Hoodie Cotidiano" style="width:100%;height:100%;object-fit:cover;">
+              <div class="productBadges">
+                <span class="badge">Essentials</span>
+              </div>
+            </div>
+            <div class="productBody">
+              <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                <div>
+                  <b>Hoodie Cotidiano</b>
+                  <div class="small">Gris / Oversize</div>
+                </div>
+                <span class="badge badge--ok">En stock</span>
+              </div>
+              <div class="priceRow">
+                <div class="price">$ 89.900</div>
+              </div>
+              <button class="btn btn--secondary" data-quickshop="Hoodie Cotidiano">Quick shop</button>
+            </div>
+          </article>
+
+          <!-- Product card 4 -->
+          <article class="productCard">
+            <div class="productMedia" style="background:none;">
+              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil" style="width:100%;height:100%;object-fit:cover;">
+              <div class="productBadges">
+                <span class="badge badge--primary">Promo</span>
+              </div>
+            </div>
+            <div class="productBody">
+              <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                <div>
+                  <b>Short Versátil</b>
+                  <div class="small">Verde / Liviano</div>
+                </div>
+                <span class="badge">Low stock</span>
+              </div>
+              <div class="priceRow">
+                <div class="price">$ 41.900</div>
+                <span class="badge badge--primary">2x1</span>
+              </div>
+              <button class="btn btn--secondary" data-quickshop="Short Versátil">Quick shop</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:var(--s-7);">
+          <!-- PDP snippet -->
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Snippet de PDP (Product Detail)</h3>
+              <p class="p">Selector de talles + cantidad + CTA.</p>
+            </div>
+            <div class="card__bd">
+              <div class="stack" style="gap:14px;">
+                <div>
+                  <div class="badge badge--accent">Drop 01</div>
+                  <h3 class="h3" style="margin-top:10px;">Calza Range — Negro</h3>
+                  <div class="priceRow" style="margin-top:6px;">
+                    <div class="price">$ 59.900</div>
+                    <div class="priceOld">$ 74.900</div>
+                    <span class="badge badge--primary">-20%</span>
+                  </div>
+                  <p class="p" style="margin-top:10px;">
+                    Diseñada para moverte todo el día: del gym a la calle sin cortar la rutina.
+                  </p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="field">
+                  <div class="label">Talle</div>
+                  <div class="sizeGrid" id="sizeGrid">
+                    <button class="chip" aria-pressed="false" data-size="XS">XS</button>
+                    <button class="chip" aria-pressed="false" data-size="S">S</button>
+                    <button class="chip" aria-pressed="true" data-size="M">M</button>
+                    <button class="chip" aria-pressed="false" data-size="L">L</button>
+                    <button class="chip is-disabled" aria-pressed="false" aria-disabled="true" data-size="XL">XL</button>
+                  </div>
+                  <div class="hint">Tip: si estás entre dos, subí uno para más comodidad.</div>
+                </div>
+
+                <div class="row" style="justify-content:space-between;">
+                  <div class="field" style="min-width: 200px;">
+                    <div class="label">Cantidad</div>
+                    <div class="stepper" data-stepper>
+                      <button type="button" data-dec aria-label="Disminuir">−</button>
+                      <input type="text" value="1" inputmode="numeric" aria-label="Cantidad" />
+                      <button type="button" data-inc aria-label="Aumentar">+</button>
+                    </div>
+                  </div>
+
+                  <button class="btn btn--primary btn--lg" id="addToCartBtn">
+                    Agregar al carrito
+                  </button>
+                </div>
+
+                <div class="alert alert--ok">
+                  <div class="alert__dot"></div>
+                  <div>
+                    <b>Envío gratis</b>
+                    <div class="small">Superando $ 120.000 (CABA/GBA).</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Checkout snippet -->
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Snippet de Checkout</h3>
+              <p class="p">Campos reales, sin fricción, copy claro.</p>
+            </div>
+            <div class="card__bd">
+              <div class="grid" style="gap:14px;">
+                <div class="grid grid-2" style="gap:12px;">
+                  <div class="field">
+                    <div class="label">Nombre</div>
+                    <input class="control" placeholder="Sol" />
+                  </div>
+                  <div class="field">
+                    <div class="label">Apellido</div>
+                    <input class="control" placeholder="Pérez" />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="label">Dirección</div>
+                  <input class="control" placeholder="Calle + número" />
+                </div>
+
+                <div class="grid grid-2" style="gap:12px;">
+                  <div class="field">
+                    <div class="label">Ciudad</div>
+                    <input class="control" placeholder="Buenos Aires" />
+                  </div>
+                  <div class="field">
+                    <div class="label">Código postal</div>
+                    <input class="control" placeholder="C1425" />
+                  </div>
+                </div>
+
+                <label class="choice">
+                  <input type="checkbox" checked />
+                  <span>
+                    <b>Quiero recibir actualizaciones</b>
+                    <small>Tracking y novedades de drops.</small>
+                  </span>
+                </label>
+
+                <div class="row" style="justify-content:space-between; align-items:center;">
+                  <div>
+                    <div class="small">Total</div>
+                    <div style="font-weight:950; font-size:20px;">$ 59.900</div>
+                  </div>
+                  <button class="btn btn--primary btn--lg" id="payBtn">Pagar</button>
+                </div>
+
+                <div class="small">
+                  Pagos: tarjeta / transferencia. (Integración real va del lado de tu plataforma.)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PATTERNS -->
+    <section class="section anchor" id="patterns">
+      <div class="container">
+        <h2 class="h2">Patterns</h2>
+        <p class="p">Bloques reutilizables: banners, grids, headers, secciones editorial/producto.</p>
+
+        <div class="grid grid-2" style="margin-top:var(--s-6);">
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Banner editorial</h3>
+              <p class="p">Para “drop en curso” (gran escala, minimal).</p>
+            </div>
+            <div class="card__bd">
+              <div style="border:1px solid var(--border); border-radius:18px; overflow:hidden; background:var(--surface-2);">
+                <div style="padding:22px; background:
+                  radial-gradient(700px 240px at 10% 40%, rgba(255,94,50,.22), transparent 60%),
+                  radial-gradient(600px 240px at 75% 20%, rgba(117,138,253,.18), transparent 60%),
+                  linear-gradient(135deg, var(--surface), var(--surface-2));
+                ">
+                  <div class="badge badge--primary">DROP 01</div>
+                  <h3 class="h2" style="margin-top:10px;">Más allá del entrenamiento.</h3>
+                  <p class="p">Activewear para la vida real: cómodo, funcional y versátil.</p>
+                  <div class="row" style="margin-top:14px;">
+                    <button class="btn btn--primary">Ver colección</button>
+                    <button class="btn btn--secondary">Guía de talles</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__hd">
+              <h3 class="h3">Tabla / states</h3>
+              <p class="p">Ejemplo: tabla de talles con estados hover/focus.</p>
+            </div>
+            <div class="card__bd">
+              <div style="border:1px solid var(--border); border-radius:16px; overflow:hidden;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--surface-2); font-weight:900;">
+                  <div style="padding:12px 14px;">Talle</div>
+                  <div style="padding:12px 14px;">Cintura</div>
+                  <div style="padding:12px 14px;">Cadera</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr;">
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">S</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">64–70</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">88–94</div>
+
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">M</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">70–76</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">94–100</div>
+
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">L</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">76–82</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">100–106</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <p class="small">
+                Esto es un pattern (tabla) que después podés estilizar con tokens sin tocar lógica.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <div class="footer__grid">
+            <div>
+              <div class="brand" style="gap:12px;">
+                <div class="logo"></div>
+                <div>
+                  <div style="font-weight:950;">Horizon Fit</div>
+                  <div class="small">Design System — HTML/CSS/JS</div>
+                </div>
+              </div>
+              <p class="small" style="margin-top:12px;">
+                Minimal, funcional y versátil. Preparado para e-commerce.
+              </p>
+            </div>
+
+            <div>
+              <b>Shop</b>
+              <div class="stack" style="margin-top:10px;">
+                <a class="small" href="#ecommerce">Colección</a>
+                <a class="small" href="#components">Componentes</a>
+                <a class="small" href="#patterns">Patterns</a>
+              </div>
+            </div>
+
+            <div>
+              <b>Ayuda</b>
+              <div class="stack" style="margin-top:10px;">
+                <a class="small" href="#components">Envíos</a>
+                <a class="small" href="#components">Cambios</a>
+                <a class="small" href="#components">Guía de talles</a>
+              </div>
+            </div>
+
+            <div>
+              <b>Contacto</b>
+              <div class="stack" style="margin-top:10px;">
+                <span class="small">WhatsApp</span>
+                <span class="small">Instagram</span>
+                <span class="small">Email</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin-top:var(--s-6);"></div>
+          <div class="small">© Horizon Fit — Preview de Design System</div>
+        </footer>
+
+      </div>
+    </section>
+
+    <!-- PRODUCT GRID ITEMS - Touche Sport Style -->
+    <section class="section" style="background: var(--surface);">
+      <div class="container">
+        <div style="margin-bottom: var(--s-6);">
+          <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
+          <h2 class="h2">Product Grid Items</h2>
+          <p class="p">Componente de tarjeta de producto estilo Touche Sport con selector de talles, precios y cuotas.</p>
+        </div>
+      </div>
+
+      <div style="padding: 0 var(--s-4);">
+        <div class="hf-product-grid">
+          <!-- Product 1: Black High Top -->
+          <article class="hf-product-item">
+            <div class="hf-product-item__media">
+              <span class="hf-product-item__badge">50% OFF!</span>
+              <img
+                src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop"
+                alt="Black High Top"
+                class="hf-product-item__image hf-product-item__image--primary"
+              >
+              <img
+                src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop"
+                alt="Black High Top - Vista alternativa"
+                class="hf-product-item__image hf-product-item__image--secondary"
+              >
+            </div>
+            <div class="hf-product-item__body">
+              <div class="hf-product-item__sizes">
+                <button class="hf-product-item__size" aria-pressed="false">S</button>
+                <button class="hf-product-item__size" aria-pressed="false">M</button>
+                <button class="hf-product-item__size" aria-pressed="false">L</button>
+                <button class="hf-product-item__size" aria-pressed="false">XL</button>
+              </div>
+              <p class="hf-product-item__brand">Pro Collection</p>
+              <h3 class="hf-product-item__title">BLACK HIGH TOP</h3>
+              <div class="hf-product-item__pricing">
+                <div class="hf-product-item__price-row">
+                  <span class="hf-product-item__price">$54.990 ARS</span>
+                  <span class="hf-product-item__price-original">$109.990</span>
+                </div>
+                <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$9.165</a></p>
+                <p class="hf-product-item__transfer">$46.742 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 2: Black High Legging -->
+          <article class="hf-product-item">
+            <div class="hf-product-item__media">
+              <span class="hf-product-item__badge">50% OFF!</span>
+              <img
+                src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop"
+                alt="Black High Legging"
+                class="hf-product-item__image hf-product-item__image--primary"
+              >
+              <img
+                src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop"
+                alt="Black High Legging - Vista alternativa"
+                class="hf-product-item__image hf-product-item__image--secondary"
+              >
+            </div>
+            <div class="hf-product-item__body">
+              <div class="hf-product-item__sizes">
+                <button class="hf-product-item__size" aria-pressed="false">S</button>
+                <button class="hf-product-item__size" aria-pressed="false">M</button>
+                <button class="hf-product-item__size" aria-pressed="false">L</button>
+                <button class="hf-product-item__size" aria-pressed="false">XL</button>
+                <button class="hf-product-item__size" aria-pressed="false">XXL</button>
+              </div>
+              <p class="hf-product-item__brand">Pro Collection</p>
+              <h3 class="hf-product-item__title">BLACK HIGH LEGGING</h3>
+              <div class="hf-product-item__pricing">
+                <div class="hf-product-item__price-row">
+                  <span class="hf-product-item__price">$64.990 ARS</span>
+                  <span class="hf-product-item__price-original">$129.990</span>
+                </div>
+                <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
+                <p class="hf-product-item__transfer">$55.242 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 3: Blue High Top -->
+          <article class="hf-product-item">
+            <div class="hf-product-item__media">
+              <span class="hf-product-item__badge">50% OFF!</span>
+              <img
+                src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop"
+                alt="Blue High Top"
+                class="hf-product-item__image hf-product-item__image--primary"
+              >
+              <img
+                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop"
+                alt="Blue High Top - Vista alternativa"
+                class="hf-product-item__image hf-product-item__image--secondary"
+              >
+            </div>
+            <div class="hf-product-item__body">
+              <div class="hf-product-item__sizes">
+                <button class="hf-product-item__size" aria-pressed="false">S</button>
+                <button class="hf-product-item__size" aria-pressed="false">M</button>
+                <button class="hf-product-item__size" aria-pressed="false">L</button>
+                <button class="hf-product-item__size" aria-pressed="false">XL</button>
+              </div>
+              <p class="hf-product-item__brand">Pro Collection</p>
+              <h3 class="hf-product-item__title">BLUE HIGH TOP</h3>
+              <div class="hf-product-item__pricing">
+                <div class="hf-product-item__price-row">
+                  <span class="hf-product-item__price">$54.990 ARS</span>
+                  <span class="hf-product-item__price-original">$109.990</span>
+                </div>
+                <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$9.165</a></p>
+                <p class="hf-product-item__transfer">$46.742 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 4: Blue High Legging -->
+          <article class="hf-product-item">
+            <div class="hf-product-item__media">
+              <span class="hf-product-item__badge">50% OFF!</span>
+              <img
+                src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop"
+                alt="Blue High Legging"
+                class="hf-product-item__image hf-product-item__image--primary"
+              >
+              <img
+                src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop"
+                alt="Blue High Legging - Vista alternativa"
+                class="hf-product-item__image hf-product-item__image--secondary"
+              >
+            </div>
+            <div class="hf-product-item__body">
+              <div class="hf-product-item__sizes">
+                <button class="hf-product-item__size" aria-pressed="false">S</button>
+                <button class="hf-product-item__size" aria-pressed="false">M</button>
+                <button class="hf-product-item__size" aria-pressed="false">L</button>
+                <button class="hf-product-item__size" aria-pressed="false">XL</button>
+              </div>
+              <p class="hf-product-item__brand">Pro Collection</p>
+              <h3 class="hf-product-item__title">BLUE HIGH LEGGING</h3>
+              <div class="hf-product-item__pricing">
+                <div class="hf-product-item__price-row">
+                  <span class="hf-product-item__price">$64.990 ARS</span>
+                  <span class="hf-product-item__price-original">$129.990</span>
+                </div>
+                <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
+                <p class="hf-product-item__transfer">$55.242 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="container" style="margin-top: var(--s-7);">
+        <div class="card">
+          <div class="card__hd">
+            <h3 class="h3">Uso del componente</h3>
+            <p class="p">Estructura HTML del product item.</p>
+          </div>
+          <div class="card__bd">
+            <pre class="mono" style="font-size: 12px; background: var(--surface-2); padding: var(--s-4); border-radius: var(--r-1); overflow-x: auto; white-space: pre-wrap;"><code>&lt;article class="hf-product-item"&gt;
+  &lt;div class="hf-product-item__media"&gt;
+    &lt;span class="hf-product-item__badge"&gt;50% OFF!&lt;/span&gt;
+    &lt;img src="..." class="hf-product-item__image hf-product-item__image--primary"&gt;
+    &lt;img src="..." class="hf-product-item__image hf-product-item__image--secondary"&gt;
+  &lt;/div&gt;
+  &lt;div class="hf-product-item__body"&gt;
+    &lt;div class="hf-product-item__sizes"&gt;
+      &lt;button class="hf-product-item__size"&gt;S&lt;/button&gt;
+      &lt;button class="hf-product-item__size"&gt;M&lt;/button&gt;
+      &lt;button class="hf-product-item__size"&gt;L&lt;/button&gt;
+      &lt;button class="hf-product-item__size"&gt;XL&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p class="hf-product-item__brand"&gt;Pro Collection&lt;/p&gt;
+    &lt;h3 class="hf-product-item__title"&gt;ORIGINAL LASER TEE&lt;/h3&gt;
+    &lt;div class="hf-product-item__pricing"&gt;
+      &lt;div class="hf-product-item__price-row"&gt;
+        &lt;span class="hf-product-item__price"&gt;$54.990 ARS&lt;/span&gt;
+        &lt;span class="hf-product-item__price-original"&gt;$109.990&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;p class="hf-product-item__installments"&gt;6 cuotas de: &lt;a href="#" class="hf-product-item__installments-link"&gt;$9.165&lt;/a&gt;&lt;/p&gt;
+      &lt;p class="hf-product-item__transfer"&gt;$46.742 &lt;span class="hf-product-item__transfer-label"&gt;con Transferencia&lt;/span&gt;&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/article&gt;</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- OVERLAY / MODAL -->
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__dialog" tabindex="-1">
+      <div class="modal__hd">
+        <b id="modalTitle">Modal — Horizon Fit</b>
+        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal__bd">
+        <p class="p" style="margin-top:0;">
+          Este modal está listo para usar (overlay click + ESC + focus management básico).
+        </p>
+        <div class="divider"></div>
+        <div class="field">
+          <div class="label">Email para avisarte cuando vuelve el stock</div>
+          <input class="control" type="email" placeholder="tu@email.com" />
+          <div class="hint">Te avisamos apenas vuelva. Sin spam.</div>
+        </div>
+      </div>
+      <div class="modal__ft">
+        <button class="btn btn--secondary" data-close-modal>Cancelar</button>
+        <button class="btn btn--primary" id="modalConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DRAWER (CART) -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer__hd">
+        <b id="drawerTitle">Carrito</b>
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">✕</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="cartItem">
+          <img class="cartThumb" src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=156&h=195&fit=crop" alt="Calza Range" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Calza Range — Negro</b>
+            <div class="small">Talle M · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 59.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cartItem">
+          <img class="cartThumb" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=156&h=195&fit=crop" alt="Top Motion" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Top Motion — Arena</b>
+            <div class="small">Talle S · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 34.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
+          <div class="label">Código de descuento</div>
+          <div class="row" style="gap:10px;">
+            <input class="control" placeholder="HF-15" style="flex:1;" />
+            <button class="btn btn--secondary" id="applyCouponBtn">Aplicar</button>
+          </div>
+          <div class="hint" id="couponHint">Tip: probá HF-15</div>
+        </div>
+      </div>
+      <div class="drawer__ft">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <div class="small">Subtotal</div>
+            <div style="font-weight:950; font-size:18px;" id="cartSubtotal">$ 94.800</div>
+          </div>
+          <button class="btn btn--primary" id="goCheckoutBtn">Ir al checkout</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- SEARCH DRAWER -->
+  <aside class="drawer" id="searchDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="searchDrawerTitle">
+      <div class="drawer__hd">
+        <b id="searchDrawerTitle">Buscar</b>
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">✕</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="field">
+          <div class="row" style="gap:10px;">
+            <input class="control" id="searchInput" placeholder="Buscar productos..." style="flex:1;" autofocus />
+            <button class="btn btn--primary" id="searchSubmitBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="small" style="color:var(--muted);margin-bottom:12px;">Búsquedas populares</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
+          <button class="chip chip--clickable" data-search-term="tops">Tops</button>
+          <button class="chip chip--clickable" data-search-term="conjuntos">Conjuntos</button>
+          <button class="chip chip--clickable" data-search-term="accesorios">Accesorios</button>
+          <button class="chip chip--clickable" data-search-term="ofertas">Ofertas</button>
+        </div>
+        <div id="searchResults" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOASTS -->
+  <div class="toasts" id="toasts" aria-live="polite" aria-relevant="additions"></div>
+
+  <!-- TOOLTIP -->
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <script>
+    /******************************************************************
+      HORIZON FIT — DS JS (vanilla)
+      - dropdown, tooltip, tabs, accordion
+      - modal + drawer (ESC + click outside)
+      - toast
+      - ecommerce interactions: quickshop, size select, quantity stepper, add to cart
+    ******************************************************************/
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    /* -----------------------------
+      Dropdown
+    ------------------------------*/
+    const menuBtn = $("#menuBtn");
+    const menu = $("#menu");
+
+    function setMenu(open){
+      menu.setAttribute("aria-hidden", String(!open));
+      menuBtn.setAttribute("aria-expanded", String(open));
+      if(open){
+        // focus first item
+        const first = menu.querySelector('[role="menuitem"]');
+        if(first) first.focus?.();
+      }
+    }
+
+    menuBtn?.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      const open = menu.getAttribute("aria-hidden") === "true";
+      setMenu(open);
+    });
+
+    document.addEventListener("click", ()=>{
+      if(menu && menu.getAttribute("aria-hidden") === "false") setMenu(false);
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape"){
+        if(menu && menu.getAttribute("aria-hidden") === "false") setMenu(false);
+      }
+    });
+
+    /* -----------------------------
+      Tooltip (data-tooltip)
+    ------------------------------*/
+    const tooltip = $("#tooltip");
+    let ttTarget = null;
+
+    function showTooltip(el){
+      const txt = el.getAttribute("data-tooltip");
+      if(!txt) return;
+      tooltip.textContent = txt;
+      const r = el.getBoundingClientRect();
+      tooltip.style.left = Math.max(12, Math.min(window.innerWidth - 252, r.left)) + "px";
+      tooltip.style.top = (r.bottom + 10) + "px";
+      tooltip.classList.add("is-on");
+      ttTarget = el;
+    }
+    function hideTooltip(){
+      tooltip.classList.remove("is-on");
+      ttTarget = null;
+    }
+
+    document.addEventListener("mouseover", (e)=>{
+      const el = e.target.closest?.("[data-tooltip]");
+      if(el) showTooltip(el);
+    });
+    document.addEventListener("mouseout", (e)=>{
+      const el = e.target.closest?.("[data-tooltip]");
+      if(el && ttTarget === el) hideTooltip();
+    });
+    window.addEventListener("scroll", ()=>{ if(ttTarget) hideTooltip(); }, {passive:true});
+
+    /* -----------------------------
+      Tabs
+    ------------------------------*/
+    $$("[data-tabs]").forEach(tabs=>{
+      const btns = $$(".tab", tabs);
+      const panels = $$(".tabs__panel", tabs);
+
+      function activate(id){
+        btns.forEach(b=>{
+          const on = b.dataset.tab === id;
+          b.setAttribute("aria-selected", String(on));
+        });
+        panels.forEach(p=>{
+          p.classList.toggle("is-active", p.id === id);
+        });
+      }
+
+      btns.forEach(b=>{
+        b.addEventListener("click", ()=> activate(b.dataset.tab));
+      });
+    });
+
+    /* -----------------------------
+      Accordion
+    ------------------------------*/
+    $$("[data-accordion]").forEach(acc=>{
+      $$(".acc__item", acc).forEach(item=>{
+        const btn = $(".acc__btn", item);
+        btn.addEventListener("click", ()=>{
+          const expanded = item.getAttribute("aria-expanded") === "true";
+          item.setAttribute("aria-expanded", String(!expanded));
+        });
+      });
+    });
+
+    /* -----------------------------
+      Modal / Drawer helpers
+    ------------------------------*/
+    const overlay = $("#overlay");
+    const modal = $("#modal");
+    const drawer = $("#drawer");
+    const searchDrawer = $("#searchDrawer");
+
+    let lastFocus = null;
+
+    function openOverlay(){
+      overlay.classList.add("is-on");
+      overlay.setAttribute("aria-hidden","false");
+    }
+    function closeOverlay(){
+      overlay.classList.remove("is-on");
+      overlay.setAttribute("aria-hidden","true");
+    }
+
+    function openModal(){
+      lastFocus = document.activeElement;
+      openOverlay();
+      modal.classList.add("is-on");
+      modal.setAttribute("aria-hidden","false");
+      // focus dialog
+      setTimeout(()=> $(".modal__dialog", modal)?.focus(), 10);
+      document.body.style.overflow="hidden";
+    }
+    function closeModal(){
+      modal.classList.remove("is-on");
+      modal.setAttribute("aria-hidden","true");
+      closeOverlay();
+      document.body.style.overflow="";
+      lastFocus?.focus?.();
+    }
+
+    function openDrawer(){
+      lastFocus = document.activeElement;
+      openOverlay();
+      drawer.classList.add("is-on");
+      drawer.setAttribute("aria-hidden","false");
+      document.body.style.overflow="hidden";
+    }
+    function closeDrawer(){
+      drawer.classList.remove("is-on");
+      drawer.setAttribute("aria-hidden","true");
+      closeOverlay();
+      document.body.style.overflow="";
+      lastFocus?.focus?.();
+    }
+
+    function openSearchDrawer(){
+      lastFocus = document.activeElement;
+      openOverlay();
+      searchDrawer.classList.add("is-on");
+      searchDrawer.setAttribute("aria-hidden","false");
+      document.body.style.overflow="hidden";
+      setTimeout(()=> $("#searchInput")?.focus(), 50);
+    }
+    function closeSearchDrawer(){
+      searchDrawer.classList.remove("is-on");
+      searchDrawer.setAttribute("aria-hidden","true");
+      closeOverlay();
+      document.body.style.overflow="";
+      lastFocus?.focus?.();
+    }
+
+    // open buttons
+    $("#openModalBtn")?.addEventListener("click", ()=>{ setMenu(false); openModal(); });
+    $("#openModalBtn2")?.addEventListener("click", openModal);
+    $("#openCartBtn")?.addEventListener("click", ()=>{ setMenu(false); openDrawer(); });
+    $("#openCartBtn2")?.addEventListener("click", openDrawer);
+    $("#ctaQuickShop")?.addEventListener("click", openDrawer);
+    $("#cartBtn")?.addEventListener("click", openDrawer);
+    $("#searchBtn")?.addEventListener("click", openSearchDrawer);
+
+    // close buttons
+    $$("[data-close-modal]").forEach(b=> b.addEventListener("click", closeModal));
+    $$("[data-close-drawer]").forEach(b=> b.addEventListener("click", closeDrawer));
+    $$("[data-close-search]").forEach(b=> b.addEventListener("click", closeSearchDrawer));
+
+    // overlay click closes
+    overlay.addEventListener("click", ()=>{
+      if(modal.classList.contains("is-on")) closeModal();
+      if(drawer.classList.contains("is-on")) closeDrawer();
+      if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+    });
+
+    // ESC closes
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape"){
+        if(modal.classList.contains("is-on")) closeModal();
+        if(drawer.classList.contains("is-on")) closeDrawer();
+        if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+      }
+    });
+
+    // Search term chips
+    $$("[data-search-term]").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const term = chip.getAttribute("data-search-term");
+        const searchInput = $("#searchInput");
+        if(searchInput) {
+          searchInput.value = term;
+          searchInput.focus();
+        }
+      });
+    });
+
+    /* -----------------------------
+      Toast
+    ------------------------------*/
+    const toasts = $("#toasts");
+
+    function toast({title="Listo", message="", variant="info", timeout=3200}){
+      const t = document.createElement("div");
+      t.className = `toast toast--${variant}`;
+      t.innerHTML = `
+        <div class="toast__dot" aria-hidden="true"></div>
+        <div>
+          <b>${escapeHtml(title)}</b>
+          <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
+        </div>
+        <button class="toast__x" aria-label="Cerrar">✕</button>
+      `;
+      const x = $(".toast__x", t);
+      x.addEventListener("click", ()=> t.remove());
+      toasts.appendChild(t);
+      setTimeout(()=>{ t.remove(); }, timeout);
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[s]));
+    }
+
+    $("#toastBtn")?.addEventListener("click", ()=>{ setMenu(false); toast({title:"Horizon Fit", message:"Toast de ejemplo (info).", variant:"info"}); });
+    $("#toastBtn2")?.addEventListener("click", ()=> toast({title:"Info", message:"Interacción suave, copy claro.", variant:"info"}));
+    $("#toastBtnOk")?.addEventListener("click", ()=> toast({title:"Ok", message:"Producto agregado al carrito.", variant:"ok"}));
+    $("#openToastDemo")?.addEventListener("click", ()=>{
+      toast({title:"Info", message:"Tabs / accordion / modal / drawer listos.", variant:"info"});
+      setTimeout(()=> toast({title:"Ok", message:"Sistema funcionando en vanilla.", variant:"ok"}), 500);
+    });
+
+    $("#modalConfirm")?.addEventListener("click", ()=>{
+      closeModal();
+      toast({title:"Listo", message:"Te avisamos cuando vuelva stock.", variant:"ok"});
+    });
+
+    /* -----------------------------
+      Theme toggle
+    ------------------------------*/
+    const toggleThemeBtn = $("#toggleThemeBtn");
+    function toggleTheme(){
+      const root = document.body;
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      toast({title:"Theme", message:`Modo ${next}`, variant:"info", timeout:1600});
+    }
+    toggleThemeBtn?.addEventListener("click", ()=>{ setMenu(false); toggleTheme(); });
+
+    /* -----------------------------
+      Quickshop buttons (product cards)
+    ------------------------------*/
+    $$("[data-quickshop]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const name = btn.getAttribute("data-quickshop");
+        openDrawer();
+        toast({title:"Quick shop", message:`Abriste el carrito para: ${name}`, variant:"info", timeout:2200});
+      });
+    });
+
+    /* -----------------------------
+      Size selector
+    ------------------------------*/
+    const sizeGrid = $("#sizeGrid");
+    if(sizeGrid){
+      sizeGrid.addEventListener("click", (e)=>{
+        const b = e.target.closest?.("button.chip");
+        if(!b) return;
+        if(b.classList.contains("is-disabled") || b.getAttribute("aria-disabled")==="true") return;
+        $$(".chip", sizeGrid).forEach(x=> x.setAttribute("aria-pressed","false"));
+        b.setAttribute("aria-pressed","true");
+      });
+    }
+
+    /* -----------------------------
+      Stepper
+    ------------------------------*/
+    $$("[data-stepper]").forEach(step=>{
+      const input = $("input", step);
+      const dec = $("[data-dec]", step);
+      const inc = $("[data-inc]", step);
+
+      function clamp(v){ return Math.max(1, Math.min(99, v)); }
+      function setVal(v){ input.value = String(clamp(v)); }
+
+      dec.addEventListener("click", ()=> setVal(parseInt(input.value||"1",10)-1));
+      inc.addEventListener("click", ()=> setVal(parseInt(input.value||"1",10)+1));
+      input.addEventListener("input", ()=> setVal(parseInt(input.value||"1",10) || 1));
+    });
+
+    /* -----------------------------
+      Ecommerce: Add to cart
+    ------------------------------*/
+    $("#addToCartBtn")?.addEventListener("click", ()=>{
+      openDrawer();
+      toast({title:"Agregado", message:"Calza Range agregada al carrito.", variant:"ok"});
+    });
+
+    $$("[data-remove-item]").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        const item = b.closest(".cartItem");
+        item?.remove();
+        toast({title:"Carrito", message:"Producto eliminado.", variant:"info"});
+      });
+    });
+
+    $("#applyCouponBtn")?.addEventListener("click", ()=>{
+      $("#couponHint").textContent = "Aplicado: HF-15 (demo)";
+      $("#cartSubtotal").textContent = "$ 80.580";
+      toast({title:"Descuento", message:"Código aplicado (demo).", variant:"ok"});
+    });
+
+    $("#goCheckoutBtn")?.addEventListener("click", ()=>{
+      closeDrawer();
+      toast({title:"Checkout", message:"Te llevaría al checkout (demo).", variant:"info"});
+      location.hash = "#patterns";
+    });
+
+    $("#payBtn")?.addEventListener("click", ()=>{
+      toast({title:"Pago", message:"Acción de pago (demo).", variant:"info"});
+    });
+
+    /* -----------------------------
+      Misc helpers
+    ------------------------------*/
+    $("#loadingBtn")?.addEventListener("click", ()=>{
+      toast({title:"Loading", message:"Este botón está en estado loading (demo).", variant:"info"});
+    });
+
+    $("#copyLinkBtn")?.addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(location.href);
+        toast({title:"Copiado", message:"Link copiado al portapapeles.", variant:"ok", timeout:1700});
+      }catch{
+        toast({title:"No se pudo copiar", message:"Tu navegador bloqueó el clipboard.", variant:"info"});
+      }
+    });
+
+    $("#downloadHtmlBtn")?.addEventListener("click", ()=>{
+      const blob = new Blob([document.documentElement.outerHTML], {type:"text/html"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "design-system-horizonfit.html";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast({title:"Guardado", message:"Descargaste el HTML (single file).", variant:"ok"});
+    });
+  </script>
+
+  <!-- Component JS imports -->
+  <script src="design-system/js/core.js"></script>
+  <script src="design-system/components/banner/banner.js"></script>
+  <script src="design-system/components/marquee/marquee.js"></script>
+  <script src="design-system/components/carousel/carousel.js"></script>
+  <script src="design-system/components/video-hero/video-hero.js"></script>
+  <script src="design-system/components/grid/grid.js"></script>
+  <script src="design-system/components/lightbox/lightbox.js"></script>
+
+  <script>
+    // Initialize all marketing components
+    document.addEventListener('DOMContentLoaded', function() {
+      // Init marquees
+      document.querySelectorAll('[data-hf="marquee"]').forEach(function(el) {
+        if (window.HFMarquee && !el._hfMarquee) {
+          el._hfMarquee = HFMarquee.init(el);
+        }
+      });
+
+      // Init carousels
+      document.querySelectorAll('[data-hf="carousel"]').forEach(function(el) {
+        if (window.HFCarousel && !el._hfCarousel) {
+          HFCarousel.create(el);
+        }
+      });
+
+      // Init collections
+      document.querySelectorAll('[data-hf="collection"]').forEach(function(el) {
+        if (window.HFGrid && !el._hfCollection) {
+          el._hfCollection = HFGrid.initCollection(el);
+        }
+      });
+
+      // Init lightboxes
+      document.querySelectorAll('[data-hf="lightbox"]').forEach(function(el) {
+        if (window.HFLightbox && !el._hfLightbox) {
+          HFLightbox.init(el);
+        }
+      });
+
+      // Gallery thumbnail clicks (cambiar imagen principal)
+      document.querySelectorAll('.hf-gallery').forEach(function(gallery) {
+        const mainImg = gallery.querySelector('.hf-gallery__main-image');
+        const thumbs = gallery.querySelectorAll('.hf-gallery__thumb');
+
+        thumbs.forEach(function(thumb) {
+          thumb.addEventListener('click', function() {
+            // Update main image
+            const newSrc = thumb.getAttribute('data-lightbox-src');
+            const thumbImg = thumb.querySelector('img');
+            if (mainImg && thumbImg) {
+              mainImg.src = thumbImg.src.replace('w=100&h=125', 'w=600&h=750');
+              mainImg.setAttribute('data-lightbox-src', newSrc);
+            }
+            // Update active state
+            thumbs.forEach(function(t) {
+              t.classList.remove('is-active');
+              t.setAttribute('aria-selected', 'false');
+            });
+            thumb.classList.add('is-active');
+            thumb.setAttribute('aria-selected', 'true');
+          });
+        });
+      });
+
+      // Animate grids on scroll
+      const grids = document.querySelectorAll('.hf-grid[data-animate]');
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      grids.forEach(function(grid) {
+        observer.observe(grid);
+      });
+    });
+  </script>
+</body>
+</html>

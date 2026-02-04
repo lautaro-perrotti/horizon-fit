@@ -1,0 +1,204 @@
+/**
+ * HF-BANNER Component
+ * Marketing/editorial banner with variants
+ */
+
+.hf-banner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-2);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.hf-banner.is-hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+/* Icon slot */
+.hf-banner__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-1);
+}
+
+.hf-banner__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Content */
+.hf-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hf-banner__title {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0 0 var(--s-1);
+  color: var(--text);
+}
+
+.hf-banner__message {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.hf-banner__actions {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  flex-wrap: wrap;
+}
+
+/* Dismiss button */
+.hf-banner__dismiss {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-1);
+  cursor: pointer;
+  color: var(--muted);
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.hf-banner__dismiss:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.hf-banner__dismiss:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+/* ========================================
+   VARIANTS
+======================================== */
+
+/* Info (default) */
+.hf-banner--info {
+  background: color-mix(in srgb, var(--hf-accent) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--hf-accent) 25%, var(--border));
+}
+
+.hf-banner--info .hf-banner__icon {
+  background: color-mix(in srgb, var(--hf-accent) 15%, transparent);
+  color: var(--hf-accent-700);
+}
+
+/* Promo */
+.hf-banner--promo {
+  background: color-mix(in srgb, var(--hf-primary) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--hf-primary) 25%, var(--border));
+}
+
+.hf-banner--promo .hf-banner__icon {
+  background: color-mix(in srgb, var(--hf-primary) 15%, transparent);
+  color: var(--hf-primary);
+}
+
+/* Drop */
+.hf-banner--drop {
+  background:
+    radial-gradient(600px 200px at 10% 50%, rgba(255,94,50,0.12), transparent 60%),
+    radial-gradient(500px 180px at 90% 30%, rgba(117,138,253,0.1), transparent 60%),
+    color-mix(in srgb, var(--hf-warm) 15%, var(--surface));
+  border-color: color-mix(in srgb, var(--hf-warm) 40%, var(--border));
+}
+
+.hf-banner--drop .hf-banner__icon {
+  background: color-mix(in srgb, var(--hf-primary) 18%, transparent);
+  color: var(--hf-primary-700);
+}
+
+/* Warning */
+.hf-banner--warning {
+  background: color-mix(in srgb, #FFA500 8%, var(--surface));
+  border-color: color-mix(in srgb, #FFA500 30%, var(--border));
+}
+
+.hf-banner--warning .hf-banner__icon {
+  background: color-mix(in srgb, #FFA500 18%, transparent);
+  color: #B45309;
+}
+
+/* Success */
+.hf-banner--success {
+  background: color-mix(in srgb, var(--hf-green) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--hf-green) 35%, var(--border));
+}
+
+.hf-banner--success .hf-banner__icon {
+  background: color-mix(in srgb, var(--hf-green) 20%, transparent);
+  color: var(--hf-green-700);
+}
+
+/* ========================================
+   SIZES
+======================================== */
+
+.hf-banner--sm {
+  padding: var(--s-3) var(--s-4);
+}
+
+.hf-banner--sm .hf-banner__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.hf-banner--sm .hf-banner__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.hf-banner--lg {
+  padding: var(--s-5) var(--s-6);
+  border-radius: var(--r-3);
+}
+
+/* ========================================
+   FULL WIDTH (Announcement style)
+======================================== */
+
+.hf-banner--full {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+/* ========================================
+   DARK MODE ADJUSTMENTS
+======================================== */
+
+[data-theme="dark"] .hf-banner--info {
+  background: color-mix(in srgb, var(--hf-accent) 12%, var(--surface));
+}
+
+[data-theme="dark"] .hf-banner--promo {
+  background: color-mix(in srgb, var(--hf-primary) 12%, var(--surface));
+}
+
+[data-theme="dark"] .hf-banner--success {
+  background: color-mix(in srgb, var(--hf-green) 15%, var(--surface));
+}

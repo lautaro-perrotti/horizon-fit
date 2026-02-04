@@ -1,0 +1,970 @@
+{
+  "pairs": [
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_arrowright.png"
+      },
+      "light": "light/desktop/interaction/hf_lightbox_arrowright.png",
+      "dark": "dark/desktop/interaction/hf_lightbox_arrowright.png",
+      "dhashDistance": 1,
+      "meanLumaLight": 0.2867,
+      "meanLumaDark": 0.2633,
+      "meanLumaAbsDiff": 0.0234,
+      "suspect": true
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_open.png"
+      },
+      "light": "light/desktop/interaction/hf_lightbox_open.png",
+      "dark": "dark/desktop/interaction/hf_lightbox_open.png",
+      "dhashDistance": 1,
+      "meanLumaLight": 0.2867,
+      "meanLumaDark": 0.2633,
+      "meanLumaAbsDiff": 0.0235,
+      "suspect": true
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_open.png"
+      },
+      "light": "light/mobile/interaction/hf_lightbox_open.png",
+      "dark": "dark/mobile/interaction/hf_lightbox_open.png",
+      "dhashDistance": 7,
+      "meanLumaLight": 0.4349,
+      "meanLumaDark": 0.4101,
+      "meanLumaAbsDiff": 0.0248,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_arrowright.png"
+      },
+      "light": "light/mobile/interaction/hf_lightbox_arrowright.png",
+      "dark": "dark/mobile/interaction/hf_lightbox_arrowright.png",
+      "dhashDistance": 8,
+      "meanLumaLight": 0.4345,
+      "meanLumaDark": 0.4097,
+      "meanLumaAbsDiff": 0.0248,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "navbar_menu_closed.png"
+      },
+      "light": "light/mobile/interaction/navbar_menu_closed.png",
+      "dark": "dark/mobile/interaction/navbar_menu_closed.png",
+      "dhashDistance": 14,
+      "meanLumaLight": 0.1916,
+      "meanLumaDark": 0.087,
+      "meanLumaAbsDiff": 0.1046,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "navbar_initial.png"
+      },
+      "light": "light/mobile/interaction/navbar_initial.png",
+      "dark": "dark/mobile/interaction/navbar_initial.png",
+      "dhashDistance": 16,
+      "meanLumaLight": 0.1917,
+      "meanLumaDark": 0.087,
+      "meanLumaAbsDiff": 0.1047,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hero_video_paused.png"
+      },
+      "light": "light/desktop/interaction/hero_video_paused.png",
+      "dark": "dark/desktop/interaction/hero_video_paused.png",
+      "dhashDistance": 16,
+      "meanLumaLight": 0.5212,
+      "meanLumaDark": 0.2196,
+      "meanLumaAbsDiff": 0.3016,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "ecommerce_quickshop_closed.png"
+      },
+      "light": "light/mobile/interaction/ecommerce_quickshop_closed.png",
+      "dark": "dark/mobile/interaction/ecommerce_quickshop_closed.png",
+      "dhashDistance": 18,
+      "meanLumaLight": 0.509,
+      "meanLumaDark": 0.1938,
+      "meanLumaAbsDiff": 0.3152,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_video_hero_paused.png"
+      },
+      "light": "light/mobile/interaction/hf_video_hero_paused.png",
+      "dark": "dark/mobile/interaction/hf_video_hero_paused.png",
+      "dhashDistance": 19,
+      "meanLumaLight": 0.5518,
+      "meanLumaDark": 0.2429,
+      "meanLumaAbsDiff": 0.3088,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_video_hero_baseline.png"
+      },
+      "light": "light/mobile/interaction/hf_video_hero_baseline.png",
+      "dark": "dark/mobile/interaction/hf_video_hero_baseline.png",
+      "dhashDistance": 22,
+      "meanLumaLight": 0.5054,
+      "meanLumaDark": 0.1416,
+      "meanLumaAbsDiff": 0.3638,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "navbar_menu_open.png"
+      },
+      "light": "light/mobile/interaction/navbar_menu_open.png",
+      "dark": "dark/mobile/interaction/navbar_menu_open.png",
+      "dhashDistance": 27,
+      "meanLumaLight": 0.4461,
+      "meanLumaDark": 0.111,
+      "meanLumaAbsDiff": 0.3352,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "navbar_menu_closed.png"
+      },
+      "light": "light/desktop/interaction/navbar_menu_closed.png",
+      "dark": "dark/desktop/interaction/navbar_menu_closed.png",
+      "dhashDistance": 28,
+      "meanLumaLight": 0.1157,
+      "meanLumaDark": 0.2141,
+      "meanLumaAbsDiff": 0.0984,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_grid_filter_todos.png"
+      },
+      "light": "light/desktop/interaction/hf_grid_filter_todos.png",
+      "dark": "dark/desktop/interaction/hf_grid_filter_todos.png",
+      "dhashDistance": 28,
+      "meanLumaLight": 0.7683,
+      "meanLumaDark": 0.2334,
+      "meanLumaAbsDiff": 0.5349,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "marquee_baseline.png"
+      },
+      "light": "light/desktop/baseline/marquee_baseline.png",
+      "dark": "dark/desktop/baseline/marquee_baseline.png",
+      "dhashDistance": 28,
+      "meanLumaLight": 0.9402,
+      "meanLumaDark": 0.2652,
+      "meanLumaAbsDiff": 0.675,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "hf_video_hero_baseline.png"
+      },
+      "light": "light/desktop/baseline/hf_video_hero_baseline.png",
+      "dark": "dark/desktop/baseline/hf_video_hero_baseline.png",
+      "dhashDistance": 29,
+      "meanLumaLight": 0.5784,
+      "meanLumaDark": 0.1785,
+      "meanLumaAbsDiff": 0.3999,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_carousel_baseline.png"
+      },
+      "light": "light/mobile/interaction/hf_carousel_baseline.png",
+      "dark": "dark/mobile/interaction/hf_carousel_baseline.png",
+      "dhashDistance": 29,
+      "meanLumaLight": 0.8377,
+      "meanLumaDark": 0.3966,
+      "meanLumaAbsDiff": 0.4411,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_carousel_dot2.png"
+      },
+      "light": "light/mobile/interaction/hf_carousel_dot2.png",
+      "dark": "dark/mobile/interaction/hf_carousel_dot2.png",
+      "dhashDistance": 29,
+      "meanLumaLight": 0.6608,
+      "meanLumaDark": 0.2197,
+      "meanLumaAbsDiff": 0.4411,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_closed.png"
+      },
+      "light": "light/mobile/interaction/hf_lightbox_closed.png",
+      "dark": "dark/mobile/interaction/hf_lightbox_closed.png",
+      "dhashDistance": 30,
+      "meanLumaLight": 0.8103,
+      "meanLumaDark": 0.4232,
+      "meanLumaAbsDiff": 0.387,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "ecommerce_quickshop_closed.png"
+      },
+      "light": "light/desktop/interaction/ecommerce_quickshop_closed.png",
+      "dark": "dark/desktop/interaction/ecommerce_quickshop_closed.png",
+      "dhashDistance": 31,
+      "meanLumaLight": 0.839,
+      "meanLumaDark": 0.1836,
+      "meanLumaAbsDiff": 0.6554,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "ecommerce_quickshop_open.png"
+      },
+      "light": "light/desktop/interaction/ecommerce_quickshop_open.png",
+      "dark": "dark/desktop/interaction/ecommerce_quickshop_open.png",
+      "dhashDistance": 33,
+      "meanLumaLight": 0.572,
+      "meanLumaDark": 0.0969,
+      "meanLumaAbsDiff": 0.4751,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_carousel_next_clicked.png"
+      },
+      "light": "light/mobile/interaction/hf_carousel_next_clicked.png",
+      "dark": "dark/mobile/interaction/hf_carousel_next_clicked.png",
+      "dhashDistance": 34,
+      "meanLumaLight": 0.6608,
+      "meanLumaDark": 0.2188,
+      "meanLumaAbsDiff": 0.4419,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_carousel_next_clicked.png"
+      },
+      "light": "light/desktop/interaction/hf_carousel_next_clicked.png",
+      "dark": "dark/desktop/interaction/hf_carousel_next_clicked.png",
+      "dhashDistance": 34,
+      "meanLumaLight": 0.6204,
+      "meanLumaDark": 0.1395,
+      "meanLumaAbsDiff": 0.4809,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "ecommerce_baseline.png"
+      },
+      "light": "light/desktop/baseline/ecommerce_baseline.png",
+      "dark": "dark/desktop/baseline/ecommerce_baseline.png",
+      "dhashDistance": 34,
+      "meanLumaLight": 0.8399,
+      "meanLumaDark": 0.2231,
+      "meanLumaAbsDiff": 0.6167,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "navbar_menu_open.png"
+      },
+      "light": "light/desktop/interaction/navbar_menu_open.png",
+      "dark": "dark/desktop/interaction/navbar_menu_open.png",
+      "dhashDistance": 35,
+      "meanLumaLight": 0.2018,
+      "meanLumaDark": 0.2098,
+      "meanLumaAbsDiff": 0.008,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_grid_filter_calzas.png"
+      },
+      "light": "light/mobile/interaction/hf_grid_filter_calzas.png",
+      "dark": "dark/mobile/interaction/hf_grid_filter_calzas.png",
+      "dhashDistance": 35,
+      "meanLumaLight": 0.6874,
+      "meanLumaDark": 0.1892,
+      "meanLumaAbsDiff": 0.4982,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_grid_filters_baseline.png"
+      },
+      "light": "light/mobile/interaction/hf_grid_filters_baseline.png",
+      "dark": "dark/mobile/interaction/hf_grid_filters_baseline.png",
+      "dhashDistance": 35,
+      "meanLumaLight": 0.6893,
+      "meanLumaDark": 0.127,
+      "meanLumaAbsDiff": 0.5622,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "pdp_add_to_cart_drawer_closed.png"
+      },
+      "light": "light/desktop/interaction/pdp_add_to_cart_drawer_closed.png",
+      "dark": "dark/desktop/interaction/pdp_add_to_cart_drawer_closed.png",
+      "dhashDistance": 35,
+      "meanLumaLight": 0.8919,
+      "meanLumaDark": 0.0954,
+      "meanLumaAbsDiff": 0.7965,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "pdp_size_xs_selected.png"
+      },
+      "light": "light/desktop/interaction/pdp_size_xs_selected.png",
+      "dark": "dark/desktop/interaction/pdp_size_xs_selected.png",
+      "dhashDistance": 35,
+      "meanLumaLight": 0.8919,
+      "meanLumaDark": 0.0922,
+      "meanLumaAbsDiff": 0.7998,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "slider_scrolled.png"
+      },
+      "light": "light/desktop/interaction/slider_scrolled.png",
+      "dark": "dark/desktop/interaction/slider_scrolled.png",
+      "dhashDistance": 36,
+      "meanLumaLight": 0.9606,
+      "meanLumaDark": 0.2141,
+      "meanLumaAbsDiff": 0.7466,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "pdp_qty_increased.png"
+      },
+      "light": "light/desktop/interaction/pdp_qty_increased.png",
+      "dark": "dark/desktop/interaction/pdp_qty_increased.png",
+      "dhashDistance": 36,
+      "meanLumaLight": 0.8919,
+      "meanLumaDark": 0.0948,
+      "meanLumaAbsDiff": 0.7971,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "hf_carousel_baseline.png"
+      },
+      "light": "light/desktop/baseline/hf_carousel_baseline.png",
+      "dark": "dark/desktop/baseline/hf_carousel_baseline.png",
+      "dhashDistance": 37,
+      "meanLumaLight": 0.6366,
+      "meanLumaDark": 0.1614,
+      "meanLumaAbsDiff": 0.4752,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_grid_filter_todos.png"
+      },
+      "light": "light/mobile/interaction/hf_grid_filter_todos.png",
+      "dark": "dark/mobile/interaction/hf_grid_filter_todos.png",
+      "dhashDistance": 37,
+      "meanLumaLight": 0.6852,
+      "meanLumaDark": 0.1866,
+      "meanLumaAbsDiff": 0.4986,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "modal_open.png"
+      },
+      "light": "light/desktop/interaction/modal_open.png",
+      "dark": "dark/desktop/interaction/modal_open.png",
+      "dhashDistance": 37,
+      "meanLumaLight": 0.5966,
+      "meanLumaDark": 0.0543,
+      "meanLumaAbsDiff": 0.5422,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_grid_filter_calzas.png"
+      },
+      "light": "light/desktop/interaction/hf_grid_filter_calzas.png",
+      "dark": "dark/desktop/interaction/hf_grid_filter_calzas.png",
+      "dhashDistance": 37,
+      "meanLumaLight": 0.8439,
+      "meanLumaDark": 0.185,
+      "meanLumaAbsDiff": 0.659,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_baseline.png"
+      },
+      "light": "light/mobile/interaction/hf_lightbox_baseline.png",
+      "dark": "dark/mobile/interaction/hf_lightbox_baseline.png",
+      "dhashDistance": 38,
+      "meanLumaLight": 0.8217,
+      "meanLumaDark": 0.3151,
+      "meanLumaAbsDiff": 0.5066,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "pdp_snippet_baseline.png"
+      },
+      "light": "light/mobile/interaction/pdp_snippet_baseline.png",
+      "dark": "dark/mobile/interaction/pdp_snippet_baseline.png",
+      "dhashDistance": 38,
+      "meanLumaLight": 0.9513,
+      "meanLumaDark": 0.2747,
+      "meanLumaAbsDiff": 0.6766,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "drawer_open.png"
+      },
+      "light": "light/mobile/interaction/drawer_open.png",
+      "dark": "dark/mobile/interaction/drawer_open.png",
+      "dhashDistance": 39,
+      "meanLumaLight": 0.88,
+      "meanLumaDark": 0.0966,
+      "meanLumaAbsDiff": 0.7834,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "tabs_envios.png"
+      },
+      "light": "light/mobile/interaction/tabs_envios.png",
+      "dark": "dark/mobile/interaction/tabs_envios.png",
+      "dhashDistance": 39,
+      "meanLumaLight": 0.9458,
+      "meanLumaDark": 0.1341,
+      "meanLumaAbsDiff": 0.8117,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "hf_grid_filters_baseline.png"
+      },
+      "light": "light/desktop/baseline/hf_grid_filters_baseline.png",
+      "dark": "dark/desktop/baseline/hf_grid_filters_baseline.png",
+      "dhashDistance": 40,
+      "meanLumaLight": 0.7599,
+      "meanLumaDark": 0.2351,
+      "meanLumaAbsDiff": 0.5248,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "drawer_open.png"
+      },
+      "light": "light/desktop/interaction/drawer_open.png",
+      "dark": "dark/desktop/interaction/drawer_open.png",
+      "dhashDistance": 40,
+      "meanLumaLight": 0.6328,
+      "meanLumaDark": 0.0613,
+      "meanLumaAbsDiff": 0.5715,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "ecommerce_quickshop_open.png"
+      },
+      "light": "light/mobile/interaction/ecommerce_quickshop_open.png",
+      "dark": "dark/mobile/interaction/ecommerce_quickshop_open.png",
+      "dhashDistance": 40,
+      "meanLumaLight": 0.8382,
+      "meanLumaDark": 0.1035,
+      "meanLumaAbsDiff": 0.7347,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "hf_banner_baseline.png"
+      },
+      "light": "light/desktop/baseline/hf_banner_baseline.png",
+      "dark": "dark/desktop/baseline/hf_banner_baseline.png",
+      "dhashDistance": 41,
+      "meanLumaLight": 0.9679,
+      "meanLumaDark": 0.1473,
+      "meanLumaAbsDiff": 0.8206,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "modal_closed.png"
+      },
+      "light": "light/desktop/interaction/modal_closed.png",
+      "dark": "dark/desktop/interaction/modal_closed.png",
+      "dhashDistance": 41,
+      "meanLumaLight": 0.9702,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.8759,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "accordion_second_open.png"
+      },
+      "light": "light/desktop/interaction/accordion_second_open.png",
+      "dark": "dark/desktop/interaction/accordion_second_open.png",
+      "dhashDistance": 42,
+      "meanLumaLight": 0.9693,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.875,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "hf_lightbox_baseline.png"
+      },
+      "light": "light/desktop/baseline/hf_lightbox_baseline.png",
+      "dark": "dark/desktop/baseline/hf_lightbox_baseline.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.8848,
+      "meanLumaDark": 0.2262,
+      "meanLumaAbsDiff": 0.6587,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "pdp_snippet_baseline.png"
+      },
+      "light": "light/desktop/baseline/pdp_snippet_baseline.png",
+      "dark": "dark/desktop/baseline/pdp_snippet_baseline.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.8917,
+      "meanLumaDark": 0.1687,
+      "meanLumaAbsDiff": 0.723,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "baseline",
+        "filename": "hf_banner_baseline.png"
+      },
+      "light": "light/mobile/baseline/hf_banner_baseline.png",
+      "dark": "dark/mobile/baseline/hf_banner_baseline.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9438,
+      "meanLumaDark": 0.1536,
+      "meanLumaAbsDiff": 0.7902,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "modal_closed.png"
+      },
+      "light": "light/mobile/interaction/modal_closed.png",
+      "dark": "dark/mobile/interaction/modal_closed.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9433,
+      "meanLumaDark": 0.1341,
+      "meanLumaAbsDiff": 0.8092,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "pdp_qty_increased.png"
+      },
+      "light": "light/mobile/interaction/pdp_qty_increased.png",
+      "dark": "dark/mobile/interaction/pdp_qty_increased.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9629,
+      "meanLumaDark": 0.1346,
+      "meanLumaAbsDiff": 0.8283,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "tabs_detalles.png"
+      },
+      "light": "light/desktop/interaction/tabs_detalles.png",
+      "dark": "dark/desktop/interaction/tabs_detalles.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9695,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.8752,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "tabs_envios.png"
+      },
+      "light": "light/desktop/interaction/tabs_envios.png",
+      "dark": "dark/desktop/interaction/tabs_envios.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9699,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.8756,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "drawer_closed.png"
+      },
+      "light": "light/desktop/interaction/drawer_closed.png",
+      "dark": "dark/desktop/interaction/drawer_closed.png",
+      "dhashDistance": 43,
+      "meanLumaLight": 0.9701,
+      "meanLumaDark": 0.0895,
+      "meanLumaAbsDiff": 0.8806,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "pdp_add_to_cart_drawer_open.png"
+      },
+      "light": "light/desktop/interaction/pdp_add_to_cart_drawer_open.png",
+      "dark": "dark/desktop/interaction/pdp_add_to_cart_drawer_open.png",
+      "dhashDistance": 44,
+      "meanLumaLight": 0.5957,
+      "meanLumaDark": 0.0954,
+      "meanLumaAbsDiff": 0.5002,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "pdp_add_to_cart_drawer_closed.png"
+      },
+      "light": "light/mobile/interaction/pdp_add_to_cart_drawer_closed.png",
+      "dark": "dark/mobile/interaction/pdp_add_to_cart_drawer_closed.png",
+      "dhashDistance": 44,
+      "meanLumaLight": 0.9323,
+      "meanLumaDark": 0.1525,
+      "meanLumaAbsDiff": 0.7798,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "pdp_add_to_cart_drawer_open.png"
+      },
+      "light": "light/mobile/interaction/pdp_add_to_cart_drawer_open.png",
+      "dark": "dark/mobile/interaction/pdp_add_to_cart_drawer_open.png",
+      "dhashDistance": 44,
+      "meanLumaLight": 0.9323,
+      "meanLumaDark": 0.1525,
+      "meanLumaAbsDiff": 0.7798,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "accordion_open.png"
+      },
+      "light": "light/desktop/interaction/accordion_open.png",
+      "dark": "dark/desktop/interaction/accordion_open.png",
+      "dhashDistance": 44,
+      "meanLumaLight": 0.9683,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.874,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "modal_open.png"
+      },
+      "light": "light/mobile/interaction/modal_open.png",
+      "dark": "dark/mobile/interaction/modal_open.png",
+      "dhashDistance": 45,
+      "meanLumaLight": 0.6667,
+      "meanLumaDark": 0.0829,
+      "meanLumaAbsDiff": 0.5838,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "accordion_open.png"
+      },
+      "light": "light/mobile/interaction/accordion_open.png",
+      "dark": "dark/mobile/interaction/accordion_open.png",
+      "dhashDistance": 45,
+      "meanLumaLight": 0.9451,
+      "meanLumaDark": 0.1408,
+      "meanLumaAbsDiff": 0.8043,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "pdp_size_xs_selected.png"
+      },
+      "light": "light/mobile/interaction/pdp_size_xs_selected.png",
+      "dark": "dark/mobile/interaction/pdp_size_xs_selected.png",
+      "dhashDistance": 46,
+      "meanLumaLight": 0.9548,
+      "meanLumaDark": 0.1402,
+      "meanLumaAbsDiff": 0.8145,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "hf_banner_closed.png"
+      },
+      "light": "light/mobile/interaction/hf_banner_closed.png",
+      "dark": "dark/mobile/interaction/hf_banner_closed.png",
+      "dhashDistance": 47,
+      "meanLumaLight": 0.9075,
+      "meanLumaDark": 0.1536,
+      "meanLumaAbsDiff": 0.7539,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "tabs_detalles.png"
+      },
+      "light": "light/mobile/interaction/tabs_detalles.png",
+      "dark": "dark/mobile/interaction/tabs_detalles.png",
+      "dhashDistance": 48,
+      "meanLumaLight": 0.9483,
+      "meanLumaDark": 0.1423,
+      "meanLumaAbsDiff": 0.806,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "hf_lightbox_closed.png"
+      },
+      "light": "light/desktop/interaction/hf_lightbox_closed.png",
+      "dark": "dark/desktop/interaction/hf_lightbox_closed.png",
+      "dhashDistance": 49,
+      "meanLumaLight": 0.8233,
+      "meanLumaDark": 0.2239,
+      "meanLumaAbsDiff": 0.5994,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "toast_after_4s.png"
+      },
+      "light": "light/mobile/interaction/toast_after_4s.png",
+      "dark": "dark/mobile/interaction/toast_after_4s.png",
+      "dhashDistance": 50,
+      "meanLumaLight": 0.9499,
+      "meanLumaDark": 0.144,
+      "meanLumaAbsDiff": 0.8059,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "toast_after_4s.png"
+      },
+      "light": "light/desktop/interaction/toast_after_4s.png",
+      "dark": "dark/desktop/interaction/toast_after_4s.png",
+      "dhashDistance": 50,
+      "meanLumaLight": 0.97,
+      "meanLumaDark": 0.0956,
+      "meanLumaAbsDiff": 0.8743,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "interaction",
+        "filename": "tooltip_hover.png"
+      },
+      "light": "light/desktop/interaction/tooltip_hover.png",
+      "dark": "dark/desktop/interaction/tooltip_hover.png",
+      "dhashDistance": 50,
+      "meanLumaLight": 0.97,
+      "meanLumaDark": 0.0956,
+      "meanLumaAbsDiff": 0.8744,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "drawer_closed.png"
+      },
+      "light": "light/mobile/interaction/drawer_closed.png",
+      "dark": "dark/mobile/interaction/drawer_closed.png",
+      "dhashDistance": 51,
+      "meanLumaLight": 0.9455,
+      "meanLumaDark": 0.1444,
+      "meanLumaAbsDiff": 0.8011,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "desktop",
+        "bucket": "baseline",
+        "filename": "components_baseline.png"
+      },
+      "light": "light/desktop/baseline/components_baseline.png",
+      "dark": "dark/desktop/baseline/components_baseline.png",
+      "dhashDistance": 51,
+      "meanLumaLight": 0.9685,
+      "meanLumaDark": 0.0943,
+      "meanLumaAbsDiff": 0.8742,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "components_section.png"
+      },
+      "light": "light/mobile/interaction/components_section.png",
+      "dark": "dark/mobile/interaction/components_section.png",
+      "dhashDistance": 53,
+      "meanLumaLight": 0.9339,
+      "meanLumaDark": 0.1503,
+      "meanLumaAbsDiff": 0.7836,
+      "suspect": false
+    },
+    {
+      "key": {
+        "viewport": "mobile",
+        "bucket": "interaction",
+        "filename": "tooltip_and_toast.png"
+      },
+      "light": "light/mobile/interaction/tooltip_and_toast.png",
+      "dark": "dark/mobile/interaction/tooltip_and_toast.png",
+      "dhashDistance": 54,
+      "meanLumaLight": 0.948,
+      "meanLumaDark": 0.1448,
+      "meanLumaAbsDiff": 0.8031,
+      "suspect": false
+    }
+  ]
+}

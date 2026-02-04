@@ -1,0 +1,413 @@
+/**
+ * HF-CARD Component Variants
+ * Product cards, editorial cards, feature cards
+ */
+
+/* ========================================
+   BASE CARD
+======================================== */
+
+.hf-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  overflow: hidden;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+
+.hf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+}
+
+/* ========================================
+   CARD MEDIA
+======================================== */
+
+.hf-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.hf-card__image {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  transition: transform var(--med) var(--ease);
+}
+
+.hf-card:hover .hf-card__image {
+  transform: scale(1.03);
+}
+
+/* Placeholder when no image */
+.hf-card__media--placeholder {
+  aspect-ratio: 4/5;
+  background:
+    radial-gradient(500px 250px at 20% 20%, rgba(255,94,50,0.15), transparent 60%),
+    radial-gradient(420px 220px at 80% 10%, rgba(117,138,253,0.12), transparent 60%),
+    linear-gradient(135deg, var(--surface-2), var(--surface));
+}
+
+/* Badges over media */
+.hf-card__badges {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  z-index: 2;
+}
+
+/* Quick actions */
+.hf-card__actions {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+  z-index: 2;
+}
+
+.hf-card:hover .hf-card__actions,
+.hf-card:focus-within .hf-card__actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.hf-card__action {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.hf-card__action:hover {
+  background: var(--surface-2);
+  transform: scale(1.08);
+}
+
+.hf-card__action:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+.hf-card__action svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========================================
+   CARD BODY
+======================================== */
+
+.hf-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  flex: 1;
+}
+
+.hf-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.hf-card__title {
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0;
+  color: var(--text);
+}
+
+.hf-card__subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.hf-card__description {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ========================================
+   PRICING
+======================================== */
+
+.hf-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-top: var(--s-1);
+}
+
+.hf-card__price-current {
+  font-weight: 900;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.hf-card__price-original {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.hf-card__price-discount {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--hf-primary) 15%, var(--surface));
+  color: var(--hf-primary-700);
+}
+
+/* ========================================
+   SWATCHES
+======================================== */
+
+.hf-card__swatches {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-top: var(--s-1);
+}
+
+.hf-card__swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease);
+}
+
+.hf-card__swatch:hover {
+  transform: scale(1.15);
+}
+
+.hf-card__swatch[aria-selected="true"] {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--hf-primary);
+}
+
+/* ========================================
+   CARD FOOTER
+======================================== */
+
+.hf-card__footer {
+  display: flex;
+  gap: var(--s-2);
+  padding: 0 var(--s-4) var(--s-4);
+  margin-top: auto;
+}
+
+.hf-card__footer .btn {
+  flex: 1;
+}
+
+/* ========================================
+   CARD LINK OVERLAY
+======================================== */
+
+.hf-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hf-card__link:focus-visible {
+  outline: none;
+}
+
+.hf-card:has(.hf-card__link:focus-visible) {
+  box-shadow: var(--focus);
+}
+
+/* Actions should be above link */
+.hf-card__actions,
+.hf-card__footer {
+  position: relative;
+  z-index: 3;
+}
+
+/* ========================================
+   PRODUCT CARD VARIANT
+======================================== */
+
+.hf-card--product .hf-card__image {
+  aspect-ratio: 4/5;
+}
+
+.hf-card--product .hf-card__body {
+  padding: var(--s-3) var(--s-4) var(--s-4);
+}
+
+/* ========================================
+   EDITORIAL CARD VARIANT
+======================================== */
+
+.hf-card--editorial {
+  border-radius: var(--r-3);
+}
+
+.hf-card--editorial .hf-card__image {
+  aspect-ratio: 16/9;
+}
+
+.hf-card--editorial .hf-card__body {
+  padding: var(--s-5);
+}
+
+.hf-card--editorial .hf-card__title {
+  font-size: 18px;
+}
+
+.hf-card--editorial .hf-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ========================================
+   FEATURE CARD VARIANT
+======================================== */
+
+.hf-card--feature {
+  padding: var(--s-5);
+  text-align: center;
+}
+
+.hf-card--feature .hf-card__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--s-4);
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--hf-accent) 12%, var(--surface));
+  color: var(--hf-accent-700);
+}
+
+.hf-card--feature .hf-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.hf-card--feature .hf-card__title {
+  font-size: 16px;
+  margin-bottom: var(--s-2);
+}
+
+/* ========================================
+   HORIZONTAL CARD VARIANT
+======================================== */
+
+.hf-card--horizontal {
+  flex-direction: row;
+}
+
+.hf-card--horizontal .hf-card__media {
+  flex: 0 0 40%;
+  max-width: 200px;
+}
+
+.hf-card--horizontal .hf-card__image {
+  aspect-ratio: 1;
+  height: 100%;
+}
+
+.hf-card--horizontal .hf-card__body {
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .hf-card--horizontal {
+    flex-direction: column;
+  }
+
+  .hf-card--horizontal .hf-card__media {
+    flex: none;
+    max-width: none;
+  }
+
+  .hf-card--horizontal .hf-card__image {
+    aspect-ratio: 16/9;
+  }
+}
+
+/* ========================================
+   COMPACT CARD
+======================================== */
+
+.hf-card--compact .hf-card__body {
+  padding: var(--s-3);
+}
+
+.hf-card--compact .hf-card__title {
+  font-size: 14px;
+}
+
+.hf-card--compact .hf-card__price-current {
+  font-size: 15px;
+}
+
+/* ========================================
+   CARD STATES
+======================================== */
+
+.hf-card--sold-out {
+  opacity: 0.7;
+}
+
+.hf-card--sold-out .hf-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+}
+
+.hf-card--featured {
+  border-color: color-mix(in srgb, var(--hf-primary) 40%, var(--border));
+  box-shadow: 0 8px 24px rgba(255,94,50,0.12);
+}
+
+/* ========================================
+   DARK MODE
+======================================== */
+
+[data-theme="dark"] .hf-card {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .hf-card:hover {
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+}
+
+[data-theme="dark"] .hf-card__action {
+  background: var(--surface-2);
+}
