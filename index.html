@@ -2882,23 +2882,26 @@
 
       const isMobile = () => window.innerWidth <= 768;
       let interval = null;
-      let showingIsotipo = true;
+      let showingLogotipo = true;
 
       function toggleLogo() {
         if (!isMobile()) return;
-        showingIsotipo = !showingIsotipo;
-        if (showingIsotipo) {
-          isotipo.classList.remove("is-hidden");
-          logotipo.classList.remove("is-visible");
-        } else {
+        showingLogotipo = !showingLogotipo;
+        if (showingLogotipo) {
           isotipo.classList.add("is-hidden");
           logotipo.classList.add("is-visible");
+        } else {
+          isotipo.classList.remove("is-hidden");
+          logotipo.classList.remove("is-visible");
         }
       }
 
       function startAnimation() {
         if (interval) clearInterval(interval);
         if (isMobile()) {
+          isotipo.classList.add("is-hidden");
+          logotipo.classList.add("is-visible");
+          showingLogotipo = true;
           interval = setInterval(toggleLogo, 3000);
         }
       }
@@ -2907,7 +2910,6 @@
         if (interval) clearInterval(interval);
         isotipo.classList.remove("is-hidden");
         logotipo.classList.remove("is-visible");
-        showingIsotipo = true;
         startAnimation();
       }
 
