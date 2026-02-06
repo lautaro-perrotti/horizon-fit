@@ -981,36 +981,37 @@
 
   <!-- VIDEO HERO - FULL SCREEN 100vh -->
   <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" style="min-height:0;border-radius:0;flex-grow:1;display:flex;flex-direction:column;justify-content:flex-end;">
-    <video class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
-        <script>
-          function resizeHero() {
-            var header = document.querySelector('header.nav');
-            var marquee = document.querySelector('.hf-marquee');
-            var hero = document.querySelector('.hf-video-hero--full');
-            if (!hero) return;
-            var offset = 0;
-            if (header) offset += header.offsetHeight;
-            if (marquee && marquee.offsetParent !== null) offset += marquee.offsetHeight;
-            hero.style.minHeight = 'calc(100vh - ' + offset + 'px)';
-          }
-          window.addEventListener('resize', resizeHero);
-          window.addEventListener('DOMContentLoaded', resizeHero);
-        </script>
-      <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4" class="video-desktop">
-      <source src="https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4" type="video/mp4" class="video-mobile">
+    <video id="heroVideo" class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
+      src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4">
     </video>
     <script>
+      function resizeHero() {
+        var header = document.querySelector('header.nav');
+        var marquee = document.querySelector('.hf-marquee');
+        var hero = document.querySelector('.hf-video-hero--full');
+        if (!hero) return;
+        var offset = 0;
+        if (header) offset += header.offsetHeight;
+        if (marquee && marquee.offsetParent !== null) offset += marquee.offsetHeight;
+        hero.style.minHeight = 'calc(100vh - ' + offset + 'px)';
+      }
+      window.addEventListener('resize', resizeHero);
+      window.addEventListener('DOMContentLoaded', resizeHero);
+
       (function(){
-        var video = document.querySelector('.hf-video-hero--full video');
+        var video = document.getElementById('heroVideo');
+        var mobileSrc = 'https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4';
+        var desktopSrc = 'https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4';
+        var currentSrc = '';
+
         function setVideoSource() {
           var isMobile = window.innerWidth <= 768;
-          var src = isMobile
-            ? 'https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4'
-            : 'https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4';
-          if (video.src !== src) {
-            video.src = src;
+          var newSrc = isMobile ? mobileSrc : desktopSrc;
+          if (currentSrc !== newSrc) {
+            currentSrc = newSrc;
+            video.src = newSrc;
             video.load();
-            video.play();
+            video.play().catch(function(){});
           }
         }
         setVideoSource();
