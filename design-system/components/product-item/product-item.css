@@ -279,6 +279,79 @@
 }
 
 /* ========================================
+   PRODUCT GRID 2 COLUMNS
+======================================== */
+
+.hf-product-grid--2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+
+/* ========================================
+   PRODUCT ITEM SLIDER VARIANT
+======================================== */
+
+.hf-product-item--slider .hf-product-item__media {
+  position: relative;
+}
+
+.hf-product-item__slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.hf-product-item__slider::-webkit-scrollbar {
+  display: none;
+}
+
+.hf-product-item__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.hf-product-item__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 3/4;
+}
+
+.hf-product-item__dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.hf-product-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+
+.hf-product-item__dot:hover {
+  background: rgba(255,255,255,0.8);
+}
+
+.hf-product-item__dot.is-active {
+  background: #fff;
+  transform: scale(1.2);
+}
+
+/* ========================================
    DARK MODE
 ======================================== */
 

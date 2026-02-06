@@ -1157,6 +1157,120 @@
         </article>
       </div>
     </div>
+
+    <!-- PRODUCT GRID SLIDER VARIANT (2 columns) -->
+    <div style="padding: var(--s-6) var(--s-4) 0;">
+      <h3 style="font-size:18px;font-weight:700;margin:0 0 16px;color:var(--text);">Product Grid con Slider (2 columnas)</h3>
+      <div class="hf-product-grid--2col">
+        <!-- Product Slider 1 -->
+        <article class="hf-product-item hf-product-item--slider">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Black High Top - Vista 1">
+              </div>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Black High Top - Vista 2">
+              </div>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Black High Top - Vista 3">
+              </div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLACK HIGH TOP</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$54.990 ARS</span>
+                <span class="hf-product-item__price-original">$109.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$9.165</a></p>
+              <p class="hf-product-item__transfer">$46.742 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product Slider 2 -->
+        <article class="hf-product-item hf-product-item--slider">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Black Legging - Vista 1">
+              </div>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Black Legging - Vista 2">
+              </div>
+              <div class="hf-product-item__slide">
+                <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Black Legging - Vista 3">
+              </div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+              <button class="hf-product-item__size" aria-pressed="false">XXL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLACK HIGH LEGGING</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$64.990 ARS</span>
+                <span class="hf-product-item__price-original">$129.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
+              <p class="hf-product-item__transfer">$55.242 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- Script para los sliders de productos -->
+    <script>
+      document.querySelectorAll('.hf-product-item--slider').forEach(function(item) {
+        var slider = item.querySelector('[data-slider]');
+        var dots = item.querySelectorAll('.hf-product-item__dot');
+
+        // Click en dots
+        dots.forEach(function(dot, index) {
+          dot.addEventListener('click', function() {
+            var slideWidth = slider.offsetWidth;
+            slider.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+          });
+        });
+
+        // Actualizar dots al hacer scroll
+        slider.addEventListener('scroll', function() {
+          var slideWidth = slider.offsetWidth;
+          var currentSlide = Math.round(slider.scrollLeft / slideWidth);
+          dots.forEach(function(dot, index) {
+            dot.classList.toggle('is-active', index === currentSlide);
+          });
+        });
+      });
+    </script>
   </section>
 
   <!-- FULL WIDTH SLIDER - PRODUCTOS -->
