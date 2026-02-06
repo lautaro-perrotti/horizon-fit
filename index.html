@@ -980,65 +980,27 @@
   -->
 
   <!-- VIDEO HERO - FULL SCREEN 100vh -->
-  <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" style="min-height:0;border-radius:0;flex-grow:1;display:flex;flex-direction:column;justify-content:flex-end;">
-    <video id="heroVideo" class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"
-      src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4">
+  <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" data-show-control data-offset-selectors="header.nav,.hf-marquee">
+    <video id="heroVideo" class="hf-video-hero__media hf-video-hero__video" autoplay muted loop playsinline preload="metadata">
+      <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
+      <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4" media="(min-width: 769px)">
     </video>
-    <script>
-      function resizeHero() {
-        var header = document.querySelector('header.nav');
-        var marquee = document.querySelector('.hf-marquee');
-        var hero = document.querySelector('.hf-video-hero--full');
-        if (!hero) return;
-        var offset = 0;
-        if (header) offset += header.offsetHeight;
-        if (marquee && marquee.offsetParent !== null) offset += marquee.offsetHeight;
-        hero.style.minHeight = 'calc(100vh - ' + offset + 'px)';
-      }
-      window.addEventListener('resize', resizeHero);
-      window.addEventListener('DOMContentLoaded', resizeHero);
-
-      (function(){
-        var video = document.getElementById('heroVideo');
-        var mobileSrc = 'https://videos.pexels.com/video-files/4761436/4761436-sd_640_360_30fps.mp4';
-        var desktopSrc = 'https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4';
-        var currentSrc = '';
-
-        function setVideoSource() {
-          var isMobile = window.innerWidth <= 768;
-          var newSrc = isMobile ? mobileSrc : desktopSrc;
-          if (currentSrc !== newSrc) {
-            currentSrc = newSrc;
-            video.src = newSrc;
-            video.load();
-            video.play().catch(function(){});
-          }
-        }
-        setVideoSource();
-        window.addEventListener('resize', setVideoSource);
-      })();
-    </script>
-    <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;">
-    <div class="hf-video-hero__overlay" style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.8) 100%);"></div>
-    <div class="hf-video-hero__content" style="position:relative;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:60px;max-width:800px;">
-      <span class="badge badge--primary" style="margin-bottom:16px;font-size:14px;">DROP 01</span>
-      <h1 style="font-size:clamp(36px,6vw,72px);font-weight:900;color:#fff;margin:0 0 20px;line-height:1.1;letter-spacing:-0.03em;">Más allá del entrenamiento.</h1>
-      <p style="font-size:clamp(16px,2vw,22px);color:rgba(255,255,255,0.85);margin:0 0 32px;line-height:1.6;">Activewear para la vida real. Del gym a la calle sin cortar la rutina.</p>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;">
-        <a href="#ecommerce" class="btn btn--primary btn--lg" style="padding:18px 32px;font-size:16px;">Ver colección</a>
-        <a href="#marketing" class="btn btn--lg" style="padding:18px 32px;font-size:16px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;backdrop-filter:blur(10px);">Componentes</a>
+    <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" alt="" aria-hidden="true">
+    <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
+    <div class="hf-video-hero__content">
+      <span class="badge badge--primary hf-video-hero__badge">DROP 01</span>
+      <h1 class="hf-video-hero__title">Más allá del entrenamiento.</h1>
+      <p class="hf-video-hero__subtitle">Activewear para la vida real. Del gym a la calle sin cortar la rutina.</p>
+      <div class="hf-video-hero__actions">
+        <a href="#ecommerce" class="btn btn--primary btn--lg">Ver colección</a>
+        <a href="#marketing" class="btn btn--secondary btn--lg">Componentes</a>
       </div>
     </div>
     <!-- Scroll indicator -->
-    <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(255,255,255,0.7);font-size:12px;animation:bounce 2s ease-in-out infinite;">
+    <div class="hf-video-hero__scroll">
       <span>Scroll</span>
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </div>
-    <!-- Play/Pause -->
-    <button class="hf-video-hero__control hf-video-hero__control--pause" aria-label="Pausar video" onclick="const vid=this.closest('.hf-video-hero').querySelector('video');if(vid.paused){vid.play();this.classList.remove('hf-video-hero__control--play');this.classList.add('hf-video-hero__control--pause');}else{vid.pause();this.classList.remove('hf-video-hero__control--pause');this.classList.add('hf-video-hero__control--play');}">
-      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
-      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-    </button>
   </section>
 
   <!-- FULL WIDTH SLIDER - PRODUCTOS -->
@@ -1661,11 +1623,12 @@
             <!-- Video Hero Demo con video real -->
             <div class="hf-video-hero" data-hf="video-hero" data-show-control style="min-height:400px;">
               <!-- Video real de fitness -->
-              <video class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline>
-                <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4">
+              <video class="hf-video-hero__media hf-video-hero__video" autoplay muted loop playsinline preload="metadata">
+                <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
+                <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4" media="(min-width: 769px)">
               </video>
               <!-- Fallback image -->
-              <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=800&fit=crop" alt="Gym workout" style="opacity:0;">
+              <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=800&fit=crop" alt="Gym workout">
               <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
               <div class="hf-video-hero__content">
                 <span class="badge badge--primary hf-video-hero__badge">DROP 01</span>
@@ -1676,11 +1639,6 @@
                   <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">Guía de talles</button>
                 </div>
               </div>
-              <!-- Play/Pause button -->
-              <button class="hf-video-hero__control hf-video-hero__control--pause" aria-label="Pausar video" onclick="const vid2=this.closest('.hf-video-hero').querySelector('video');if(vid2.paused){vid2.play();this.classList.remove('hf-video-hero__control--play');this.classList.add('hf-video-hero__control--pause');}else{vid2.pause();this.classList.remove('hf-video-hero__control--pause');this.classList.add('hf-video-hero__control--play');}">
-                <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-              </button>
             </div>
           </div>
         </div>

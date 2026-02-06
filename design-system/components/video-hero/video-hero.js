@@ -35,12 +35,51 @@
     // State
     let isPlaying = false;
 
+    // Optional: full viewport height minus offsets (e.g., sticky header)
+    let teardownFullHeight = null;
+
+    function setupFullHeight() {
+      if (!el.classList.contains('hf-video-hero--full')) return;
+
+      const rawSelectors = el.getAttribute('data-offset-selectors');
+      if (!rawSelectors) return;
+
+      const selectors = rawSelectors
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      if (selectors.length === 0) return;
+
+      const updateMinHeight = () => {
+        let offset = 0;
+        selectors.forEach((sel) => {
+          document.querySelectorAll(sel).forEach((node) => {
+            if (node && node.offsetParent !== null) {
+              offset += node.getBoundingClientRect().height;
+            }
+          });
+        });
+
+        const h = Math.max(0, window.innerHeight - offset);
+        el.style.minHeight = `${h}px`;
+      };
+
+      updateMinHeight();
+      window.addEventListener('resize', updateMinHeight, { passive: true });
+
+      teardownFullHeight = () => {
+        window.removeEventListener('resize', updateMinHeight);
+      };
+    }
+
     // Setup video attributes
     function setupVideo() {
       video.muted = config.muted;
       video.loop = config.loop;
       video.playsInline = true;
       video.setAttribute('playsinline', '');
+      video.preload = video.getAttribute('preload') || 'metadata';
 
       // Hide video if reduced motion
       if (prefersReducedMotion) {
@@ -63,6 +102,17 @@
       video.addEventListener('pause', () => {
         isPlaying = false;
         updateControlState();
+      });
+
+      // Fallback for devices/browsers where `loop` can be unreliable
+      video.addEventListener('ended', () => {
+        if (!config.loop) return;
+        try {
+          video.currentTime = 0;
+        } catch (_) {
+          // ignore
+        }
+        video.play().catch(() => {});
       });
 
       // Autoplay
@@ -153,6 +203,7 @@
     motionQuery.addEventListener('change', motionHandler);
 
     // Initialize
+    setupFullHeight();
     setupVideo();
     createControl();
     document.addEventListener('visibilitychange', handleVisibility);
@@ -167,6 +218,7 @@
         destroy();
         document.removeEventListener('visibilitychange', handleVisibility);
         motionQuery.removeEventListener('change', motionHandler);
+        if (teardownFullHeight) teardownFullHeight();
       },
       isPlaying: () => isPlaying
     };
@@ -184,6 +236,9 @@
   function createVideoHero(options = {}) {
     const {
       videoSrc = '',
+      videoSrcMobile = '',
+      videoSrcDesktop = '',
+      breakpoint = 768,
       fallbackSrc = '',
       title = '',
       subtitle = '',
@@ -198,10 +253,30 @@
     if (variant) hero.classList.add(`hf-video-hero--${variant}`);
 
     // Video
-    if (videoSrc) {
+    if (videoSrc || videoSrcMobile || videoSrcDesktop) {
       const video = document.createElement('video');
       video.className = 'hf-video-hero__media hf-video-hero__video';
-      video.src = videoSrc;
+
+      if (videoSrcMobile || videoSrcDesktop) {
+        if (videoSrcMobile) {
+          const sourceMobile = document.createElement('source');
+          sourceMobile.src = videoSrcMobile;
+          sourceMobile.type = 'video/mp4';
+          sourceMobile.media = `(max-width: ${breakpoint}px)`;
+          video.appendChild(sourceMobile);
+        }
+
+        if (videoSrcDesktop) {
+          const sourceDesktop = document.createElement('source');
+          sourceDesktop.src = videoSrcDesktop;
+          sourceDesktop.type = 'video/mp4';
+          sourceDesktop.media = `(min-width: ${breakpoint + 1}px)`;
+          video.appendChild(sourceDesktop);
+        }
+      } else {
+        video.src = videoSrc;
+      }
+
       video.muted = true;
       video.loop = true;
       video.playsInline = true;

@@ -14,6 +14,7 @@
 
 .hf-video-hero--full {
   min-height: 100vh;
+  min-height: 100svh;
   border-radius: 0;
 }
 
@@ -254,6 +255,7 @@
 
   .hf-video-hero--full {
     min-height: 100vh;
+    min-height: 100svh;
   }
 
   .hf-video-hero__content {
@@ -277,9 +279,5 @@
 }
 
 /* ========================================
-   DARK MODE (adjustments)
+  DARK MODE (adjustments)
 ======================================== */
-
-[data-theme="dark"] .hf-video-hero {
-  /* Dark mode doesn't need much change for video hero */
-}
