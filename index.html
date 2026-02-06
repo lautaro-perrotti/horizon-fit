@@ -996,9 +996,27 @@
           window.addEventListener('resize', resizeHero);
           window.addEventListener('DOMContentLoaded', resizeHero);
         </script>
-      <source src="https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
-      <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4">
+      <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4" class="video-desktop">
+      <source src="https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4" type="video/mp4" class="video-mobile">
     </video>
+    <script>
+      (function(){
+        var video = document.querySelector('.hf-video-hero--full video');
+        function setVideoSource() {
+          var isMobile = window.innerWidth <= 768;
+          var src = isMobile
+            ? 'https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4'
+            : 'https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4';
+          if (video.src !== src) {
+            video.src = src;
+            video.load();
+            video.play();
+          }
+        }
+        setVideoSource();
+        window.addEventListener('resize', setVideoSource);
+      })();
+    </script>
     <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;">
     <div class="hf-video-hero__overlay" style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.8) 100%);"></div>
     <div class="hf-video-hero__content" style="position:relative;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:60px;max-width:800px;">
@@ -1643,7 +1661,6 @@
             <div class="hf-video-hero" data-hf="video-hero" data-show-control style="min-height:400px;">
               <!-- Video real de fitness -->
               <video class="hf-video-hero__media hf-video-hero__video is-loaded" autoplay muted loop playsinline>
-                <source src="https://videos.pexels.com/video-files/4761436/4761436-hd_1280_720_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
                 <source src="https://videos.pexels.com/video-files/4761436/4761436-uhd_2560_1440_25fps.mp4" type="video/mp4">
               </video>
               <!-- Fallback image -->
