@@ -1159,8 +1159,8 @@
     </div>
 
     <!-- PRODUCT HORIZONTAL SLIDER (con image slider en cada producto) -->
-    <div style="padding: var(--s-6) 0 0;">
-      <div style="padding: 0 var(--s-4); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+    <div style="padding: var(--s-6) var(--s-4) 0;">
+      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
         <h3 style="font-size:18px;font-weight:700;margin:0;color:var(--text);">Product Slider (con imagen slider)</h3>
         <div style="display:flex;gap:8px;">
           <button class="btn btn--secondary btn--sm" onclick="document.getElementById('productSlider').scrollBy({left:-300,behavior:'smooth'})" aria-label="Anterior">
@@ -1171,7 +1171,7 @@
           </button>
         </div>
       </div>
-      <div id="productSlider" class="hf-product-slider hide-scrollbar" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--s-4) 20px;scrollbar-width:none;">
+      <div id="productSlider" class="hf-product-slider hide-scrollbar" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:20px;scrollbar-width:none;">
 
         <!-- Product 1 -->
         <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
