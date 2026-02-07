@@ -356,7 +356,7 @@
 ======================================== */
 
 .hf-product-slider .hf-product-item--slider {
-  flex: 0 0 calc(44% - 8px) !important;
+  flex: 0 0 calc(85% - 8px) !important;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
