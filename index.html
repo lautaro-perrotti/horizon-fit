@@ -1423,6 +1423,192 @@
         });
       });
     </script>
+
+    <!-- PRODUCT HORIZONTAL SLIDER 2 -->
+    <div style="padding: var(--s-6) var(--s-4) 0;">
+      <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size:18px;font-weight:700;margin:0;color:var(--text);">Nuevos Ingresos</h3>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn--secondary btn--sm" onclick="document.getElementById('productSlider2').scrollBy({left:-300,behavior:'smooth'})" aria-label="Anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn--secondary btn--sm" onclick="document.getElementById('productSlider2').scrollBy({left:300,behavior:'smooth'})" aria-label="Siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="productSlider2" class="hf-product-slider hide-scrollbar" style="display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:20px;scrollbar-width:none;">
+
+        <!-- Product 1 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">XS</button><button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button><button class="hf-product-item__size">L</button>
+            </div>
+            <p class="hf-product-item__brand">Essential</p>
+            <h3 class="hf-product-item__title">JOGGER PREMIUM</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$79.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$13.332</a></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button><button class="hf-product-item__size">L</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">TANK TOP FLOW</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$44.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$7.498</a></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">XS</button><button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button><button class="hf-product-item__size">L</button><button class="hf-product-item__size">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Essential</p>
+            <h3 class="hf-product-item__title">LEGGING SEAMLESS</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$69.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$11.665</a></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 4 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button><button class="hf-product-item__size">L</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">SHORTS TRAINING</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$39.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$6.665</a></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 5 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">XS</button><button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button>
+            </div>
+            <p class="hf-product-item__brand">Essential</p>
+            <h3 class="hf-product-item__title">SPORTS BRA ENERGY</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$34.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$5.832</a></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 6 -->
+        <article class="hf-product-item hf-product-item--slider" style="flex:0 0 calc(50% - 6px);scroll-snap-align:start;">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">NUEVO</span>
+            <div class="hf-product-item__slider" data-slider>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 3"></div>
+            </div>
+            <div class="hf-product-item__dots">
+              <button class="hf-product-item__dot is-active" data-slide="0"></button>
+              <button class="hf-product-item__dot" data-slide="1"></button>
+              <button class="hf-product-item__dot" data-slide="2"></button>
+            </div>
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size">S</button><button class="hf-product-item__size">M</button><button class="hf-product-item__size">L</button><button class="hf-product-item__size">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">HOODIE OVERSIZE</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row"><span class="hf-product-item__price">$89.990</span></div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$14.998</a></p>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
   </section>
 
   <!-- FULL WIDTH SLIDER - PRODUCTOS -->
