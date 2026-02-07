@@ -352,6 +352,27 @@
 }
 
 /* ========================================
+   PRODUCT SLIDER RESPONSIVE
+======================================== */
+
+.hf-product-slider .hf-product-item--slider {
+  flex: 0 0 calc(25% - 9px) !important;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 1024px) {
+  .hf-product-slider .hf-product-item--slider {
+    flex: 0 0 calc(33.333% - 8px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hf-product-slider .hf-product-item--slider {
+    flex: 0 0 calc(50% - 6px) !important;
+  }
+}
+
+/* ========================================
    DARK MODE
 ======================================== */
 
