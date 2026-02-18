@@ -159,7 +159,6 @@
 
     .section{
       padding: var(--s-9) 0;
-      border-top: 1px solid var(--border);
     }
 
     .h1{ font-size:var(--h1); letter-spacing:-.02em; margin:0 0 var(--s-3); }
@@ -1006,15 +1005,163 @@
   <!-- PRODUCT GRID ITEMS - Touche Sport Style -->
   <section class="section" style="background: var(--surface); padding-bottom: 0;">
     <div class="container">
-      <div style="margin-bottom: var(--s-6);">
+      <div style="margin-bottom: var(--s-6); text-align: center;">
         <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
-        <h2 class="h2">Product Grid Items</h2>
+        <h2 class="h2">Productos destacados</h2>
         <p class="p">Componente de tarjeta de producto estilo Touche Sport con selector de talles, precios y cuotas.</p>
       </div>
     </div>
 
     <div style="padding: 0 var(--s-4);">
-      <div class="hf-product-grid">
+      <div class="hf-product-grid--h-scroll hide-scrollbar">
+        <!-- Product 1: Black High Top -->
+        <article class="hf-product-item">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <img
+              src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop"
+              alt="Black High Top"
+              class="hf-product-item__image hf-product-item__image--primary"
+            >
+            <img
+              src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop"
+              alt="Black High Top - Vista alternativa"
+              class="hf-product-item__image hf-product-item__image--secondary"
+            >
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLACK HIGH TOP</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$54.990 ARS</span>
+                <span class="hf-product-item__price-original">$109.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$9.165</a></p>
+              <p class="hf-product-item__transfer">$46.742 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 2: Black High Legging -->
+        <article class="hf-product-item">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <img
+              src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop"
+              alt="Black High Legging"
+              class="hf-product-item__image hf-product-item__image--primary"
+            >
+            <img
+              src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop"
+              alt="Black High Legging - Vista alternativa"
+              class="hf-product-item__image hf-product-item__image--secondary"
+            >
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+              <button class="hf-product-item__size" aria-pressed="false">XXL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLACK HIGH LEGGING</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$64.990 ARS</span>
+                <span class="hf-product-item__price-original">$129.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
+              <p class="hf-product-item__transfer">$55.242 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 3: Blue High Top -->
+        <article class="hf-product-item">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <img
+              src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop"
+              alt="Blue High Top"
+              class="hf-product-item__image hf-product-item__image--primary"
+            >
+            <img
+              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop"
+              alt="Blue High Top - Vista alternativa"
+              class="hf-product-item__image hf-product-item__image--secondary"
+            >
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLUE HIGH TOP</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$54.990 ARS</span>
+                <span class="hf-product-item__price-original">$109.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$9.165</a></p>
+              <p class="hf-product-item__transfer">$46.742 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Product 4: Blue High Legging -->
+        <article class="hf-product-item">
+          <div class="hf-product-item__media">
+            <span class="hf-product-item__badge">50% OFF!</span>
+            <img
+              src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop"
+              alt="Blue High Legging"
+              class="hf-product-item__image hf-product-item__image--primary"
+            >
+            <img
+              src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop"
+              alt="Blue High Legging - Vista alternativa"
+              class="hf-product-item__image hf-product-item__image--secondary"
+            >
+          </div>
+          <div class="hf-product-item__body">
+            <div class="hf-product-item__sizes">
+              <button class="hf-product-item__size" aria-pressed="false">S</button>
+              <button class="hf-product-item__size" aria-pressed="false">M</button>
+              <button class="hf-product-item__size" aria-pressed="false">L</button>
+              <button class="hf-product-item__size" aria-pressed="false">XL</button>
+            </div>
+            <p class="hf-product-item__brand">Pro Collection</p>
+            <h3 class="hf-product-item__title">BLUE HIGH LEGGING</h3>
+            <div class="hf-product-item__pricing">
+              <div class="hf-product-item__price-row">
+                <span class="hf-product-item__price">$64.990 ARS</span>
+                <span class="hf-product-item__price-original">$129.990</span>
+              </div>
+              <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
+              <p class="hf-product-item__transfer">$55.242 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT GRID ITEMS - Copia -->
+  <section class="section" style="background: var(--surface); padding-bottom: 0;">
+    <div style="padding: 0 var(--s-4);">
+      <div class="hf-product-grid--h-scroll hide-scrollbar">
         <!-- Product 1: Black High Top -->
         <article class="hf-product-item">
           <div class="hf-product-item__media">

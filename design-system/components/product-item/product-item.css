@@ -362,6 +362,30 @@
 }
 
 /* ========================================
+   PRODUCT GRID HORIZONTAL SCROLL (2 col)
+======================================== */
+
+.hf-product-grid--h-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 20px;
+}
+
+.hf-product-grid--h-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.hf-product-grid--h-scroll .hf-product-item {
+  flex: 0 0 calc(50vw - var(--s-4) - 22px);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* ========================================
    DARK MODE
 ======================================== */
 
