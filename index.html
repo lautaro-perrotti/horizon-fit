@@ -1055,6 +1055,35 @@
       transform: scale(1.05);
     }
 
+    .hf-slider-controls{
+      display:flex;
+      gap:12px;
+      justify-content:flex-end;
+    }
+    .hf-slider-btn{
+      width:56px;
+      height:56px;
+      border-radius:999px;
+      border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      background: color-mix(in srgb, var(--surface) 86%, white 14%);
+      color: var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition: transform var(--fast) var(--ease), background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+    }
+    .hf-slider-btn:hover{
+      transform: translateY(-1px);
+      background: var(--surface);
+      border-color: color-mix(in srgb, var(--text) 26%, transparent);
+    }
+    .hf-slider-btn svg{
+      width:24px;
+      height:24px;
+      stroke-width:2;
+    }
+
     /* Categories Mosaic (2x2) */
     .hf-categories {
       background: var(--surface);
@@ -1521,11 +1550,11 @@
           <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
           <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Productos destacados</h2>
         </div>
-        <div style="display:flex; gap:8px; justify-self:end;">
-          <button class="btn btn--secondary" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
+        <div class="hf-slider-controls" style="justify-self:end;">
+          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <button class="btn btn--secondary" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
+          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
@@ -2020,17 +2049,12 @@
   <!-- PRODUCT GRID ITEMS - Copia -->
   <section class="section" style="background: var(--surface); padding-bottom: 0;">
     <div class="container">
-      <div class="hf-section-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom: var(--s-6);">
-        <div aria-hidden="true"></div>
-        <div class="hf-section-head__title" style="text-align:center;">
-          <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
-          <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Productos destacados</h2>
-        </div>
-        <div style="display:flex; gap:8px; justify-self:end;">
-          <button class="btn btn--secondary" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
+      <div class="hf-section-head" style="display:flex; align-items:center; justify-content:flex-end; margin-bottom: var(--s-6);">
+        <div class="hf-slider-controls">
+          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
-          <button class="btn btn--secondary" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
+          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
