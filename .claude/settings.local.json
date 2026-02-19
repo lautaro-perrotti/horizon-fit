@@ -11,7 +11,9 @@
       "mcp__chrome-devtools__take_screenshot",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "Bash(py -:*)"
     ]
   }
 }
