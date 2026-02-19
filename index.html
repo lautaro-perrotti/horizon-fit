@@ -1083,6 +1083,38 @@
       height:24px;
       stroke-width:2;
     }
+    .hf-product-scroll-shell{
+      position: relative;
+    }
+    .hf-slider-controls--overlay{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .hf-slider-controls--overlay .hf-slider-btn{
+      position: absolute;
+      top: clamp(110px, 13vw, 210px);
+      transform: translateY(-50%);
+      pointer-events: auto;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(2px);
+    }
+    .hf-slider-controls--overlay .hf-slider-btn:hover{
+      transform: translateY(-50%);
+      background: #fff;
+    }
+    .hf-slider-controls--overlay .hf-slider-btn[data-dir="-1"]{
+      left: 6px;
+    }
+    .hf-slider-controls--overlay .hf-slider-btn[data-dir="1"]{
+      right: 6px;
+    }
+    .hf-slider-btn.is-hidden{
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
     /* Categories Mosaic (2x2) */
     .hf-categories {
@@ -1550,19 +1582,13 @@
           <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
           <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Productos destacados</h2>
         </div>
-        <div class="hf-slider-controls" style="justify-self:end;">
-          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid1');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
+        <div aria-hidden="true"></div>
       </div>
     </div>
 
-    <div style="padding: 0 var(--s-4);">
-      <div id="productGrid1" class="hf-product-grid--h-scroll hide-scrollbar">
+    <div class="hf-product-scroll-shell" data-grid-shell="productGrid1">
+      <div style="padding: 0 var(--s-4);">
+        <div id="productGrid1" class="hf-product-grid--h-scroll hide-scrollbar">
         <!-- Product 1: Black High Top -->
         <article class="hf-product-item hf-product-item--slider">
           <div class="hf-product-item__media">
@@ -2042,26 +2068,16 @@
             </div>
           </div>
         </article>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- PRODUCT GRID ITEMS - Copia -->
   <section class="section" style="background: var(--surface); padding-bottom: 0;">
-    <div class="container">
-      <div class="hf-section-head" style="display:flex; align-items:center; justify-content:flex-end; margin-bottom: var(--s-6);">
-        <div class="hf-slider-controls">
-          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:-w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Anterior">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="hf-slider-btn" onclick="(function(){var el=document.getElementById('productGrid2');var item=el.querySelector('.hf-product-item');var w=item?item.getBoundingClientRect().width+parseFloat(getComputedStyle(el).gap):300;el.style.pointerEvents='none';el.scrollBy({left:w,behavior:'smooth'});setTimeout(function(){el.style.pointerEvents='';},500);})()" aria-label="Siguiente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div style="padding: 0 var(--s-4);">
-      <div id="productGrid2" class="hf-product-grid--h-scroll hide-scrollbar">
+    <div class="hf-product-scroll-shell" data-grid-shell="productGrid2">
+      <div style="padding: 0 var(--s-4);">
+        <div id="productGrid2" class="hf-product-grid--h-scroll hide-scrollbar">
         <!-- Product 1: Black High Top -->
         <article class="hf-product-item hf-product-item--slider">
           <div class="hf-product-item__media">
@@ -2545,6 +2561,14 @@
           </div>
         </article>
       </div>
+      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
+        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -2659,6 +2683,49 @@
       });
 
       updateSliderUI();
+    });
+
+    document.querySelectorAll('[data-grid-shell]').forEach(function(shell) {
+      var grid = shell.querySelector('.hf-product-grid--h-scroll');
+      var prevBtn = shell.querySelector('.hf-slider-btn[data-dir="-1"]');
+      var nextBtn = shell.querySelector('.hf-slider-btn[data-dir="1"]');
+      if (!grid || !prevBtn || !nextBtn) return;
+
+      function getStep() {
+        var item = grid.querySelector('.hf-product-item');
+        var gap = parseFloat(getComputedStyle(grid).gap) || 0;
+        return item ? (item.getBoundingClientRect().width + gap) : 300;
+      }
+
+      function updateControls() {
+        var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+        var canScroll = maxScroll > 2;
+        var atStart = grid.scrollLeft <= 2;
+        var atEnd = grid.scrollLeft >= (maxScroll - 2);
+
+        prevBtn.classList.toggle('is-hidden', !canScroll || atStart);
+        nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
+      }
+
+      prevBtn.addEventListener('click', function() {
+        grid.scrollBy({ left: -getStep(), behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', function() {
+        grid.scrollBy({ left: getStep(), behavior: 'smooth' });
+      });
+
+      var rafId = null;
+      grid.addEventListener('scroll', function() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(function() {
+          rafId = null;
+          updateControls();
+        });
+      });
+
+      window.addEventListener('resize', updateControls);
+      updateControls();
     });
   </script>
 
@@ -2857,6 +2924,15 @@
             <button class="btn btn--secondary">Ver detalle</button>
           </div>
         </aside>
+        </div>
+      </div>
+      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
+        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
   </section>
