@@ -2983,73 +2983,6 @@
   </script>
 
 
-  <!-- TRUST BAR COMPONENT -->
-  <section class="trust-bar">
-    <div class="container">
-      <div class="trust-bar__viewport">
-        <div class="trust-bar__track">
-          <div class="trust-item">
-            <div class="trust-item__icon">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
-                <circle cx="7" cy="18" r="2" />
-                <path d="M9 18h4m4 0h1a2 2 0 0 0 2-2v-3.5L16.5 9h-2.5v9h1" />
-                <circle cx="17" cy="18" r="2" />
-              </svg>
-            </div>
-            <div class="trust-item__content">
-              <h3 class="trust-item__title">Envios gratis a todo el pais</h3>
-              <p class="trust-item__description">En compras superiores a $150.000</p>
-            </div>
-          </div>
-          <div class="trust-item">
-            <div class="trust-item__icon">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="14" rx="2" />
-                <line x1="2" y1="10" x2="22" y2="10" />
-                <line x1="7" y1="15" x2="8" y2="15" />
-                <line x1="12" y1="15" x2="16" y2="15" />
-              </svg>
-            </div>
-            <div class="trust-item__content">
-              <h3 class="trust-item__title">3 y 6 cuotas sin interes</h3>
-              <p class="trust-item__description">Pagando con debito y credito</p>
-            </div>
-          </div>
-          <div class="trust-item">
-            <div class="trust-item__icon">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 6h11" />
-                <path d="M9 12h11" />
-                <path d="M9 18h11" />
-                <path d="M5 6v.01" />
-                <path d="M5 12v.01" />
-                <path d="M5 18v.01" />
-              </svg>
-            </div>
-            <div class="trust-item__content">
-              <h3 class="trust-item__title">Cambios faciles</h3>
-              <p class="trust-item__description">Tenes hasta 30 dias para cambiar tu compra</p>
-            </div>
-          </div>
-          <div class="trust-item">
-            <div class="trust-item__icon">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                <line x1="8" y1="9" x2="16" y2="9" />
-                <line x1="8" y1="13" x2="14" y2="13" />
-              </svg>
-            </div>
-            <div class="trust-item__content">
-              <h3 class="trust-item__title">Atencion personalizada</h3>
-              <p class="trust-item__description">Te acompanamos antes y despues de tu compra</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- CATEGORIES MOSAIC -->
   <section class="hf-categories">
     <div class="container">
@@ -3112,14 +3045,6 @@
         <div>
           <span class="badge badge--accent" style="margin-bottom:8px;">Conjunto completo</span>
           <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
-        </div>
-        <div class="hf-set-desktop-slider__controls">
-          <button class="btn btn--secondary" type="button" id="setDesktopPrev" aria-label="Anterior">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="btn btn--secondary" type="button" id="setDesktopNext" aria-label="Siguiente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
         </div>
       </div>
 
@@ -3188,7 +3113,7 @@
         <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
       </div>
 
-      <div class="hf-carousel hf-carousel--responsive" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"gap":12}' aria-label="Conjuntos en mobile">
+      <div class="hf-carousel hf-carousel--responsive" id="setMobileCarousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"draggable":true,"itemsToShow":1,"gap":12}' aria-label="Conjuntos en mobile">
         <div class="hf-carousel__viewport">
           <div class="hf-carousel__track">
             <div class="hf-carousel__slide">
@@ -3210,6 +3135,96 @@
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
               <p class="hf-set-mobile-carousel__caption">Energy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function() {
+      function ensureSetMobileCarousel() {
+        var el = document.getElementById('setMobileCarousel');
+        if (!el || !window.HFCarousel) return;
+        if (!window.matchMedia('(max-width: 1024px)').matches) return;
+        if (el._hfCarousel) return;
+        window.HFCarousel.create(el, {
+          loop: true,
+          dots: true,
+          arrows: false,
+          draggable: true,
+          itemsToShow: 1,
+          gap: 12
+        });
+      }
+
+      window.addEventListener('load', ensureSetMobileCarousel);
+      window.addEventListener('resize', ensureSetMobileCarousel);
+      document.addEventListener('DOMContentLoaded', ensureSetMobileCarousel);
+    })();
+  </script>
+
+  <!-- TRUST BAR COMPONENT -->
+  <section class="trust-bar">
+    <div class="container">
+      <div class="trust-bar__viewport">
+        <div class="trust-bar__track">
+          <div class="trust-item">
+            <div class="trust-item__icon">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
+                <circle cx="7" cy="18" r="2" />
+                <path d="M9 18h4m4 0h1a2 2 0 0 0 2-2v-3.5L16.5 9h-2.5v9h1" />
+                <circle cx="17" cy="18" r="2" />
+              </svg>
+            </div>
+            <div class="trust-item__content">
+              <h3 class="trust-item__title">Envios gratis a todo el pais</h3>
+              <p class="trust-item__description">En compras superiores a $150.000</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-item__icon">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+                <line x1="7" y1="15" x2="8" y2="15" />
+                <line x1="12" y1="15" x2="16" y2="15" />
+              </svg>
+            </div>
+            <div class="trust-item__content">
+              <h3 class="trust-item__title">3 y 6 cuotas sin interes</h3>
+              <p class="trust-item__description">Pagando con debito y credito</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-item__icon">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 6h11" />
+                <path d="M9 12h11" />
+                <path d="M9 18h11" />
+                <path d="M5 6v.01" />
+                <path d="M5 12v.01" />
+                <path d="M5 18v.01" />
+              </svg>
+            </div>
+            <div class="trust-item__content">
+              <h3 class="trust-item__title">Cambios faciles</h3>
+              <p class="trust-item__description">Tenes hasta 30 dias para cambiar tu compra</p>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-item__icon">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <line x1="8" y1="9" x2="16" y2="9" />
+                <line x1="8" y1="13" x2="14" y2="13" />
+              </svg>
+            </div>
+            <div class="trust-item__content">
+              <h3 class="trust-item__title">Atencion personalizada</h3>
+              <p class="trust-item__description">Te acompanamos antes y despues de tu compra</p>
             </div>
           </div>
         </div>
@@ -4900,7 +4915,7 @@
       const infoList = $("#setDesktopInfoList", root);
       const infoPrice = $("#setDesktopInfoPrice", root);
       const infoCompare = $("#setDesktopInfoCompare", root);
-      if (!track || !slides.length || !prevBtn || !nextBtn || !dots.length) return;
+      if (!track || !slides.length || !dots.length) return;
 
       let index = 0;
       const total = slides.length;
@@ -4935,8 +4950,8 @@
         render();
       }
 
-      prevBtn.addEventListener("click", () => goTo(index - 1));
-      nextBtn.addEventListener("click", () => goTo(index + 1));
+      if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1));
+      if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1));
       dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
       render();
     })();
