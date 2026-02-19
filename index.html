@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Horizon Fit â€” Design System (HTML/CSS/JS)</title>
+  <title>Horizon Fit — Design System (HTML/CSS/JS)</title>
   <meta name="color-scheme" content="light dark" />
 
   <!-- Component CSS imports -->
@@ -21,7 +21,7 @@
 
   <style>
     /******************************************************************
-      HORIZON FIT â€” DESIGN SYSTEM (single file)
+      HORIZON FIT — DESIGN SYSTEM (single file)
       - Token-first via CSS variables
       - Vanilla JS components (modal, drawer, tabs, accordion, dropdown, toast, tooltip)
       - Ecommerce-ready examples
@@ -862,15 +862,172 @@
 
     /* Footer */
     .footer{
-      padding: var(--s-8) 0;
-      color: var(--muted);
+      margin-top: var(--s-8);
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-bottom: 0;
+      border-top: 1px solid rgba(255,255,255,.16);
+      border-bottom: 1px solid rgba(255,255,255,.16);
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+      overflow: hidden;
+      color: #f2f4ff;
+      background:
+        radial-gradient(760px 300px at 0% 0%, rgba(255,94,50,.28), transparent 60%),
+        radial-gradient(800px 320px at 100% 100%, rgba(117,138,253,.28), transparent 60%),
+        linear-gradient(140deg, #0f1126, #171a34 55%, #101221);
+      box-shadow: 0 -14px 34px rgba(0,0,0,.22);
     }
-    .footer__grid{
+    .footer__top{
       display:grid;
-      grid-template-columns: 1.2fr .8fr .8fr .8fr;
+      grid-template-columns: 1.35fr .9fr .9fr .9fr;
       gap: var(--s-6);
+      padding: clamp(18px, 3vw, 34px);
+      width: min(1280px, 100%);
+      margin-inline: auto;
     }
-    @media (max-width: 980px){ .footer__grid{ grid-template-columns:1fr; } }
+    .footer__brand-title{
+      margin: 0;
+      font-size: clamp(24px, 2.6vw, 36px);
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      line-height: .95;
+    }
+    .footer__brand-copy{
+      margin: 10px 0 14px;
+      color: rgba(242,244,255,.8);
+      max-width: 40ch;
+    }
+    .footer__newsletter{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+    .footer__newsletter .control{
+      min-width: 220px;
+      flex: 1;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border-color: rgba(255,255,255,.2);
+    }
+    .footer__newsletter .control::placeholder{
+      color: rgba(242,244,255,.62);
+    }
+    .footer__trust{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .footer__trust .chip{
+      background: rgba(255,255,255,.96);
+      color: #111426;
+      border-color: rgba(255,255,255,.98);
+      font-weight: 900;
+    }
+    .footer__trust .chip:hover{
+      background: #ffffff;
+      color: #0b0f22;
+    }
+    .footer__col-title{
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .footer__links{
+      display:grid;
+      gap: 10px;
+    }
+    .footer__links a,
+    .footer__links span{
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1.2;
+      opacity: 1;
+    }
+    .footer__links a:hover{
+      color: #ffffff;
+      opacity: 1;
+    }
+    .footer__social{
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+    .footer__social a{
+      min-width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color: #fff;
+      text-decoration:none;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 0 12px;
+    }
+    .footer__social a:hover{
+      background: rgba(255,255,255,.16);
+      border-color: rgba(255,255,255,.34);
+    }
+    .footer__bottom{
+      border-top: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.2);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+      padding: 14px clamp(18px, 3vw, 34px);
+      color: rgba(242,244,255,.74);
+      font-size: 13px;
+      width: min(1280px, 100%);
+      margin-inline: auto;
+    }
+    .footer__bottom-links{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      flex-wrap:wrap;
+    }
+    .footer__bottom-links a{
+      color: inherit;
+      text-decoration:none;
+    }
+    .footer__bottom-links a:hover{
+      color: #fff;
+    }
+
+    .section#patterns{
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    .section#patterns > .container{
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    main{
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    @media (max-width: 1100px){
+      .footer__top{ grid-template-columns: 1.2fr 1fr 1fr; }
+    }
+    @media (max-width: 820px){
+      .footer__top{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 620px){
+      .footer__top{ grid-template-columns: 1fr; }
+      .footer__newsletter .control{ min-width: 100%; }
+    }
 
     /* Utility */
     .muted{ color: var(--muted); }
@@ -900,7 +1057,6 @@
 
     /* Categories Mosaic (2x2) */
     .hf-categories {
-      padding: 80px 0;
       background: var(--surface);
     }
 
@@ -986,13 +1142,184 @@
       opacity: 0.95;
     }
 
+    /* Desktop-only complete set slider (1 image per view) */
+    .hf-set-desktop-slider {
+      background: var(--surface);
+      padding: 16px 0 72px;
+    }
+
+    .hf-set-desktop-slider .container {
+      width: 100%;
+      max-width: none;
+      padding-inline: clamp(12px, 2.4vw, 28px);
+    }
+
+    .hf-set-desktop-slider__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .hf-set-desktop-slider__controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hf-set-desktop-slider__layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .hf-set-desktop-slider__media-col {
+      min-width: 0;
+    }
+
+    .hf-set-desktop-slider__viewport {
+      position: relative;
+      border-radius: var(--r-3);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: var(--surface-2);
+      height: clamp(180px, 26vw, 420px);
+    }
+
+    .hf-set-desktop-slider__track {
+      display: flex;
+      height: 100%;
+      transition: transform var(--slow) var(--ease);
+      will-change: transform;
+    }
+
+    .hf-set-desktop-slider__slide {
+      flex: 0 0 100%;
+      position: relative;
+      height: 100%;
+    }
+
+    .hf-set-desktop-slider__slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hf-set-desktop-slider__info {
+      border: 1px solid var(--border);
+      border-radius: var(--r-3);
+      background: var(--surface);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hf-set-desktop-slider__title {
+      margin: 0;
+      font-size: clamp(26px, 2.2vw, 34px);
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .hf-set-desktop-slider__meta {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hf-set-desktop-slider__list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text);
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .hf-set-desktop-slider__price {
+      margin-top: auto;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hf-set-desktop-slider__price b {
+      font-size: 30px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+    }
+
+    .hf-set-desktop-slider__price s {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hf-set-desktop-slider__actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .hf-set-desktop-slider__dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .hf-set-desktop-slider__dot {
+      width: 8px;
+      height: 8px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0;
+      cursor: pointer;
+      background: rgba(11, 11, 15, 0.25);
+      transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
+    }
+
+    .hf-set-desktop-slider__dot.is-active {
+      background: var(--hf-primary);
+      transform: scale(1.25);
+    }
+
+    @media (max-width: 1280px) {
+      .hf-set-desktop-slider__layout {
+        grid-template-columns: minmax(0, 1fr) 320px;
+      }
+    }
+
     @media (max-width: 640px) {
+      .hf-section-head {
+        grid-template-columns: 1fr auto !important;
+      }
+
+      .hf-section-head > div[aria-hidden="true"] {
+        display: none;
+      }
+
+      .hf-section-head__title {
+        text-align: left !important;
+      }
+
       .hf-categories {
         padding: 56px 0;
         padding-top: 0px;
       }
 
+      .hf-categories__head {
+        text-align: left;
+      }
+
       .hf-categories .container {
+        padding-inline: 10px;
+      }
+
+      .hf-set-desktop-slider .container {
         padding-inline: 10px;
       }
 
@@ -1018,6 +1345,50 @@
         min-height: 22px;
         padding: 3px 8px;
       }
+
+    }
+
+    @media (max-width: 1024px) {
+      .hf-set-desktop-slider {
+        display: none;
+      }
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #25d366;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      z-index: 260;
+      transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+    }
+
+    .whatsapp-float:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.26);
+    }
+
+    .whatsapp-float img {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .whatsapp-float {
+        right: 14px;
+        bottom: 14px;
+        width: 52px;
+        height: 52px;
+      }
     }
   </style>
 </head>
@@ -1028,7 +1399,7 @@
     <div class="nav__inner">
       <!-- Izquierda: Hamburguesa (+ Search en mobile) -->
       <div class="nav__left">
-        <button class="btn btn--ghost btn--sm nav__hamburger" id="hamburgerBtn" aria-label="Abrir menÃº" aria-expanded="false" style="color:var(--hf-primary);">
+        <button class="btn btn--ghost btn--sm nav__hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" style="color:var(--hf-primary);">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1094,7 +1465,7 @@
   </header>
 
   <!-- ============================================
-       FULL SCREEN COMPONENTS (sin mÃ¡rgenes)
+       FULL SCREEN COMPONENTS (sin márgenes)
        ============================================ -->
 
   <!-- ANNOUNCEMENT BANNER - FULL WIDTH -->
@@ -1144,9 +1515,9 @@
   <!-- PRODUCT GRID ITEMS - Touche Sport Style -->
   <section class="section" style="background: var(--surface); padding-bottom: 0;">
     <div class="container">
-      <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom: var(--s-6);">
+      <div class="hf-section-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom: var(--s-6);">
         <div aria-hidden="true"></div>
-        <div style="text-align:center;">
+        <div class="hf-section-head__title" style="text-align:center;">
           <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
           <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Productos destacados</h2>
         </div>
@@ -1649,9 +2020,9 @@
   <!-- PRODUCT GRID ITEMS - Copia -->
   <section class="section" style="background: var(--surface); padding-bottom: 0;">
     <div class="container">
-      <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom: var(--s-6);">
+      <div class="hf-section-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom: var(--s-6);">
         <div aria-hidden="true"></div>
-        <div style="text-align:center;">
+        <div class="hf-section-head__title" style="text-align:center;">
           <span class="badge badge--primary" style="margin-bottom: 12px;">Ofertas</span>
           <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Productos destacados</h2>
         </div>
@@ -2112,7 +2483,7 @@
               <button class="hf-product-item__size" aria-pressed="false">S</button><button class="hf-product-item__size" aria-pressed="false">M</button><button class="hf-product-item__size" aria-pressed="false">L</button><button class="hf-product-item__size" aria-pressed="false">XL</button>
             </div>
             <p class="hf-product-item__brand">Essential</p>
-            <h3 class="hf-product-item__title">CALZA COMPRESIÃ“N</h3>
+            <h3 class="hf-product-item__title">CALZA COMPRESIÓN</h3>
             <div class="hf-product-item__pricing">
               <div class="hf-product-item__price-row"><span class="hf-product-item__price">$64.990 ARS</span></div>
               <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
@@ -2267,127 +2638,6 @@
     });
   </script>
 
-  <!-- FULL WIDTH SLIDER - PRODUCTOS -->
-  <section style="width:100%;background:var(--surface);padding: 80px 0px 0px;overflow:hidden;">
-    <div style="max-width:1400px;margin:0 auto;padding:0 40px;">
-      <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:flex-end;margin-bottom:40px;">
-        <div aria-hidden="true"></div>
-        <div style="text-align:center;">
-          <span class="badge badge--accent" style="margin-bottom:12px;">Best Sellers</span>
-          <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Set completo</h2>
-        </div>
-        <div style="display:flex;gap:12px;justify-self:end;">
-          <button class="btn btn--secondary" onclick="document.getElementById('fullSlider').scrollBy({left:-400,behavior:'smooth'})" aria-label="Anterior">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="btn btn--secondary" onclick="document.getElementById('fullSlider').scrollBy({left:400,behavior:'smooth'})" aria-label="Siguiente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- Slider sin padding, full overflow -->
-    <div id="fullSlider" style="display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 40px 20px;scrollbar-width:none;-ms-overflow-style:none;" class="hide-scrollbar">
-      <!-- Slide 1 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=640&h=853&fit=crop" alt="Calza Range" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge badge--primary">Nuevo</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Calza Range</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Negro / CompresiÃ³n media</p>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <span style="color:#fff;font-weight:900;font-size:20px;">$59.900</span>
-              <span style="color:rgba(255,255,255,0.5);text-decoration:line-through;font-size:14px;">$74.900</span>
-            </div>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 2 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=640&h=853&fit=crop" alt="Top Motion" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge badge--accent">Best seller</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Top Motion</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Arena / SujeciÃ³n media</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$34.900</span>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 3 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=640&h=853&fit=crop" alt="Hoodie Cotidiano" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge">Essentials</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Hoodie Cotidiano</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Gris / Oversize</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$89.900</span>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 4 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=640&h=853&fit=crop" alt="Short VersÃ¡til" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge badge--primary">Promo</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Short VersÃ¡til</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Verde / Liviano</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$41.900</span>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 5 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=640&h=853&fit=crop" alt="Calza Flow" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge badge--ok">En stock</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Calza Flow</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Burgundy / High waist</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$54.900</span>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 6 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=640&h=853&fit=crop" alt="Top Essential" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Top Essential</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Crema / BÃ¡sico</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$29.900</span>
-          </div>
-        </div>
-      </article>
-      <!-- Slide 7 -->
-      <article style="flex:0 0 320px;scroll-snap-align:start;">
-        <div style="position:relative;border-radius:20px;overflow:hidden;aspect-ratio:3/4;">
-          <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=640&h=853&fit=crop" alt="Leggings Pro" style="width:100%;height:100%;object-fit:cover;">
-          <div style="position:absolute;top:16px;left:16px;display:flex;gap:8px;">
-            <span class="badge badge--accent">Top 10</span>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);">
-            <h3 style="color:#fff;font-weight:800;font-size:18px;margin:0 0 4px;">Leggings Pro</h3>
-            <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;">Negro / Alta compresiÃ³n</p>
-            <span style="color:#fff;font-weight:900;font-size:20px;">$64.900</span>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
 
   <!-- TRUST BAR COMPONENT -->
   <section class="trust-bar">
@@ -2512,12 +2762,87 @@
     </div>
   </section>
 
+  <!-- COMPLETE SET DESKTOP SLIDER -->
+  <section class="hf-set-desktop-slider" id="conjuntos-desktop-slider">
+    <div class="container">
+      <div class="hf-set-desktop-slider__head">
+        <div>
+          <span class="badge badge--accent" style="margin-bottom:8px;">Conjunto completo</span>
+          <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
+        </div>
+        <div class="hf-set-desktop-slider__controls">
+          <button class="btn btn--secondary" type="button" id="setDesktopPrev" aria-label="Anterior">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="btn btn--secondary" type="button" id="setDesktopNext" aria-label="Siguiente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hf-set-desktop-slider__layout">
+        <div class="hf-set-desktop-slider__media-col">
+          <div class="hf-set-desktop-slider__viewport" id="setDesktopViewport">
+            <div class="hf-set-desktop-slider__track" id="setDesktopTrack">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Motion" data-meta="Top + calza | Compresión media" data-items="Top Motion|Calza Range|6 cuotas sin interés" data-price="$89.900" data-compare="$109.800">
+                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1800&h=1000&fit=crop" alt="Set Motion completo">
+              </article>
+
+              <article class="hf-set-desktop-slider__slide" data-title="Set Power" data-meta="Top + short | Liviano y elástico" data-items="Top Essential|Short Versátil|Secado rápido" data-price="$72.900" data-compare="$89.800">
+                <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1800&h=1000&fit=crop" alt="Set Power completo">
+              </article>
+
+              <article class="hf-set-desktop-slider__slide" data-title="Set Urban" data-meta="Buzo + calza | Athleisure diario" data-items="Hoodie Cotidiano|Calza Flow|Termorregulación" data-price="$134.900" data-compare="$154.800">
+                <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1800&h=1000&fit=crop" alt="Set Urban completo">
+              </article>
+
+              <article class="hf-set-desktop-slider__slide" data-title="Set Focus" data-meta="Top + biker | Bajo impacto" data-items="Top Motion|Biker Short|Elasticidad 4-way" data-price="$69.900" data-compare="$84.800">
+                <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=1800&h=1000&fit=crop" alt="Set Focus completo">
+              </article>
+
+              <article class="hf-set-desktop-slider__slide" data-title="Set Energy" data-meta="Top + short | Entrenamiento funcional" data-items="Top Power|Short Train|Tela respirable" data-price="$76.900" data-compare="$92.800">
+                <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=1800&h=1000&fit=crop" alt="Set Energy completo">
+              </article>
+            </div>
+          </div>
+
+          <div class="hf-set-desktop-slider__dots" id="setDesktopDots" aria-label="Navegación de slides">
+            <button class="hf-set-desktop-slider__dot is-active" type="button" data-slide="0" aria-label="Slide 1"></button>
+            <button class="hf-set-desktop-slider__dot" type="button" data-slide="1" aria-label="Slide 2"></button>
+            <button class="hf-set-desktop-slider__dot" type="button" data-slide="2" aria-label="Slide 3"></button>
+            <button class="hf-set-desktop-slider__dot" type="button" data-slide="3" aria-label="Slide 4"></button>
+            <button class="hf-set-desktop-slider__dot" type="button" data-slide="4" aria-label="Slide 5"></button>
+          </div>
+        </div>
+
+        <aside class="hf-set-desktop-slider__info" id="setDesktopInfo" aria-live="polite">
+          <span class="badge badge--primary">Conformación del conjunto</span>
+          <h3 class="hf-set-desktop-slider__title" id="setDesktopInfoTitle">Set Motion</h3>
+          <p class="hf-set-desktop-slider__meta" id="setDesktopInfoMeta">Top + calza | Compresión media</p>
+          <ul class="hf-set-desktop-slider__list" id="setDesktopInfoList">
+            <li>Top Motion</li>
+            <li>Calza Range</li>
+            <li>6 cuotas sin interés</li>
+          </ul>
+          <div class="hf-set-desktop-slider__price">
+            <b id="setDesktopInfoPrice">$89.900</b>
+            <s id="setDesktopInfoCompare">$109.800</s>
+          </div>
+          <div class="hf-set-desktop-slider__actions">
+            <button class="btn btn--primary">Comprar set</button>
+            <button class="btn btn--secondary">Ver detalle</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
   <!-- BANNER PROMO FULL WIDTH -->
   <section style="width:100%;background:linear-gradient(135deg,var(--hf-primary) 0%,var(--hf-primary-700) 100%);padding:60px 40px;text-align:center;">
     <div style="max-width:800px;margin:0 auto;">
       <span style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.2);border-radius:999px;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;">OFERTA LIMITADA</span>
       <h2 style="font-size:clamp(32px,5vw,56px);font-weight:900;color:#fff;margin:0 0 16px;letter-spacing:-0.02em;">20% OFF en tu primera compra</h2>
-      <p style="font-size:18px;color:rgba(255,255,255,0.85);margin:0 0 32px;">UsÃ¡ el cÃ³digo <strong style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:8px;">HF-20</strong> al finalizar tu compra.</p>
+      <p style="font-size:18px;color:rgba(255,255,255,0.85);margin:0 0 32px;">Usá el código <strong style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:8px;">HF-20</strong> al finalizar tu compra.</p>
       <a href="#ecommerce" class="btn btn--lg" style="padding:18px 40px;font-size:16px;background:#fff;color:var(--hf-primary-700);font-weight:800;">Comprar ahora</a>
     </div>
   </section>
@@ -2535,19 +2860,19 @@
             </div>
 
             <div class="heroTitle">
-              <h1 class="h1">Un Design System para moverte rÃ¡pido.</h1>
+              <h1 class="h1">Un Design System para moverte rápido.</h1>
               <p class="p">
-                PÃ¡gina Ãºnica para preview y construcciÃ³n de componentes. Estilo minimalista + banner grande (e-commerce),
-                con microinteracciones suaves â€œmovimiento continuoâ€.
+                Página única para preview y construcción de componentes. Estilo minimalista + banner grande (e-commerce),
+                con microinteracciones suaves “movimiento continuo”.
               </p>
               <div class="heroCTA">
-                <a class="btn btn--primary btn--lg" href="#ecommerce">Ver mÃ³dulos E-commerce</a>
+                <a class="btn btn--primary btn--lg" href="#ecommerce">Ver módulos E-commerce</a>
                 <button class="btn btn--secondary btn--lg" id="downloadHtmlBtn">Guardar como archivo</button>
                 <button class="btn btn--ghost btn--lg" id="openToastDemo">Probar interacciones</button>
               </div>
               <div class="spacer"></div>
               <div class="small">
-                Tip: todo esto lo podÃ©s pegar en un bloque HTML en WordPress y listo.
+                Tip: todo esto lo podés pegar en un bloque HTML en WordPress y listo.
               </div>
             </div>
           </div>
@@ -2557,7 +2882,7 @@
           <div class="card">
             <div class="card__hd">
               <div class="badge badge--primary">Tokens</div>
-              <h3 class="h3" style="margin-top:10px;">Paleta y semÃ¡ntica</h3>
+              <h3 class="h3" style="margin-top:10px;">Paleta y semántica</h3>
               <p class="p">Colores base desde el Identikit.</p>
             </div>
             <div class="card__bd">
@@ -2582,7 +2907,7 @@
           <div class="card">
             <div class="card__hd">
               <div class="badge badge--accent">Principios</div>
-              <h3 class="h3" style="margin-top:10px;">CÃ³mo se traduce a UI</h3>
+              <h3 class="h3" style="margin-top:10px;">Cómo se traduce a UI</h3>
               <p class="p">Movimientos suaves, componentes flexibles y tono cercano.</p>
             </div>
             <div class="card__bd">
@@ -2591,20 +2916,20 @@
                   <div class="alert__dot"></div>
                   <div>
                     <b>Movimiento continuo</b>
-                    <div class="small">Transiciones 150â€“240ms, estados fluidos.</div>
+                    <div class="small">Transiciones 150–240ms, estados fluidos.</div>
                   </div>
                 </div>
                 <div class="alert alert--warn">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>Extender lÃ­mites</b>
-                    <div class="small">Variantes + composiciÃ³n (chips, cards, grids).</div>
+                    <b>Extender límites</b>
+                    <div class="small">Variantes + composición (chips, cards, grids).</div>
                   </div>
                 </div>
                 <div class="alert alert--ok">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>CercanÃ­a y realidad</b>
+                    <b>Cercanía y realidad</b>
                     <div class="small">Copys claros, layouts reales, sin humo.</div>
                   </div>
                 </div>
@@ -2620,7 +2945,7 @@
     <section class="section anchor" id="tokens">
       <div class="container">
         <h2 class="h2">Tokens</h2>
-        <p class="p">Variables CSS como fuente de verdad: colores, spacing, radius, motion, tipografÃ­a.</p>
+        <p class="p">Variables CSS como fuente de verdad: colores, spacing, radius, motion, tipografía.</p>
 
         <div class="grid grid-2" style="margin-top:var(--s-6);">
           <div class="card">
@@ -2637,22 +2962,22 @@
               </div>
               <div class="divider"></div>
               <div class="small mono">
-                Tip: si querÃ©s â€œmÃ¡s Zara / minimalâ€, bajÃ¡ sombras y subÃ­ whitespace.
+                Tip: si querés “más Zara / minimal”, bajá sombras y subí whitespace.
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card__hd">
-              <h3 class="h3">TipografÃ­a</h3>
+              <h3 class="h3">Tipografía</h3>
               <p class="p">Escala simple (H1/H2/H3/body/small).</p>
             </div>
             <div class="card__bd">
-              <div class="h1" style="margin:0;">H1 â€” Horizon Fit</div>
-              <div class="h2" style="margin:8px 0 0;">H2 â€” ColecciÃ³n / Drop</div>
-              <div class="h3" style="margin:10px 0 0;">H3 â€” Detalles</div>
-              <p class="p" style="margin-top:10px;">Body â€” Texto de apoyo, descriptivo y claro.</p>
-              <div class="small" style="margin-top:8px;">Small â€” Metadatos, labels, hints.</div>
+              <div class="h1" style="margin:0;">H1 — Horizon Fit</div>
+              <div class="h2" style="margin:8px 0 0;">H2 — Colección / Drop</div>
+              <div class="h3" style="margin:10px 0 0;">H3 — Detalles</div>
+              <p class="p" style="margin-top:10px;">Body — Texto de apoyo, descriptivo y claro.</p>
+              <div class="small" style="margin-top:8px;">Small — Metadatos, labels, hints.</div>
             </div>
           </div>
         </div>
@@ -2675,7 +3000,7 @@
               <div class="row">
                 <button class="btn btn--primary">Comprar ahora</button>
                 <button class="btn btn--secondary">Agregar al carrito</button>
-                <button class="btn btn--ghost">Ver mÃ¡s</button>
+                <button class="btn btn--ghost">Ver más</button>
                 <button class="btn btn--danger">Eliminar</button>
               </div>
               <div class="spacer"></div>
@@ -2709,7 +3034,7 @@
                 </div>
 
                 <div class="field">
-                  <div class="label">CÃ³digo de descuento</div>
+                  <div class="label">Código de descuento</div>
                   <div class="row" style="gap:10px;">
                     <input class="control" type="text" placeholder="HF-15" style="flex:1;" />
                     <button class="btn btn--secondary">Aplicar</button>
@@ -2717,7 +3042,7 @@
                 </div>
 
                 <div class="field">
-                  <div class="label">PaÃ­s</div>
+                  <div class="label">País</div>
                   <select class="control">
                     <option>Argentina</option>
                     <option>Chile</option>
@@ -2727,7 +3052,7 @@
 
                 <div class="field">
                   <div class="label">Notas</div>
-                  <textarea class="control" rows="3" placeholder="Indicaciones para el envÃ­o..."></textarea>
+                  <textarea class="control" rows="3" placeholder="Indicaciones para el envío..."></textarea>
                 </div>
 
                 <div class="row">
@@ -2750,24 +3075,24 @@
               <label class="choice">
                 <input type="checkbox" checked />
                 <span>
-                  <b>Quiero guÃ­a de talles</b>
-                  <small>Te mostramos cÃ³mo elegir rÃ¡pido sin vueltas.</small>
+                  <b>Quiero guía de talles</b>
+                  <small>Te mostramos cómo elegir rápido sin vueltas.</small>
                 </span>
               </label>
               <div class="spacer"></div>
               <label class="choice">
                 <input type="radio" name="ship" checked />
                 <span>
-                  <b>EnvÃ­o estÃ¡ndar</b>
-                  <small>48â€“96 hs hÃ¡biles.</small>
+                  <b>Envío estándar</b>
+                  <small>48–96 hs hábiles.</small>
                 </span>
               </label>
               <div class="spacer"></div>
               <label class="choice">
                 <input type="radio" name="ship" />
                 <span>
-                  <b>EnvÃ­o express</b>
-                  <small>24â€“48 hs hÃ¡biles.</small>
+                  <b>Envío express</b>
+                  <small>24–48 hs hábiles.</small>
                 </span>
               </label>
             </div>
@@ -2790,7 +3115,7 @@
                 <button class="btn btn--primary" id="openCartBtn2">Abrir drawer</button>
               </div>
               <div class="small" style="margin-top:10px;">
-                Accesible: <span class="kbd">ESC</span> cierra modal/drawer, click afuera tambiÃ©n.
+                Accesible: <span class="kbd">ESC</span> cierra modal/drawer, click afuera también.
               </div>
             </div>
           </div>
@@ -2799,59 +3124,59 @@
         <div class="grid grid-2" style="margin-top:var(--s-6);">
           <div class="tabs" data-tabs>
             <div class="tabs__list" role="tablist" aria-label="Demo tabs">
-              <button class="tab" role="tab" aria-selected="true" data-tab="tab-1">DescripciÃ³n</button>
+              <button class="tab" role="tab" aria-selected="true" data-tab="tab-1">Descripción</button>
               <button class="tab" role="tab" aria-selected="false" data-tab="tab-2">Detalles</button>
-              <button class="tab" role="tab" aria-selected="false" data-tab="tab-3">EnvÃ­os</button>
+              <button class="tab" role="tab" aria-selected="false" data-tab="tab-3">Envíos</button>
             </div>
             <div class="tabs__panel is-active" id="tab-1" role="tabpanel">
               <b>Más allá del entrenamiento</b>
               <p class="p" style="margin-top:8px;">
-                Prendas cÃ³modas y funcionales para extender tu dÃ­a sin cambiar de plan.
+                Prendas cómodas y funcionales para extender tu día sin cambiar de plan.
               </p>
             </div>
             <div class="tabs__panel" id="tab-2" role="tabpanel">
               <div class="row">
                 <span class="badge">Tela: Supplex</span>
-                <span class="badge badge--accent">CompresiÃ³n media</span>
-                <span class="badge badge--ok">Secado rÃ¡pido</span>
+                <span class="badge badge--accent">Compresión media</span>
+                <span class="badge badge--ok">Secado rápido</span>
               </div>
             </div>
             <div class="tabs__panel" id="tab-3" role="tabpanel">
-              <p class="p">CABA/GBA 48â€“96 hs. Interior 3â€“6 dÃ­as. Retiro: 24 hs.</p>
+              <p class="p">CABA/GBA 48–96 hs. Interior 3–6 días. Retiro: 24 hs.</p>
             </div>
           </div>
 
           <div class="accordion" data-accordion>
             <div class="acc__item" aria-expanded="true">
               <button class="acc__btn">
-                Â¿CÃ³mo elijo mi talle?
-                <span class="chev">â–¾</span>
+                ¿Cómo elijo mi talle?
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  ElegÃ­ en base a tu talle habitual. Si estÃ¡s entre dos, subÃ­ uno para mayor comodidad.
+                  Elegí en base a tu talle habitual. Si estás entre dos, subí uno para mayor comodidad.
                 </p>
               </div></div>
             </div>
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
-                Â¿Puedo cambiar si no me queda?
-                <span class="chev">â–¾</span>
+                ¿Puedo cambiar si no me queda?
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  SÃ­, tenÃ©s 10 dÃ­as para cambios. La prenda debe estar sin uso y con etiqueta.
+                  Sí, tenés 10 días para cambios. La prenda debe estar sin uso y con etiqueta.
                 </p>
               </div></div>
             </div>
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
                 Cuidados de la prenda
-                <span class="chev">â–¾</span>
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  Lavar con agua frÃ­a, no usar blanqueador, secar a la sombra. No planchar estampas.
+                  Lavar con agua fría, no usar blanqueador, secar a la sombra. No planchar estampas.
                 </p>
               </div></div>
             </div>
@@ -2879,13 +3204,13 @@
             <div class="hf-marquee hf-marquee--primary" data-hf="marquee" data-speed="25">
               <div class="hf-marquee__track">
                 <div class="hf-marquee__content">
-                  <span class="hf-marquee__item">EnvÃ­o gratis en compras +$120.000</span>
+                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">DROP 01 disponible</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">Cambios sin costo</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
-                  <span class="hf-marquee__item">EnvÃ­o gratis en compras +$120.000</span>
+                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">DROP 01 disponible</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
@@ -2917,7 +3242,7 @@
                   </div>
                   <div class="hf-banner__content">
                     <p class="hf-banner__title">Info Banner</p>
-                    <p class="hf-banner__message">InformaciÃ³n importante para el usuario.</p>
+                    <p class="hf-banner__message">Información importante para el usuario.</p>
                   </div>
                 </div>
 
@@ -2928,9 +3253,9 @@
                   </div>
                   <div class="hf-banner__content">
                     <p class="hf-banner__title">15% OFF en tu primera compra</p>
-                    <p class="hf-banner__message">UsÃ¡ el cÃ³digo HF-15 al finalizar.</p>
+                    <p class="hf-banner__message">Usá el código HF-15 al finalizar.</p>
                     <div class="hf-banner__actions">
-                      <button class="btn btn--primary btn--sm">Aplicar cÃ³digo</button>
+                      <button class="btn btn--primary btn--sm">Aplicar código</button>
                     </div>
                   </div>
                   <button class="hf-banner__dismiss" aria-label="Cerrar">
@@ -2968,7 +3293,7 @@
             <div class="card__hd">
               <div class="badge badge--accent">hf-carousel</div>
               <h3 class="h3" style="margin-top:10px;">Carousel / Slider</h3>
-              <p class="p">Drag/swipe, arrows, dots, autoplay opcional. Responsive: 1-4 items segÃºn breakpoint.</p>
+              <p class="p">Drag/swipe, arrows, dots, autoplay opcional. Responsive: 1-4 items según breakpoint.</p>
             </div>
             <div class="card__bd">
               <!-- Carousel Demo -->
@@ -2995,7 +3320,7 @@
               </div>
             </div>
             <div class="card__ft">
-              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: â† â†’</div>
+              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: ← →</div>
             </div>
           </div>
         </div>
@@ -3021,10 +3346,10 @@
               <div class="hf-video-hero__content">
                 <span class="badge badge--primary hf-video-hero__badge">DROP 01</span>
                 <h2 class="hf-video-hero__title">Más allá del entrenamiento</h2>
-                <p class="hf-video-hero__subtitle">Activewear para la vida real: cÃ³modo, funcional y versÃ¡til. Del gym a la calle sin cortar la rutina.</p>
+                <p class="hf-video-hero__subtitle">Activewear para la vida real: cómodo, funcional y versátil. Del gym a la calle sin cortar la rutina.</p>
                 <div class="hf-video-hero__actions">
                   <button class="btn btn--primary btn--lg">Ver colección</button>
-                  <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">GuÃ­a de talles</button>
+                  <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">Guía de talles</button>
                 </div>
               </div>
             </div>
@@ -3036,7 +3361,7 @@
           <div class="card__hd">
             <div class="badge badge--accent">hf-grid + hf-card</div>
             <h3 class="h3" style="margin-top:10px;">Collection Grid con Filtros</h3>
-            <p class="p">Grid responsive con filtros por categorÃ­a. Product cards con hover actions, swatches y badges.</p>
+            <p class="p">Grid responsive con filtros por categoría. Product cards con hover actions, swatches y badges.</p>
           </div>
           <div class="card__bd">
             <!-- Collection with filters -->
@@ -3052,7 +3377,7 @@
                 <div class="hf-collection__sort">
                   <span class="hf-collection__sort-label">Ordenar:</span>
                   <select class="hf-collection__sort-select">
-                    <option value="newest">MÃ¡s recientes</option>
+                    <option value="newest">Más recientes</option>
                     <option value="price-asc">Precio: menor a mayor</option>
                     <option value="price-desc">Precio: mayor a menor</option>
                     <option value="name-asc">Nombre A-Z</option>
@@ -3077,7 +3402,7 @@
                       <button class="hf-card__action" aria-label="Agregar a favoritos">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       </button>
-                      <button class="hf-card__action" aria-label="Vista rÃ¡pida">
+                      <button class="hf-card__action" aria-label="Vista rápida">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       </button>
                     </div>
@@ -3086,7 +3411,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Calza Range</h3>
-                        <p class="hf-card__subtitle">Negro / CompresiÃ³n media</p>
+                        <p class="hf-card__subtitle">Negro / Compresión media</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -3122,7 +3447,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Top Motion</h3>
-                        <p class="hf-card__subtitle">Arena / SujeciÃ³n media</p>
+                        <p class="hf-card__subtitle">Arena / Sujeción media</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -3168,9 +3493,9 @@
                 </article>
 
                 <!-- Card 4 -->
-                <article class="hf-card hf-card--product" data-category="shorts" data-price="41900" data-name="Short VersÃ¡til">
+                <article class="hf-card hf-card--product" data-category="shorts" data-price="41900" data-name="Short Versátil">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short VersÃ¡til verde" loading="lazy">
+                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil verde" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge badge--primary">Promo</span>
                     </div>
@@ -3183,7 +3508,7 @@
                   <div class="hf-card__body">
                     <div class="hf-card__header">
                       <div>
-                        <h3 class="hf-card__title">Short VersÃ¡til</h3>
+                        <h3 class="hf-card__title">Short Versátil</h3>
                         <p class="hf-card__subtitle">Verde / Liviano</p>
                       </div>
                     </div>
@@ -3239,7 +3564,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Top Essential</h3>
-                        <p class="hf-card__subtitle">Crema / BÃ¡sico</p>
+                        <p class="hf-card__subtitle">Crema / Básico</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -3269,7 +3594,7 @@
           <div class="card__hd">
             <div class="badge badge--primary">hf-lightbox</div>
             <h3 class="h3" style="margin-top:10px;">Gallery / Lightbox</h3>
-            <p class="p">GalerÃ­a para PDP con thumbnails, zoom modal, focus trap y navegaciÃ³n por teclado (â† â†’ ESC).</p>
+            <p class="p">Galería para PDP con thumbnails, zoom modal, focus trap y navegación por teclado (← → ESC).</p>
           </div>
           <div class="card__bd">
             <div class="grid grid-2" style="gap:var(--s-6);">
@@ -3306,20 +3631,20 @@
                     <div class="alert__dot"></div>
                     <div>
                       <b>Focus trap en modal</b>
-                      <div class="small">Tab no sale del lightbox mientras estÃ¡ abierto.</div>
+                      <div class="small">Tab no sale del lightbox mientras está abierto.</div>
                     </div>
                   </div>
                   <div class="alert alert--ok">
                     <div class="alert__dot"></div>
                     <div>
                       <b>ESC cierra el modal</b>
-                      <div class="small">Comportamiento estÃ¡ndar esperado.</div>
+                      <div class="small">Comportamiento estándar esperado.</div>
                     </div>
                   </div>
                   <div class="alert alert--ok">
                     <div class="alert__dot"></div>
                     <div>
-                      <b>NavegaciÃ³n â† â†’</b>
+                      <b>Navegación ← →</b>
                       <div class="small">Flechas para cambiar imagen.</div>
                     </div>
                   </div>
@@ -3334,7 +3659,7 @@
                     <div class="alert__dot"></div>
                     <div>
                       <b>Retorna focus al cerrar</b>
-                      <div class="small">Focus vuelve al elemento que abriÃ³ el modal.</div>
+                      <div class="small">Focus vuelve al elemento que abrió el modal.</div>
                     </div>
                   </div>
                 </div>
@@ -3347,7 +3672,7 @@
         <div class="card" style="margin-top:var(--s-6);">
           <div class="card__hd">
             <h3 class="h3">API Reference</h3>
-            <p class="p">InicializaciÃ³n y mÃ©todos disponibles para cada componente.</p>
+            <p class="p">Inicialización y métodos disponibles para cada componente.</p>
           </div>
           <div class="card__bd">
             <div style="overflow-x:auto;">
@@ -3355,7 +3680,7 @@
                 <thead>
                   <tr style="background:var(--surface-2);text-align:left;">
                     <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Componente</th>
-                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">InicializaciÃ³n</th>
+                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Inicialización</th>
                     <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">API</th>
                   </tr>
                 </thead>
@@ -3402,7 +3727,7 @@
     <!-- ECOMMERCE -->
     <section class="section anchor" id="ecommerce">
       <div class="container">
-        <h2 class="h2">MÃ³dulos E-commerce</h2>
+        <h2 class="h2">Módulos E-commerce</h2>
         <p class="p">Product cards, grid, selector de variantes (talles), stepper de cantidad, mini-cart (drawer).</p>
 
         <div class="grid grid-4" style="margin-top:var(--s-6);">
@@ -3419,7 +3744,7 @@
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
                   <b>Calza Range</b>
-                  <div class="small">Negro / CompresiÃ³n media</div>
+                  <div class="small">Negro / Compresión media</div>
                 </div>
                 <span class="badge badge--ok">En stock</span>
               </div>
@@ -3454,9 +3779,9 @@
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
                   <b>Top Motion</b>
-                  <div class="small">Arena / SujeciÃ³n media</div>
+                  <div class="small">Arena / Sujeción media</div>
                 </div>
-                <span class="badge">Ãšltimos</span>
+                <span class="badge">Últimos</span>
               </div>
               <div class="priceRow">
                 <div class="price">$ 34.900</div>
@@ -3495,7 +3820,7 @@
           <!-- Product card 4 -->
           <article class="productCard">
             <div class="productMedia" style="background:none;">
-              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short VersÃ¡til" style="width:100%;height:100%;object-fit:cover;">
+              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil" style="width:100%;height:100%;object-fit:cover;">
               <div class="productBadges">
                 <span class="badge badge--primary">Promo</span>
               </div>
@@ -3503,7 +3828,7 @@
             <div class="productBody">
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
-                  <b>Short VersÃ¡til</b>
+                  <b>Short Versátil</b>
                   <div class="small">Verde / Liviano</div>
                 </div>
                 <span class="badge">Low stock</span>
@@ -3512,7 +3837,7 @@
                 <div class="price">$ 41.900</div>
                 <span class="badge badge--primary">2x1</span>
               </div>
-              <button class="btn btn--secondary" data-quickshop="Short VersÃ¡til">Quick shop</button>
+              <button class="btn btn--secondary" data-quickshop="Short Versátil">Quick shop</button>
             </div>
           </article>
         </div>
@@ -3528,14 +3853,14 @@
               <div class="stack" style="gap:14px;">
                 <div>
                   <div class="badge badge--accent">Drop 01</div>
-                  <h3 class="h3" style="margin-top:10px;">Calza Range â€” Negro</h3>
+                  <h3 class="h3" style="margin-top:10px;">Calza Range — Negro</h3>
                   <div class="priceRow" style="margin-top:6px;">
                     <div class="price">$ 59.900</div>
                     <div class="priceOld">$ 74.900</div>
                     <span class="badge badge--primary">-20%</span>
                   </div>
                   <p class="p" style="margin-top:10px;">
-                    DiseÃ±ada para moverte todo el dÃ­a: del gym a la calle sin cortar la rutina.
+                    Diseñada para moverte todo el día: del gym a la calle sin cortar la rutina.
                   </p>
                 </div>
 
@@ -3550,14 +3875,14 @@
                     <button class="chip" aria-pressed="false" data-size="L">L</button>
                     <button class="chip is-disabled" aria-pressed="false" aria-disabled="true" data-size="XL">XL</button>
                   </div>
-                  <div class="hint">Tip: si estÃ¡s entre dos, subÃ­ uno para mÃ¡s comodidad.</div>
+                  <div class="hint">Tip: si estás entre dos, subí uno para más comodidad.</div>
                 </div>
 
                 <div class="row" style="justify-content:space-between; align-items:center;">
                   <div class="field" style="min-width: 200px;">
                     <div class="label">Cantidad</div>
                     <div class="stepper" data-stepper>
-                      <button type="button" data-dec aria-label="Disminuir">âˆ’</button>
+                      <button type="button" data-dec aria-label="Disminuir">−</button>
                       <input type="text" value="1" inputmode="numeric" aria-label="Cantidad" />
                       <button type="button" data-inc aria-label="Aumentar">+</button>
                     </div>
@@ -3571,7 +3896,7 @@
                 <div class="alert alert--ok">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>EnvÃ­o gratis</b>
+                    <b>Envío gratis</b>
                     <div class="small">Superando $ 120.000 (CABA/GBA).</div>
                   </div>
                 </div>
@@ -3584,7 +3909,7 @@
           <div class="card">
             <div class="card__hd">
               <h3 class="h3">Snippet de Checkout</h3>
-              <p class="p">Campos reales, sin fricciÃ³n, copy claro.</p>
+              <p class="p">Campos reales, sin fricción, copy claro.</p>
             </div>
             <div class="card__bd">
               <div class="grid" style="gap:14px;">
@@ -3595,13 +3920,13 @@
                   </div>
                   <div class="field">
                     <div class="label">Apellido</div>
-                    <input class="control" placeholder="PÃ©rez" />
+                    <input class="control" placeholder="Pérez" />
                   </div>
                 </div>
 
                 <div class="field">
-                  <div class="label">DirecciÃ³n</div>
-                  <input class="control" placeholder="Calle + nÃºmero" />
+                  <div class="label">Dirección</div>
+                  <input class="control" placeholder="Calle + número" />
                 </div>
 
                 <div class="grid grid-2" style="gap:12px;">
@@ -3610,7 +3935,7 @@
                     <input class="control" placeholder="Buenos Aires" />
                   </div>
                   <div class="field">
-                    <div class="label">CÃ³digo postal</div>
+                    <div class="label">Código postal</div>
                     <input class="control" placeholder="C1425" />
                   </div>
                 </div>
@@ -3632,7 +3957,7 @@
                 </div>
 
                 <div class="small">
-                  Pagos: tarjeta / transferencia. (IntegraciÃ³n real va del lado de tu plataforma.)
+                  Pagos: tarjeta / transferencia. (Integración real va del lado de tu plataforma.)
                 </div>
               </div>
             </div>
@@ -3652,7 +3977,7 @@
           <div class="card">
             <div class="card__hd">
               <h3 class="h3">Banner editorial</h3>
-              <p class="p">Para â€œdrop en cursoâ€ (gran escala, minimal).</p>
+              <p class="p">Para “drop en curso” (gran escala, minimal).</p>
             </div>
             <div class="card__bd">
               <div style="border:1px solid var(--border); border-radius:18px; overflow:hidden; background:var(--surface-2);">
@@ -3664,11 +3989,11 @@
                   <div class="badge badge--primary">DROP 01</div>
                   <h3 class="h2" style="margin-top:10px;">Más allá del entrenamiento</h3>
                   <p class="p" style="margin-top:10px;">
-                    Activewear para la vida real: cÃ³modo, funcional y versÃ¡til.
+                    Activewear para la vida real: cómodo, funcional y versátil.
                   </p>
                   <div class="row" style="margin-top:14px;">
                     <button class="btn btn--primary">Ver colección</button>
-                    <button class="btn btn--secondary">GuÃ­a de talles</button>
+                    <button class="btn btn--secondary">Guía de talles</button>
                   </div>
                 </div>
               </div>
@@ -3689,72 +4014,89 @@
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr;">
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">S</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">64â€“70</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">88â€“94</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">64–70</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">88–94</div>
 
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">M</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">70â€“76</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">94â€“100</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">70–76</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">94–100</div>
 
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">L</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">76â€“82</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">100â€“106</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">76–82</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">100–106</div>
                 </div>
               </div>
 
               <div class="divider"></div>
               <p class="small">
-                Esto es un pattern (tabla) que despuÃ©s podÃ©s estilizar con tokens sin tocar lÃ³gica.
+                Esto es un pattern (tabla) que después podés estilizar con tokens sin tocar lógica.
               </p>
             </div>
           </div>
         </div>
 
         <footer class="footer">
-          <div class="footer__grid">
+          <div class="footer__top">
             <div>
-              <div class="brand" style="gap:12px;">
-                <div class="logo"></div>
-                <div>
-                  <div style="font-weight:950;">Horizon Fit</div>
-                  <div class="small">Design System â€” HTML/CSS/JS</div>
-                </div>
-              </div>
-              <p class="small" style="margin-top:12px;">
-                Minimal, funcional y versÃ¡til. Preparado para e-commerce.
+              <span class="badge badge--primary">Horizon Fit</span>
+              <h3 class="footer__brand-title">Entrena fuerte.<br>Viste mejor.</h3>
+              <p class="footer__brand-copy">
+                Activewear funcional para todos los dias. Nuevos drops, mejores telas y fits pensados para entrenar y vivir en movimiento.
               </p>
-            </div>
-
-            <div>
-              <b>Shop</b>
-              <div class="stack" style="margin-top:10px;">
-                <a class="small" href="#ecommerce">ColecciÃ³n</a>
-                <a class="small" href="#components">Componentes</a>
-                <a class="small" href="#patterns">Patterns</a>
+              <div class="footer__newsletter">
+                <input class="control" type="email" placeholder="Tu email para promos y drops">
+                <button class="btn btn--primary">Suscribirme</button>
+              </div>
+              <div class="footer__trust">
+                <span class="chip">Envio 24/48h</span>
+                <span class="chip">6 cuotas sin interes</span>
+                <span class="chip">Cambios faciles</span>
               </div>
             </div>
 
             <div>
-              <b>Ayuda</b>
-              <div class="stack" style="margin-top:10px;">
-                <a class="small" href="#components">EnvÃ­os</a>
-                <a class="small" href="#components">Cambios</a>
-                <a class="small" href="#components">GuÃ­a de talles</a>
+              <h4 class="footer__col-title">Shop</h4>
+              <div class="footer__links">
+                <a href="#ecommerce">Nuevos ingresos</a>
+                <a href="#ecommerce">Best sellers</a>
+                <a href="#ecommerce">Conjuntos</a>
+                <a href="#patterns">Lookbook</a>
               </div>
             </div>
 
             <div>
-              <b>Contacto</b>
-              <div class="stack" style="margin-top:10px;">
-                <span class="small">WhatsApp</span>
-                <span class="small">Instagram</span>
-                <span class="small">Email</span>
+              <h4 class="footer__col-title">Ayuda</h4>
+              <div class="footer__links">
+                <a href="#components">Envios y entregas</a>
+                <a href="#components">Cambios y devoluciones</a>
+                <a href="#components">Guia de talles</a>
+                <a href="#components">Medios de pago</a>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="footer__col-title">Contacto</h4>
+              <div class="footer__links">
+                <span>WhatsApp: +54 9 11 0000 0000</span>
+                <span>hola@horizonfit.com</span>
+                <span>Lunes a viernes 9 a 18h</span>
+              </div>
+              <div class="footer__social" style="margin-top:12px;">
+                <a href="#" aria-label="Instagram">IG</a>
+                <a href="#" aria-label="TikTok">TT</a>
+                <a href="#" aria-label="YouTube">YT</a>
               </div>
             </div>
           </div>
 
-          <div class="divider" style="margin-top:var(--s-6);"></div>
-          <div class="small">Â© Horizon Fit â€” Preview de Design System</div>
+          <div class="footer__bottom">
+            <span>© Horizon Fit 2026. Todos los derechos reservados.</span>
+            <div class="footer__bottom-links">
+              <a href="#">Terminos</a>
+              <a href="#">Privacidad</a>
+              <a href="#">Defensa al consumidor</a>
+            </div>
+          </div>
         </footer>
 
       </div>
@@ -3762,18 +4104,22 @@
 
   </main>
 
+  <a class="whatsapp-float" href="https://wa.me/541154878253?text=Hola%20Horizon%20Fit" target="_blank" rel="noopener noreferrer" aria-label="Escribinos por WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" aria-hidden="true">
+  </a>
+
   <!-- OVERLAY / MODAL -->
   <div class="overlay" id="overlay" aria-hidden="true"></div>
 
   <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal__dialog" tabindex="-1">
       <div class="modal__hd">
-        <b id="modalTitle">Modal â€” Horizon Fit</b>
-        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">âœ•</button>
+        <b id="modalTitle">Modal — Horizon Fit</b>
+        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">✕</button>
       </div>
       <div class="modal__bd">
         <p class="p" style="margin-top:0;">
-          Este modal estÃ¡ listo para usar (overlay click + ESC + focus management bÃ¡sico).
+          Este modal está listo para usar (overlay click + ESC + focus management básico).
         </p>
         <div class="divider"></div>
         <div class="field">
@@ -3794,14 +4140,14 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
       <div class="drawer__hd">
         <b id="drawerTitle">Carrito</b>
-        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">âœ•</button>
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">✕</button>
       </div>
       <div class="drawer__bd">
         <div class="cartItem">
           <img class="cartThumb" src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=156&h=195&fit=crop" alt="Calza Range" style="object-fit:cover;">
           <div class="cartMeta">
-            <b>Calza Range â€” Negro</b>
-            <div class="small">Talle M Â· Cant. 1</div>
+            <b>Calza Range — Negro</b>
+            <div class="small">Talle M · Cant. 1</div>
             <div class="cartRow">
               <div class="small">$ 59.900</div>
               <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
@@ -3812,8 +4158,8 @@
         <div class="cartItem">
           <img class="cartThumb" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=156&h=195&fit=crop" alt="Top Motion" style="object-fit:cover;">
           <div class="cartMeta">
-            <b>Top Motion â€” Arena</b>
-            <div class="small">Talle S Â· Cant. 1</div>
+            <b>Top Motion — Arena</b>
+            <div class="small">Talle S · Cant. 1</div>
             <div class="cartRow">
               <div class="small">$ 34.900</div>
               <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
@@ -3823,12 +4169,12 @@
 
         <div class="divider"></div>
         <div class="field">
-          <div class="label">CÃ³digo de descuento</div>
+          <div class="label">Código de descuento</div>
           <div class="row" style="gap:10px;">
             <input class="control" placeholder="HF-15" style="flex:1;" />
             <button class="btn btn--secondary" id="applyCouponBtn">Aplicar</button>
           </div>
-          <div class="hint" id="couponHint">Tip: probÃ¡ HF-15</div>
+          <div class="hint" id="couponHint">Tip: probá HF-15</div>
         </div>
       </div>
       <div class="drawer__ft">
@@ -3848,7 +4194,7 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="searchDrawerTitle">
       <div class="drawer__hd">
         <b id="searchDrawerTitle">Buscar</b>
-        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">âœ•</button>
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">✕</button>
       </div>
       <div class="drawer__bd">
         <div class="field">
@@ -3863,7 +4209,7 @@
           </div>
         </div>
         <div class="divider"></div>
-        <div class="small" style="color:var(--muted);margin-bottom:12px;">BÃºsquedas populares</div>
+        <div class="small" style="color:var(--muted);margin-bottom:12px;">Búsquedas populares</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
           <button class="chip chip--clickable" data-search-term="tops">Tops</button>
@@ -3884,7 +4230,7 @@
 
   <script>
     /******************************************************************
-      HORIZON FIT â€” DS JS (vanilla)
+      HORIZON FIT — DS JS (vanilla)
       - dropdown, tooltip, tabs, accordion
       - modal + drawer (ESC + click outside)
       - toast
@@ -4120,7 +4466,7 @@
         }
       }
 
-      window.addEventListener("resize", resetAnimation);
+      window.addEventListener("resize", startAnimation);
       startAnimation();
     })();
 
@@ -4158,6 +4504,64 @@
     });
 
     /* -----------------------------
+      Desktop Complete Set Slider
+    ------------------------------*/
+    (function initDesktopSetSlider() {
+      const root = $("#conjuntos-desktop-slider");
+      if (!root) return;
+
+      const track = $("#setDesktopTrack", root);
+      const slides = $$(".hf-set-desktop-slider__slide", root);
+      const prevBtn = $("#setDesktopPrev", root);
+      const nextBtn = $("#setDesktopNext", root);
+      const dots = $$(".hf-set-desktop-slider__dot", root);
+      const infoTitle = $("#setDesktopInfoTitle", root);
+      const infoMeta = $("#setDesktopInfoMeta", root);
+      const infoList = $("#setDesktopInfoList", root);
+      const infoPrice = $("#setDesktopInfoPrice", root);
+      const infoCompare = $("#setDesktopInfoCompare", root);
+      if (!track || !slides.length || !prevBtn || !nextBtn || !dots.length) return;
+
+      let index = 0;
+      const total = slides.length;
+
+      function renderInfo() {
+        const slide = slides[index];
+        if (!slide) return;
+
+        if (infoTitle) infoTitle.textContent = slide.dataset.title || "";
+        if (infoMeta) infoMeta.textContent = slide.dataset.meta || "";
+        if (infoPrice) infoPrice.textContent = slide.dataset.price || "";
+        if (infoCompare) infoCompare.textContent = slide.dataset.compare || "";
+
+        if (infoList) {
+          const items = (slide.dataset.items || "").split("|").filter(Boolean);
+          infoList.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+      }
+
+      function render() {
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((dot, i) => {
+          const on = i === index;
+          dot.classList.toggle("is-active", on);
+          dot.setAttribute("aria-current", on ? "true" : "false");
+        });
+        renderInfo();
+      }
+
+      function goTo(i) {
+        index = (i + total) % total;
+        render();
+      }
+
+      prevBtn.addEventListener("click", () => goTo(index - 1));
+      nextBtn.addEventListener("click", () => goTo(index + 1));
+      dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+      render();
+    })();
+
+    /* -----------------------------
       Toast
     ------------------------------*/
     const toasts = $("#toasts");
@@ -4171,7 +4575,7 @@
           <b>${escapeHtml(title)}</b>
           <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
         </div>
-        <button class="toast__x" aria-label="Cerrar">âœ•</button>
+        <button class="toast__x" aria-label="Cerrar">✕</button>
       `;
       const x = $(".toast__x", t);
       x.addEventListener("click", ()=> t.remove());
@@ -4270,24 +4674,24 @@
     $("#applyCouponBtn")?.addEventListener("click", ()=>{
       $("#couponHint").textContent = "Aplicado: HF-15 (demo)";
       $("#cartSubtotal").textContent = "$ 80.580";
-      toast({title:"Descuento", message:"CÃ³digo aplicado (demo).", variant:"ok"});
+      toast({title:"Descuento", message:"Código aplicado (demo).", variant:"ok"});
     });
 
     $("#goCheckoutBtn")?.addEventListener("click", ()=>{
       closeDrawer();
-      toast({title:"Checkout", message:"Te llevarÃ­a al checkout (demo).", variant:"info"});
+      toast({title:"Checkout", message:"Te llevaría al checkout (demo).", variant:"info"});
       location.hash = "#patterns";
     });
 
     $("#payBtn")?.addEventListener("click", ()=>{
-      toast({title:"Pago", message:"AcciÃ³n de pago (demo).", variant:"info"});
+      toast({title:"Pago", message:"Acción de pago (demo).", variant:"info"});
     });
 
     /* -----------------------------
       Misc helpers
     ------------------------------*/
     $("#loadingBtn")?.addEventListener("click", ()=>{
-      toast({title:"Loading", message:"Este botÃ³n estÃ¡ en estado loading (demo).", variant:"info"});
+      toast({title:"Loading", message:"Este botón está en estado loading (demo).", variant:"info"});
     });
 
     $("#copyLinkBtn")?.addEventListener("click", async ()=>{
@@ -4295,7 +4699,7 @@
         await navigator.clipboard.writeText(location.href);
         toast({title:"Copiado", message:"Link copiado al portapapeles.", variant:"ok", timeout:1700});
       }catch{
-        toast({title:"No se pudo copiar", message:"Tu navegador bloqueÃ³ el clipboard.", variant:"info"});
+        toast({title:"No se pudo copiar", message:"Tu navegador bloqueó el clipboard.", variant:"info"});
       }
     });
 
@@ -4316,3 +4720,6 @@
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
+
+
+
