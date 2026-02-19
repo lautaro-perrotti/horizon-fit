@@ -1202,10 +1202,15 @@
     }
 
     .hf-category-card__arrow {
-      font-size: 24px;
-      line-height: 1;
-      transform: translateY(-2px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       opacity: 0.95;
+    }
+    .hf-category-card__arrow svg{
+      width: 22px;
+      height: 22px;
+      display:block;
     }
 
     /* Desktop-only complete set slider (1 image per view) */
@@ -3195,7 +3200,7 @@
               <h3 class="hf-category-card__title">Tops</h3>
               <span class="hf-category-card__cta">Quiero ver</span>
             </div>
-            <span class="hf-category-card__arrow" aria-hidden="true">?</span>
+            <span class="hf-category-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
           </div>
         </a>
 
@@ -3206,7 +3211,7 @@
               <h3 class="hf-category-card__title">Calzas</h3>
               <span class="hf-category-card__cta">Quiero ver</span>
             </div>
-            <span class="hf-category-card__arrow" aria-hidden="true">?</span>
+            <span class="hf-category-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
           </div>
         </a>
 
@@ -3217,7 +3222,7 @@
               <h3 class="hf-category-card__title">Buzos</h3>
               <span class="hf-category-card__cta">Quiero ver</span>
             </div>
-            <span class="hf-category-card__arrow" aria-hidden="true">?</span>
+            <span class="hf-category-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
           </div>
         </a>
 
@@ -3228,7 +3233,7 @@
               <h3 class="hf-category-card__title">Accesorios</h3>
               <span class="hf-category-card__cta">Quiero ver</span>
             </div>
-            <span class="hf-category-card__arrow" aria-hidden="true">?</span>
+            <span class="hf-category-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>
           </div>
         </a>
       </div>
@@ -3550,7 +3555,7 @@
             <div class="acc__item" aria-expanded="true">
               <button class="acc__btn">
                 ¿Cómo elijo mi talle?
-                <span class="chev">?</span>
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
@@ -3561,7 +3566,7 @@
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
                 ¿Puedo cambiar si no me queda?
-                <span class="chev">?</span>
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
@@ -3572,7 +3577,7 @@
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
                 Cuidados de la prenda
-                <span class="chev">?</span>
+                <span class="chev">▾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
@@ -3720,7 +3725,7 @@
               </div>
             </div>
             <div class="card__ft">
-              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: ? ?</div>
+              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: ← →</div>
             </div>
           </div>
         </div>
@@ -3994,7 +3999,7 @@
           <div class="card__hd">
             <div class="badge badge--primary">hf-lightbox</div>
             <h3 class="h3" style="margin-top:10px;">Gallery / Lightbox</h3>
-            <p class="p">Galería para PDP con thumbnails, zoom modal, focus trap y navegación por teclado (? ? ESC).</p>
+            <p class="p">Galería para PDP con thumbnails, zoom modal, focus trap y navegación por teclado (← → ESC).</p>
           </div>
           <div class="card__bd">
             <div class="grid grid-2" style="gap:var(--s-6);">
@@ -4044,7 +4049,7 @@
                   <div class="alert alert--ok">
                     <div class="alert__dot"></div>
                     <div>
-                      <b>Navegación ? ?</b>
+                      <b>Navegación ← →</b>
                       <div class="small">Flechas para cambiar imagen.</div>
                     </div>
                   </div>
@@ -4515,7 +4520,7 @@
     <div class="modal__dialog" tabindex="-1">
       <div class="modal__hd">
         <b id="modalTitle">Modal — Horizon Fit</b>
-        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">?</button>
+        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">×</button>
       </div>
       <div class="modal__bd">
         <p class="p" style="margin-top:0;">
@@ -4540,7 +4545,7 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
       <div class="drawer__hd">
         <b id="drawerTitle">Carrito</b>
-        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">?</button>
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">×</button>
       </div>
       <div class="drawer__bd">
         <div class="cartItem">
@@ -4594,7 +4599,7 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="searchDrawerTitle">
       <div class="drawer__hd">
         <b id="searchDrawerTitle">Buscar</b>
-        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">?</button>
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">×</button>
       </div>
       <div class="drawer__bd">
         <div class="field">
@@ -4975,7 +4980,7 @@
           <b>${escapeHtml(title)}</b>
           <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
         </div>
-        <button class="toast__x" aria-label="Cerrar">?</button>
+        <button class="toast__x" aria-label="Cerrar">×</button>
       `;
       const x = $(".toast__x", t);
       x.addEventListener("click", ()=> t.remove());
