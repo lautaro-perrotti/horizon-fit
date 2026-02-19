@@ -1094,7 +1094,7 @@
     }
     .hf-slider-controls--overlay .hf-slider-btn{
       position: absolute;
-      top: clamp(110px, 13vw, 210px);
+      top: var(--hf-overlay-top, 180px);
       transform: translateY(-50%);
       pointer-events: auto;
       background: rgba(255,255,255,0.94);
@@ -1114,6 +1114,11 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+    }
+    @media (max-width: 768px){
+      .hf-slider-controls--overlay{
+        display: none;
+      }
     }
 
     /* Categories Mosaic (2x2) */
@@ -1348,7 +1353,122 @@
       transform: scale(1.25);
     }
 
+    .hf-sets {
+      background: var(--surface);
+      padding: 6px 0 28px;
+    }
+
+    .hf-sets__head {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .hf-sets__grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .hf-set-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r-2);
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+    }
+
+    .hf-set-card__media {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .hf-set-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hf-set-card__badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1;
+    }
+
+    .hf-set-card__body {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .hf-set-card__title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+
+    .hf-set-card__desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .hf-set-card__items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hf-set-card__price {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hf-set-card__price b {
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .hf-set-card__price s {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hf-set-card__actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hf-set-mobile-carousel {
+      display: none;
+      background: var(--surface);
+      padding: 12px 0 28px;
+    }
+
+    .hf-set-mobile-carousel__head {
+      margin-bottom: 12px;
+    }
+
+    .hf-set-mobile-carousel .hf-carousel__slide img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: var(--r-2);
+      border: 1px solid var(--border);
+    }
+
     @media (max-width: 1280px) {
+      .hf-sets__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
       .hf-set-desktop-slider__layout {
         grid-template-columns: minmax(0, 1fr) 320px;
       }
@@ -1410,8 +1530,14 @@
     }
 
     @media (max-width: 1024px) {
+      .hf-sets__grid {
+        grid-template-columns: 1fr;
+      }
       .hf-set-desktop-slider {
         display: none;
+      }
+      .hf-set-mobile-carousel {
+        display: block;
       }
     }
 
@@ -2070,6 +2196,14 @@
         </article>
         </div>
       </div>
+      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
+        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -2570,6 +2704,7 @@
         </button>
       </div>
     </div>
+    </div>
   </section>
 
   <script>
@@ -2707,6 +2842,12 @@
         nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
       }
 
+      function updateOverlayTop() {
+        var media = grid.querySelector('.hf-product-item__media');
+        if (!media) return;
+        shell.style.setProperty('--hf-overlay-top', (media.getBoundingClientRect().height / 2) + 'px');
+      }
+
       prevBtn.addEventListener('click', function() {
         grid.scrollBy({ left: -getStep(), behavior: 'smooth' });
       });
@@ -2724,7 +2865,11 @@
         });
       });
 
-      window.addEventListener('resize', updateControls);
+      window.addEventListener('resize', function() {
+        updateOverlayTop();
+        updateControls();
+      });
+      updateOverlayTop();
       updateControls();
     });
   </script>
@@ -2853,6 +2998,110 @@
     </div>
   </section>
 
+  <!-- COMPLETE SETS -->
+  <section class="hf-sets" id="conjuntos">
+    <div class="container">
+      <div class="hf-sets__head">
+        <span class="badge badge--primary" style="margin-bottom:8px;">Conjuntos</span>
+        <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Conjuntos deportivos completos</h2>
+      </div>
+
+      <div class="hf-sets__grid">
+        <article class="hf-set-card">
+          <div class="hf-set-card__media">
+            <span class="badge badge--accent hf-set-card__badge">Top + Calza</span>
+            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion completo">
+          </div>
+          <div class="hf-set-card__body">
+            <h3 class="hf-set-card__title">Set Motion</h3>
+            <p class="hf-set-card__desc">Sujecion media y compresion equilibrada para entrenar todos los dias.</p>
+            <div class="hf-set-card__items">
+              <span class="chip">Top Motion</span>
+              <span class="chip">Calza Range</span>
+            </div>
+            <div class="hf-set-card__price">
+              <b>$89.900</b>
+              <s>$109.800</s>
+            </div>
+            <div class="hf-set-card__actions">
+              <button class="btn btn--primary btn--sm">Comprar set</button>
+              <button class="btn btn--secondary btn--sm">Ver detalle</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="hf-set-card">
+          <div class="hf-set-card__media">
+            <span class="badge badge--ok hf-set-card__badge">Top + Short</span>
+            <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power completo">
+          </div>
+          <div class="hf-set-card__body">
+            <h3 class="hf-set-card__title">Set Power</h3>
+            <p class="hf-set-card__desc">Liviano y elastico, ideal para running y funcional de alta intensidad.</p>
+            <div class="hf-set-card__items">
+              <span class="chip">Top Essential</span>
+              <span class="chip">Short Versatil</span>
+            </div>
+            <div class="hf-set-card__price">
+              <b>$72.900</b>
+              <s>$89.800</s>
+            </div>
+            <div class="hf-set-card__actions">
+              <button class="btn btn--primary btn--sm">Comprar set</button>
+              <button class="btn btn--secondary btn--sm">Ver detalle</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="hf-set-card">
+          <div class="hf-set-card__media">
+            <span class="badge hf-set-card__badge">Buzo + Calza</span>
+            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban completo">
+          </div>
+          <div class="hf-set-card__body">
+            <h3 class="hf-set-card__title">Set Urban</h3>
+            <p class="hf-set-card__desc">Capa termica y calza de alto tiro para dias frios y look athleisure.</p>
+            <div class="hf-set-card__items">
+              <span class="chip">Hoodie Cotidiano</span>
+              <span class="chip">Calza Flow</span>
+            </div>
+            <div class="hf-set-card__price">
+              <b>$134.900</b>
+              <s>$154.800</s>
+            </div>
+            <div class="hf-set-card__actions">
+              <button class="btn btn--primary btn--sm">Comprar set</button>
+              <button class="btn btn--secondary btn--sm">Ver detalle</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="hf-set-card">
+          <div class="hf-set-card__media">
+            <span class="badge badge--primary hf-set-card__badge">Top + Biker</span>
+            <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus completo">
+          </div>
+          <div class="hf-set-card__body">
+            <h3 class="hf-set-card__title">Set Focus</h3>
+            <p class="hf-set-card__desc">Conjunto minimal para pilates, yoga y entrenamientos de bajo impacto.</p>
+            <div class="hf-set-card__items">
+              <span class="chip">Top Motion</span>
+              <span class="chip">Biker Short</span>
+            </div>
+            <div class="hf-set-card__price">
+              <b>$69.900</b>
+              <s>$84.800</s>
+            </div>
+            <div class="hf-set-card__actions">
+              <button class="btn btn--primary btn--sm">Comprar set</button>
+              <button class="btn btn--secondary btn--sm">Ver detalle</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- COMPLETE SET DESKTOP SLIDER -->
   <section class="hf-set-desktop-slider" id="conjuntos-desktop-slider">
     <div class="container">
@@ -2926,13 +3175,36 @@
         </aside>
         </div>
       </div>
-      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
-        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
+  </section>
+
+  <!-- COMPLETE SET MOBILE CAROUSEL -->
+  <section class="hf-set-mobile-carousel" id="conjuntos-mobile-carousel">
+    <div class="container">
+      <div class="hf-set-mobile-carousel__head">
+        <span class="badge badge--accent" style="margin-bottom:8px;">Conjunto completo</span>
+        <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
+      </div>
+
+      <div class="hf-carousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"gap":12}' aria-label="Conjuntos en mobile">
+        <div class="hf-carousel__viewport">
+          <div class="hf-carousel__track">
+            <div class="hf-carousel__slide">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">
+            </div>
+            <div class="hf-carousel__slide">
+              <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">
+            </div>
+            <div class="hf-carousel__slide">
+              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">
+            </div>
+            <div class="hf-carousel__slide">
+              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">
+            </div>
+            <div class="hf-carousel__slide">
+              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -4820,6 +5092,8 @@
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
+
+
 
 
 
