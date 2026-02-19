@@ -1354,6 +1354,7 @@
     }
 
     .hf-sets {
+      display: none;
       background: var(--surface);
       padding: 6px 0 28px;
     }
@@ -1447,6 +1448,83 @@
       flex-wrap: wrap;
     }
 
+    .hf-sets-mobile-slider {
+      display: none;
+    }
+
+    .hf-sets-mobile-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r-2);
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .hf-sets-mobile-card__media {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+
+    .hf-sets-mobile-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hf-sets-mobile-card__badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 1;
+    }
+
+    .hf-sets-mobile-card__body {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .hf-sets-mobile-card__title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .hf-sets-mobile-card__desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .hf-sets-mobile-card__items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hf-sets-mobile-card__price {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hf-sets-mobile-card__price b {
+      font-size: 38px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .hf-sets-mobile-card__price s {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     .hf-set-mobile-carousel {
       display: none;
       background: var(--surface);
@@ -1463,6 +1541,29 @@
       object-fit: cover;
       border-radius: var(--r-2);
       border: 1px solid var(--border);
+    }
+    .hf-set-mobile-carousel .hf-carousel__viewport,
+    .hf-sets-mobile-slider .hf-carousel__viewport {
+      overflow: hidden;
+    }
+    .hf-set-mobile-carousel .hf-carousel__track,
+    .hf-sets-mobile-slider .hf-carousel__track {
+      display: flex;
+    }
+    .hf-set-mobile-carousel .hf-carousel__slide,
+    .hf-sets-mobile-slider .hf-carousel__slide {
+      flex: 0 0 100%;
+      min-width: 100%;
+    }
+
+    .hf-set-mobile-carousel__caption {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: var(--text);
+      text-align: center;
     }
 
     @media (max-width: 1280px) {
@@ -1530,6 +1631,13 @@
     }
 
     @media (max-width: 1024px) {
+      .hf-sets {
+        display: block;
+      }
+      .hf-sets__grid { display: none; }
+      .hf-sets-mobile-slider {
+        display: block;
+      }
       .hf-sets__grid {
         grid-template-columns: 1fr;
       }
@@ -2997,112 +3105,7 @@
       </div>
     </div>
   </section>
-
-  <!-- COMPLETE SETS -->
-  <section class="hf-sets" id="conjuntos">
-    <div class="container">
-      <div class="hf-sets__head">
-        <span class="badge badge--primary" style="margin-bottom:8px;">Conjuntos</span>
-        <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Conjuntos deportivos completos</h2>
-      </div>
-
-      <div class="hf-sets__grid">
-        <article class="hf-set-card">
-          <div class="hf-set-card__media">
-            <span class="badge badge--accent hf-set-card__badge">Top + Calza</span>
-            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion completo">
-          </div>
-          <div class="hf-set-card__body">
-            <h3 class="hf-set-card__title">Set Motion</h3>
-            <p class="hf-set-card__desc">Sujecion media y compresion equilibrada para entrenar todos los dias.</p>
-            <div class="hf-set-card__items">
-              <span class="chip">Top Motion</span>
-              <span class="chip">Calza Range</span>
-            </div>
-            <div class="hf-set-card__price">
-              <b>$89.900</b>
-              <s>$109.800</s>
-            </div>
-            <div class="hf-set-card__actions">
-              <button class="btn btn--primary btn--sm">Comprar set</button>
-              <button class="btn btn--secondary btn--sm">Ver detalle</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="hf-set-card">
-          <div class="hf-set-card__media">
-            <span class="badge badge--ok hf-set-card__badge">Top + Short</span>
-            <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power completo">
-          </div>
-          <div class="hf-set-card__body">
-            <h3 class="hf-set-card__title">Set Power</h3>
-            <p class="hf-set-card__desc">Liviano y elastico, ideal para running y funcional de alta intensidad.</p>
-            <div class="hf-set-card__items">
-              <span class="chip">Top Essential</span>
-              <span class="chip">Short Versatil</span>
-            </div>
-            <div class="hf-set-card__price">
-              <b>$72.900</b>
-              <s>$89.800</s>
-            </div>
-            <div class="hf-set-card__actions">
-              <button class="btn btn--primary btn--sm">Comprar set</button>
-              <button class="btn btn--secondary btn--sm">Ver detalle</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="hf-set-card">
-          <div class="hf-set-card__media">
-            <span class="badge hf-set-card__badge">Buzo + Calza</span>
-            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban completo">
-          </div>
-          <div class="hf-set-card__body">
-            <h3 class="hf-set-card__title">Set Urban</h3>
-            <p class="hf-set-card__desc">Capa termica y calza de alto tiro para dias frios y look athleisure.</p>
-            <div class="hf-set-card__items">
-              <span class="chip">Hoodie Cotidiano</span>
-              <span class="chip">Calza Flow</span>
-            </div>
-            <div class="hf-set-card__price">
-              <b>$134.900</b>
-              <s>$154.800</s>
-            </div>
-            <div class="hf-set-card__actions">
-              <button class="btn btn--primary btn--sm">Comprar set</button>
-              <button class="btn btn--secondary btn--sm">Ver detalle</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="hf-set-card">
-          <div class="hf-set-card__media">
-            <span class="badge badge--primary hf-set-card__badge">Top + Biker</span>
-            <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus completo">
-          </div>
-          <div class="hf-set-card__body">
-            <h3 class="hf-set-card__title">Set Focus</h3>
-            <p class="hf-set-card__desc">Conjunto minimal para pilates, yoga y entrenamientos de bajo impacto.</p>
-            <div class="hf-set-card__items">
-              <span class="chip">Top Motion</span>
-              <span class="chip">Biker Short</span>
-            </div>
-            <div class="hf-set-card__price">
-              <b>$69.900</b>
-              <s>$84.800</s>
-            </div>
-            <div class="hf-set-card__actions">
-              <button class="btn btn--primary btn--sm">Comprar set</button>
-              <button class="btn btn--secondary btn--sm">Ver detalle</button>
-            </div>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPLETE SET DESKTOP SLIDER -->
+<!-- COMPLETE SET DESKTOP SLIDER -->
   <section class="hf-set-desktop-slider" id="conjuntos-desktop-slider">
     <div class="container">
       <div class="hf-set-desktop-slider__head">
@@ -3185,23 +3188,28 @@
         <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
       </div>
 
-      <div class="hf-carousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"gap":12}' aria-label="Conjuntos en mobile">
+      <div class="hf-carousel hf-carousel--responsive" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"gap":12}' aria-label="Conjuntos en mobile">
         <div class="hf-carousel__viewport">
           <div class="hf-carousel__track">
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">
+              <p class="hf-set-mobile-carousel__caption">Motion</p>
             </div>
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">
+              <p class="hf-set-mobile-carousel__caption">Power</p>
             </div>
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">
+              <p class="hf-set-mobile-carousel__caption">Urban</p>
             </div>
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">
+              <p class="hf-set-mobile-carousel__caption">Focus</p>
             </div>
             <div class="hf-carousel__slide">
               <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
+              <p class="hf-set-mobile-carousel__caption">Energy</p>
             </div>
           </div>
         </div>
@@ -5092,6 +5100,7 @@
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
+
 
 
 
