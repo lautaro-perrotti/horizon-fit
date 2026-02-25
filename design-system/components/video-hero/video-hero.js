@@ -77,8 +77,11 @@
     function setupVideo() {
       video.muted = config.muted;
       video.loop = config.loop;
+      video.setAttribute('loop', '');
       video.playsInline = true;
       video.setAttribute('playsinline', '');
+      video.setAttribute('muted', '');
+      video.setAttribute('autoplay', '');
       video.preload = video.getAttribute('preload') || 'metadata';
 
       // Hide video if reduced motion
@@ -113,6 +116,18 @@
           // ignore
         }
         video.play().catch(() => {});
+      });
+
+      // Extra safety net: some mobile browsers can stall at the end frame.
+      video.addEventListener('timeupdate', () => {
+        if (!config.loop || !video.duration || !Number.isFinite(video.duration)) return;
+        if (video.duration - video.currentTime < 0.12) {
+          try {
+            video.currentTime = 0;
+          } catch (_) {
+            // ignore
+          }
+        }
       });
 
       // Autoplay
