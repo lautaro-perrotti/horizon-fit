@@ -37,6 +37,7 @@
 
     // Optional: full viewport height minus offsets (e.g., sticky header)
     let teardownFullHeight = null;
+    let fullHeightRaf = null;
 
     function setupFullHeight() {
       if (!el.classList.contains('hf-video-hero--full')) return;
@@ -51,25 +52,70 @@
 
       if (selectors.length === 0) return;
 
+      const getViewportHeight = () => {
+        if (window.visualViewport && Number.isFinite(window.visualViewport.height)) {
+          return window.visualViewport.height;
+        }
+        return window.innerHeight;
+      };
+
       const updateMinHeight = () => {
         let offset = 0;
         selectors.forEach((sel) => {
           document.querySelectorAll(sel).forEach((node) => {
-            if (node && node.offsetParent !== null) {
-              offset += node.getBoundingClientRect().height;
-            }
+            if (!node) return;
+            const style = window.getComputedStyle(node);
+            if (style.display === 'none' || style.visibility === 'hidden') return;
+            const h = node.getBoundingClientRect().height;
+            if (h > 0) offset += h;
           });
         });
 
-        const h = Math.max(0, window.innerHeight - offset);
+        const h = Math.max(0, getViewportHeight() - offset);
         el.style.minHeight = `${h}px`;
       };
 
+      const scheduleUpdate = () => {
+        if (fullHeightRaf !== null) return;
+        fullHeightRaf = window.requestAnimationFrame(() => {
+          fullHeightRaf = null;
+          updateMinHeight();
+        });
+      };
+
+      const observedNodes = [];
+      const resizeObserver = typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(scheduleUpdate)
+        : null;
+
+      selectors.forEach((sel) => {
+        document.querySelectorAll(sel).forEach((node) => {
+          if (!node || observedNodes.includes(node)) return;
+          observedNodes.push(node);
+          if (resizeObserver) resizeObserver.observe(node);
+        });
+      });
+
       updateMinHeight();
-      window.addEventListener('resize', updateMinHeight, { passive: true });
+      window.addEventListener('resize', scheduleUpdate, { passive: true });
+      window.addEventListener('orientationchange', scheduleUpdate, { passive: true });
+      window.addEventListener('load', scheduleUpdate);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', scheduleUpdate, { passive: true });
+      }
 
       teardownFullHeight = () => {
-        window.removeEventListener('resize', updateMinHeight);
+        if (fullHeightRaf !== null) {
+          window.cancelAnimationFrame(fullHeightRaf);
+          fullHeightRaf = null;
+        }
+        if (resizeObserver) resizeObserver.disconnect();
+        window.removeEventListener('resize', scheduleUpdate);
+        window.removeEventListener('orientationchange', scheduleUpdate);
+        window.removeEventListener('load', scheduleUpdate);
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', scheduleUpdate);
+        }
       };
     }
 

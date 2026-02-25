@@ -127,7 +127,17 @@
       2) BASE / RESET
     ------------------------------*/
     *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    html{
+      height:100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    body{
+      min-height:100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     body{
       margin:0;
       font-family:var(--font-sans);
@@ -216,6 +226,14 @@
       right: 0;
       width: 100%;
       z-index: 130;
+    }
+    /* Keep marquee clearly visible above navbar */
+    .hf-marquee{
+      background: var(--hf-primary);
+      color: var(--hf-white);
+      min-height: var(--announce-h);
+      display: flex;
+      align-items: center;
     }
     .nav__inner{
       display:flex; align-items:center; justify-content:space-between;
@@ -658,7 +676,7 @@
       position:fixed; inset:0;
       background: rgba(0,0,0,.48);
       display:none;
-      z-index:100;
+      z-index:220;
     }
     .overlay.is-on{ display:block; }
 
@@ -667,7 +685,7 @@
       inset:0;
       display:none;
       place-items:center;
-      z-index:110;
+      z-index:230;
       padding: var(--s-6);
     }
     .modal.is-on{ display:grid; }
@@ -691,7 +709,7 @@
       position:fixed;
       inset:0;
       display:none;
-      z-index:120;
+      z-index:240;
     }
     .drawer.is-on{ display:block; }
     .drawer__panel{
@@ -1656,7 +1674,7 @@
 
     .whatsapp-float {
       position: fixed;
-      right: 18px;
+      right: 78px;
       bottom: 18px;
       width: 56px;
       height: 56px;
@@ -1684,7 +1702,7 @@
 
     @media (max-width: 640px) {
       .whatsapp-float {
-        right: 14px;
+        right: 70px;
         bottom: 14px;
         width: 52px;
         height: 52px;
@@ -1789,7 +1807,7 @@
   </div>
 
   <!-- VIDEO HERO - FULL SCREEN 100vh -->
-  <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" data-show-control data-offset-selectors="header.nav,.hf-marquee">
+  <section class="hf-video-hero hf-video-hero--full" data-hf="video-hero" data-show-control data-offset-selectors="header.nav,#topMarquee">
         <video id="heroVideo" class="hf-video-hero__media hf-video-hero__video" autoplay muted loop playsinline preload="metadata">
       <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
       <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4" media="(min-width: 769px)">
@@ -2822,115 +2840,16 @@
 
   <script>
     document.querySelectorAll('.hf-product-item--slider').forEach(function(item) {
-      var slider = item.querySelector('[data-slider]');
-      var slides = item.querySelectorAll('.hf-product-item__slide img');
-      var dots = item.querySelectorAll('.hf-product-item__dot');
-      if (!slider || !dots.length || !slides.length) return;
+      var imgs = item.querySelectorAll('.hf-product-item__slide img');
+      if (!imgs || imgs.length < 2) return;
+      var firstSrc = imgs[0].getAttribute('src');
+      imgs[1].addEventListener('error', function() {
+        if (firstSrc) imgs[1].setAttribute('src', firstSrc);
+      }, { once: true });
+    });
 
-      var themeCache = {};
-
-      function getCurrentSlideIndex() {
-        var slideWidth = slider.offsetWidth || 1;
-        var index = Math.round(slider.scrollLeft / slideWidth);
-        return Math.max(0, Math.min(slides.length - 1, index));
-      }
-
-      function getImageLuminance(img) {
-        try {
-          if (!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return null;
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d', { willReadFrequently: true });
-          if (!ctx) return null;
-
-          var sampleW = 28;
-          var sampleH = 18;
-          canvas.width = sampleW;
-          canvas.height = sampleH;
-
-          var sx = Math.floor(img.naturalWidth * 0.25);
-          var sy = Math.floor(img.naturalHeight * 0.68);
-          var sw = Math.floor(img.naturalWidth * 0.5);
-          var sh = Math.floor(img.naturalHeight * 0.28);
-
-          if (sw <= 0 || sh <= 0) return null;
-
-          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sampleW, sampleH);
-          var data = ctx.getImageData(0, 0, sampleW, sampleH).data;
-          var total = 0;
-
-          for (var i = 0; i < data.length; i += 4) {
-            total += (0.2126 * data[i]) + (0.7152 * data[i + 1]) + (0.0722 * data[i + 2]);
-          }
-
-          return total / (data.length / 4);
-        } catch (err) {
-          return null;
-        }
-      }
-
-      function getThemeForSlide(index) {
-        if (themeCache[index]) return themeCache[index];
-
-        var luminance = getImageLuminance(slides[index]);
-        var theme = luminance !== null && luminance > 140
-          ? {
-              dot: 'rgba(0, 0, 0, 0.45)',
-              hover: 'rgba(0, 0, 0, 0.72)',
-              active: '#000'
-            }
-          : {
-              dot: 'rgba(255, 255, 255, 0.5)',
-              hover: 'rgba(255, 255, 255, 0.82)',
-              active: '#fff'
-            };
-
-        themeCache[index] = theme;
-        return theme;
-      }
-
-      function applyDotsTheme(index) {
-        var theme = getThemeForSlide(index);
-        item.style.setProperty('--hf-dot-color', theme.dot);
-        item.style.setProperty('--hf-dot-hover-color', theme.hover);
-        item.style.setProperty('--hf-dot-active-color', theme.active);
-      }
-
-      function updateSliderUI() {
-        var currentSlide = getCurrentSlideIndex();
-        dots.forEach(function(dot, index) {
-          dot.classList.toggle('is-active', index === currentSlide);
-        });
-        applyDotsTheme(currentSlide);
-      }
-
-      slides.forEach(function(img, index) {
-        if (!img.complete) {
-          img.addEventListener('load', function() {
-            delete themeCache[index];
-            if (index === getCurrentSlideIndex()) updateSliderUI();
-          });
-        }
-      });
-
-      dots.forEach(function(dot, index) {
-        dot.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var slideWidth = slider.offsetWidth;
-          slider.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
-        });
-      });
-
-      var rafId = null;
-      slider.addEventListener('scroll', function() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(function() {
-          rafId = null;
-          updateSliderUI();
-        });
-      });
-
-      updateSliderUI();
+    document.querySelectorAll('.hf-product-item__dots').forEach(function(dots) {
+      dots.remove();
     });
 
     document.querySelectorAll('[data-grid-shell]').forEach(function(shell) {

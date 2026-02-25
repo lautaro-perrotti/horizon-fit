@@ -303,12 +303,10 @@
 }
 
 .hf-product-item__slider {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .hf-product-item__slider::-webkit-scrollbar {
@@ -316,8 +314,19 @@
 }
 
 .hf-product-item__slide {
-  flex: 0 0 100%;
-  scroll-snap-align: start;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--med) var(--ease);
+}
+
+.hf-product-item__slide:first-child {
+  position: relative;
+  opacity: 1;
+}
+
+.hf-product-item__slide:nth-child(n + 3) {
+  display: none;
 }
 
 .hf-product-item__slide img {
@@ -328,29 +337,11 @@
 }
 
 .hf-product-item__dots {
-  position: absolute;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.16);
-  backdrop-filter: blur(2px);
-  z-index: 3;
+  display: none !important;
 }
 
 .hf-product-item__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--hf-dot-color);
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 0;
-  cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
-  transition: background var(--fast) var(--ease), transform var(--fast) var(--ease);
+  display: none !important;
 }
 
 .hf-product-item__dot:hover {
@@ -360,6 +351,28 @@
 .hf-product-item__dot.is-active {
   background: var(--hf-dot-active-color);
   transform: scale(1.2);
+}
+
+/* Desktop: show second image on hover */
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .hf-product-item--slider:hover .hf-product-item__slide:first-child {
+    opacity: 0;
+  }
+
+  .hf-product-item--slider:hover .hf-product-item__slide:nth-child(2) {
+    opacity: 1;
+  }
+}
+
+/* Mobile: keep first image static */
+@media (max-width: 768px) {
+  .hf-product-item__slide:first-child {
+    opacity: 1 !important;
+  }
+
+  .hf-product-item__slide:nth-child(2) {
+    opacity: 0 !important;
+  }
 }
 
 /* ========================================
