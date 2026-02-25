@@ -200,7 +200,7 @@
     ------------------------------*/
     .nav{
       position:fixed;
-      top:0;
+      top: var(--announce-h);
       left:0;
       right:0;
       z-index:120;
@@ -211,11 +211,11 @@
 
     .hf-marquee--fixed{
       position: fixed;
-      top: var(--nav-h);
+      top: 0;
       left: 0;
       right: 0;
       width: 100%;
-      z-index: 110;
+      z-index: 130;
     }
     .nav__inner{
       display:flex; align-items:center; justify-content:space-between;
@@ -1769,7 +1769,7 @@
        ============================================ -->
 
   <!-- ANNOUNCEMENT BANNER - FULL WIDTH -->
-  <div class="hf-marquee hf-marquee--dark hf-marquee--fixed" id="topMarquee" data-hf="marquee" data-speed="20">
+  <div class="hf-marquee hf-marquee--fixed" id="topMarquee" data-hf="marquee" data-speed="20">
     <div class="hf-marquee__track">
       <div class="hf-marquee__content">
         <span class="hf-marquee__item">DROP 01 - DISPONIBLE AHORA</span>
