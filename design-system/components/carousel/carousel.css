@@ -15,6 +15,7 @@
 .hf-carousel__viewport {
   overflow: hidden;
   border-radius: var(--r-2);
+  touch-action: pan-y;
 }
 
 .hf-carousel__track {

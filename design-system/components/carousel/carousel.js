@@ -48,7 +48,11 @@
     let isAnimating = false;
     let autoplayTimer = null;
     let isDragging = false;
+    let isTouchDragging = false;
+    let dragDirectionLocked = false;
+    let isHorizontalDrag = false;
     let startX = 0;
+    let startY = 0;
     let startScrollLeft = 0;
     let currentTranslate = 0;
 
@@ -208,8 +212,12 @@
       if (!config.draggable) return;
 
       isDragging = true;
+      isTouchDragging = e.type.startsWith('touch');
+      dragDirectionLocked = false;
+      isHorizontalDrag = !isTouchDragging;
       track.classList.add('is-dragging');
       startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+      startY = e.type.includes('mouse') ? 0 : e.touches[0].pageY;
       startScrollLeft = currentTranslate;
 
       // Pause autoplay while dragging
@@ -219,9 +227,22 @@
     function handleDragMove(e) {
       if (!isDragging) return;
 
-      e.preventDefault();
       const x = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+      const y = e.type.includes('mouse') ? 0 : e.touches[0].pageY;
       const delta = x - startX;
+      const deltaY = y - startY;
+
+      if (isTouchDragging && !dragDirectionLocked) {
+        if (Math.abs(delta) < 8 && Math.abs(deltaY) < 8) return;
+        dragDirectionLocked = true;
+        isHorizontalDrag = Math.abs(delta) >= Math.abs(deltaY);
+      }
+
+      if (isTouchDragging && !isHorizontalDrag) {
+        return;
+      }
+
+      e.preventDefault();
 
       track.style.transition = 'none';
       track.style.transform = `translateX(${startScrollLeft + delta}px)`;
@@ -232,6 +253,13 @@
 
       isDragging = false;
       track.classList.remove('is-dragging');
+
+      if (isTouchDragging && dragDirectionLocked && !isHorizontalDrag) {
+        isTouchDragging = false;
+        dragDirectionLocked = false;
+        updatePosition(false);
+        return;
+      }
 
       const x = e.type.includes('mouse') ? e.pageX : e.changedTouches[0].pageX;
       const delta = x - startX;
@@ -250,6 +278,10 @@
       if (config.autoplay) {
         startAutoplay();
       }
+
+      isTouchDragging = false;
+      dragDirectionLocked = false;
+      isHorizontalDrag = false;
     }
 
     function setupDrag() {
