@@ -1277,6 +1277,32 @@
       height: clamp(180px, 26vw, 420px);
     }
 
+    .hf-set-desktop-slider__arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+      width: 50px;
+      height: 50px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      backdrop-filter: blur(8px);
+      border-color: color-mix(in srgb, var(--text) 18%, transparent);
+      transition: none;
+    }
+
+    .hf-set-desktop-slider__arrow:hover {
+      transform: translateY(-50%);
+    }
+
+    .hf-set-desktop-slider__arrow--prev {
+      left: 14px;
+    }
+
+    .hf-set-desktop-slider__arrow--next {
+      right: 14px;
+    }
+
     .hf-set-desktop-slider__track {
       display: flex;
       height: 100%;
@@ -1559,6 +1585,25 @@
       margin-bottom: 12px;
     }
 
+    .hf-set-mobile-carousel__actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .hf-set-mobile-carousel .hf-carousel__nav {
+      width: 44px;
+      height: 44px;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      border-color: color-mix(in srgb, var(--text) 16%, transparent);
+      transition: none;
+      transform: none;
+    }
+
+    .hf-set-mobile-carousel .hf-carousel__nav:hover {
+      transform: none;
+    }
+
     .hf-set-mobile-carousel .hf-carousel__slide img {
       width: 100%;
       aspect-ratio: 4 / 5;
@@ -1578,16 +1623,6 @@
     .hf-sets-mobile-slider .hf-carousel__slide {
       flex: 0 0 100%;
       min-width: 100%;
-    }
-
-    .hf-set-mobile-carousel__caption {
-      margin-top: 8px;
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: -0.01em;
-      line-height: 1.1;
-      color: var(--text);
-      text-align: center;
     }
 
     @media (max-width: 1280px) {
@@ -2921,26 +2956,32 @@
         <div class="hf-set-desktop-slider__media-col">
           <div class="hf-set-desktop-slider__viewport" id="setDesktopViewport">
             <div class="hf-set-desktop-slider__track" id="setDesktopTrack">
-              <article class="hf-set-desktop-slider__slide" data-title="Set Motion" data-meta="Top + calza | Compresión media" data-items="Top Motion|Calza Range|6 cuotas sin interés" data-price="$89.900" data-compare="$109.800">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Motion" data-meta="Top + calza | Compresión media" data-items="Top Motion|Calza Range|6 cuotas sin interés" data-price="$89.900" data-compare="$109.800" data-buy-link="#set-motion" data-detail-link="#set-motion-detalle">
                 <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1800&h=1000&fit=crop" alt="Set Motion completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Power" data-meta="Top + short | Liviano y elástico" data-items="Top Essential|Short Versátil|Secado rápido" data-price="$72.900" data-compare="$89.800">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Power" data-meta="Top + short | Liviano y elástico" data-items="Top Essential|Short Versátil|Secado rápido" data-price="$72.900" data-compare="$89.800" data-buy-link="#set-power" data-detail-link="#set-power-detalle">
                 <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1800&h=1000&fit=crop" alt="Set Power completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Urban" data-meta="Buzo + calza | Athleisure diario" data-items="Hoodie Cotidiano|Calza Flow|Termorregulación" data-price="$134.900" data-compare="$154.800">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Urban" data-meta="Buzo + calza | Athleisure diario" data-items="Hoodie Cotidiano|Calza Flow|Termorregulación" data-price="$134.900" data-compare="$154.800" data-buy-link="#set-urban" data-detail-link="#set-urban-detalle">
                 <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1800&h=1000&fit=crop" alt="Set Urban completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Focus" data-meta="Top + biker | Bajo impacto" data-items="Top Motion|Biker Short|Elasticidad 4-way" data-price="$69.900" data-compare="$84.800">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Focus" data-meta="Top + biker | Bajo impacto" data-items="Top Motion|Biker Short|Elasticidad 4-way" data-price="$69.900" data-compare="$84.800" data-buy-link="#set-focus" data-detail-link="#set-focus-detalle">
                 <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=1800&h=1000&fit=crop" alt="Set Focus completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Energy" data-meta="Top + short | Entrenamiento funcional" data-items="Top Power|Short Train|Tela respirable" data-price="$76.900" data-compare="$92.800">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Energy" data-meta="Top + short | Entrenamiento funcional" data-items="Top Power|Short Train|Tela respirable" data-price="$76.900" data-compare="$92.800" data-buy-link="#set-energy" data-detail-link="#set-energy-detalle">
                 <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=1800&h=1000&fit=crop" alt="Set Energy completo">
               </article>
             </div>
+            <button class="hf-set-desktop-slider__arrow hf-set-desktop-slider__arrow--prev" id="setDesktopPrev" type="button" aria-label="Set anterior">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="hf-set-desktop-slider__arrow hf-set-desktop-slider__arrow--next" id="setDesktopNext" type="button" aria-label="Set siguiente">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
           </div>
 
           <div class="hf-set-desktop-slider__dots" id="setDesktopDots" aria-label="Navegación de slides">
@@ -2966,8 +3007,8 @@
             <s id="setDesktopInfoCompare">$109.800</s>
           </div>
           <div class="hf-set-desktop-slider__actions">
-            <button class="btn btn--primary">Comprar set</button>
-            <button class="btn btn--secondary">Ver detalle</button>
+            <a class="btn btn--primary" id="setDesktopBuyLink" href="#set-motion">Comprar set</a>
+            <a class="btn btn--secondary" id="setDesktopDetailLink" href="#set-motion-detalle">Ver detalle</a>
           </div>
         </aside>
         </div>
@@ -2985,52 +3026,67 @@
       <div class="hf-carousel hf-carousel--responsive" id="setMobileCarousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"draggable":true,"itemsToShow":1,"gap":12}' aria-label="Conjuntos en mobile">
         <div class="hf-carousel__viewport">
           <div class="hf-carousel__track">
-            <div class="hf-carousel__slide">
-              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">
-              <p class="hf-set-mobile-carousel__caption">Motion</p>
-            </div>
-            <div class="hf-carousel__slide">
-              <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">
-              <p class="hf-set-mobile-carousel__caption">Power</p>
-            </div>
-            <div class="hf-carousel__slide">
-              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">
-              <p class="hf-set-mobile-carousel__caption">Urban</p>
-            </div>
-            <div class="hf-carousel__slide">
-              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">
-              <p class="hf-set-mobile-carousel__caption">Focus</p>
-            </div>
-            <div class="hf-carousel__slide">
-              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
-              <p class="hf-set-mobile-carousel__caption">Energy</p>
-            </div>
+            <div class="hf-carousel__slide" data-buy-link="#set-motion" data-detail-link="#set-motion-detalle">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">            </div>
+            <div class="hf-carousel__slide" data-buy-link="#set-power" data-detail-link="#set-power-detalle">
+              <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">            </div>
+            <div class="hf-carousel__slide" data-buy-link="#set-urban" data-detail-link="#set-urban-detalle">
+              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">            </div>
+            <div class="hf-carousel__slide" data-buy-link="#set-focus" data-detail-link="#set-focus-detalle">
+              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">            </div>
+            <div class="hf-carousel__slide" data-buy-link="#set-energy" data-detail-link="#set-energy-detalle">
+              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">            </div>
           </div>
         </div>
+      </div>
+      <div class="hf-set-mobile-carousel__actions">
+        <a class="btn btn--primary" id="setMobileBuyLink" href="#set-motion">Comprar set</a>
+        <a class="btn btn--secondary" id="setMobileDetailLink" href="#set-motion-detalle">Ver detalle</a>
       </div>
     </div>
   </section>
 
   <script>
     (function() {
+      function syncMobileSetLinks() {
+        var el = document.getElementById('setMobileCarousel');
+        var buy = document.getElementById('setMobileBuyLink');
+        var detail = document.getElementById('setMobileDetailLink');
+        if (!el || !el._hfCarousel || !buy || !detail) return;
+
+        var index = el._hfCarousel.getCurrentIndex();
+        var slides = el._hfCarousel.getSlides();
+        var slide = slides && slides[index] ? slides[index] : null;
+        if (!slide) return;
+
+        buy.href = slide.getAttribute('data-buy-link') || '#';
+        detail.href = slide.getAttribute('data-detail-link') || '#';
+      }
+
       function ensureSetMobileCarousel() {
         var el = document.getElementById('setMobileCarousel');
         if (!el || !window.HFCarousel) return;
         if (!window.matchMedia('(max-width: 1024px)').matches) return;
-        if (el._hfCarousel) return;
-        window.HFCarousel.create(el, {
-          loop: true,
-          dots: true,
-          arrows: false,
-          draggable: true,
-          itemsToShow: 1,
-          gap: 12
-        });
+        if (!el._hfCarousel) {
+          window.HFCarousel.create(el, {
+            loop: true,
+            dots: true,
+            arrows: false,
+            draggable: true,
+            itemsToShow: 1,
+            gap: 12
+          });
+        }
+        syncMobileSetLinks();
       }
 
       window.addEventListener('load', ensureSetMobileCarousel);
       window.addEventListener('resize', ensureSetMobileCarousel);
       document.addEventListener('DOMContentLoaded', ensureSetMobileCarousel);
+      document.addEventListener('hf:carousel:change', function(e) {
+        if (!e || !e.target || e.target.id !== 'setMobileCarousel') return;
+        syncMobileSetLinks();
+      });
     })();
   </script>
 
@@ -4845,6 +4901,8 @@
       const infoList = $("#setDesktopInfoList", root);
       const infoPrice = $("#setDesktopInfoPrice", root);
       const infoCompare = $("#setDesktopInfoCompare", root);
+      const buyLink = $("#setDesktopBuyLink", root);
+      const detailLink = $("#setDesktopDetailLink", root);
       if (!track || !slides.length || !dots.length) return;
 
       let index = 0;
@@ -4858,6 +4916,8 @@
         if (infoMeta) infoMeta.textContent = slide.dataset.meta || "";
         if (infoPrice) infoPrice.textContent = slide.dataset.price || "";
         if (infoCompare) infoCompare.textContent = slide.dataset.compare || "";
+        if (buyLink) buyLink.href = slide.dataset.buyLink || "#";
+        if (detailLink) detailLink.href = slide.dataset.detailLink || "#";
 
         if (infoList) {
           const items = (slide.dataset.items || "").split("|").filter(Boolean);
@@ -5040,12 +5100,15 @@
   </script>
 
   <!-- Component JS imports -->
+  <script src="design-system/components/carousel/carousel.js"></script>
   <script src="design-system/components/video-hero/video-hero.js"></script>
   <script src="design-system/components/marquee/marquee.js"></script>
   <script src="design-system/components/info-banner/info-banner.js"></script>
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
+
+
 
 
 
