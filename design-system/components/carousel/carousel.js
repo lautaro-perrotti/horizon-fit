@@ -46,6 +46,7 @@
     // State
     let currentIndex = 0;
     let isAnimating = false;
+    let animationTimer = null;
     let autoplayTimer = null;
     let isDragging = false;
     let isTouchDragging = false;
@@ -106,8 +107,6 @@
 
     // Navigation
     function goTo(index, animate = true) {
-      if (isAnimating && animate) return;
-
       const maxIndex = getMaxIndex();
 
       if (config.loop) {
@@ -119,12 +118,18 @@
 
       if (index === currentIndex) return;
 
+      if (animationTimer) {
+        clearTimeout(animationTimer);
+        animationTimer = null;
+      }
+
       isAnimating = true;
       currentIndex = index;
       updatePosition(animate);
 
-      setTimeout(() => {
+      animationTimer = setTimeout(() => {
         isAnimating = false;
+        animationTimer = null;
       }, config.speed);
     }
 
@@ -384,6 +389,7 @@
     // Destroy
     function destroy() {
       stopAutoplay();
+      if (animationTimer) clearTimeout(animationTimer);
 
       if (prevBtn) prevBtn.remove();
       if (nextBtn) nextBtn.remove();
