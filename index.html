@@ -1585,31 +1585,43 @@
       margin-bottom: 12px;
     }
 
-    .hf-set-mobile-carousel__actions {
-      margin-top: 14px;
-      display: flex;
-      gap: 8px;
-    }
-
     .hf-set-mobile-carousel .hf-carousel__nav {
-      width: 44px;
-      height: 44px;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      border-color: color-mix(in srgb, var(--text) 16%, transparent);
+      width: 24px;
+      height: 48px;
+      border: 0;
+      border-radius: 0;
+      background: rgba(0, 0, 0, 0.18);
+      box-shadow: none;
       transition: none;
-      transform: none;
+      padding: 0;
     }
 
     .hf-set-mobile-carousel .hf-carousel__nav:hover {
       transform: none;
     }
 
+    .hf-set-mobile-carousel .hf-carousel__nav svg {
+      display: none;
+    }
+
+    .hf-set-mobile-carousel .hf-carousel__nav--prev {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='48' viewBox='0 0 24 48' fill='none'><path d='M14.452 29.43L8.999 24.005L14.452 18.58' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .hf-set-mobile-carousel .hf-carousel__nav--next {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='48' viewBox='0 0 24 48' fill='none'><path d='M9.548 18.58L15.001 24.005L9.548 29.43' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
     .hf-set-mobile-carousel .hf-carousel__slide img {
       width: 100%;
       aspect-ratio: 4 / 5;
       object-fit: cover;
-      border-radius: var(--r-2);
-      border: 1px solid var(--border);
+      border-radius: 0;
+      border: 0;
     }
     .hf-set-mobile-carousel .hf-carousel__viewport,
     .hf-sets-mobile-slider .hf-carousel__viewport {
@@ -3023,46 +3035,167 @@
         <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Sets listos para entrenar</h2>
       </div>
 
-      <div class="hf-carousel hf-carousel--responsive" id="setMobileCarousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":false,"draggable":true,"itemsToShow":1,"gap":12}' aria-label="Conjuntos en mobile">
+      <div class="hf-carousel hf-carousel--responsive hf-carousel--show-nav-mobile" id="setMobileCarousel" data-hf="carousel" data-hf-carousel='{"loop":true,"dots":true,"arrows":true,"draggable":true,"itemsToShow":1,"gap":12}' aria-label="Conjuntos en mobile">
         <div class="hf-carousel__viewport">
           <div class="hf-carousel__track">
-            <div class="hf-carousel__slide" data-buy-link="#set-motion" data-detail-link="#set-motion-detalle">
-              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">            </div>
-            <div class="hf-carousel__slide" data-buy-link="#set-power" data-detail-link="#set-power-detalle">
-              <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">            </div>
-            <div class="hf-carousel__slide" data-buy-link="#set-urban" data-detail-link="#set-urban-detalle">
-              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">            </div>
-            <div class="hf-carousel__slide" data-buy-link="#set-focus" data-detail-link="#set-focus-detalle">
-              <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">            </div>
-            <div class="hf-carousel__slide" data-buy-link="#set-energy" data-detail-link="#set-energy-detalle">
-              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">            </div>
+            <div class="hf-carousel__slide">
+              <article class="productCard">
+                <div class="productMedia" style="background:none;">
+                  <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">
+                  <div class="productBadges">
+                    <span class="badge badge--accent">Set Motion</span>
+                  </div>
+                </div>
+                <div class="productBody">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                    <div>
+                      <b>Set Motion</b>
+                      <div class="small">Top + calza / Compresión media</div>
+                    </div>
+                    <span class="badge badge--ok">En stock</span>
+                  </div>
+                  <div class="priceRow">
+                    <div class="price">$ 89.900</div>
+                    <div class="priceOld">$ 109.800</div>
+                    <span class="badge badge--primary">-18%</span>
+                  </div>
+                  <div class="swatches" aria-label="Colores Set Motion">
+                    <span class="swatch" style="background:#111;"></span>
+                    <span class="swatch" style="background:var(--hf-primary);"></span>
+                    <span class="swatch" style="background:var(--hf-accent);"></span>
+                  </div>
+                  <a class="btn btn--secondary" href="#set-motion-detalle">Ver conjunto</a>
+                </div>
+              </article>
+            </div>
+            <div class="hf-carousel__slide">
+              <article class="productCard">
+                <div class="productMedia" style="background:none;">
+                  <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">
+                  <div class="productBadges">
+                    <span class="badge badge--accent">Set Power</span>
+                  </div>
+                </div>
+                <div class="productBody">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                    <div>
+                      <b>Set Power</b>
+                      <div class="small">Top + short / Liviano y elástico</div>
+                    </div>
+                    <span class="badge badge--ok">En stock</span>
+                  </div>
+                  <div class="priceRow">
+                    <div class="price">$ 72.900</div>
+                    <div class="priceOld">$ 89.800</div>
+                    <span class="badge badge--primary">-19%</span>
+                  </div>
+                  <div class="swatches" aria-label="Colores Set Power">
+                    <span class="swatch" style="background:var(--hf-earth);"></span>
+                    <span class="swatch" style="background:var(--hf-warm);"></span>
+                    <span class="swatch" style="background:#111;"></span>
+                  </div>
+                  <a class="btn btn--secondary" href="#set-power-detalle">Ver conjunto</a>
+                </div>
+              </article>
+            </div>
+            <div class="hf-carousel__slide">
+              <article class="productCard">
+                <div class="productMedia" style="background:none;">
+                  <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">
+                  <div class="productBadges">
+                    <span class="badge badge--accent">Set Urban</span>
+                  </div>
+                </div>
+                <div class="productBody">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                    <div>
+                      <b>Set Urban</b>
+                      <div class="small">Buzo + calza / Athleisure diario</div>
+                    </div>
+                    <span class="badge badge--ok">En stock</span>
+                  </div>
+                  <div class="priceRow">
+                    <div class="price">$ 134.900</div>
+                    <div class="priceOld">$ 154.800</div>
+                    <span class="badge badge--primary">-13%</span>
+                  </div>
+                  <div class="swatches" aria-label="Colores Set Urban">
+                    <span class="swatch" style="background:#4a4a4a;"></span>
+                    <span class="swatch" style="background:#1f1f1f;"></span>
+                    <span class="swatch" style="background:var(--hf-accent);"></span>
+                  </div>
+                  <a class="btn btn--secondary" href="#set-urban-detalle">Ver conjunto</a>
+                </div>
+              </article>
+            </div>
+            <div class="hf-carousel__slide">
+              <article class="productCard">
+                <div class="productMedia" style="background:none;">
+                  <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">
+                  <div class="productBadges">
+                    <span class="badge badge--accent">Set Focus</span>
+                  </div>
+                </div>
+                <div class="productBody">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                    <div>
+                      <b>Set Focus</b>
+                      <div class="small">Top + biker / Bajo impacto</div>
+                    </div>
+                    <span class="badge badge--ok">En stock</span>
+                  </div>
+                  <div class="priceRow">
+                    <div class="price">$ 69.900</div>
+                    <div class="priceOld">$ 84.800</div>
+                    <span class="badge badge--primary">-18%</span>
+                  </div>
+                  <div class="swatches" aria-label="Colores Set Focus">
+                    <span class="swatch" style="background:#0e0e0e;"></span>
+                    <span class="swatch" style="background:#6f7f8f;"></span>
+                    <span class="swatch" style="background:var(--hf-green);"></span>
+                  </div>
+                  <a class="btn btn--secondary" href="#set-focus-detalle">Ver conjunto</a>
+                </div>
+              </article>
+            </div>
+            <div class="hf-carousel__slide">
+              <article class="productCard">
+                <div class="productMedia" style="background:none;">
+                  <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
+                  <div class="productBadges">
+                    <span class="badge badge--accent">Set Energy</span>
+                  </div>
+                </div>
+                <div class="productBody">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+                    <div>
+                      <b>Set Energy</b>
+                      <div class="small">Top + short / Entrenamiento funcional</div>
+                    </div>
+                    <span class="badge badge--ok">En stock</span>
+                  </div>
+                  <div class="priceRow">
+                    <div class="price">$ 76.900</div>
+                    <div class="priceOld">$ 92.800</div>
+                    <span class="badge badge--primary">-17%</span>
+                  </div>
+                  <div class="swatches" aria-label="Colores Set Energy">
+                    <span class="swatch" style="background:var(--hf-primary);"></span>
+                    <span class="swatch" style="background:var(--hf-accent);"></span>
+                    <span class="swatch" style="background:var(--hf-earth);"></span>
+                  </div>
+                  <a class="btn btn--secondary" href="#set-energy-detalle">Ver conjunto</a>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="hf-set-mobile-carousel__actions">
-        <a class="btn btn--primary" id="setMobileBuyLink" href="#set-motion">Comprar set</a>
-        <a class="btn btn--secondary" id="setMobileDetailLink" href="#set-motion-detalle">Ver detalle</a>
       </div>
     </div>
   </section>
 
   <script>
     (function() {
-      function syncMobileSetLinks() {
-        var el = document.getElementById('setMobileCarousel');
-        var buy = document.getElementById('setMobileBuyLink');
-        var detail = document.getElementById('setMobileDetailLink');
-        if (!el || !el._hfCarousel || !buy || !detail) return;
-
-        var index = el._hfCarousel.getCurrentIndex();
-        var slides = el._hfCarousel.getSlides();
-        var slide = slides && slides[index] ? slides[index] : null;
-        if (!slide) return;
-
-        buy.href = slide.getAttribute('data-buy-link') || '#';
-        detail.href = slide.getAttribute('data-detail-link') || '#';
-      }
-
       function ensureSetMobileCarousel() {
         var el = document.getElementById('setMobileCarousel');
         if (!el || !window.HFCarousel) return;
@@ -3071,22 +3204,17 @@
           window.HFCarousel.create(el, {
             loop: true,
             dots: true,
-            arrows: false,
+            arrows: true,
             draggable: true,
             itemsToShow: 1,
             gap: 12
           });
         }
-        syncMobileSetLinks();
       }
 
       window.addEventListener('load', ensureSetMobileCarousel);
       window.addEventListener('resize', ensureSetMobileCarousel);
       document.addEventListener('DOMContentLoaded', ensureSetMobileCarousel);
-      document.addEventListener('hf:carousel:change', function(e) {
-        if (!e || !e.target || e.target.id !== 'setMobileCarousel') return;
-        syncMobileSetLinks();
-      });
     })();
   </script>
 
