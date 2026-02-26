@@ -1,10 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <!-- Horizon Fit Design System v1.0 -->
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Horizon Fit — Design System (HTML/CSS/JS)</title>
+  <title>Horizon Fit â€” Design System (HTML/CSS/JS)</title>
   <meta name="color-scheme" content="light dark" />
 
   <!-- Component CSS imports -->
@@ -21,7 +21,7 @@
 
   <style>
     /******************************************************************
-      HORIZON FIT — DESIGN SYSTEM (single file)
+      HORIZON FIT â€” DESIGN SYSTEM (single file)
       - Token-first via CSS variables
       - Vanilla JS components (modal, drawer, tabs, accordion, dropdown, toast, tooltip)
       - Ecommerce-ready examples
@@ -1594,10 +1594,12 @@
       box-shadow: none;
       transition: none;
       padding: 0;
+      top: clamp(150px, calc((100vw - 24px) * 0.625), 280px);
+      transform: translateY(-50%);
     }
 
     .hf-set-mobile-carousel .hf-carousel__nav:hover {
-      transform: none;
+      transform: translateY(-50%);
     }
 
     .hf-set-mobile-carousel .hf-carousel__nav svg {
@@ -1765,7 +1767,7 @@
     <div class="nav__inner">
       <!-- Izquierda: Hamburguesa (+ Search en mobile) -->
       <div class="nav__left">
-        <button class="btn btn--ghost btn--sm nav__hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false" style="color:var(--hf-primary);">
+        <button class="btn btn--ghost btn--sm nav__hamburger" id="hamburgerBtn" aria-label="Abrir menÃº" aria-expanded="false" style="color:var(--hf-primary);">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1831,7 +1833,7 @@
   </header>
 
   <!-- ============================================
-       FULL SCREEN COMPONENTS (sin márgenes)
+       FULL SCREEN COMPONENTS (sin mÃ¡rgenes)
        ============================================ -->
 
   <!-- ANNOUNCEMENT BANNER - FULL WIDTH -->
@@ -1860,14 +1862,14 @@
       <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4" media="(max-width: 768px)">
       <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4" media="(min-width: 769px)">
     </video>
-    <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&h=1080&fit=crop" alt="" aria-hidden="true">
+    <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="" aria-hidden="true">
     <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
     <div class="hf-video-hero__content">
       <!-- <span class="badge badge--primary hf-video-hero__badge">DROP 01</span> -->
-      <h1 class="hf-video-hero__title">Más allá del entrenamiento</h1>
+      <h1 class="hf-video-hero__title">MÃ¡s allÃ¡ del entrenamiento</h1>
       <p class="hf-video-hero__subtitle">Activewear para la vida real. Del gym a la calle sin cortar la rutina.</p>
       <div class="hf-video-hero__actions">
-        <a href="#ecommerce" class="btn btn--primary btn--lg">Ver colección</a>
+        <a href="#ecommerce" class="btn btn--primary btn--lg">Ver colecciÃ³n</a>
         <a href="#marketing" class="btn btn--secondary btn--lg">Componentes</a>
       </div>
     </div>
@@ -1899,9 +1901,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -1934,9 +1936,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -1970,9 +1972,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2005,9 +2007,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2034,9 +2036,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">30% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2062,9 +2064,9 @@
         <article class="hf-product-item hf-product-item--slider">
           <div class="hf-product-item__media">
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2091,9 +2093,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2120,9 +2122,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">40% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2149,9 +2151,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2178,9 +2180,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">25% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2206,9 +2208,9 @@
         <article class="hf-product-item hf-product-item--slider">
           <div class="hf-product-item__media">
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2235,9 +2237,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">60% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2264,9 +2266,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2293,9 +2295,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">35% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2321,9 +2323,9 @@
         <article class="hf-product-item hf-product-item--slider">
           <div class="hf-product-item__media">
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2350,9 +2352,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">45% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2396,9 +2398,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2431,9 +2433,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2467,9 +2469,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2502,9 +2504,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">50% OFF!</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2531,9 +2533,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2560,9 +2562,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2589,9 +2591,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2618,9 +2620,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2647,9 +2649,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2676,9 +2678,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2705,9 +2707,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2734,9 +2736,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2763,9 +2765,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2792,9 +2794,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2821,9 +2823,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2836,7 +2838,7 @@
               <button class="hf-product-item__size" aria-pressed="false">S</button><button class="hf-product-item__size" aria-pressed="false">M</button><button class="hf-product-item__size" aria-pressed="false">L</button><button class="hf-product-item__size" aria-pressed="false">XL</button>
             </div>
             <p class="hf-product-item__brand">Essential</p>
-            <h3 class="hf-product-item__title">CALZA COMPRESIÓN</h3>
+            <h3 class="hf-product-item__title">CALZA COMPRESIÃ“N</h3>
             <div class="hf-product-item__pricing">
               <div class="hf-product-item__price-row"><span class="hf-product-item__price">$64.990 ARS</span></div>
               <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$10.832</a></p>
@@ -2850,9 +2852,9 @@
           <div class="hf-product-item__media">
             <span class="hf-product-item__badge">NUEVO</span>
             <div class="hf-product-item__slider" data-slider>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=533&fit=crop" alt="Vista 1"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 2"></div>
-              <div class="hf-product-item__slide"><img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=533&fit=crop" alt="Vista 3"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 1"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 2"></div>
+              <div class="hf-product-item__slide"><img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Vista 3"></div>
             </div>
             <div class="hf-product-item__dots">
               <button class="hf-product-item__dot is-active" data-slide="0"></button>
@@ -2968,24 +2970,24 @@
         <div class="hf-set-desktop-slider__media-col">
           <div class="hf-set-desktop-slider__viewport" id="setDesktopViewport">
             <div class="hf-set-desktop-slider__track" id="setDesktopTrack">
-              <article class="hf-set-desktop-slider__slide" data-title="Set Motion" data-meta="Top + calza | Compresión media" data-items="Top Motion|Calza Range|6 cuotas sin interés" data-price="$89.900" data-compare="$109.800" data-buy-link="#set-motion" data-detail-link="#set-motion-detalle">
-                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1800&h=1000&fit=crop" alt="Set Motion completo">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Motion" data-meta="Top + calza | CompresiÃ³n media" data-items="Top Motion|Calza Range|6 cuotas sin interÃ©s" data-price="$89.900" data-compare="$109.800" data-buy-link="#set-motion" data-detail-link="#set-motion-detalle">
+                <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Motion completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Power" data-meta="Top + short | Liviano y elástico" data-items="Top Essential|Short Versátil|Secado rápido" data-price="$72.900" data-compare="$89.800" data-buy-link="#set-power" data-detail-link="#set-power-detalle">
-                <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1800&h=1000&fit=crop" alt="Set Power completo">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Power" data-meta="Top + short | Liviano y elÃ¡stico" data-items="Top Essential|Short VersÃ¡til|Secado rÃ¡pido" data-price="$72.900" data-compare="$89.800" data-buy-link="#set-power" data-detail-link="#set-power-detalle">
+                <img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Power completo">
               </article>
 
-              <article class="hf-set-desktop-slider__slide" data-title="Set Urban" data-meta="Buzo + calza | Athleisure diario" data-items="Hoodie Cotidiano|Calza Flow|Termorregulación" data-price="$134.900" data-compare="$154.800" data-buy-link="#set-urban" data-detail-link="#set-urban-detalle">
-                <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1800&h=1000&fit=crop" alt="Set Urban completo">
+              <article class="hf-set-desktop-slider__slide" data-title="Set Urban" data-meta="Buzo + calza | Athleisure diario" data-items="Hoodie Cotidiano|Calza Flow|TermorregulaciÃ³n" data-price="$134.900" data-compare="$154.800" data-buy-link="#set-urban" data-detail-link="#set-urban-detalle">
+                <img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Urban completo">
               </article>
 
               <article class="hf-set-desktop-slider__slide" data-title="Set Focus" data-meta="Top + biker | Bajo impacto" data-items="Top Motion|Biker Short|Elasticidad 4-way" data-price="$69.900" data-compare="$84.800" data-buy-link="#set-focus" data-detail-link="#set-focus-detalle">
-                <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=1800&h=1000&fit=crop" alt="Set Focus completo">
+                <img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Focus completo">
               </article>
 
               <article class="hf-set-desktop-slider__slide" data-title="Set Energy" data-meta="Top + short | Entrenamiento funcional" data-items="Top Power|Short Train|Tela respirable" data-price="$76.900" data-compare="$92.800" data-buy-link="#set-energy" data-detail-link="#set-energy-detalle">
-                <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=1800&h=1000&fit=crop" alt="Set Energy completo">
+                <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Energy completo">
               </article>
             </div>
             <button class="hf-set-desktop-slider__arrow hf-set-desktop-slider__arrow--prev" id="setDesktopPrev" type="button" aria-label="Set anterior">
@@ -2996,7 +2998,7 @@
             </button>
           </div>
 
-          <div class="hf-set-desktop-slider__dots" id="setDesktopDots" aria-label="Navegación de slides">
+          <div class="hf-set-desktop-slider__dots" id="setDesktopDots" aria-label="NavegaciÃ³n de slides">
             <button class="hf-set-desktop-slider__dot is-active" type="button" data-slide="0" aria-label="Slide 1"></button>
             <button class="hf-set-desktop-slider__dot" type="button" data-slide="1" aria-label="Slide 2"></button>
             <button class="hf-set-desktop-slider__dot" type="button" data-slide="2" aria-label="Slide 3"></button>
@@ -3006,13 +3008,13 @@
         </div>
 
         <aside class="hf-set-desktop-slider__info" id="setDesktopInfo" aria-live="polite">
-          <span class="badge badge--primary">Conformación del conjunto</span>
+          <span class="badge badge--primary">ConformaciÃ³n del conjunto</span>
           <h3 class="hf-set-desktop-slider__title" id="setDesktopInfoTitle">Set Motion</h3>
-          <p class="hf-set-desktop-slider__meta" id="setDesktopInfoMeta">Top + calza | Compresión media</p>
+          <p class="hf-set-desktop-slider__meta" id="setDesktopInfoMeta">Top + calza | CompresiÃ³n media</p>
           <ul class="hf-set-desktop-slider__list" id="setDesktopInfoList">
             <li>Top Motion</li>
             <li>Calza Range</li>
-            <li>6 cuotas sin interés</li>
+            <li>6 cuotas sin interÃ©s</li>
           </ul>
           <div class="hf-set-desktop-slider__price">
             <b id="setDesktopInfoPrice">$89.900</b>
@@ -3041,7 +3043,7 @@
             <div class="hf-carousel__slide">
               <article class="productCard">
                 <div class="productMedia" style="background:none;">
-                  <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&h=1100&fit=crop" alt="Set Motion">
+                  <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Motion">
                   <div class="productBadges">
                     <span class="badge badge--accent">Set Motion</span>
                   </div>
@@ -3050,7 +3052,7 @@
                   <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                     <div>
                       <b>Set Motion</b>
-                      <div class="small">Top + calza / Compresión media</div>
+                      <div class="small">Top + calza / CompresiÃ³n media</div>
                     </div>
                     <span class="badge badge--ok">En stock</span>
                   </div>
@@ -3071,7 +3073,7 @@
             <div class="hf-carousel__slide">
               <article class="productCard">
                 <div class="productMedia" style="background:none;">
-                  <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=900&h=1100&fit=crop" alt="Set Power">
+                  <img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Power">
                   <div class="productBadges">
                     <span class="badge badge--accent">Set Power</span>
                   </div>
@@ -3080,7 +3082,7 @@
                   <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                     <div>
                       <b>Set Power</b>
-                      <div class="small">Top + short / Liviano y elástico</div>
+                      <div class="small">Top + short / Liviano y elÃ¡stico</div>
                     </div>
                     <span class="badge badge--ok">En stock</span>
                   </div>
@@ -3101,7 +3103,7 @@
             <div class="hf-carousel__slide">
               <article class="productCard">
                 <div class="productMedia" style="background:none;">
-                  <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&h=1100&fit=crop" alt="Set Urban">
+                  <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Urban">
                   <div class="productBadges">
                     <span class="badge badge--accent">Set Urban</span>
                   </div>
@@ -3131,7 +3133,7 @@
             <div class="hf-carousel__slide">
               <article class="productCard">
                 <div class="productMedia" style="background:none;">
-                  <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=900&h=1100&fit=crop" alt="Set Focus">
+                  <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Focus">
                   <div class="productBadges">
                     <span class="badge badge--accent">Set Focus</span>
                   </div>
@@ -3161,7 +3163,7 @@
             <div class="hf-carousel__slide">
               <article class="productCard">
                 <div class="productMedia" style="background:none;">
-                  <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=900&h=1100&fit=crop" alt="Set Energy">
+                  <img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Energy">
                   <div class="productBadges">
                     <span class="badge badge--accent">Set Energy</span>
                   </div>
@@ -3233,7 +3235,7 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">Envíos gratis a todo el país</h3>
+              <h3 class="trust-item__title">EnvÃ­os gratis a todo el paÃ­s</h3>
               <p class="trust-item__description">En compras superiores a $150.000</p>
             </div>
           </div>
@@ -3247,8 +3249,8 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">3 y 6 cuotas sin interés</h3>
-              <p class="trust-item__description">Pagando con débito y crédito</p>
+              <h3 class="trust-item__title">3 y 6 cuotas sin interÃ©s</h3>
+              <p class="trust-item__description">Pagando con dÃ©bito y crÃ©dito</p>
             </div>
           </div>
           <div class="trust-item">
@@ -3263,8 +3265,8 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">Cambios fáciles</h3>
-              <p class="trust-item__description">Tenés hasta 30 días para cambiar tu compra</p>
+              <h3 class="trust-item__title">Cambios fÃ¡ciles</h3>
+              <p class="trust-item__description">TenÃ©s hasta 30 dÃ­as para cambiar tu compra</p>
             </div>
           </div>
           <div class="trust-item">
@@ -3276,8 +3278,8 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">Atención personalizada</h3>
-              <p class="trust-item__description">Te acompañamos antes y después de tu compra</p>
+              <h3 class="trust-item__title">AtenciÃ³n personalizada</h3>
+              <p class="trust-item__description">Te acompaÃ±amos antes y despuÃ©s de tu compra</p>
             </div>
           </div>
         </div>
@@ -3298,7 +3300,7 @@
 
       <div class="hf-categories__grid">
         <a href="#ecommerce" class="hf-category-card" aria-label="Ver Tops">
-          <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=1400&h=900&fit=crop" alt="Categoria Tops">
+          <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Categoria Tops">
           <div class="hf-category-card__overlay">
             <div>
               <h3 class="hf-category-card__title">Tops</h3>
@@ -3309,7 +3311,7 @@
         </a>
 
         <a href="#ecommerce" class="hf-category-card" aria-label="Ver Calzas">
-          <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1400&h=900&fit=crop" alt="Categoria Calzas">
+          <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Categoria Calzas">
           <div class="hf-category-card__overlay">
             <div>
               <h3 class="hf-category-card__title">Calzas</h3>
@@ -3320,7 +3322,7 @@
         </a>
 
         <a href="#ecommerce" class="hf-category-card" aria-label="Ver Buzos">
-          <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1400&h=900&fit=crop" alt="Categoria Buzos">
+          <img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Categoria Buzos">
           <div class="hf-category-card__overlay">
             <div>
               <h3 class="hf-category-card__title">Buzos</h3>
@@ -3331,7 +3333,7 @@
         </a>
 
         <a href="#ecommerce" class="hf-category-card" aria-label="Ver Accesorios">
-          <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1400&h=900&fit=crop" alt="Categoria Accesorios">
+          <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Categoria Accesorios">
           <div class="hf-category-card__overlay">
             <div>
               <h3 class="hf-category-card__title">Accesorios</h3>
@@ -3351,7 +3353,7 @@
     <div style="max-width:800px;margin:0 auto;">
       <span style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.2);border-radius:999px;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;">OFERTA LIMITADA</span>
       <h2 style="font-size:clamp(32px,5vw,56px);font-weight:900;color:#fff;margin:0 0 16px;letter-spacing:-0.02em;">20% OFF en tu primera compra</h2>
-      <p style="font-size:18px;color:rgba(255,255,255,0.85);margin:0 0 32px;">Usá el código <strong style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:8px;">HF-20</strong> al finalizar tu compra.</p>
+      <p style="font-size:18px;color:rgba(255,255,255,0.85);margin:0 0 32px;">UsÃ¡ el cÃ³digo <strong style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:8px;">HF-20</strong> al finalizar tu compra.</p>
       <a href="#ecommerce" class="btn btn--lg" style="padding:18px 40px;font-size:16px;background:#fff;color:var(--hf-primary-700);font-weight:800;">Comprar ahora</a>
     </div>
   </section>
@@ -3369,19 +3371,19 @@
             </div>
 
             <div class="heroTitle">
-              <h1 class="h1">Un Design System para moverte rápido.</h1>
+              <h1 class="h1">Un Design System para moverte rÃ¡pido.</h1>
               <p class="p">
-                Página única para preview y construcción de componentes. Estilo minimalista + banner grande (e-commerce),
-                con microinteracciones suaves “movimiento continuo”.
+                PÃ¡gina Ãºnica para preview y construcciÃ³n de componentes. Estilo minimalista + banner grande (e-commerce),
+                con microinteracciones suaves â€œmovimiento continuoâ€.
               </p>
               <div class="heroCTA">
-                <a class="btn btn--primary btn--lg" href="#ecommerce">Ver módulos E-commerce</a>
+                <a class="btn btn--primary btn--lg" href="#ecommerce">Ver mÃ³dulos E-commerce</a>
                 <button class="btn btn--secondary btn--lg" id="downloadHtmlBtn">Guardar como archivo</button>
                 <button class="btn btn--ghost btn--lg" id="openToastDemo">Probar interacciones</button>
               </div>
               <div class="spacer"></div>
               <div class="small">
-                Tip: todo esto lo podés pegar en un bloque HTML en WordPress y listo.
+                Tip: todo esto lo podÃ©s pegar en un bloque HTML en WordPress y listo.
               </div>
             </div>
           </div>
@@ -3391,7 +3393,7 @@
           <div class="card">
             <div class="card__hd">
               <div class="badge badge--primary">Tokens</div>
-              <h3 class="h3" style="margin-top:10px;">Paleta y semántica</h3>
+              <h3 class="h3" style="margin-top:10px;">Paleta y semÃ¡ntica</h3>
               <p class="p">Colores base desde el Identikit.</p>
             </div>
             <div class="card__bd">
@@ -3416,7 +3418,7 @@
           <div class="card">
             <div class="card__hd">
               <div class="badge badge--accent">Principios</div>
-              <h3 class="h3" style="margin-top:10px;">Cómo se traduce a UI</h3>
+              <h3 class="h3" style="margin-top:10px;">CÃ³mo se traduce a UI</h3>
               <p class="p">Movimientos suaves, componentes flexibles y tono cercano.</p>
             </div>
             <div class="card__bd">
@@ -3425,20 +3427,20 @@
                   <div class="alert__dot"></div>
                   <div>
                     <b>Movimiento continuo</b>
-                    <div class="small">Transiciones 150–240ms, estados fluidos.</div>
+                    <div class="small">Transiciones 150â€“240ms, estados fluidos.</div>
                   </div>
                 </div>
                 <div class="alert alert--warn">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>Extender límites</b>
-                    <div class="small">Variantes + composición (chips, cards, grids).</div>
+                    <b>Extender lÃ­mites</b>
+                    <div class="small">Variantes + composiciÃ³n (chips, cards, grids).</div>
                   </div>
                 </div>
                 <div class="alert alert--ok">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>Cercanía y realidad</b>
+                    <b>CercanÃ­a y realidad</b>
                     <div class="small">Copys claros, layouts reales, sin humo.</div>
                   </div>
                 </div>
@@ -3454,7 +3456,7 @@
     <section class="section anchor" id="tokens">
       <div class="container">
         <h2 class="h2">Tokens</h2>
-        <p class="p">Variables CSS como fuente de verdad: colores, spacing, radius, motion, tipografía.</p>
+        <p class="p">Variables CSS como fuente de verdad: colores, spacing, radius, motion, tipografÃ­a.</p>
 
         <div class="grid grid-2" style="margin-top:var(--s-6);">
           <div class="card">
@@ -3471,22 +3473,22 @@
               </div>
               <div class="divider"></div>
               <div class="small mono">
-                Tip: si querés “más Zara / minimal”, bajá sombras y subí whitespace.
+                Tip: si querÃ©s â€œmÃ¡s Zara / minimalâ€, bajÃ¡ sombras y subÃ­ whitespace.
               </div>
             </div>
           </div>
 
           <div class="card">
             <div class="card__hd">
-              <h3 class="h3">Tipografía</h3>
+              <h3 class="h3">TipografÃ­a</h3>
               <p class="p">Escala simple (H1/H2/H3/body/small).</p>
             </div>
             <div class="card__bd">
-              <div class="h1" style="margin:0;">H1 — Horizon Fit</div>
-              <div class="h2" style="margin:8px 0 0;">H2 — Colección / Drop</div>
-              <div class="h3" style="margin:10px 0 0;">H3 — Detalles</div>
-              <p class="p" style="margin-top:10px;">Body — Texto de apoyo, descriptivo y claro.</p>
-              <div class="small" style="margin-top:8px;">Small — Metadatos, labels, hints.</div>
+              <div class="h1" style="margin:0;">H1 â€” Horizon Fit</div>
+              <div class="h2" style="margin:8px 0 0;">H2 â€” ColecciÃ³n / Drop</div>
+              <div class="h3" style="margin:10px 0 0;">H3 â€” Detalles</div>
+              <p class="p" style="margin-top:10px;">Body â€” Texto de apoyo, descriptivo y claro.</p>
+              <div class="small" style="margin-top:8px;">Small â€” Metadatos, labels, hints.</div>
             </div>
           </div>
         </div>
@@ -3509,7 +3511,7 @@
               <div class="row">
                 <button class="btn btn--primary">Comprar ahora</button>
                 <button class="btn btn--secondary">Agregar al carrito</button>
-                <button class="btn btn--ghost">Ver más</button>
+                <button class="btn btn--ghost">Ver mÃ¡s</button>
                 <button class="btn btn--danger">Eliminar</button>
               </div>
               <div class="spacer"></div>
@@ -3543,7 +3545,7 @@
                 </div>
 
                 <div class="field">
-                  <div class="label">Código de descuento</div>
+                  <div class="label">CÃ³digo de descuento</div>
                   <div class="row" style="gap:10px;">
                     <input class="control" type="text" placeholder="HF-15" style="flex:1;" />
                     <button class="btn btn--secondary">Aplicar</button>
@@ -3551,7 +3553,7 @@
                 </div>
 
                 <div class="field">
-                  <div class="label">País</div>
+                  <div class="label">PaÃ­s</div>
                   <select class="control">
                     <option>Argentina</option>
                     <option>Chile</option>
@@ -3561,7 +3563,7 @@
 
                 <div class="field">
                   <div class="label">Notas</div>
-                  <textarea class="control" rows="3" placeholder="Indicaciones para el envío..."></textarea>
+                  <textarea class="control" rows="3" placeholder="Indicaciones para el envÃ­o..."></textarea>
                 </div>
 
                 <div class="row">
@@ -3584,24 +3586,24 @@
               <label class="choice">
                 <input type="checkbox" checked />
                 <span>
-                  <b>Quiero guía de talles</b>
-                  <small>Te mostramos cómo elegir rápido sin vueltas.</small>
+                  <b>Quiero guÃ­a de talles</b>
+                  <small>Te mostramos cÃ³mo elegir rÃ¡pido sin vueltas.</small>
                 </span>
               </label>
               <div class="spacer"></div>
               <label class="choice">
                 <input type="radio" name="ship" checked />
                 <span>
-                  <b>Envío estándar</b>
-                  <small>48–96 hs hábiles.</small>
+                  <b>EnvÃ­o estÃ¡ndar</b>
+                  <small>48â€“96 hs hÃ¡biles.</small>
                 </span>
               </label>
               <div class="spacer"></div>
               <label class="choice">
                 <input type="radio" name="ship" />
                 <span>
-                  <b>Envío express</b>
-                  <small>24–48 hs hábiles.</small>
+                  <b>EnvÃ­o express</b>
+                  <small>24â€“48 hs hÃ¡biles.</small>
                 </span>
               </label>
             </div>
@@ -3624,7 +3626,7 @@
                 <button class="btn btn--primary" id="openCartBtn2">Abrir drawer</button>
               </div>
               <div class="small" style="margin-top:10px;">
-                Accesible: <span class="kbd">ESC</span> cierra modal/drawer, click afuera también.
+                Accesible: <span class="kbd">ESC</span> cierra modal/drawer, click afuera tambiÃ©n.
               </div>
             </div>
           </div>
@@ -3633,59 +3635,59 @@
         <div class="grid grid-2" style="margin-top:var(--s-6);">
           <div class="tabs" data-tabs>
             <div class="tabs__list" role="tablist" aria-label="Demo tabs">
-              <button class="tab" role="tab" aria-selected="true" data-tab="tab-1">Descripción</button>
+              <button class="tab" role="tab" aria-selected="true" data-tab="tab-1">DescripciÃ³n</button>
               <button class="tab" role="tab" aria-selected="false" data-tab="tab-2">Detalles</button>
-              <button class="tab" role="tab" aria-selected="false" data-tab="tab-3">Envíos</button>
+              <button class="tab" role="tab" aria-selected="false" data-tab="tab-3">EnvÃ­os</button>
             </div>
             <div class="tabs__panel is-active" id="tab-1" role="tabpanel">
-              <b>Más allá del entrenamiento</b>
+              <b>MÃ¡s allÃ¡ del entrenamiento</b>
               <p class="p" style="margin-top:8px;">
-                Prendas cómodas y funcionales para extender tu día sin cambiar de plan.
+                Prendas cÃ³modas y funcionales para extender tu dÃ­a sin cambiar de plan.
               </p>
             </div>
             <div class="tabs__panel" id="tab-2" role="tabpanel">
               <div class="row">
                 <span class="badge">Tela: Supplex</span>
-                <span class="badge badge--accent">Compresión media</span>
-                <span class="badge badge--ok">Secado rápido</span>
+                <span class="badge badge--accent">CompresiÃ³n media</span>
+                <span class="badge badge--ok">Secado rÃ¡pido</span>
               </div>
             </div>
             <div class="tabs__panel" id="tab-3" role="tabpanel">
-              <p class="p">CABA/GBA 48–96 hs. Interior 3–6 días. Retiro: 24 hs.</p>
+              <p class="p">CABA/GBA 48â€“96 hs. Interior 3â€“6 dÃ­as. Retiro: 24 hs.</p>
             </div>
           </div>
 
           <div class="accordion" data-accordion>
             <div class="acc__item" aria-expanded="true">
               <button class="acc__btn">
-                ¿Cómo elijo mi talle?
-                <span class="chev">▾</span>
+                Â¿CÃ³mo elijo mi talle?
+                <span class="chev">â–¾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  Elegí en base a tu talle habitual. Si estás entre dos, subí uno para mayor comodidad.
+                  ElegÃ­ en base a tu talle habitual. Si estÃ¡s entre dos, subÃ­ uno para mayor comodidad.
                 </p>
               </div></div>
             </div>
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
-                ¿Puedo cambiar si no me queda?
-                <span class="chev">▾</span>
+                Â¿Puedo cambiar si no me queda?
+                <span class="chev">â–¾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  Sí, tenés 10 días para cambios. La prenda debe estar sin uso y con etiqueta.
+                  SÃ­, tenÃ©s 10 dÃ­as para cambios. La prenda debe estar sin uso y con etiqueta.
                 </p>
               </div></div>
             </div>
             <div class="acc__item" aria-expanded="false">
               <button class="acc__btn">
                 Cuidados de la prenda
-                <span class="chev">▾</span>
+                <span class="chev">â–¾</span>
               </button>
               <div class="acc__panel"><div>
                 <p class="p" style="margin-top:0;">
-                  Lavar con agua fría, no usar blanqueador, secar a la sombra. No planchar estampas.
+                  Lavar con agua frÃ­a, no usar blanqueador, secar a la sombra. No planchar estampas.
                 </p>
               </div></div>
             </div>
@@ -3713,13 +3715,13 @@
             <div class="hf-marquee hf-marquee--primary" data-hf="marquee" data-speed="25">
               <div class="hf-marquee__track">
                 <div class="hf-marquee__content">
-                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                  <span class="hf-marquee__item">EnvÃ­o gratis en compras +$120.000</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">DROP 01 disponible</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">Cambios sin costo</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
-                  <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                  <span class="hf-marquee__item">EnvÃ­o gratis en compras +$120.000</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
                   <span class="hf-marquee__item">DROP 01 disponible</span>
                   <span class="hf-marquee__separator" aria-hidden="true"></span>
@@ -3751,7 +3753,7 @@
                   </div>
                   <div class="hf-banner__content">
                     <p class="hf-banner__title">Info Banner</p>
-                    <p class="hf-banner__message">Información importante para el usuario.</p>
+                    <p class="hf-banner__message">InformaciÃ³n importante para el usuario.</p>
                   </div>
                 </div>
 
@@ -3762,9 +3764,9 @@
                   </div>
                   <div class="hf-banner__content">
                     <p class="hf-banner__title">15% OFF en tu primera compra</p>
-                    <p class="hf-banner__message">Usá el código HF-15 al finalizar.</p>
+                    <p class="hf-banner__message">UsÃ¡ el cÃ³digo HF-15 al finalizar.</p>
                     <div class="hf-banner__actions">
-                      <button class="btn btn--primary btn--sm">Aplicar código</button>
+                      <button class="btn btn--primary btn--sm">Aplicar cÃ³digo</button>
                     </div>
                   </div>
                   <button class="hf-banner__dismiss" aria-label="Cerrar">
@@ -3802,7 +3804,7 @@
             <div class="card__hd">
               <div class="badge badge--accent">hf-carousel</div>
               <h3 class="h3" style="margin-top:10px;">Carousel / Slider</h3>
-              <p class="p">Drag/swipe, arrows, dots, autoplay opcional. Responsive: 1-4 items según breakpoint.</p>
+              <p class="p">Drag/swipe, arrows, dots, autoplay opcional. Responsive: 1-4 items segÃºn breakpoint.</p>
             </div>
             <div class="card__bd">
               <!-- Carousel Demo -->
@@ -3810,26 +3812,26 @@
                 <div class="hf-carousel__viewport">
                   <div class="hf-carousel__track">
                     <div class="hf-carousel__slide">
-                      <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=400&h=500&fit=crop" alt="Leggings negros" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                      <img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Leggings negros" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
                     </div>
                     <div class="hf-carousel__slide">
-                      <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top deportivo" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                      <img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top deportivo" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
                     </div>
                     <div class="hf-carousel__slide">
-                      <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=500&fit=crop" alt="Conjunto fitness" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                      <img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Conjunto fitness" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
                     </div>
                     <div class="hf-carousel__slide">
-                      <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=500&fit=crop" alt="Ropa gym" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                      <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Ropa gym" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
                     </div>
                     <div class="hf-carousel__slide">
-                      <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=500&fit=crop" alt="Activewear" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
+                      <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Activewear" style="aspect-ratio:4/5;border-radius:var(--r-2);object-fit:cover;width:100%;">
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="card__ft">
-              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: ← →</div>
+              <div class="small mono">API: next(), prev(), goTo(i), destroy() | Keyboard: â† â†’</div>
             </div>
           </div>
         </div>
@@ -3850,15 +3852,15 @@
                 <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4" media="(min-width: 769px)">
               </video>
               <!-- Fallback image -->
-              <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&h=800&fit=crop" alt="Gym workout">
+              <img class="hf-video-hero__media hf-video-hero__fallback" src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Gym workout">
               <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
               <div class="hf-video-hero__content">
                 <!-- <span class="badge badge--primary hf-video-hero__badge">DROP 01</span> -->
-                <h2 class="hf-video-hero__title">Más allá del entrenamiento</h2>
-                <p class="hf-video-hero__subtitle">Activewear para la vida real: cómodo, funcional y versátil. Del gym a la calle sin cortar la rutina.</p>
+                <h2 class="hf-video-hero__title">MÃ¡s allÃ¡ del entrenamiento</h2>
+                <p class="hf-video-hero__subtitle">Activewear para la vida real: cÃ³modo, funcional y versÃ¡til. Del gym a la calle sin cortar la rutina.</p>
                 <div class="hf-video-hero__actions">
-                  <button class="btn btn--primary btn--lg">Ver colección</button>
-                  <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">Guía de talles</button>
+                  <button class="btn btn--primary btn--lg">Ver colecciÃ³n</button>
+                  <button class="btn btn--secondary btn--lg" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:var(--hf-white);">GuÃ­a de talles</button>
                 </div>
               </div>
             </div>
@@ -3870,7 +3872,7 @@
           <div class="card__hd">
             <div class="badge badge--accent">hf-grid + hf-card</div>
             <h3 class="h3" style="margin-top:10px;">Collection Grid con Filtros</h3>
-            <p class="p">Grid responsive con filtros por categoría. Product cards con hover actions, swatches y badges.</p>
+            <p class="p">Grid responsive con filtros por categorÃ­a. Product cards con hover actions, swatches y badges.</p>
           </div>
           <div class="card__bd">
             <!-- Collection with filters -->
@@ -3886,7 +3888,7 @@
                 <div class="hf-collection__sort">
                   <span class="hf-collection__sort-label">Ordenar:</span>
                   <select class="hf-collection__sort-select">
-                    <option value="newest">Más recientes</option>
+                    <option value="newest">MÃ¡s recientes</option>
                     <option value="price-asc">Precio: menor a mayor</option>
                     <option value="price-desc">Precio: mayor a menor</option>
                     <option value="name-asc">Nombre A-Z</option>
@@ -3903,7 +3905,7 @@
                 <!-- Card 1 -->
                 <article class="hf-card hf-card--product" data-category="leggings" data-price="59900" data-name="Calza Range">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=500&fit=crop" alt="Calza Range negra" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range negra" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge badge--primary">Nuevo</span>
                     </div>
@@ -3911,7 +3913,7 @@
                       <button class="hf-card__action" aria-label="Agregar a favoritos">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       </button>
-                      <button class="hf-card__action" aria-label="Vista rápida">
+                      <button class="hf-card__action" aria-label="Vista rÃ¡pida">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       </button>
                     </div>
@@ -3920,7 +3922,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Calza Range</h3>
-                        <p class="hf-card__subtitle">Negro / Compresión media</p>
+                        <p class="hf-card__subtitle">Negro / CompresiÃ³n media</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -3942,7 +3944,7 @@
                 <!-- Card 2 -->
                 <article class="hf-card hf-card--product" data-category="tops" data-price="34900" data-name="Top Motion">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top Motion arena" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Motion arena" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge badge--accent">Best seller</span>
                     </div>
@@ -3956,7 +3958,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Top Motion</h3>
-                        <p class="hf-card__subtitle">Arena / Sujeción media</p>
+                        <p class="hf-card__subtitle">Arena / SujeciÃ³n media</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -3975,7 +3977,7 @@
                 <!-- Card 3 -->
                 <article class="hf-card hf-card--product" data-category="hoodies" data-price="89900" data-name="Hoodie Cotidiano">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop" alt="Hoodie Cotidiano gris" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Hoodie Cotidiano gris" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge">Essentials</span>
                     </div>
@@ -4002,9 +4004,9 @@
                 </article>
 
                 <!-- Card 4 -->
-                <article class="hf-card hf-card--product" data-category="shorts" data-price="41900" data-name="Short Versátil">
+                <article class="hf-card hf-card--product" data-category="shorts" data-price="41900" data-name="Short VersÃ¡til">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil verde" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Short VersÃ¡til verde" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge badge--primary">Promo</span>
                     </div>
@@ -4017,7 +4019,7 @@
                   <div class="hf-card__body">
                     <div class="hf-card__header">
                       <div>
-                        <h3 class="hf-card__title">Short Versátil</h3>
+                        <h3 class="hf-card__title">Short VersÃ¡til</h3>
                         <p class="hf-card__subtitle">Verde / Liviano</p>
                       </div>
                     </div>
@@ -4033,7 +4035,7 @@
                 <!-- Card 5 -->
                 <article class="hf-card hf-card--product" data-category="leggings" data-price="54900" data-name="Calza Flow">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=500&fit=crop" alt="Calza Flow burgundy" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Flow burgundy" loading="lazy">
                     <div class="hf-card__badges">
                       <span class="badge badge--ok">En stock</span>
                     </div>
@@ -4062,7 +4064,7 @@
                 <!-- Card 6 -->
                 <article class="hf-card hf-card--product" data-category="tops" data-price="29900" data-name="Top Essential">
                   <div class="hf-card__media">
-                    <img class="hf-card__image" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=500&fit=crop" alt="Top Essential crema" loading="lazy">
+                    <img class="hf-card__image" src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Essential crema" loading="lazy">
                     <div class="hf-card__actions">
                       <button class="hf-card__action" aria-label="Agregar a favoritos">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -4073,7 +4075,7 @@
                     <div class="hf-card__header">
                       <div>
                         <h3 class="hf-card__title">Top Essential</h3>
-                        <p class="hf-card__subtitle">Crema / Básico</p>
+                        <p class="hf-card__subtitle">Crema / BÃ¡sico</p>
                       </div>
                     </div>
                     <div class="hf-card__price">
@@ -4103,31 +4105,31 @@
           <div class="card__hd">
             <div class="badge badge--primary">hf-lightbox</div>
             <h3 class="h3" style="margin-top:10px;">Gallery / Lightbox</h3>
-            <p class="p">Galería para PDP con thumbnails, zoom modal, focus trap y navegación por teclado (← → ESC).</p>
+            <p class="p">GalerÃ­a para PDP con thumbnails, zoom modal, focus trap y navegaciÃ³n por teclado (â† â†’ ESC).</p>
           </div>
           <div class="card__bd">
             <div class="grid grid-2" style="gap:var(--s-6);">
               <!-- Gallery Demo -->
               <div class="hf-gallery" data-hf="lightbox">
                 <div class="hf-gallery__main" tabindex="0">
-                  <img class="hf-gallery__main-image" src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=750&fit=crop" alt="Calza Range - Vista principal" data-lightbox-src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1200&h=1500&fit=crop">
+                  <img class="hf-gallery__main-image" src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range - Vista principal" data-lightbox-src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1">
                   <div class="hf-gallery__zoom-hint">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
                     Click para ampliar
                   </div>
                 </div>
                 <div class="hf-gallery__thumbs">
-                  <button class="hf-gallery__thumb is-active" aria-selected="true" aria-label="Imagen 1" data-lightbox-src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=1200&h=1500&fit=crop">
-                    <img src="https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  <button class="hf-gallery__thumb is-active" aria-selected="true" aria-label="Imagen 1" data-lightbox-src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1">
+                    <img src="https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="" class="hf-gallery__thumb-image">
                   </button>
-                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 2" data-lightbox-src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=1200&h=1500&fit=crop">
-                    <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 2" data-lightbox-src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1">
+                    <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="" class="hf-gallery__thumb-image">
                   </button>
-                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 3" data-lightbox-src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&h=1500&fit=crop">
-                    <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 3" data-lightbox-src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1">
+                    <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="" class="hf-gallery__thumb-image">
                   </button>
-                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 4" data-lightbox-src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1200&h=1500&fit=crop">
-                    <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=100&h=125&fit=crop" alt="" class="hf-gallery__thumb-image">
+                  <button class="hf-gallery__thumb" aria-selected="false" aria-label="Imagen 4" data-lightbox-src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1">
+                    <img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="" class="hf-gallery__thumb-image">
                   </button>
                 </div>
               </div>
@@ -4140,20 +4142,20 @@
                     <div class="alert__dot"></div>
                     <div>
                       <b>Focus trap en modal</b>
-                      <div class="small">Tab no sale del lightbox mientras está abierto.</div>
+                      <div class="small">Tab no sale del lightbox mientras estÃ¡ abierto.</div>
                     </div>
                   </div>
                   <div class="alert alert--ok">
                     <div class="alert__dot"></div>
                     <div>
                       <b>ESC cierra el modal</b>
-                      <div class="small">Comportamiento estándar esperado.</div>
+                      <div class="small">Comportamiento estÃ¡ndar esperado.</div>
                     </div>
                   </div>
                   <div class="alert alert--ok">
                     <div class="alert__dot"></div>
                     <div>
-                      <b>Navegación ← →</b>
+                      <b>NavegaciÃ³n â† â†’</b>
                       <div class="small">Flechas para cambiar imagen.</div>
                     </div>
                   </div>
@@ -4168,7 +4170,7 @@
                     <div class="alert__dot"></div>
                     <div>
                       <b>Retorna focus al cerrar</b>
-                      <div class="small">Focus vuelve al elemento que abrió el modal.</div>
+                      <div class="small">Focus vuelve al elemento que abriÃ³ el modal.</div>
                     </div>
                   </div>
                 </div>
@@ -4181,7 +4183,7 @@
         <div class="card" style="margin-top:var(--s-6);">
           <div class="card__hd">
             <h3 class="h3">API Reference</h3>
-            <p class="p">Inicialización y métodos disponibles para cada componente.</p>
+            <p class="p">InicializaciÃ³n y mÃ©todos disponibles para cada componente.</p>
           </div>
           <div class="card__bd">
             <div style="overflow-x:auto;">
@@ -4189,7 +4191,7 @@
                 <thead>
                   <tr style="background:var(--surface-2);text-align:left;">
                     <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Componente</th>
-                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">Inicialización</th>
+                    <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">InicializaciÃ³n</th>
                     <th style="padding:12px 14px;border:1px solid var(--border);font-weight:800;">API</th>
                   </tr>
                 </thead>
@@ -4236,14 +4238,14 @@
     <!-- ECOMMERCE -->
     <section class="section anchor" id="ecommerce">
       <div class="container">
-        <h2 class="h2">Módulos E-commerce</h2>
+        <h2 class="h2">MÃ³dulos E-commerce</h2>
         <p class="p">Product cards, grid, selector de variantes (talles), stepper de cantidad, mini-cart (drawer).</p>
 
         <div class="grid grid-4" style="margin-top:var(--s-6);">
           <!-- Product card 1 -->
           <article class="productCard">
             <div class="productMedia" style="background:none;">
-              <img src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400&h=500&fit=crop" alt="Calza Range" style="width:100%;height:100%;object-fit:cover;">
+              <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range" style="width:100%;height:100%;object-fit:cover;">
               <div class="productBadges">
                 <span class="badge badge--primary">Nuevo</span>
                 <span class="badge">Drop 01</span>
@@ -4253,7 +4255,7 @@
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
                   <b>Calza Range</b>
-                  <div class="small">Negro / Compresión media</div>
+                  <div class="small">Negro / CompresiÃ³n media</div>
                 </div>
                 <span class="badge badge--ok">En stock</span>
               </div>
@@ -4279,7 +4281,7 @@
           <!-- Product card 2 -->
           <article class="productCard">
             <div class="productMedia" style="background:none;">
-              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=500&fit=crop" alt="Top Motion" style="width:100%;height:100%;object-fit:cover;">
+              <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Motion" style="width:100%;height:100%;object-fit:cover;">
               <div class="productBadges">
                 <span class="badge badge--accent">Best seller</span>
               </div>
@@ -4288,9 +4290,9 @@
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
                   <b>Top Motion</b>
-                  <div class="small">Arena / Sujeción media</div>
+                  <div class="small">Arena / SujeciÃ³n media</div>
                 </div>
-                <span class="badge">Últimos</span>
+                <span class="badge">Ãšltimos</span>
               </div>
               <div class="priceRow">
                 <div class="price">$ 34.900</div>
@@ -4306,7 +4308,7 @@
           <!-- Product card 3 -->
           <article class="productCard">
             <div class="productMedia" style="background:none;">
-              <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=500&fit=crop" alt="Hoodie Cotidiano" style="width:100%;height:100%;object-fit:cover;">
+              <img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Hoodie Cotidiano" style="width:100%;height:100%;object-fit:cover;">
               <div class="productBadges">
                 <span class="badge">Essentials</span>
               </div>
@@ -4329,7 +4331,7 @@
           <!-- Product card 4 -->
           <article class="productCard">
             <div class="productMedia" style="background:none;">
-              <img src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=500&fit=crop" alt="Short Versátil" style="width:100%;height:100%;object-fit:cover;">
+              <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Short VersÃ¡til" style="width:100%;height:100%;object-fit:cover;">
               <div class="productBadges">
                 <span class="badge badge--primary">Promo</span>
               </div>
@@ -4337,7 +4339,7 @@
             <div class="productBody">
               <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
                 <div>
-                  <b>Short Versátil</b>
+                  <b>Short VersÃ¡til</b>
                   <div class="small">Verde / Liviano</div>
                 </div>
                 <span class="badge">Low stock</span>
@@ -4346,7 +4348,7 @@
                 <div class="price">$ 41.900</div>
                 <span class="badge badge--primary">2x1</span>
               </div>
-              <button class="btn btn--secondary" data-quickshop="Short Versátil">Quick shop</button>
+              <button class="btn btn--secondary" data-quickshop="Short VersÃ¡til">Quick shop</button>
             </div>
           </article>
         </div>
@@ -4362,14 +4364,14 @@
               <div class="stack" style="gap:14px;">
                 <div>
                   <div class="badge badge--accent">Drop 01</div>
-                  <h3 class="h3" style="margin-top:10px;">Calza Range — Negro</h3>
+                  <h3 class="h3" style="margin-top:10px;">Calza Range â€” Negro</h3>
                   <div class="priceRow" style="margin-top:6px;">
                     <div class="price">$ 59.900</div>
                     <div class="priceOld">$ 74.900</div>
                     <span class="badge badge--primary">-20%</span>
                   </div>
                   <p class="p" style="margin-top:10px;">
-                    Diseñada para moverte todo el día: del gym a la calle sin cortar la rutina.
+                    DiseÃ±ada para moverte todo el dÃ­a: del gym a la calle sin cortar la rutina.
                   </p>
                 </div>
 
@@ -4384,7 +4386,7 @@
                     <button class="chip" aria-pressed="false" data-size="L">L</button>
                     <button class="chip is-disabled" aria-pressed="false" aria-disabled="true" data-size="XL">XL</button>
                   </div>
-                  <div class="hint">Tip: si estás entre dos, subí uno para más comodidad.</div>
+                  <div class="hint">Tip: si estÃ¡s entre dos, subÃ­ uno para mÃ¡s comodidad.</div>
                 </div>
 
                 <div class="row" style="justify-content:space-between; align-items:center;">
@@ -4405,7 +4407,7 @@
                 <div class="alert alert--ok">
                   <div class="alert__dot"></div>
                   <div>
-                    <b>Envío gratis</b>
+                    <b>EnvÃ­o gratis</b>
                     <div class="small">Superando $ 120.000 (CABA/GBA).</div>
                   </div>
                 </div>
@@ -4418,7 +4420,7 @@
           <div class="card">
             <div class="card__hd">
               <h3 class="h3">Snippet de Checkout</h3>
-              <p class="p">Campos reales, sin fricción, copy claro.</p>
+              <p class="p">Campos reales, sin fricciÃ³n, copy claro.</p>
             </div>
             <div class="card__bd">
               <div class="grid" style="gap:14px;">
@@ -4429,13 +4431,13 @@
                   </div>
                   <div class="field">
                     <div class="label">Apellido</div>
-                    <input class="control" placeholder="Pérez" />
+                    <input class="control" placeholder="PÃ©rez" />
                   </div>
                 </div>
 
                 <div class="field">
-                  <div class="label">Dirección</div>
-                  <input class="control" placeholder="Calle + número" />
+                  <div class="label">DirecciÃ³n</div>
+                  <input class="control" placeholder="Calle + nÃºmero" />
                 </div>
 
                 <div class="grid grid-2" style="gap:12px;">
@@ -4444,7 +4446,7 @@
                     <input class="control" placeholder="Buenos Aires" />
                   </div>
                   <div class="field">
-                    <div class="label">Código postal</div>
+                    <div class="label">CÃ³digo postal</div>
                     <input class="control" placeholder="C1425" />
                   </div>
                 </div>
@@ -4466,7 +4468,7 @@
                 </div>
 
                 <div class="small">
-                  Pagos: tarjeta / transferencia. (Integración real va del lado de tu plataforma.)
+                  Pagos: tarjeta / transferencia. (IntegraciÃ³n real va del lado de tu plataforma.)
                 </div>
               </div>
             </div>
@@ -4486,7 +4488,7 @@
           <div class="card">
             <div class="card__hd">
               <h3 class="h3">Banner editorial</h3>
-              <p class="p">Para “drop en curso” (gran escala, minimal).</p>
+              <p class="p">Para â€œdrop en cursoâ€ (gran escala, minimal).</p>
             </div>
             <div class="card__bd">
               <div style="border:1px solid var(--border); border-radius:18px; overflow:hidden; background:var(--surface-2);">
@@ -4496,13 +4498,13 @@
                   linear-gradient(135deg, var(--surface), var(--surface-2));
                 ">
                   <div class="badge badge--primary">DROP 01</div>
-                  <h3 class="h2" style="margin-top:10px;">Más allá del entrenamiento</h3>
+                  <h3 class="h2" style="margin-top:10px;">MÃ¡s allÃ¡ del entrenamiento</h3>
                   <p class="p" style="margin-top:10px;">
-                    Activewear para la vida real: cómodo, funcional y versátil.
+                    Activewear para la vida real: cÃ³modo, funcional y versÃ¡til.
                   </p>
                   <div class="row" style="margin-top:14px;">
-                    <button class="btn btn--primary">Ver colección</button>
-                    <button class="btn btn--secondary">Guía de talles</button>
+                    <button class="btn btn--primary">Ver colecciÃ³n</button>
+                    <button class="btn btn--secondary">GuÃ­a de talles</button>
                   </div>
                 </div>
               </div>
@@ -4523,22 +4525,22 @@
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr;">
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">S</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">64–70</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">88–94</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">64â€“70</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">88â€“94</div>
 
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">M</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">70–76</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">94–100</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">70â€“76</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">94â€“100</div>
 
                   <div style="padding:12px 14px; border-top:1px solid var(--border);">L</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">76–82</div>
-                  <div style="padding:12px 14px; border-top:1px solid var(--border);">100–106</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">76â€“82</div>
+                  <div style="padding:12px 14px; border-top:1px solid var(--border);">100â€“106</div>
                 </div>
               </div>
 
               <div class="divider"></div>
               <p class="small">
-                Esto es un pattern (tabla) que después podés estilizar con tokens sin tocar lógica.
+                Esto es un pattern (tabla) que despuÃ©s podÃ©s estilizar con tokens sin tocar lÃ³gica.
               </p>
             </div>
           </div>
@@ -4599,7 +4601,7 @@
           </div>
 
           <div class="footer__bottom">
-            <span>© Horizon Fit 2026. Todos los derechos reservados.</span>
+            <span>Â© Horizon Fit 2026. Todos los derechos reservados.</span>
             <div class="footer__bottom-links">
               <a href="#">Terminos</a>
               <a href="#">Privacidad</a>
@@ -4623,12 +4625,12 @@
   <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal__dialog" tabindex="-1">
       <div class="modal__hd">
-        <b id="modalTitle">Modal — Horizon Fit</b>
-        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">×</button>
+        <b id="modalTitle">Modal â€” Horizon Fit</b>
+        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">Ã—</button>
       </div>
       <div class="modal__bd">
         <p class="p" style="margin-top:0;">
-          Este modal está listo para usar (overlay click + ESC + focus management básico).
+          Este modal estÃ¡ listo para usar (overlay click + ESC + focus management bÃ¡sico).
         </p>
         <div class="divider"></div>
         <div class="field">
@@ -4649,14 +4651,14 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
       <div class="drawer__hd">
         <b id="drawerTitle">Carrito</b>
-        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">×</button>
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">Ã—</button>
       </div>
       <div class="drawer__bd">
         <div class="cartItem">
-          <img class="cartThumb" src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=156&h=195&fit=crop" alt="Calza Range" style="object-fit:cover;">
+          <img class="cartThumb" src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range" style="object-fit:cover;">
           <div class="cartMeta">
-            <b>Calza Range — Negro</b>
-            <div class="small">Talle M · Cant. 1</div>
+            <b>Calza Range â€” Negro</b>
+            <div class="small">Talle M Â· Cant. 1</div>
             <div class="cartRow">
               <div class="small">$ 59.900</div>
               <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
@@ -4665,10 +4667,10 @@
         </div>
 
         <div class="cartItem">
-          <img class="cartThumb" src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=156&h=195&fit=crop" alt="Top Motion" style="object-fit:cover;">
+          <img class="cartThumb" src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Motion" style="object-fit:cover;">
           <div class="cartMeta">
-            <b>Top Motion — Arena</b>
-            <div class="small">Talle S · Cant. 1</div>
+            <b>Top Motion â€” Arena</b>
+            <div class="small">Talle S Â· Cant. 1</div>
             <div class="cartRow">
               <div class="small">$ 34.900</div>
               <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
@@ -4678,12 +4680,12 @@
 
         <div class="divider"></div>
         <div class="field">
-          <div class="label">Código de descuento</div>
+          <div class="label">CÃ³digo de descuento</div>
           <div class="row" style="gap:10px;">
             <input class="control" placeholder="HF-15" style="flex:1;" />
             <button class="btn btn--secondary" id="applyCouponBtn">Aplicar</button>
           </div>
-          <div class="hint" id="couponHint">Tip: probá HF-15</div>
+          <div class="hint" id="couponHint">Tip: probÃ¡ HF-15</div>
         </div>
       </div>
       <div class="drawer__ft">
@@ -4703,7 +4705,7 @@
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="searchDrawerTitle">
       <div class="drawer__hd">
         <b id="searchDrawerTitle">Buscar</b>
-        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">×</button>
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">Ã—</button>
       </div>
       <div class="drawer__bd">
         <div class="field">
@@ -4718,7 +4720,7 @@
           </div>
         </div>
         <div class="divider"></div>
-        <div class="small" style="color:var(--muted);margin-bottom:12px;">Búsquedas populares</div>
+        <div class="small" style="color:var(--muted);margin-bottom:12px;">BÃºsquedas populares</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
           <button class="chip chip--clickable" data-search-term="tops">Tops</button>
@@ -4739,7 +4741,7 @@
 
   <script>
     /******************************************************************
-      HORIZON FIT — DS JS (vanilla)
+      HORIZON FIT â€” DS JS (vanilla)
       - dropdown, tooltip, tabs, accordion
       - modal + drawer (ESC + click outside)
       - toast
@@ -5088,7 +5090,7 @@
           <b>${escapeHtml(title)}</b>
           <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
         </div>
-        <button class="toast__x" aria-label="Cerrar">×</button>
+        <button class="toast__x" aria-label="Cerrar">Ã—</button>
       `;
       const x = $(".toast__x", t);
       x.addEventListener("click", ()=> t.remove());
@@ -5103,7 +5105,7 @@
     }
 
     $("#toastBtn")?.addEventListener("click", ()=>{ setMenu(false); toast({title:"Horizon Fit", message:"Toast de ejemplo (info).", variant:"info"}); });
-    $("#toastBtn2")?.addEventListener("click", ()=> toast({title:"Info", message:"Interacción suave, copy claro.", variant:"info"}));
+    $("#toastBtn2")?.addEventListener("click", ()=> toast({title:"Info", message:"InteracciÃ³n suave, copy claro.", variant:"info"}));
     $("#toastBtnOk")?.addEventListener("click", ()=> toast({title:"Ok", message:"Producto agregado al carrito.", variant:"ok"}));
     $("#openToastDemo")?.addEventListener("click", ()=>{
       toast({title:"Info", message:"Tabs / accordion / modal / drawer listos.", variant:"info"});
@@ -5187,24 +5189,24 @@
     $("#applyCouponBtn")?.addEventListener("click", ()=>{
       $("#couponHint").textContent = "Aplicado: HF-15 (demo)";
       $("#cartSubtotal").textContent = "$ 80.580";
-      toast({title:"Descuento", message:"Código aplicado (demo).", variant:"ok"});
+      toast({title:"Descuento", message:"CÃ³digo aplicado (demo).", variant:"ok"});
     });
 
     $("#goCheckoutBtn")?.addEventListener("click", ()=>{
       closeDrawer();
-      toast({title:"Checkout", message:"Te llevaría al checkout (demo).", variant:"info"});
+      toast({title:"Checkout", message:"Te llevarÃ­a al checkout (demo).", variant:"info"});
       location.hash = "#patterns";
     });
 
     $("#payBtn")?.addEventListener("click", ()=>{
-      toast({title:"Pago", message:"Acción de pago (demo).", variant:"info"});
+      toast({title:"Pago", message:"AcciÃ³n de pago (demo).", variant:"info"});
     });
 
     /* -----------------------------
       Misc helpers
     ------------------------------*/
     $("#loadingBtn")?.addEventListener("click", ()=>{
-      toast({title:"Loading", message:"Este botón está en estado loading (demo).", variant:"info"});
+      toast({title:"Loading", message:"Este botÃ³n estÃ¡ en estado loading (demo).", variant:"info"});
     });
 
     $("#copyLinkBtn")?.addEventListener("click", async ()=>{
@@ -5212,7 +5214,7 @@
         await navigator.clipboard.writeText(location.href);
         toast({title:"Copiado", message:"Link copiado al portapapeles.", variant:"ok", timeout:1700});
       }catch{
-        toast({title:"No se pudo copiar", message:"Tu navegador bloqueó el clipboard.", variant:"info"});
+        toast({title:"No se pudo copiar", message:"Tu navegador bloqueÃ³ el clipboard.", variant:"info"});
       }
     });
 
@@ -5235,6 +5237,10 @@
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
+
+
+
+
 
 
 
