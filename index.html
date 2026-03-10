@@ -617,7 +617,7 @@
     .menu hr{ border:0; height:1px; background: var(--border); margin:8px 0; }
 
     .tooltip{
-      position:absolute;
+      position:fixed;
       pointer-events:none;
       opacity:0;
       transform: translateY(6px);
@@ -912,8 +912,8 @@
     /* Footer */
     .footer{
       margin-top: 0;
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
+      width: 100%;
+      margin-left: 0;
       margin-bottom: 0;
       border-top: 1px solid rgba(255,255,255,.16);
       border-bottom: 1px solid rgba(255,255,255,.16);
@@ -1269,8 +1269,8 @@
     }
 
     .hf-set-desktop-slider .container {
-      width: min(1120px, 100%);
-      padding-inline: clamp(12px, 2.4vw, 28px);
+      width: min(1280px, 100%);
+      padding-inline: clamp(16px, 2.8vw, 36px);
     }
 
     .hf-set-desktop-slider__head {
@@ -1288,8 +1288,8 @@
 
     .hf-set-desktop-slider__layout {
       display: grid;
-      grid-template-columns: minmax(0, .96fr) 320px;
-      gap: 18px;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 22px;
       align-items: stretch;
     }
 
