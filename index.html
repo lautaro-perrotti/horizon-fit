@@ -1821,85 +1821,7 @@
       box-shadow: 0 0 0 7px rgba(39,24,125,.18);
     }
 
-    .hf-social-proof {
-      background: var(--surface);
-      padding: 24px 0 68px;
-    }
-
-    .hf-social-proof .container {
-      width: min(1120px, 100%);
-      padding-inline: clamp(12px, 2.4vw, 28px);
-    }
-
-    .hf-social-proof__head {
-      text-align: center;
-      margin-bottom: var(--s-6);
-    }
-
-    .hf-social-proof__grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .hf-social-proof__card {
-      position: relative;
-      border-radius: var(--r-2);
-      overflow: hidden;
-      min-height: 320px;
-      border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-      background: var(--surface-2);
-    }
-
-    .hf-social-proof__card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .hf-social-proof__overlay {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: 16px 14px 14px;
-      color: #fff;
-      background: linear-gradient(to top, rgba(0,0,0,.68), rgba(0,0,0,.12) 70%, transparent);
-    }
-
-    .hf-social-proof__handle {
-      display: inline-block;
-      margin-bottom: 6px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      opacity: .84;
-    }
-
-    .hf-social-proof__copy {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    @media (max-width: 900px) {
-      .hf-social-proof__grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
     @media (max-width: 640px) {
-      .hf-social-proof {
-        padding: 20px 0 56px;
-      }
-
-      .hf-social-proof__grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hf-social-proof__card {
-        min-height: 260px;
-      }
-
       .hf-video-hero__eyebrow {
         padding: 12px 16px;
         font-size: 13px;
@@ -1988,17 +1910,17 @@
   <div class="hf-marquee hf-marquee--fixed" id="topMarquee" data-hf="marquee" data-speed="20">
     <div class="hf-marquee__track">
       <div class="hf-marquee__content">
-        <span class="hf-marquee__item">DROP 01 - DISPONIBLE AHORA</span>
+        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">ENVIO GRATIS +$120.000</span>
+        <span class="hf-marquee__item">Envíos gratis a partir de $120.000</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">CAMBIOS SIN COSTO</span>
+        <span class="hf-marquee__item">Cambios sin costo</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">DROP 01 - DISPONIBLE AHORA</span>
+        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">ENVIO GRATIS +$120.000</span>
+        <span class="hf-marquee__item">Envíos gratis a partir de $120.000</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">CAMBIOS SIN COSTO</span>
+        <span class="hf-marquee__item">Cambios sin costo</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
       </div>
     </div>
@@ -3481,45 +3403,6 @@
     </div>
   </section>
 
-  <section class="hf-social-proof" id="homeSocialProof">
-    <div class="container">
-      <div class="hf-social-proof__head">
-        <span class="badge badge--accent" style="margin-bottom:10px;">Comunidad</span>
-        <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Looks reales de Horizon Fit</h2>
-      </div>
-      <div class="hf-social-proof__grid">
-        <article class="hf-social-proof__card">
-          <img src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1600&dpr=1" alt="Clienta usando conjunto Horizon Fit">
-          <div class="hf-social-proof__overlay">
-            <span class="hf-social-proof__handle">@mili.entrena</span>
-            <p class="hf-social-proof__copy">“Me llegó al toque y la calza no se mueve nada cuando entreno.”</p>
-          </div>
-        </article>
-        <article class="hf-social-proof__card">
-          <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1600&dpr=1" alt="Clienta mostrando look deportivo">
-          <div class="hf-social-proof__overlay">
-            <span class="hf-social-proof__handle">@agus.move</span>
-            <p class="hf-social-proof__copy">“Las cuotas me resolvieron la compra del set completo.”</p>
-          </div>
-        </article>
-        <article class="hf-social-proof__card">
-          <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1600&dpr=1" alt="Detalle de top deportivo Horizon Fit">
-          <div class="hf-social-proof__overlay">
-            <span class="hf-social-proof__handle">@luna.training</span>
-            <p class="hf-social-proof__copy">“Top firme, tela liviana y cambio súper fácil de talle.”</p>
-          </div>
-        </article>
-        <article class="hf-social-proof__card">
-          <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1200&h=1600&dpr=1" alt="Conjunto deportivo para entrenamiento">
-          <div class="hf-social-proof__overlay">
-            <span class="hf-social-proof__handle">@vale.en.movimiento</span>
-            <p class="hf-social-proof__copy">“Compré por Instagram, pagué en cuotas y a los dos días ya lo estaba usando.”</p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <!-- BANNER PROMO FULL WIDTH -->
   <section style="width:100%;background:linear-gradient(135deg,var(--hf-primary) 0%,var(--hf-primary-700) 100%);padding:60px 40px;text-align:center;">
     <div style="max-width:800px;margin:0 auto;">
@@ -4952,16 +4835,6 @@
       updateNavState();
       window.addEventListener('load', updateNavState);
       window.addEventListener('scroll', updateNavState, { passive: true });
-    })();
-
-    (function reorderHomeSections() {
-      const trustBar = document.getElementById('homeTrustBar');
-      const categories = document.getElementById('homeCategories');
-      const socialProof = document.getElementById('homeSocialProof');
-      if (!trustBar || !categories || !socialProof) return;
-
-      trustBar.parentNode.insertBefore(categories, trustBar);
-      trustBar.insertAdjacentElement('afterend', socialProof);
     })();
 
     /* -----------------------------

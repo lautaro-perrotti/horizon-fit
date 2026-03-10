@@ -25,6 +25,7 @@
 
 .hf-marquee__content {
   display: flex;
+  align-items: center;
   gap: 40px;
 }
 
@@ -35,11 +36,12 @@
 .hf-marquee__separator {
   width: 4px;
   height: 4px;
+  flex: 0 0 4px;
   border-radius: 50%;
   background: currentColor;
   opacity: 0.5;
-  display: inline-block;
-  vertical-align: middle;
+  display: block;
+  align-self: center;
 }
 
 /* Pause on hover/focus */
