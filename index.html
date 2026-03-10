@@ -592,14 +592,14 @@
     .menu{
       position:absolute;
       top: calc(100% + 10px);
-      left: 16px;
+      left: 0;
       right: auto;
-      width: min(420px, calc(100vw - 32px));
+      width: min(460px, calc(100vw - 24px));
       border:1px solid color-mix(in srgb, var(--hf-indigo) 10%, var(--border));
       background: var(--surface);
-      border-radius: 20px;
-      box-shadow: 0 18px 48px rgba(17, 16, 40, .14);
-      padding: 14px;
+      border-radius: 18px;
+      box-shadow: 0 18px 42px rgba(17, 16, 40, .12);
+      padding: 12px;
       display:none;
       z-index:80;
     }
@@ -607,51 +607,45 @@
     .menu__grid{
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .menu__col{
-      display:grid;
-      gap: 6px;
-      align-content:start;
-    }
-    .menu__label{
-      margin: 0 0 2px;
-      padding: 0 10px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--hf-indigo);
-    }
-    .menu__footer{
-      display:grid;
-      gap: 6px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+      gap: 8px;
     }
     .menu a, .menu button{
       width:100%;
       text-align:left;
       display:flex; align-items:center; gap:10px;
       justify-content:space-between;
-      min-height: 44px;
-      padding:12px 12px;
-      border-radius:12px;
-      border:0;
-      background: transparent;
+      min-height: 52px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid color-mix(in srgb, var(--hf-indigo) 8%, var(--border));
+      background: color-mix(in srgb, var(--surface) 88%, white);
       color: var(--text);
       cursor:pointer;
       font-size: 15px;
+      font-weight: 600;
+      line-height: 1.2;
+      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), transform var(--fast) var(--ease);
     }
-    .menu a:hover, .menu button:hover{ background: var(--surface-2); }
+    .menu a::after, .menu button::after{
+      content: "↗";
+      color: var(--hf-indigo);
+      font-size: 14px;
+      line-height: 1;
+      opacity: .7;
+    }
+    .menu a:hover, .menu button:hover{
+      background: color-mix(in srgb, var(--hf-indigo) 4%, white);
+      border-color: color-mix(in srgb, var(--hf-indigo) 18%, var(--border));
+      transform: translateY(-1px);
+    }
     .menu hr{ display:none; }
 
     @media (max-width: 640px){
       .menu{
-        width: min(360px, calc(100vw - 24px));
-        left: 12px;
+        width: min(400px, calc(100vw - 20px));
       }
+    }
+    @media (max-width: 540px){
       .menu__grid{
         grid-template-columns: 1fr;
       }
@@ -1364,6 +1358,8 @@
       object-fit:cover;
       transition: transform var(--med) var(--ease);
       display:block;
+      backface-visibility: hidden;
+      transform: translateZ(0);
     }
 
     .hf-style-tile:hover .hf-style-tile__media img,
@@ -1422,14 +1418,15 @@
       .hf-style-tile{
         position: relative;
         display: block;
-        min-height: 540px;
+        min-height: 440px;
+        aspect-ratio: 7 / 8;
         border-radius: var(--r-2);
         overflow: hidden;
       }
 
       .hf-style-tile__media{
         height: 100%;
-        aspect-ratio: auto;
+        aspect-ratio: 7 / 8;
         border-radius: 0;
       }
 
@@ -2317,21 +2314,13 @@
       <!-- Menu hamburguesa -->
       <div class="menu" role="menu" aria-hidden="true" id="menu" style="display:none;">
         <div class="menu__grid">
-          <div class="menu__col">
-            <p class="menu__label">Explorar</p>
-            <a role="menuitem" href="#productGrid1">Productos destacados</a>
-            <a role="menuitem" href="#fullSlider">Sets listos para entrenar</a>
-            <a role="menuitem" href="#homeCategories">Compra por categoría</a>
-          </div>
-          <div class="menu__col">
-            <p class="menu__label">Categorías</p>
-            <a role="menuitem" href="#ecommerce">Tops</a>
-            <a role="menuitem" href="#ecommerce">Calzas</a>
-            <a role="menuitem" href="#ecommerce">Shorts</a>
-            <a role="menuitem" href="#ecommerce">Buzos</a>
-          </div>
-        </div>
-        <div class="menu__footer">
+          <a role="menuitem" href="#productGrid1">Productos destacados</a>
+          <a role="menuitem" href="#fullSlider">Sets listos para entrenar</a>
+          <a role="menuitem" href="#homeCategories">Compra por categoría</a>
+          <a role="menuitem" href="#ecommerce">Tops</a>
+          <a role="menuitem" href="#ecommerce">Calzas</a>
+          <a role="menuitem" href="#ecommerce">Shorts</a>
+          <a role="menuitem" href="#ecommerce">Buzos</a>
           <a role="menuitem" href="#homeSocialStrip">Horizon Fit in the wild</a>
           <a role="menuitem" href="#footerContact">Contacto</a>
           <button role="menuitem" id="openCartBtn">Abrir carrito</button>
@@ -3861,7 +3850,7 @@
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Studio">
           <div class="hf-style-tile__media">
             <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
+              <source src="assets/style-studio-pexels.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -3875,7 +3864,7 @@
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Urbano">
           <div class="hf-style-tile__media">
             <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4">
+              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -3889,7 +3878,7 @@
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Prints">
           <div class="hf-style-tile__media">
             <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
+              <source src="assets/style-prints-pexels.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
