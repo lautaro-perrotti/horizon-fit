@@ -1383,8 +1383,9 @@
     }
 
     .hf-social-strip .container{
-      width: min(1320px, 100%);
-      padding-inline: clamp(16px, 2.8vw, 36px);
+      width: 100%;
+      max-width: none;
+      padding-inline: clamp(20px, 3vw, 44px);
     }
 
     .hf-social-strip__head{
@@ -1431,7 +1432,7 @@
 
     .hf-social-strip__card{
       position: relative;
-      flex: 0 0 clamp(220px, 22vw, 276px);
+      flex: 0 0 220px;
       aspect-ratio: 4 / 5.8;
       overflow: hidden;
       border-radius: 18px;
@@ -1530,8 +1531,26 @@
     .hf-social-strip__brand img{
       width: 100%;
       height: 100%;
-      object-fit: contain;
       display:block;
+    }
+
+    @media (min-width: 1025px){
+      .hf-social-strip__viewport{
+        overflow: visible;
+        padding-bottom: 0;
+      }
+
+      .hf-social-strip__track{
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .hf-social-strip__card{
+        flex: none;
+        width: 100%;
+      }
     }
 
     @media (max-width: 640px){
@@ -1564,8 +1583,9 @@
     }
 
     .hf-set-desktop-slider .container {
-      width: min(1280px, 100%);
-      padding-inline: clamp(16px, 2.8vw, 36px);
+      width: 100%;
+      max-width: none;
+      padding-inline: clamp(20px, 3vw, 44px);
     }
 
     .hf-set-desktop-slider__head {
@@ -1583,8 +1603,8 @@
 
     .hf-set-desktop-slider__layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
-      gap: 22px;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 28px;
       align-items: stretch;
     }
 
@@ -3797,6 +3817,13 @@
               <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
             </div>
             <img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 5">
+          </article>
+
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 6">
           </article>
         </div>
       </div>
