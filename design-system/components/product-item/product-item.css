@@ -203,6 +203,21 @@
   color: #666;
 }
 
+.hf-product-item__actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hf-product-item__cta {
+  width: 100%;
+}
+
+.hf-product-item__cta--ghost {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
 /* ========================================
    PRODUCT GRID
 ======================================== */
@@ -242,6 +257,11 @@
 
   .hf-product-item__brand {
     font-size: 10px;
+  }
+
+  .hf-product-item__actions {
+    gap: 6px;
+    margin-top: 10px;
   }
 }
 
