@@ -61,9 +61,11 @@
 
       const updateMinHeight = () => {
         let offset = 0;
+        const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
         selectors.forEach((sel) => {
           document.querySelectorAll(sel).forEach((node) => {
             if (!node) return;
+            if (isMobileViewport && node.matches && node.matches('header.nav, .nav')) return;
             const style = window.getComputedStyle(node);
             if (style.display === 'none' || style.visibility === 'hidden') return;
             const h = node.getBoundingClientRect().height;

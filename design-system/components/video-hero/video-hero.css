@@ -254,8 +254,8 @@
   }
 
   .hf-video-hero--full {
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: calc(100vh - var(--announce-h));
+    min-height: calc(100svh - var(--announce-h));
   }
 
   .hf-video-hero__content {
