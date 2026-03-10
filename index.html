@@ -3415,6 +3415,7 @@
 
   <!-- HERO -->
   <main>
+    <template id="legacy-hero-section">
     <section class="hero">
       <div class="container hero__wrap">
         <div class="heroCard">
@@ -3506,7 +3507,10 @@
         </div>
       </div>
     </section>
+    </template>
 
+    <!-- Hidden legacy sections -->
+    <template id="legacy-main-sections">
     <!-- TOKENS -->
     <section class="section anchor" id="tokens">
       <div class="container">
@@ -4533,9 +4537,9 @@
       </div>
     </section>
 
-    <!-- PATTERNS -->
-    <section class="section anchor" id="patterns">
-      <div class="container">
+    </template>
+
+    <template id="legacy-patterns-content">
         <h2 class="h2">Patterns</h2>
         <p class="p">Bloques reutilizables: banners, grids, headers, secciones editorial/producto.</p>
 
@@ -4600,8 +4604,9 @@
             </div>
           </div>
         </div>
+    </template>
 
-        <footer class="footer">
+    <footer class="footer">
           <div class="footer__top">
             <div>
               <span class="badge badge--primary">Horizon Fit</span>
@@ -4663,10 +4668,7 @@
               <a href="#">Defensa al consumidor</a>
             </div>
           </div>
-        </footer>
-
-      </div>
-    </section>
+    </footer>
 
   </main>
 
