@@ -244,6 +244,7 @@
       align-items: center;
     }
     .nav__inner{
+      position: relative;
       display:flex; align-items:center; justify-content:space-between;
       padding: 12px 16px;
       gap: var(--s-4);
@@ -591,30 +592,70 @@
     .menu{
       position:absolute;
       top: calc(100% + 10px);
-      right: 0;
-      width: 260px;
-      border:1px solid var(--border);
+      left: 16px;
+      right: auto;
+      width: min(420px, calc(100vw - 32px));
+      border:1px solid color-mix(in srgb, var(--hf-indigo) 10%, var(--border));
       background: var(--surface);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 8px;
+      border-radius: 20px;
+      box-shadow: 0 18px 48px rgba(17, 16, 40, .14);
+      padding: 14px;
       display:none;
       z-index:80;
     }
     .menu[aria-hidden="false"]{ display:block; }
+    .menu__grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .menu__col{
+      display:grid;
+      gap: 6px;
+      align-content:start;
+    }
+    .menu__label{
+      margin: 0 0 2px;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--hf-indigo);
+    }
+    .menu__footer{
+      display:grid;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
     .menu a, .menu button{
       width:100%;
       text-align:left;
       display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
+      justify-content:space-between;
+      min-height: 44px;
+      padding:12px 12px;
       border-radius:12px;
       border:0;
       background: transparent;
       color: var(--text);
       cursor:pointer;
+      font-size: 15px;
     }
     .menu a:hover, .menu button:hover{ background: var(--surface-2); }
-    .menu hr{ border:0; height:1px; background: var(--border); margin:8px 0; }
+    .menu hr{ display:none; }
+
+    @media (max-width: 640px){
+      .menu{
+        width: min(360px, calc(100vw - 24px));
+        left: 12px;
+      }
+      .menu__grid{
+        grid-template-columns: 1fr;
+      }
+    }
 
     .tooltip{
       position:fixed;
@@ -1316,14 +1357,17 @@
       border-radius: var(--r-2);
     }
 
-    .hf-style-tile__media img{
+    .hf-style-tile__media img,
+    .hf-style-tile__media video{
       width:100%;
       height:100%;
       object-fit:cover;
       transition: transform var(--med) var(--ease);
+      display:block;
     }
 
-    .hf-style-tile:hover .hf-style-tile__media img{
+    .hf-style-tile:hover .hf-style-tile__media img,
+    .hf-style-tile:hover .hf-style-tile__media video{
       transform: scale(1.035);
     }
 
@@ -2270,17 +2314,28 @@
         </button>
       </div>
 
-      <!-- Menu oculto para funcionalidades (toggle theme, etc.) -->
+      <!-- Menu hamburguesa -->
       <div class="menu" role="menu" aria-hidden="true" id="menu" style="display:none;">
-        <a role="menuitem" href="#marketing">Marketing</a>
-        <a role="menuitem" href="#ecommerce">E-commerce</a>
-        <a role="menuitem" href="#patterns">Patterns</a>
-        <hr/>
-        <button role="menuitem" id="openCartBtn">Abrir carrito (Drawer)</button>
-        <button role="menuitem" id="openModalBtn">Abrir modal</button>
-        <button role="menuitem" id="toastBtn">Mostrar toast</button>
-        <hr/>
-        <button role="menuitem" id="toggleThemeBtn">Toggle theme</button>
+        <div class="menu__grid">
+          <div class="menu__col">
+            <p class="menu__label">Explorar</p>
+            <a role="menuitem" href="#productGrid1">Productos destacados</a>
+            <a role="menuitem" href="#fullSlider">Sets listos para entrenar</a>
+            <a role="menuitem" href="#homeCategories">Compra por categoría</a>
+          </div>
+          <div class="menu__col">
+            <p class="menu__label">Categorías</p>
+            <a role="menuitem" href="#ecommerce">Tops</a>
+            <a role="menuitem" href="#ecommerce">Calzas</a>
+            <a role="menuitem" href="#ecommerce">Shorts</a>
+            <a role="menuitem" href="#ecommerce">Buzos</a>
+          </div>
+        </div>
+        <div class="menu__footer">
+          <a role="menuitem" href="#homeSocialStrip">Horizon Fit in the wild</a>
+          <a role="menuitem" href="#footerContact">Contacto</a>
+          <button role="menuitem" id="openCartBtn">Abrir carrito</button>
+        </div>
       </div>
     </div>
   </header>
@@ -3791,7 +3846,9 @@
       <div class="hf-style-edit__grid">
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Básicos">
           <div class="hf-style-tile__media">
-            <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Básicos">
+            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4">
+            </video>
           </div>
           <div class="hf-style-tile__body">
             <h3 class="hf-style-tile__title">Básicos</h3>
@@ -3803,7 +3860,9 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Studio">
           <div class="hf-style-tile__media">
-            <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Studio">
+            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
+            </video>
           </div>
           <div class="hf-style-tile__body">
             <h3 class="hf-style-tile__title">Studio</h3>
@@ -3815,7 +3874,9 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Urbano">
           <div class="hf-style-tile__media">
-            <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Urbano">
+            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4">
+            </video>
           </div>
           <div class="hf-style-tile__body">
             <h3 class="hf-style-tile__title">Urbano</h3>
@@ -3827,7 +3888,9 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Prints">
           <div class="hf-style-tile__media">
-            <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Prints">
+            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
+            </video>
           </div>
           <div class="hf-style-tile__body">
             <h3 class="hf-style-tile__title">Prints</h3>
@@ -5165,7 +5228,7 @@
               </div>
             </div>
 
-            <div>
+            <div id="footerContact">
               <h4 class="footer__col-title">Contacto</h4>
               <div class="footer__links">
                 <span>WhatsApp: +54 9 11 0000 0000</span>
@@ -5381,12 +5444,13 @@
     /* -----------------------------
       Dropdown
     ------------------------------*/
-    const menuBtn = $("#menuBtn");
+    const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
     const menu = $("#menu");
 
     function setMenu(open){
       menu.setAttribute("aria-hidden", String(!open));
       menuBtn.setAttribute("aria-expanded", String(open));
+      menu.style.display = open ? "block" : "none";
       if(open){
         // focus first item
         const first = menu.querySelector('[role="menuitem"]');
