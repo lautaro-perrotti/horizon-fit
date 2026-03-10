@@ -1510,6 +1510,31 @@
       display:block;
     }
 
+    .hf-social-strip__brands{
+      margin-top: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: clamp(20px, 3vw, 34px);
+      flex-wrap: wrap;
+    }
+
+    .hf-social-strip__brand{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 40px;
+      height: 40px;
+      line-height: 0;
+    }
+
+    .hf-social-strip__brand img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display:block;
+    }
+
     @media (max-width: 640px){
       .hf-social-strip{
         padding: 34px 0 38px;
@@ -1523,6 +1548,13 @@
       }
       .hf-social-strip__foot{
         font-size: 15px;
+      }
+      .hf-social-strip__brands{
+        gap: 18px;
+      }
+      .hf-social-strip__brand{
+        width: 34px;
+        height: 34px;
       }
     }
 
@@ -3780,6 +3812,21 @@
           </svg>
         </span>
         <strong>@horizonfit</strong>
+      </div>
+
+      <div class="hf-social-strip__brands" aria-label="Redes sociales Horizon Fit">
+        <a class="hf-social-strip__brand" href="#" aria-label="Instagram">
+          <img src="https://cdn.simpleicons.org/instagram/E4405F" alt="Instagram">
+        </a>
+        <a class="hf-social-strip__brand" href="#" aria-label="Facebook">
+          <img src="https://cdn.simpleicons.org/facebook/1877F2" alt="Facebook">
+        </a>
+        <a class="hf-social-strip__brand" href="#" aria-label="TikTok">
+          <img src="https://cdn.simpleicons.org/tiktok/111111" alt="TikTok">
+        </a>
+        <a class="hf-social-strip__brand" href="#" aria-label="Spotify">
+          <img src="https://cdn.simpleicons.org/spotify/1DB954" alt="Spotify">
+        </a>
       </div>
     </div>
   </section>
