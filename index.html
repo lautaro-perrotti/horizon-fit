@@ -1411,7 +1411,7 @@
       }
 
       .hf-style-edit__grid{
-        grid-template-columns: 1.35fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 18px;
       }
 
@@ -1457,6 +1457,12 @@
       .hf-style-tile__arrow svg{
         width: 20px;
         height: 20px;
+      }
+    }
+
+    @media (min-width: 1101px) and (max-width: 1280px){
+      .hf-style-edit__grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -3878,7 +3884,7 @@
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Prints">
           <div class="hf-style-tile__media">
             <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/style-prints-pexels.mp4" type="video/mp4">
+              <source src="assets/style-prints-exercise.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
