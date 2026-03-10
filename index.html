@@ -1262,6 +1262,270 @@
       display:block;
     }
 
+    .hf-style-edit{
+      background: var(--surface);
+      padding: 28px 0 60px;
+    }
+
+    .hf-style-edit .container{
+      width: min(1280px, 100%);
+      padding-inline: clamp(16px, 2.8vw, 36px);
+    }
+
+    .hf-style-edit__head{
+      text-align:center;
+      margin: 0 auto 26px;
+      max-width: 720px;
+      display:grid;
+      gap: 10px;
+    }
+
+    .hf-style-edit__copy{
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .hf-style-edit__grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .hf-style-tile{
+      display:grid;
+      grid-template-rows: auto auto;
+      gap: 0;
+      color: inherit;
+      text-decoration: none;
+      background: transparent;
+    }
+
+    .hf-style-tile__media{
+      aspect-ratio: 4 / 5;
+      overflow:hidden;
+      background: var(--surface-2);
+    }
+
+    .hf-style-tile__media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      transition: transform var(--med) var(--ease);
+    }
+
+    .hf-style-tile:hover .hf-style-tile__media img{
+      transform: scale(1.035);
+    }
+
+    .hf-style-tile__body{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 16px 2px 0;
+      border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      margin-top: 12px;
+    }
+
+    .hf-style-tile__title{
+      margin:0;
+      font-size: clamp(24px, 2vw, 34px);
+      font-weight: 950;
+      letter-spacing: -0.03em;
+      line-height: .96;
+      text-transform: uppercase;
+    }
+
+    .hf-style-tile__arrow{
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 28px;
+      height: 28px;
+      color: var(--text);
+    }
+
+    .hf-style-tile__arrow svg{
+      width: 22px;
+      height: 22px;
+      display:block;
+    }
+
+    @media (max-width: 1100px){
+      .hf-style-edit__grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px){
+      .hf-style-edit{
+        padding: 24px 0 44px;
+      }
+      .hf-style-edit__grid{
+        gap: 12px;
+      }
+      .hf-style-tile__title{
+        font-size: clamp(16px, 6vw, 28px);
+      }
+      .hf-style-tile__body{
+        padding-top: 12px;
+        margin-top: 10px;
+      }
+    }
+
+    .hf-social-strip{
+      background: #ececec;
+      padding: 42px 0 48px;
+      overflow: hidden;
+    }
+
+    .hf-social-strip .container{
+      width: min(1320px, 100%);
+      padding-inline: clamp(16px, 2.8vw, 36px);
+    }
+
+    .hf-social-strip__head{
+      text-align: center;
+      display:grid;
+      gap: 10px;
+      margin-bottom: 26px;
+    }
+
+    .hf-social-strip__kicker{
+      margin: 0;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(11,11,15,.74);
+    }
+
+    .hf-social-strip__title{
+      margin: 0;
+      font-size: clamp(34px, 5vw, 64px);
+      font-weight: 950;
+      letter-spacing: -0.04em;
+      line-height: .95;
+    }
+
+    .hf-social-strip__viewport{
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 8px;
+    }
+
+    .hf-social-strip__viewport::-webkit-scrollbar{
+      display:none;
+    }
+
+    .hf-social-strip__track{
+      display:flex;
+      gap: 16px;
+      width: max-content;
+    }
+
+    .hf-social-strip__card{
+      position: relative;
+      flex: 0 0 clamp(220px, 22vw, 276px);
+      aspect-ratio: 4 / 5.8;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #d9d9d9;
+      scroll-snap-align: start;
+    }
+
+    .hf-social-strip__card img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    .hf-social-strip__meta{
+      position:absolute;
+      inset: 12px 12px auto 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      z-index: 2;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .hf-social-strip__user{
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(11,11,15,.36);
+      backdrop-filter: blur(4px);
+    }
+
+    .hf-social-strip__avatar{
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(255,255,255,.8);
+      display:block;
+    }
+
+    .hf-social-strip__foot{
+      margin-top: 20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .hf-social-strip__foot strong{
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .hf-social-strip__ig{
+      width: 22px;
+      height: 22px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color: var(--text);
+    }
+
+    .hf-social-strip__ig svg{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+
+    @media (max-width: 640px){
+      .hf-social-strip{
+        padding: 34px 0 38px;
+      }
+      .hf-social-strip__track{
+        gap: 12px;
+      }
+      .hf-social-strip__card{
+        flex-basis: 164px;
+        border-radius: 14px;
+      }
+      .hf-social-strip__foot{
+        font-size: 15px;
+      }
+    }
+
     /* Desktop-only complete set slider (1 image per view) */
     .hf-set-desktop-slider {
       background: var(--surface);
@@ -3398,6 +3662,125 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hf-style-edit" id="homeStyleEdit">
+    <div class="container">
+      <div class="hf-style-edit__head">
+        <h2 style="font-size:clamp(28px,4vw,44px);font-weight:900;margin:0;letter-spacing:-0.02em;">Elegí tu estilo</h2>
+        <p class="hf-style-edit__copy">No es por categoría ni por conjunto: es una forma más editorial de entrar a la colección según cómo querés verte y usar la prenda.</p>
+      </div>
+
+      <div class="hf-style-edit__grid">
+        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Básicos">
+          <div class="hf-style-tile__media">
+            <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Básicos">
+          </div>
+          <div class="hf-style-tile__body">
+            <h3 class="hf-style-tile__title">Básicos</h3>
+            <span class="hf-style-tile__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Studio">
+          <div class="hf-style-tile__media">
+            <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Studio">
+          </div>
+          <div class="hf-style-tile__body">
+            <h3 class="hf-style-tile__title">Studio</h3>
+            <span class="hf-style-tile__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Urbano">
+          <div class="hf-style-tile__media">
+            <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Urbano">
+          </div>
+          <div class="hf-style-tile__body">
+            <h3 class="hf-style-tile__title">Urbano</h3>
+            <span class="hf-style-tile__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Prints">
+          <div class="hf-style-tile__media">
+            <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Estilo Prints">
+          </div>
+          <div class="hf-style-tile__body">
+            <h3 class="hf-style-tile__title">Prints</h3>
+            <span class="hf-style-tile__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="hf-social-strip" id="homeSocialStrip">
+    <div class="container">
+      <div class="hf-social-strip__head">
+        <p class="hf-social-strip__kicker">Horizon Fit in the wild</p>
+        <h2 class="hf-social-strip__title">#HORIZONFIT</h2>
+      </div>
+
+      <div class="hf-social-strip__viewport" aria-label="Galería social deslizable">
+        <div class="hf-social-strip__track">
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 1">
+          </article>
+
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 2">
+          </article>
+
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 3">
+          </article>
+
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 4">
+          </article>
+
+          <article class="hf-social-strip__card">
+            <div class="hf-social-strip__meta">
+              <span class="hf-social-strip__user"><span class="hf-social-strip__avatar"></span>@horizonfit</span>
+            </div>
+            <img src="https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=900&h=1300&dpr=1" alt="Look Horizon Fit 5">
+          </article>
+        </div>
+      </div>
+
+      <div class="hf-social-strip__foot">
+        <span>Seguimos en</span>
+        <span class="hf-social-strip__ig" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="4.5"></rect>
+            <circle cx="12" cy="12" r="4.2"></circle>
+            <circle cx="17.4" cy="6.6" r="1"></circle>
+          </svg>
+        </span>
+        <strong>@horizonfit</strong>
       </div>
     </div>
   </section>
