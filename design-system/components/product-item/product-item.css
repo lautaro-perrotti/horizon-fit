@@ -173,6 +173,7 @@
 }
 
 .hf-product-item__price-original {
+  display: none; /* oculto temporalmente — ver DEUDA_TECNICA.md */
   font-size: 13px;
   color: #999;
   text-decoration: line-through;

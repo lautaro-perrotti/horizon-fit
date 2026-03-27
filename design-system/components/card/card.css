@@ -170,6 +170,7 @@
 }
 
 .hf-card__price-original {
+  display: none; /* oculto temporalmente — ver DEUDA_TECNICA.md */
   font-size: 13px;
   color: var(--muted);
   text-decoration: line-through;
