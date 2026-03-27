@@ -178,7 +178,7 @@
 
 .hf-product-item__installments-link {
   color: var(--hf-primary);
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .hf-product-item__installments-value {
