@@ -94,10 +94,6 @@
     display: none;
   }
 
-  .hf-product-scroll-shell .hf-carousel__nav {
-    display: flex;
-  }
-
   .hf-carousel--show-nav-mobile .hf-carousel__nav {
     display: flex;
     width: 36px;
