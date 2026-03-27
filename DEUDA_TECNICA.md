@@ -32,6 +32,22 @@ Cuando haya un producto con descuento para mostrar, simplemente eliminar o comen
 
 ---
 
+## Eyebrow del video hero
+
+**Estado:** Omitido temporalmente
+**Archivo afectado:** `index.html`
+**Elemento:** `.hf-video-hero__eyebrow` dentro de `hf-video-hero__content`
+
+### Nota
+
+El texto informativo sobre cuotas y envíos está comentado en el video hero. Restaurar descomentando cuando se quiera mostrar:
+
+```html
+<p class="hf-video-hero__eyebrow">Recordá: 3 y 6 cuotas sin interés · envío gratis desde $150.000 · cambios fáciles</p>
+```
+
+---
+
 ## Padding vertical del navbar en mobile
 
 **Estado:** No implementar salvo indicación explícita
