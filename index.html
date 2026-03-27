@@ -223,8 +223,8 @@
     }
 
     .nav.is-scrolled{
-      background: var(--surface);
-      backdrop-filter: none;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      backdrop-filter: blur(14px);
       border-bottom-color: var(--border);
       box-shadow: 0 8px 24px rgba(0,0,0,.08);
     }
@@ -319,22 +319,10 @@
       }
 
       .nav{
-        background: transparent;
+        background: var(--surface);
         backdrop-filter: none;
-        border-bottom-color: transparent;
+        border-bottom-color: var(--border);
         box-shadow: none;
-      }
-
-      .nav:not(.is-scrolled) .brand,
-      .nav:not(.is-scrolled) .nav__icon-btn,
-      .nav:not(.is-scrolled) .nav__hamburger{
-        color: #fff !important;
-      }
-
-      .nav:not(.is-scrolled) .nav__icon-btn:hover,
-      .nav:not(.is-scrolled) .nav__links a:hover{
-        background: rgba(255,255,255,.14);
-        color: #fff;
       }
 
       .nav__icon-btn--mobile-left{ display: flex; }
