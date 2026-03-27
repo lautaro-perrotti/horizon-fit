@@ -441,7 +441,12 @@
   }
 
   .hf-product-grid--h-scroll .hf-product-item {
-    flex: 0 0 calc(50% - 14px);
+    flex: 0 0 calc(54% - 14px);
+  }
+
+  /* Ocultar badge de descuento en mobile */
+  .hf-product-item__badge {
+    display: none;
   }
 
   /* Ocultar botones de talle en mobile */
