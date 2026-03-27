@@ -29,3 +29,25 @@ Cuando haya un producto con descuento para mostrar, simplemente eliminar o comen
 ```html
 <span class="hf-product-item__badge">50% OFF!</span>
 ```
+
+---
+
+## Padding vertical del navbar en mobile
+
+**Estado:** No implementar salvo indicación explícita
+**Archivo afectado:** `index.html`
+**Elemento:** `.nav__inner` dentro de `@media (max-width: 768px)`
+
+### Nota
+
+Se guarda como referencia el valor con padding vertical por si se quiere dar más altura al navbar en mobile:
+
+```css
+@media (max-width: 768px) {
+  .nav__inner {
+    padding: 10px 16px !important;
+  }
+}
+```
+
+Actualmente está en `0px 16px`. No cambiar a menos que se indique explícitamente.
