@@ -441,7 +441,17 @@
   }
 
   .hf-product-grid--h-scroll .hf-product-item {
-    flex: 0 0 calc(50vw - var(--s-4) - 22px);
+    flex: 0 0 calc(75vw - 12px);
+  }
+
+  /* Ocultar botones de talle en mobile */
+  .hf-product-item__sizes {
+    display: none;
+  }
+
+  /* Ocultar ambos botones de acción en mobile */
+  .hf-product-item__actions {
+    display: none;
   }
 }
 
