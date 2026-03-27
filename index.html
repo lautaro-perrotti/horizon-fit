@@ -982,10 +982,9 @@
     .footer__newsletter{
       display:flex;
       gap: 10px;
-      flex-wrap:wrap;
     }
     .footer__newsletter .control{
-      min-width: 220px;
+      min-width: 0;
       flex: 1;
       background: rgba(255,255,255,.12);
       color: #fff;
@@ -1111,7 +1110,7 @@
     }
     @media (max-width: 620px){
       .footer__top{ grid-template-columns: 1fr; }
-      .footer__newsletter .control{ min-width: 100%; }
+      .footer__newsletter .control{ min-width: 0; }
     }
 
     /* Utility */
