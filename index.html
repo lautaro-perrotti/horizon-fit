@@ -216,15 +216,15 @@
       left:0;
       right:0;
       z-index:120;
-      background: color-mix(in srgb, var(--bg) 75%, transparent);
-      backdrop-filter: blur(14px);
+      background: var(--bg);
+      backdrop-filter: none;
       border-bottom:1px solid var(--border);
       transition: background var(--med) var(--ease), border-color var(--med) var(--ease), backdrop-filter var(--med) var(--ease), box-shadow var(--med) var(--ease);
     }
 
     .nav.is-scrolled{
-      background: color-mix(in srgb, var(--bg) 82%, transparent);
-      backdrop-filter: blur(14px);
+      background: var(--bg);
+      backdrop-filter: none;
       border-bottom-color: var(--border);
       box-shadow: 0 8px 24px rgba(0,0,0,.08);
     }
