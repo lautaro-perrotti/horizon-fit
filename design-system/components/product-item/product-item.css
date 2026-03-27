@@ -161,7 +161,7 @@
 .hf-product-item__price {
   font-size: 14px;
   font-weight: 700;
-  color: #c7417b;
+  color: var(--hf-primary);
 }
 
 .hf-product-item__price-original {
@@ -177,7 +177,7 @@
 }
 
 .hf-product-item__installments-link {
-  color: #c7417b;
+  color: var(--hf-primary);
   text-decoration: underline;
 }
 
