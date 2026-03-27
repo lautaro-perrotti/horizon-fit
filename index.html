@@ -2853,14 +2853,12 @@
         </article>
         </div>
       </div>
-      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
-        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
+      <button class="hf-carousel__nav hf-carousel__nav--prev" type="button" data-dir="-1" aria-label="Anterior" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="hf-carousel__nav hf-carousel__nav--next" type="button" data-dir="1" aria-label="Siguiente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     </div>
   </section>
 
@@ -3336,15 +3334,12 @@
           </div>
         </article>
       </div>
-      <div class="hf-slider-controls hf-slider-controls--overlay" aria-label="Controles del slider">
-        <button class="hf-slider-btn" type="button" data-dir="-1" aria-label="Anterior">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="hf-slider-btn" type="button" data-dir="1" aria-label="Siguiente">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
-    </div>
+      <button class="hf-carousel__nav hf-carousel__nav--prev" type="button" data-dir="-1" aria-label="Anterior" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="hf-carousel__nav hf-carousel__nav--next" type="button" data-dir="1" aria-label="Siguiente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     </div>
   </section>
 
@@ -3379,8 +3374,8 @@
 
     document.querySelectorAll('[data-grid-shell]').forEach(function(shell) {
       var grid = shell.querySelector('.hf-product-grid--h-scroll');
-      var prevBtn = shell.querySelector('.hf-slider-btn[data-dir="-1"]');
-      var nextBtn = shell.querySelector('.hf-slider-btn[data-dir="1"]');
+      var prevBtn = shell.querySelector('[data-dir="-1"]');
+      var nextBtn = shell.querySelector('[data-dir="1"]');
       if (!grid || !prevBtn || !nextBtn) return;
 
       function getStep() {
@@ -3395,7 +3390,7 @@
         var atStart = grid.scrollLeft <= 2;
         var atEnd = grid.scrollLeft >= (maxScroll - 2);
 
-        prevBtn.classList.toggle('is-hidden', !canScroll || atStart);
+        prevBtn.disabled = atStart;
         nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
       }
 
