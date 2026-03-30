@@ -214,10 +214,12 @@
 }
 
 @media (min-width: 769px) {
-  #productGrid1 .hf-product-item__sizes,
-  #productGrid1 .hf-product-item__actions {
-    display: none;
-  }
+#productGrid1 .hf-product-item__sizes,
+#productGrid1 .hf-product-item__actions,
+#productGrid2 .hf-product-item__sizes,
+#productGrid2 .hf-product-item__actions {
+  display: none;
+}
 }
 
 /* ========================================
