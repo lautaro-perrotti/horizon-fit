@@ -28,6 +28,11 @@
 
     if (!track || !content) return null;
 
+    const lastChild = content.lastElementChild;
+    if (lastChild && lastChild.classList.contains('hf-marquee__separator')) {
+      lastChild.remove();
+    }
+
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
