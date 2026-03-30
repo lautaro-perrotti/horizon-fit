@@ -19,7 +19,8 @@
 .hf-marquee__track {
   display: flex;
   white-space: nowrap;
-  animation: marquee 30s linear infinite;
+  width: max-content;
+  animation: marquee var(--marquee-speed, 30s) linear infinite;
   will-change: transform;
 }
 
@@ -57,7 +58,7 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(var(--marquee-shift, -50%));
   }
 }
 

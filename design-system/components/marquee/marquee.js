@@ -31,14 +31,37 @@
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Clone content for seamless loop
-    const clone = content.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    track.appendChild(clone);
-
     // Set CSS variables
     el.style.setProperty('--marquee-speed', `${config.speed}s`);
     el.style.setProperty('--marquee-gap', `${config.gap}px`);
+
+    let clones = [];
+
+    function clearClones() {
+      clones.forEach((node) => node.remove());
+      clones = [];
+    }
+
+    function buildLoop() {
+      clearClones();
+
+      const contentWidth = Math.ceil(content.scrollWidth);
+      const viewportWidth = Math.ceil(el.clientWidth);
+      if (!contentWidth) return;
+
+      el.style.setProperty('--marquee-shift', `-${contentWidth}px`);
+
+      let totalWidth = contentWidth;
+      while (totalWidth < contentWidth + viewportWidth) {
+        const clone = content.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+        clones.push(clone);
+        totalWidth += contentWidth;
+      }
+    }
+
+    buildLoop();
 
     // Handle direction
     if (config.reverse) {
@@ -60,7 +83,7 @@
     }
 
     function destroy() {
-      clone.remove();
+      clearClones();
     }
 
     // Listen for reduced motion changes
@@ -74,12 +97,18 @@
     };
     motionQuery.addEventListener('change', motionHandler);
 
+    const resizeHandler = () => {
+      buildLoop();
+    };
+    window.addEventListener('resize', resizeHandler);
+
     return {
       el,
       pause,
       play,
       destroy: () => {
         destroy();
+        window.removeEventListener('resize', resizeHandler);
         motionQuery.removeEventListener('change', motionHandler);
       },
       isPaused: () => isPaused
