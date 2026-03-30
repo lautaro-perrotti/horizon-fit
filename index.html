@@ -27,6 +27,14 @@
       - Ecommerce-ready examples
     ******************************************************************/
 
+    @font-face{
+      font-family:'BlauerNue';
+      src:url('./TIPOGRAFIAS/BLAUERNUE-REGULAR.OTF') format('opentype');
+      font-weight:400;
+      font-style:normal;
+      font-display:swap;
+    }
+
     /* -----------------------------
       1) TOKENS (desde Identikit)
       Paleta: #F1F2F6 #758AFD #FEECD4 #FF5E32 #CB4A00 #B6CF50 #406915 #4B0E26 #4561FC #27187D #000000 #D5C5B5
@@ -184,6 +192,19 @@
     .p{ font-size:var(--p); color:var(--muted); margin:0; }
     .small{ font-size:var(--small); color:var(--muted); }
     .mono{ font-family:var(--font-mono); }
+
+    h1, h2, h3,
+    .h1, .h2, .h3,
+    .hf-product-item__title,
+    .hf-set-desktop-slider__title,
+    .hf-category-card__title,
+    .trust-item__title,
+    .hf-social-strip__title{
+      font-family:'BlauerNue', var(--font-sans) !important;
+      font-weight:400 !important;
+      text-transform:uppercase;
+      letter-spacing:0.04em !important;
+    }
 
     .pill{
       display:inline-flex;
