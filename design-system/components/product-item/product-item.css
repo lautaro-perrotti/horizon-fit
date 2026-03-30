@@ -177,7 +177,7 @@
 }
 
 .hf-product-item__installments-link {
-  color: #666;
+  color: var(--hf-primary);
   font-weight: 700;
   text-decoration: none;
 }
@@ -189,7 +189,7 @@
 .hf-product-item__transfer {
   font-size: 14px;
   font-weight: 700;
-  color: #222;
+  color: var(--hf-primary);
 }
 
 .hf-product-item__transfer-label {
