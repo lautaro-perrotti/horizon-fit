@@ -52,17 +52,24 @@
 
       const contentWidth = Math.ceil(content.scrollWidth);
       const viewportWidth = Math.ceil(el.clientWidth);
+      const separatorWidth = config.gap + 4;
       if (!contentWidth) return;
 
-      el.style.setProperty('--marquee-shift', `-${contentWidth}px`);
+      el.style.setProperty('--marquee-shift', `-${contentWidth + separatorWidth}px`);
 
       let totalWidth = contentWidth;
-      while (totalWidth < contentWidth + viewportWidth) {
+      while (totalWidth < contentWidth + viewportWidth + separatorWidth) {
+        const sep = document.createElement('span');
+        sep.className = 'hf-marquee__separator hf-marquee__separator--between';
+        sep.setAttribute('aria-hidden', 'true');
+        track.appendChild(sep);
+        clones.push(sep);
+
         const clone = content.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
         track.appendChild(clone);
         clones.push(clone);
-        totalWidth += contentWidth;
+        totalWidth += contentWidth + separatorWidth;
       }
     }
 

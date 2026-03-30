@@ -27,23 +27,28 @@
 .hf-marquee__content {
   display: flex;
   align-items: center;
-  gap: var(--marquee-gap, 40px);
-  padding-right: var(--marquee-gap, 40px);
+  gap: 0;
 }
 
 .hf-marquee__item {
   display: inline-block;
+  flex: 0 0 auto;
 }
 
 .hf-marquee__separator {
   width: 4px;
   height: 4px;
   flex: 0 0 4px;
+  margin-inline: calc(var(--marquee-gap, 40px) / 2);
   border-radius: 50%;
   background: currentColor;
   opacity: 0.5;
   display: block;
   align-self: center;
+}
+
+.hf-marquee__separator--between {
+  margin-inline: calc(var(--marquee-gap, 40px) / 2);
 }
 
 /* Pause on hover/focus */
