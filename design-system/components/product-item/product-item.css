@@ -134,7 +134,7 @@
 
 .hf-product-item__title {
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700 !important;
   color: #222;
   margin: 0;
   text-transform: uppercase;
@@ -243,7 +243,7 @@
   }
 
   .hf-product-item__title {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .hf-product-item__price {
