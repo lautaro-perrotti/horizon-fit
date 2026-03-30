@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'BlauerNue';
+    src: url('../../../TIPOGRAFIAS/BLAUERNUE-REGULAR.OTF') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 .trust-bar {
     width: 100%;
     padding: 60px 40px;
@@ -79,22 +87,24 @@
 .trust-item__content {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .trust-item__title {
-    font-size: 26px;
-    font-weight: 850;
+    font-size: 20px;
+    font-family: 'BlauerNue', var(--font-sans) !important;
+    font-weight: 400 !important;
+    text-transform: uppercase;
     color: var(--hf-primary);
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
     margin: 0;
 }
 
 .trust-item__description {
-    font-size: 16px;
+    font-size: 15px;
     color: color-mix(in srgb, var(--hf-primary) 80%, transparent);
-    line-height: 1.5;
+    line-height: 1.45;
     max-width: 280px;
     margin: 0 auto;
 }
@@ -116,7 +126,11 @@
     }
 
     .trust-item__title {
-        font-size: 22px;
+        font-size: 18px;
+    }
+
+    .trust-item__description {
+        font-size: 14px;
     }
 
     .trust-item__icon svg {
