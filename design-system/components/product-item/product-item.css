@@ -133,7 +133,7 @@
 ======================================== */
 
 .hf-product-item__title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700 !important;
   color: #222;
   margin: 0;
@@ -211,6 +211,13 @@
 
 .hf-product-item__cta--ghost {
   background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+@media (min-width: 769px) {
+  #productGrid1 .hf-product-item__sizes,
+  #productGrid1 .hf-product-item__actions {
+    display: none;
+  }
 }
 
 /* ========================================
