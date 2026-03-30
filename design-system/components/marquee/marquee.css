@@ -18,6 +18,7 @@
 
 .hf-marquee__track {
   display: flex;
+  gap: var(--marquee-gap, 40px);
   white-space: nowrap;
   animation: marquee 30s linear infinite;
   will-change: transform;
@@ -26,7 +27,7 @@
 .hf-marquee__content {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: var(--marquee-gap, 40px);
 }
 
 .hf-marquee__item {
