@@ -173,12 +173,13 @@
 
 .hf-product-item__installments {
   font-size: 12px;
-  color: var(--hf-primary);
+  color: #666;
 }
 
 .hf-product-item__installments-link {
-  color: var(--hf-primary);
-  text-decoration: underline;
+  color: #666;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .hf-product-item__installments-value {
