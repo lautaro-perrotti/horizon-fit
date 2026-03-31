@@ -135,7 +135,7 @@
 .hf-product-item__title {
   font-size: 14px;
   font-weight: 700 !important;
-  color: #222;
+  color: #222 !important;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.02em;
