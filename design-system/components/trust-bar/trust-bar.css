@@ -8,7 +8,7 @@
 
 .trust-bar {
     width: 100%;
-    padding: 60px 40px;
+    padding: 60px var(--page-gutter, 40px);
     text-align: center;
     background: var(--surface);
     overflow: hidden;
@@ -114,11 +114,11 @@
         flex: 0 0 50%;
     }
 
-    .trust-bar { padding: 56px 24px; }
+    .trust-bar { padding: 56px var(--page-gutter, 24px); }
 }
 
 @media (max-width: 640px) {
-    .trust-bar { padding: 48px 16px; }
+    .trust-bar { padding: 48px var(--page-gutter, 16px); }
 
     .trust-item {
         flex: 0 0 100%;
