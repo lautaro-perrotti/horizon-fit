@@ -2148,6 +2148,7 @@
     }
 
     .hf-set-mobile-carousel {
+      --set-mobile-carousel-inset: 14px;
       display: none;
       background: var(--surface);
       padding: 12px 0 28px;
@@ -2161,6 +2162,10 @@
       text-align: center;
     }
 
+    .hf-set-mobile-carousel #setMobileCarousel {
+      padding-inline: var(--set-mobile-carousel-inset);
+    }
+
     .hf-set-mobile-carousel .hf-carousel__nav {
       width: 24px;
       height: 48px;
@@ -2170,7 +2175,7 @@
       box-shadow: none;
       transition: none;
       padding: 0;
-      top: clamp(150px, calc((100vw - 24px) * 0.625), 280px);
+      top: clamp(140px, calc((100vw - (2 * var(--page-gutter)) - (2 * var(--set-mobile-carousel-inset))) * 0.625), 260px);
       transform: translateY(-50%);
     }
 
