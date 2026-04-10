@@ -10,6 +10,13 @@
   overflow: hidden;
   border-radius: var(--r-3);
   background: transparent;
+  background-image: url('../../../assets/hero-video-poster-desktop.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hf-video-hero.is-video-loaded {
+  background-image: none;
 }
 
 .hf-video-hero--full {
@@ -255,6 +262,12 @@
 /* ========================================
    RESPONSIVE
 ======================================== */
+
+@media (max-width: 768px) {
+  .hf-video-hero {
+    background-image: url('../../../assets/hero-video-poster-mobile.jpg');
+  }
+}
 
 @media (max-width: 640px) {
   .hf-video-hero {
