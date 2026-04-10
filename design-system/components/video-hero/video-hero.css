@@ -9,7 +9,7 @@
   min-height: 400px;
   overflow: hidden;
   border-radius: var(--r-3);
-  background: var(--hf-black);
+  background: #000;
 }
 
 .hf-video-hero--full {
@@ -38,6 +38,7 @@
 .hf-video-hero__video {
   opacity: 0;
   transition: opacity var(--med) var(--ease);
+  background: #000;
 }
 
 .hf-video-hero__video.is-loaded {
@@ -46,6 +47,8 @@
 
 .hf-video-hero__fallback {
   z-index: 0;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* ========================================
@@ -236,7 +239,7 @@
   }
 
   .hf-video-hero__fallback {
-    display: block !important;
+    display: none !important;
   }
 
   .hf-video-hero__scroll {

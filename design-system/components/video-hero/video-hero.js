@@ -34,6 +34,12 @@
 
     // State
     let isPlaying = false;
+    let userPaused = false;
+    let wasPlayingBeforeHidden = false;
+    let retryTimer = null;
+    let watchdogTimer = null;
+    let lastWatchTime = 0;
+    let stagnantTicks = 0;
 
     // Optional: full viewport height minus offsets (e.g., sticky header)
     let teardownFullHeight = null;
@@ -130,19 +136,60 @@
       video.setAttribute('playsinline', '');
       video.setAttribute('muted', '');
       video.setAttribute('autoplay', '');
-      video.preload = video.getAttribute('preload') || 'metadata';
+      video.preload = video.getAttribute('preload') || 'auto';
+      video.disablePictureInPicture = true;
 
       // Hide video if reduced motion
       if (prefersReducedMotion) {
         video.style.display = 'none';
-        if (fallback) fallback.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
         return;
       }
 
-      // Show fallback until video loads
-      video.addEventListener('loadeddata', () => {
+      const shouldAutoplay = () => {
+        return config.autoplay && !prefersReducedMotion && !userPaused && !document.hidden;
+      };
+
+      const clearRetry = () => {
+        if (retryTimer !== null) {
+          window.clearTimeout(retryTimer);
+          retryTimer = null;
+        }
+      };
+
+      const attemptPlay = () => {
+        if (!shouldAutoplay()) return Promise.resolve();
+        video.muted = true;
+        video.setAttribute('muted', '');
+        return video.play().catch(() => {});
+      };
+
+      const schedulePlayRetry = (delay = 250) => {
+        if (!shouldAutoplay() || retryTimer !== null) return;
+        retryTimer = window.setTimeout(() => {
+          retryTimer = null;
+          attemptPlay();
+        }, delay);
+      };
+
+      const revealVideo = () => {
         video.classList.add('is-loaded');
-        if (fallback) fallback.style.opacity = '0';
+        if (fallback) {
+          fallback.style.opacity = '0';
+          fallback.style.display = 'none';
+        }
+      };
+
+      video.addEventListener('loadeddata', revealVideo);
+      video.addEventListener('canplay', () => {
+        revealVideo();
+        schedulePlayRetry(0);
+      });
+
+      video.addEventListener('playing', () => {
+        clearRetry();
+        isPlaying = true;
+        updateControlState();
       });
 
       video.addEventListener('play', () => {
@@ -153,18 +200,23 @@
       video.addEventListener('pause', () => {
         isPlaying = false;
         updateControlState();
+        if (!video.ended && shouldAutoplay()) {
+          schedulePlayRetry(400);
+        }
       });
 
-      // Fallback for devices/browsers where `loop` can be unreliable
-      video.addEventListener('ended', () => {
+      const restartLoop = () => {
         if (!config.loop) return;
         try {
           video.currentTime = 0;
         } catch (_) {
           // ignore
         }
-        video.play().catch(() => {});
-      });
+        schedulePlayRetry(0);
+      };
+
+      // Fallback for devices/browsers where `loop` can be unreliable
+      video.addEventListener('ended', restartLoop);
 
       // Extra safety net: some mobile browsers can stall at the end frame.
       video.addEventListener('timeupdate', () => {
@@ -175,16 +227,52 @@
           } catch (_) {
             // ignore
           }
+          schedulePlayRetry(0);
         }
+      });
+
+      ['stalled', 'waiting', 'emptied', 'error'].forEach((eventName) => {
+        video.addEventListener(eventName, () => {
+          if (!shouldAutoplay()) return;
+          if (eventName === 'error') {
+            try {
+              video.load();
+            } catch (_) {
+              // ignore
+            }
+          }
+          schedulePlayRetry(600);
+        });
       });
 
       // Autoplay
       if (config.autoplay && !prefersReducedMotion) {
-        video.play().catch(() => {
-          // Autoplay blocked - show fallback
-          if (fallback) fallback.style.opacity = '1';
-        });
+        schedulePlayRetry(0);
       }
+
+      watchdogTimer = window.setInterval(() => {
+        if (!shouldAutoplay()) return;
+
+        if (video.paused || video.ended) {
+          schedulePlayRetry(0);
+          return;
+        }
+
+        if (video.readyState < 2) {
+          schedulePlayRetry(800);
+          return;
+        }
+
+        const current = video.currentTime || 0;
+        const changed = Math.abs(current - lastWatchTime) > 0.04;
+        lastWatchTime = current;
+        stagnantTicks = changed ? 0 : stagnantTicks + 1;
+
+        if (stagnantTicks >= 3) {
+          stagnantTicks = 0;
+          schedulePlayRetry(0);
+        }
+      }, 1800);
     }
 
     // Create play/pause control button
@@ -220,10 +308,16 @@
     // Control functions
     function play() {
       if (prefersReducedMotion) return;
+      userPaused = false;
       video.play().catch(() => {});
     }
 
     function pause() {
+      userPaused = true;
+      video.pause();
+    }
+
+    function pauseForSystem() {
       video.pause();
     }
 
@@ -237,6 +331,14 @@
 
     function destroy() {
       pause();
+      if (retryTimer !== null) {
+        window.clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      if (watchdogTimer !== null) {
+        window.clearInterval(watchdogTimer);
+        watchdogTimer = null;
+      }
       if (controlBtn && config.showControl) {
         controlBtn.remove();
       }
@@ -245,9 +347,11 @@
     // Visibility API - pause when tab not visible
     function handleVisibility() {
       if (document.hidden) {
-        video.pause();
-      } else if (config.autoplay && isPlaying) {
-        video.play().catch(() => {});
+        wasPlayingBeforeHidden = !video.paused;
+        pauseForSystem();
+      } else if (config.autoplay && !userPaused && (wasPlayingBeforeHidden || video.paused)) {
+        wasPlayingBeforeHidden = false;
+        play();
       }
     }
 
@@ -255,9 +359,9 @@
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionHandler = (e) => {
       if (e.matches) {
-        pause();
+        pauseForSystem();
         video.style.display = 'none';
-        if (fallback) fallback.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
       } else {
         video.style.display = '';
         if (config.autoplay) play();
