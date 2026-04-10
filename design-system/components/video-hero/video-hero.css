@@ -9,7 +9,7 @@
   min-height: 400px;
   overflow: hidden;
   border-radius: var(--r-3);
-  background: #000;
+  background: transparent;
 }
 
 .hf-video-hero--full {
@@ -38,7 +38,7 @@
 .hf-video-hero__video {
   opacity: 0;
   transition: opacity var(--med) var(--ease);
-  background: #000;
+  background: transparent;
 }
 
 .hf-video-hero__video.is-loaded {
@@ -60,6 +60,12 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--med) var(--ease);
+}
+
+.hf-video-hero.is-video-loaded .hf-video-hero__overlay {
+  opacity: 1;
 }
 
 /* Gradient presets */

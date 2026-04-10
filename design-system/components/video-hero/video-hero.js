@@ -173,6 +173,7 @@
       };
 
       const revealVideo = () => {
+        el.classList.add('is-video-loaded');
         video.classList.add('is-loaded');
         if (fallback) {
           fallback.style.opacity = '0';
