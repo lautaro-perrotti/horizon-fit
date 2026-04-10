@@ -3917,8 +3917,8 @@
       <div class="hf-style-edit__grid">
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Básicos">
           <div class="hf-style-tile__media">
-            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/6525489-hd_1080_1920_30fps.mp4" type="video/mp4">
+            <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
+              <source src="assets/style-tile-basicos.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -3931,8 +3931,8 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Studio">
           <div class="hf-style-tile__media">
-            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/style-studio-pexels.mp4" type="video/mp4">
+            <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
+              <source src="assets/style-tile-studio.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -3945,8 +3945,8 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Urbano">
           <div class="hf-style-tile__media">
-            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/3196289-uhd_3840_2160_25fps.mp4" type="video/mp4">
+            <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
+              <source src="assets/style-tile-urbano.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -3959,8 +3959,8 @@
 
         <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Prints">
           <div class="hf-style-tile__media">
-            <video autoplay muted loop playsinline preload="metadata" aria-hidden="true">
-              <source src="assets/style-prints-woman-training.mp4" type="video/mp4">
+            <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
+              <source src="assets/style-tile-prints.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
@@ -5727,6 +5727,67 @@
 
       window.addEventListener("resize", startAnimation);
       startAnimation();
+    })();
+
+    // Style edit videos: load and play only near the viewport.
+    (function initStyleEditVideos() {
+      const videos = $$("[data-style-video]");
+      if (!videos.length) return;
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function prepare(video) {
+        if (video.dataset.prepared === "true") return;
+        video.dataset.prepared = "true";
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.load();
+      }
+
+      function play(video) {
+        if (prefersReducedMotion) return;
+        prepare(video);
+        video.play().catch(() => {});
+      }
+
+      function pause(video) {
+        video.pause();
+      }
+
+      if (!("IntersectionObserver" in window)) {
+        videos.forEach(play);
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            play(video);
+          } else {
+            pause(video);
+          }
+        });
+      }, {
+        rootMargin: "220px 0px",
+        threshold: 0.18
+      });
+
+      videos.forEach((video) => observer.observe(video));
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          videos.forEach(pause);
+        } else {
+          videos.forEach((video) => {
+            const rect = video.getBoundingClientRect();
+            const nearViewport = rect.bottom > -220 && rect.top < window.innerHeight + 220;
+            if (nearViewport) play(video);
+          });
+        }
+      });
     })();
 
     // close buttons
