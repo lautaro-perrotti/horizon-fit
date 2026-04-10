@@ -36,8 +36,7 @@
 }
 
 .hf-video-hero__video {
-  opacity: 0;
-  transition: opacity var(--med) var(--ease);
+  opacity: 1;
   background: transparent;
 }
 
