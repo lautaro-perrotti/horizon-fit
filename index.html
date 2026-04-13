@@ -1477,6 +1477,43 @@
       gap:8px;
       flex-wrap:wrap;
     }
+    .hf-pdp-view__option-head{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:16px;
+      margin-top:4px;
+      font-size:14px;
+      color:#111;
+    }
+    .hf-pdp-view__option-head a{
+      color:rgba(11,11,15,.72);
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    .hf-pdp-view__color-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:-4px;
+    }
+    .hf-pdp-view__color{
+      width:58px;
+      height:70px;
+      border:1px solid rgba(11,11,15,.16);
+      border-radius:0;
+      background:#f3f3f3;
+      padding:3px;
+      cursor:pointer;
+    }
+    .hf-pdp-view__color[aria-current="true"]{
+      border-color:#111;
+    }
+    .hf-pdp-view__color img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
     .hf-pdp-view__size{
       min-width:44px;
       height:40px;
@@ -1657,6 +1694,9 @@
         width:132px;
         height:176px;
         aspect-ratio:auto;
+      }
+      .hf-pdp-view__size{
+        min-width:84px;
       }
     }
 
@@ -3854,11 +3894,12 @@
             '</div>' +
             '<p class="hf-pdp-view__copy" data-product-installments></p>' +
             '<p class="hf-pdp-view__copy" data-product-transfer></p>' +
-            '<p class="hf-pdp-view__kicker">Talle</p>' +
+            '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
+            '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
+            '<div class="hf-pdp-view__option-head"><span>Talle: <strong data-product-size-label>S</strong></span><a href="#" data-product-size-guide>Tabla de talles</a></div>' +
             '<div class="hf-pdp-view__sizes" aria-label="Seleccionar talle">' +
-              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">XS</button>' +
-              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">S</button>' +
-              '<button class="hf-pdp-view__size" type="button" aria-pressed="true">M</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="true">S</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">M</button>' +
               '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
               '<button class="hf-pdp-view__size" type="button" aria-pressed="false">XL</button>' +
             '</div>' +
@@ -3910,12 +3951,14 @@
 
       var mainImage = view.querySelector('[data-product-main-image]');
       var thumbs = view.querySelector('[data-product-thumbs]');
+      var colors = view.querySelector('[data-product-colors]');
       var title = view.querySelector('.hf-pdp-view__title');
       var priceEl = view.querySelector('.hf-pdp-view__price');
       var compareEl = view.querySelector('.hf-pdp-view__compare');
       var installmentsEl = view.querySelector('[data-product-installments]');
       var transferEl = view.querySelector('[data-product-transfer]');
       var mainMedia = view.querySelector('[data-product-main]');
+      var sizeLabel = view.querySelector('[data-product-size-label]');
 
       title.textContent = productName;
       priceEl.textContent = price;
@@ -3972,6 +4015,23 @@
         thumbs.appendChild(button);
       });
 
+      images.slice(0, 4).forEach(function(src, index) {
+        var button = document.createElement('button');
+        button.className = 'hf-pdp-view__color';
+        button.type = 'button';
+        button.setAttribute('aria-label', 'Seleccionar color ' + (index + 1));
+        button.setAttribute('aria-current', index === 0 ? 'true' : 'false');
+        button.innerHTML = '<img src="' + src + '" alt="">';
+        button.addEventListener('click', function() {
+          Array.prototype.forEach.call(colors.children, function(item) {
+            item.setAttribute('aria-current', 'false');
+          });
+          button.setAttribute('aria-current', 'true');
+          goToProductImage(index);
+        });
+        colors.appendChild(button);
+      });
+
       var startX = null;
       mainMedia.addEventListener('pointerdown', function(event) {
         startX = event.clientX;
@@ -3990,7 +4050,15 @@
             size.setAttribute('aria-pressed', 'false');
           });
           button.setAttribute('aria-pressed', 'true');
+          if (sizeLabel) sizeLabel.textContent = button.textContent.trim();
         });
+      });
+
+      view.querySelector('[data-product-size-guide]')?.addEventListener('click', function(event) {
+        event.preventDefault();
+        var tab = view.querySelector('[data-product-tab="sizes"]');
+        tab?.click();
+        view.querySelector('.hf-pdp-view__details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
       view.querySelectorAll('[data-product-tab]').forEach(function(tab) {
