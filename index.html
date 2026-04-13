@@ -885,6 +885,12 @@
     }
     .drawer.is-on .drawer__panel{ transform: translateX(0); opacity:1; }
     .drawer__hd{ padding: 16px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
+    .drawer__hd b{
+      font-size:24px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:.02em;
+    }
     .drawer__bd{ padding: 16px 18px; overflow:auto; flex:1; }
     .drawer__ft{ padding: 16px 18px; border-top:1px solid var(--border); }
 
@@ -1341,6 +1347,215 @@
       }
       .hf-product-scroll-shell .hf-carousel__nav{
         display: flex;
+      }
+    }
+
+    .hf-pdp-view{
+      width:min(100%, 980px);
+      margin:0 auto;
+      padding:16px var(--page-gutter) 48px;
+      background:var(--surface);
+    }
+    .hf-pdp-view__back{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:14px;
+      border:0;
+      background:transparent;
+      color:var(--text);
+      padding:8px 0;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .hf-pdp-view__layout{
+      display:grid;
+      gap:18px;
+    }
+    .hf-pdp-view__media{
+      display:grid;
+      gap:12px;
+    }
+    .hf-pdp-view__main{
+      position:relative;
+      overflow:hidden;
+      border-radius:8px;
+      background:#f3f3f3;
+      aspect-ratio:4 / 5;
+      touch-action:pan-y;
+      user-select:none;
+    }
+    .hf-pdp-view__main img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .hf-pdp-view__arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:28px;
+      height:56px;
+      border:0;
+      border-radius:0;
+      background:rgba(0,0,0,.46);
+      color:#fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:2;
+    }
+    .hf-pdp-view__arrow:hover{
+      background:rgba(0,0,0,.62);
+    }
+    .hf-pdp-view__arrow--prev{ left:0; }
+    .hf-pdp-view__arrow--next{ right:0; }
+    .hf-pdp-view__thumbs{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      padding-bottom:4px;
+      scrollbar-width:none;
+    }
+    .hf-pdp-view__thumbs::-webkit-scrollbar{ display:none; }
+    .hf-pdp-view__thumb{
+      flex:0 0 64px;
+      width:64px;
+      aspect-ratio:4 / 5;
+      border:1px solid transparent;
+      border-radius:4px;
+      overflow:hidden;
+      padding:0;
+      background:#f3f3f3;
+      cursor:pointer;
+    }
+    .hf-pdp-view__thumb[aria-current="true"]{
+      border-color:var(--text);
+    }
+    .hf-pdp-view__thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .hf-pdp-view__info{
+      display:grid;
+      gap:14px;
+    }
+    .hf-pdp-view__kicker{
+      margin:0;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .hf-pdp-view__title{
+      margin:0;
+      font-family:'BlauerNue', var(--font-sans) !important;
+      font-size:clamp(28px, 7vw, 44px);
+      font-weight:900 !important;
+      letter-spacing:.04em !important;
+      line-height:.95;
+      text-transform:uppercase;
+      color:var(--hf-primary) !important;
+    }
+    .hf-pdp-view__price-row{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:8px;
+    }
+    .hf-pdp-view__price{
+      color:var(--hf-primary);
+      font-size:20px;
+      font-weight:900;
+    }
+    .hf-pdp-view__compare{
+      color:var(--muted);
+      text-decoration:line-through;
+      font-size:14px;
+    }
+    .hf-pdp-view__copy{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .hf-pdp-view__sizes{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .hf-pdp-view__size{
+      min-width:44px;
+      height:40px;
+      border:1px solid var(--border);
+      border-radius:4px;
+      background:var(--surface);
+      cursor:pointer;
+      font-weight:800;
+    }
+    .hf-pdp-view__size[aria-pressed="true"]{
+      border-color:var(--text);
+      background:var(--text);
+      color:var(--surface);
+    }
+    .hf-pdp-view__actions{
+      display:grid;
+      gap:10px;
+    }
+    .hf-pdp-view__button{
+      min-height:48px;
+      border:1px solid transparent;
+      border-radius:8px;
+      padding:12px 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .hf-pdp-view__button--primary{
+      background:var(--hf-primary);
+      color:var(--hf-white);
+    }
+    .hf-pdp-view__button--secondary{
+      background:var(--surface);
+      color:var(--text);
+      border-color:var(--border);
+    }
+    body.hf-product-mode > :not(.nav):not(.hf-pdp-view){
+      display:none !important;
+    }
+    body.hf-product-mode{
+      padding-top:var(--nav-h);
+      background:var(--surface);
+    }
+    body.hf-product-mode .nav{
+      top:0;
+    }
+    @media (min-width:900px){
+      .hf-pdp-view{
+        padding-top:28px;
+      }
+      .hf-pdp-view__layout{
+        grid-template-columns:minmax(0, 1.05fr) minmax(320px, .75fr);
+        gap:34px;
+        align-items:start;
+      }
+      .hf-pdp-view__info{
+        position:sticky;
+        top:76px;
+      }
+      .hf-pdp-view__main{
+        aspect-ratio:.783 / 1;
+      }
+      .hf-pdp-view__thumb{
+        flex-basis:76px;
+        width:76px;
       }
     }
 
@@ -3498,6 +3713,147 @@
   </section>
 
   <script>
+    (function() {
+      var pageParams = new URLSearchParams(window.location.search);
+      if (pageParams.get('view') !== 'product') return;
+
+      var fallbackImages = [
+        'https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+        'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+        'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1'
+      ];
+      var images = (pageParams.get('images') || '').split('|').filter(Boolean);
+      if (!images.length) images = fallbackImages;
+
+      var productName = pageParams.get('name') || 'Producto Horizon Fit';
+      var price = pageParams.get('price') || '$54.990 ARS';
+      var compare = pageParams.get('compare') || '';
+      var installments = pageParams.get('installments') || '6 cuotas sin interés';
+      var transfer = pageParams.get('transfer') || '';
+      var activeIndex = 0;
+
+      var view = document.createElement('main');
+      view.className = 'hf-pdp-view';
+      view.innerHTML =
+        '<button class="hf-pdp-view__back" type="button" data-product-back>' +
+          '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>' +
+          'Volver' +
+        '</button>' +
+        '<div class="hf-pdp-view__layout">' +
+          '<section class="hf-pdp-view__media" aria-label="Fotos del producto">' +
+            '<div class="hf-pdp-view__main" data-product-main>' +
+              '<img data-product-main-image src="" alt="">' +
+              '<button class="hf-pdp-view__arrow hf-pdp-view__arrow--prev" type="button" data-product-prev aria-label="Foto anterior">' +
+                '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>' +
+              '</button>' +
+              '<button class="hf-pdp-view__arrow hf-pdp-view__arrow--next" type="button" data-product-next aria-label="Foto siguiente">' +
+                '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>' +
+              '</button>' +
+            '</div>' +
+            '<div class="hf-pdp-view__thumbs" data-product-thumbs aria-label="Miniaturas"></div>' +
+          '</section>' +
+          '<section class="hf-pdp-view__info" aria-label="Información del producto">' +
+            '<p class="hf-pdp-view__kicker">Seamless collection</p>' +
+            '<h1 class="hf-pdp-view__title"></h1>' +
+            '<div class="hf-pdp-view__price-row">' +
+              '<span class="hf-pdp-view__price"></span>' +
+              '<span class="hf-pdp-view__compare"></span>' +
+            '</div>' +
+            '<p class="hf-pdp-view__copy" data-product-installments></p>' +
+            '<p class="hf-pdp-view__copy" data-product-transfer></p>' +
+            '<p class="hf-pdp-view__kicker">Talle</p>' +
+            '<div class="hf-pdp-view__sizes" aria-label="Seleccionar talle">' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">XS</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">S</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="true">M</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
+              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">XL</button>' +
+            '</div>' +
+            '<div class="hf-pdp-view__actions">' +
+              '<button class="hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +
+              '<button class="hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
+            '</div>' +
+          '</section>' +
+        '</div>';
+
+      document.body.insertBefore(view, document.querySelector('.nav')?.nextSibling || document.body.firstChild);
+      document.body.classList.add('hf-product-mode');
+      document.title = productName + ' | Horizon Fit';
+
+      var mainImage = view.querySelector('[data-product-main-image]');
+      var thumbs = view.querySelector('[data-product-thumbs]');
+      var title = view.querySelector('.hf-pdp-view__title');
+      var priceEl = view.querySelector('.hf-pdp-view__price');
+      var compareEl = view.querySelector('.hf-pdp-view__compare');
+      var installmentsEl = view.querySelector('[data-product-installments]');
+      var transferEl = view.querySelector('[data-product-transfer]');
+      var mainMedia = view.querySelector('[data-product-main]');
+
+      title.textContent = productName;
+      priceEl.textContent = price;
+      compareEl.textContent = compare;
+      compareEl.hidden = !compare;
+      installmentsEl.textContent = installments;
+      transferEl.textContent = transfer;
+      transferEl.hidden = !transfer;
+
+      function renderProductImage() {
+        mainImage.src = images[activeIndex];
+        mainImage.alt = productName + ' foto ' + (activeIndex + 1);
+        Array.prototype.forEach.call(thumbs.children, function(button, i) {
+          button.setAttribute('aria-current', i === activeIndex ? 'true' : 'false');
+        });
+      }
+
+      function goToProductImage(index) {
+        activeIndex = (index + images.length) % images.length;
+        renderProductImage();
+      }
+
+      images.forEach(function(src, index) {
+        var button = document.createElement('button');
+        button.className = 'hf-pdp-view__thumb';
+        button.type = 'button';
+        button.setAttribute('aria-label', 'Ver foto ' + (index + 1));
+        button.innerHTML = '<img src="' + src + '" alt="">';
+        button.addEventListener('click', function() { goToProductImage(index); });
+        thumbs.appendChild(button);
+      });
+
+      view.querySelector('[data-product-prev]').addEventListener('click', function() {
+        goToProductImage(activeIndex - 1);
+      });
+      view.querySelector('[data-product-next]').addEventListener('click', function() {
+        goToProductImage(activeIndex + 1);
+      });
+      view.querySelector('[data-product-back]').addEventListener('click', function() {
+        window.location.href = 'index.html#productGrid1';
+      });
+
+      var startX = null;
+      mainMedia.addEventListener('pointerdown', function(event) {
+        startX = event.clientX;
+      });
+      mainMedia.addEventListener('pointerup', function(event) {
+        if (startX === null) return;
+        var delta = event.clientX - startX;
+        startX = null;
+        if (Math.abs(delta) < 40) return;
+        goToProductImage(delta < 0 ? activeIndex + 1 : activeIndex - 1);
+      });
+
+      view.querySelectorAll('.hf-pdp-view__size').forEach(function(button) {
+        button.addEventListener('click', function() {
+          view.querySelectorAll('.hf-pdp-view__size').forEach(function(size) {
+            size.setAttribute('aria-pressed', 'false');
+          });
+          button.setAttribute('aria-pressed', 'true');
+        });
+      });
+
+      renderProductImage();
+    })();
+
     document.querySelectorAll('.hf-product-item--slider').forEach(function(item) {
       var imgs = item.querySelectorAll('.hf-product-item__slide img');
       if (!imgs || imgs.length < 2) return;
@@ -3520,6 +3876,64 @@
         '<button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="' + productName + '">Agregar al carrito</button>' +
         '<button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="' + productName + '">Comprar ahora</button>';
       pricing.insertAdjacentElement('afterend', actions);
+    });
+
+    document.querySelectorAll('.hf-product-item--slider').forEach(function(item) {
+      var titleEl = item.querySelector('.hf-product-item__title');
+      var priceEl = item.querySelector('.hf-product-item__price');
+      var originalEl = item.querySelector('.hf-product-item__price-original');
+      var installmentsEl = item.querySelector('.hf-product-item__installments');
+      var transferEl = item.querySelector('.hf-product-item__transfer');
+      var imageEls = item.querySelectorAll('.hf-product-item__slide img');
+      if (!titleEl || !imageEls.length) return;
+
+      var params = new URLSearchParams({
+        name: titleEl.textContent.trim(),
+        price: priceEl ? priceEl.textContent.trim() : '',
+        compare: originalEl ? originalEl.textContent.trim() : '',
+        installments: installmentsEl ? installmentsEl.textContent.trim() : '',
+        transfer: transferEl ? transferEl.textContent.trim() : '',
+        images: Array.prototype.map.call(imageEls, function(img) {
+          return img.getAttribute('src');
+        }).filter(Boolean).join('|')
+      });
+      params.set('view', 'product');
+      var productUrl = 'index.html?' + params.toString();
+      item.dataset.productUrl = productUrl;
+      item.setAttribute('role', 'link');
+      item.setAttribute('tabindex', '0');
+      item.style.cursor = 'pointer';
+
+      function wrapWithProductLink(element, label) {
+        if (!element || element.closest('a')) return;
+        var link = document.createElement('a');
+        link.href = productUrl;
+        link.setAttribute('aria-label', label || ('Ver ' + titleEl.textContent.trim()));
+        link.className = 'hf-product-item__link';
+        element.parentNode.insertBefore(link, element);
+        link.appendChild(element);
+      }
+
+      wrapWithProductLink(item.querySelector('.hf-product-item__media'), 'Ver fotos de ' + titleEl.textContent.trim());
+      wrapWithProductLink(titleEl, 'Ver detalle de ' + titleEl.textContent.trim());
+
+      item.addEventListener('click', function(event) {
+        if (event.target.closest('button, a, input, select, textarea')) return;
+        window.location.href = productUrl;
+      });
+
+      item.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter') return;
+        window.location.href = productUrl;
+      });
+
+      item.querySelectorAll('[data-product-action="buy"]').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          window.location.href = productUrl;
+        });
+      });
     });
 
     document.querySelectorAll('.hf-product-item__dots').forEach(function(dots) {

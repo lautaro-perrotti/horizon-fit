@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Producto | Horizon Fit</title>
+  <script>
+    var target = '../index.html';
+    var query = window.location.search || '';
+    if (query) {
+      var params = new URLSearchParams(query);
+      params.set('view', 'product');
+      target += '?' + params.toString();
+    } else {
+      target += '#productGrid1';
+    }
+    window.location.replace(target);
+  </script>
+</head>
+<body>
+  <p>Redirigiendo al producto...</p>
+</body>
+</html>
