@@ -3899,7 +3899,6 @@
               '<button class="hf-pdp-view__size" type="button" aria-pressed="true">S</button>' +
               '<button class="hf-pdp-view__size" type="button" aria-pressed="false">M</button>' +
               '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
-              '<button class="hf-pdp-view__size" type="button" aria-pressed="false">XL</button>' +
             '</div>' +
             '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
             '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
@@ -3939,7 +3938,7 @@
               '<h2>Talles</h2>' +
               '<table class="hf-pdp-view__size-table">' +
                 '<thead><tr><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>' +
-                '<tbody><tr><td>XS</td><td>78-84</td><td>58-64</td><td>84-90</td></tr><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr><tr><td>XL</td><td>104-112</td><td>84-92</td><td>110-118</td></tr></tbody>' +
+                '<tbody><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr></tbody>' +
               '</table>' +
             '</div>' +
           '</section>' +
@@ -6644,6 +6643,26 @@
     /* -----------------------------
       Size selector
     ------------------------------*/
+    function normalizeSizesToSml(){
+      const allowedSizes = new Set(["S", "M", "L"]);
+      $$(".hf-product-item__size, .hf-pdp-view__size, .chip[data-size]").forEach(button=>{
+        const size = (button.getAttribute("data-size") || button.textContent || "").trim().toUpperCase();
+        if(!allowedSizes.has(size)){
+          button.remove();
+        }
+      });
+
+      $$(".hf-product-item__sizes, .hf-pdp-view__sizes, #sizeGrid").forEach(group=>{
+        const selected = group.querySelector('[aria-pressed="true"]');
+        if(selected) return;
+        const firstAvailable = Array.from(group.querySelectorAll("button")).find(button=>{
+          return button.getAttribute("aria-disabled") !== "true" && !button.classList.contains("is-disabled");
+        });
+        firstAvailable?.setAttribute("aria-pressed", "true");
+      });
+    }
+    normalizeSizesToSml();
+
     const sizeGrid = $("#sizeGrid");
     if(sizeGrid){
       sizeGrid.addEventListener("click", (e)=>{
