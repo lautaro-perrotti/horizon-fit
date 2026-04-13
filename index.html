@@ -1528,6 +1528,82 @@
       color:var(--text);
       border-color:var(--border);
     }
+    .hf-pdp-view__details{
+      margin-top:20px;
+      border-top:1px solid rgba(11,11,15,.18);
+    }
+    .hf-pdp-view__tabs{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      border-bottom:1px solid rgba(11,11,15,.18);
+    }
+    .hf-pdp-view__tab{
+      min-height:48px;
+      border:0;
+      border-bottom:2px solid transparent;
+      background:transparent;
+      color:rgba(11,11,15,.58);
+      cursor:pointer;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .hf-pdp-view__tab[aria-selected="true"]{
+      color:var(--text);
+      border-bottom-color:var(--text);
+    }
+    .hf-pdp-view__panel{
+      display:none;
+      padding:32px 0 6px;
+    }
+    .hf-pdp-view__panel.is-active{
+      display:block;
+    }
+    .hf-pdp-view__panel h2{
+      margin:0 0 24px;
+      font-family:'BlauerNue', var(--font-sans) !important;
+      font-size:clamp(34px, 5vw, 48px);
+      font-style:italic;
+      font-weight:900 !important;
+      letter-spacing:.04em !important;
+      line-height:1;
+      color:#1f2630 !important;
+    }
+    .hf-pdp-view__panel p,
+    .hf-pdp-view__panel li{
+      color:#000;
+      font-size:14px;
+      line-height:1.65;
+    }
+    .hf-pdp-view__panel p{
+      margin:0 0 22px;
+    }
+    .hf-pdp-view__panel ul{
+      list-style:none;
+      margin:0 0 24px;
+      padding:0;
+    }
+    .hf-pdp-view__panel a{
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    .hf-pdp-view__size-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+    .hf-pdp-view__size-table th,
+    .hf-pdp-view__size-table td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(11,11,15,.12);
+      text-align:left;
+    }
+    .hf-pdp-view__size-table th{
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
     body.hf-product-mode > :not(.nav):not(.hf-pdp-view):not(#topMarquee){
       display:none !important;
     }
@@ -1550,6 +1626,10 @@
       .hf-pdp-view__info{
         position:sticky;
         top:76px;
+      }
+      .hf-pdp-view__details{
+        grid-column:1 / -1;
+        margin-top:16px;
       }
       .hf-pdp-view__main{
         aspect-ratio:.783 / 1;
@@ -3787,6 +3867,41 @@
               '<button class="hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
             '</div>' +
           '</section>' +
+          '<section class="hf-pdp-view__details" aria-label="Detalle del producto">' +
+            '<div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">' +
+              '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>' +
+              '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="care">Lavado y cuidado</button>' +
+              '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>' +
+            '</div>' +
+            '<div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">' +
+              '<h2>Seamless</h2>' +
+              '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para potenciar tu figura y acompañarte en cada movimiento sin perder estilo ni confort.</p>' +
+              '<p>Su calce anatómico ofrece soporte justo y estructura.</p>' +
+              '<p><em>Sin tazas.</em></p>' +
+              '<ul>' +
+                '<li>- <strong>Composición:</strong> Tejido de punto 94% nylon · 6% elastano</li>' +
+                '<li>- Tejido seamless para comodidad y soporte evitando el roce.</li>' +
+                '<li>- Ajuste suave con elasticidad para entrenamiento y uso diario.</li>' +
+              '</ul>' +
+              '<p>VIDEO - <a href="#">Como cuidar tus prendas SEAMLESS</a></p>' +
+            '</div>' +
+            '<div class="hf-pdp-view__panel" data-product-panel="care" role="tabpanel">' +
+              '<h2>Lavado</h2>' +
+              '<p>Lavar a mano o en ciclo delicado con agua fría. Usar jabón neutro y evitar suavizantes para conservar la elasticidad del tejido.</p>' +
+              '<ul>' +
+                '<li>- No usar lavandina.</li>' +
+                '<li>- No centrifugar en caliente.</li>' +
+                '<li>- Secar a la sombra y no planchar sobre estampas o avíos.</li>' +
+              '</ul>' +
+            '</div>' +
+            '<div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">' +
+              '<h2>Talles</h2>' +
+              '<table class="hf-pdp-view__size-table">' +
+                '<thead><tr><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>' +
+                '<tbody><tr><td>XS</td><td>78-84</td><td>58-64</td><td>84-90</td></tr><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr><tr><td>XL</td><td>104-112</td><td>84-92</td><td>110-118</td></tr></tbody>' +
+              '</table>' +
+            '</div>' +
+          '</section>' +
         '</div>';
 
       document.body.insertBefore(view, document.querySelector('.nav')?.nextSibling || document.body.firstChild);
@@ -3875,6 +3990,18 @@
             size.setAttribute('aria-pressed', 'false');
           });
           button.setAttribute('aria-pressed', 'true');
+        });
+      });
+
+      view.querySelectorAll('[data-product-tab]').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var target = tab.getAttribute('data-product-tab');
+          view.querySelectorAll('[data-product-tab]').forEach(function(item) {
+            item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
+          });
+          view.querySelectorAll('[data-product-panel]').forEach(function(panel) {
+            panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === target);
+          });
         });
       });
 
