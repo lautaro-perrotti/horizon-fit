@@ -1448,7 +1448,7 @@
       letter-spacing:.04em !important;
       line-height:.95;
       text-transform:uppercase;
-      color:var(--hf-primary) !important;
+      color:#111 !important;
     }
     .hf-pdp-view__price-row{
       display:flex;
@@ -1554,9 +1554,29 @@
       .hf-pdp-view__main{
         aspect-ratio:.783 / 1;
       }
+      .hf-pdp-view__media{
+        grid-template-columns:132px minmax(0, 1fr);
+        align-items:start;
+        gap:20px;
+      }
+      .hf-pdp-view__main{
+        grid-column:2;
+        grid-row:1;
+      }
+      .hf-pdp-view__thumbs{
+        grid-column:1;
+        grid-row:1;
+        flex-direction:column;
+        overflow-x:hidden;
+        overflow-y:auto;
+        max-height:min(620px, calc(100vh - 150px));
+        padding:0 4px 0 0;
+      }
       .hf-pdp-view__thumb{
-        flex-basis:76px;
-        width:76px;
+        flex:0 0 auto;
+        width:132px;
+        height:176px;
+        aspect-ratio:auto;
       }
     }
 
