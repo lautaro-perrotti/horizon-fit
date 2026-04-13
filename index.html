@@ -1270,6 +1270,39 @@
     .hf-product-scroll-shell > div{
       padding-inline: var(--page-gutter) !important;
     }
+    .hf-product-scroll-shell .hf-carousel__nav{
+      top: var(--hf-overlay-top, 180px);
+      width: 24px;
+      height: 48px;
+      border: 0;
+      border-radius: 0;
+      background: rgba(0, 0, 0, 0.48);
+      color: #fff;
+      box-shadow: none;
+      padding: 0;
+      transform: translateY(-50%);
+    }
+    .hf-product-scroll-shell .hf-carousel__nav:hover{
+      background: rgba(0, 0, 0, 0.62);
+      transform: translateY(-50%);
+    }
+    .hf-product-scroll-shell .hf-carousel__nav:disabled,
+    .hf-product-scroll-shell .hf-carousel__nav.is-hidden{
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .hf-product-scroll-shell .hf-carousel__nav--prev{
+      left: var(--page-gutter);
+    }
+    .hf-product-scroll-shell .hf-carousel__nav--next{
+      right: var(--page-gutter);
+    }
+    .hf-product-scroll-shell .hf-carousel__nav svg{
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.6;
+    }
     .hf-slider-controls--overlay{
       position: absolute;
       inset: 0;
@@ -1304,6 +1337,9 @@
         display: none;
       }
       .hf-product-scroll-shell .hf-slider-controls--overlay{
+        display: flex;
+      }
+      .hf-product-scroll-shell .hf-carousel__nav{
         display: flex;
       }
     }
