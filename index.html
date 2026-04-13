@@ -1480,11 +1480,22 @@
     .hf-pdp-view__size{
       min-width:44px;
       height:40px;
-      border:1px solid var(--border);
+      border:1px solid rgba(11,11,15,.28);
       border-radius:4px;
-      background:var(--surface);
+      background:#fff;
+      color:#111;
       cursor:pointer;
       font-weight:800;
+      box-shadow:0 1px 0 rgba(11,11,15,.08);
+      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+    }
+    .hf-pdp-view__size:hover{
+      border-color:rgba(11,11,15,.55);
+      background:#f7f7f7;
+    }
+    .hf-pdp-view__size:focus-visible{
+      outline:none;
+      box-shadow:var(--focus);
     }
     .hf-pdp-view__size[aria-pressed="true"]{
       border-color:var(--text);
