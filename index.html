@@ -1678,7 +1678,7 @@
       .hf-pdp-view{
         width:100%;
         max-width:none;
-        padding-top:28px;
+        padding-top:0;
         padding-inline:clamp(22px, 1.8vw, 34px);
       }
       .hf-pdp-view__layout{
@@ -1689,7 +1689,10 @@
       }
       .hf-pdp-view__info{
         position:sticky;
-        top:calc(var(--nav-h) + var(--announce-h) + 28px);
+        top:calc(var(--nav-h) + var(--announce-h));
+        align-self:start;
+        padding-top:0;
+        margin-top:0;
       }
       .hf-pdp-view__details{
         grid-column:1 / -1;
