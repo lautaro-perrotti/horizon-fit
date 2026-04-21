@@ -1462,15 +1462,22 @@
       font-weight:900;
     }
     .hf-pdp-view__compare{
-      color:var(--muted);
+      color:var(--hf-primary);
       text-decoration:line-through;
       font-size:14px;
+      opacity:.62;
     }
     .hf-pdp-view__copy{
       margin:0;
       color:var(--muted);
       font-size:13px;
       line-height:1.4;
+    }
+    .hf-pdp-view__copy[data-product-installments],
+    .hf-pdp-view__copy[data-product-transfer],
+    .hf-pdp-view__option-head strong{
+      color:var(--hf-primary);
+      font-weight:900;
     }
     .hf-pdp-view__sizes{
       display:flex;
@@ -1528,17 +1535,18 @@
       transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
     }
     .hf-pdp-view__size:hover{
-      border-color:#111;
+      border-color:var(--hf-primary);
       background:#fff;
+      color:var(--hf-primary);
     }
     .hf-pdp-view__size:focus-visible{
       outline:none;
       box-shadow:var(--focus);
     }
     .hf-pdp-view__size[aria-pressed="true"]{
-      border-color:#111;
+      border-color:var(--hf-primary);
       background:#fff;
-      color:#111;
+      color:var(--hf-primary);
     }
     .hf-pdp-view__actions{
       display:grid;
@@ -1559,13 +1567,13 @@
       font-size:11px;
     }
     .hf-pdp-view__button--primary{
-      background:#ff8fc2;
+      background:var(--hf-primary);
       color:#fff;
     }
     .hf-pdp-view__button--secondary{
       background:var(--surface);
-      color:var(--text);
-      border-color:var(--border);
+      color:var(--hf-primary);
+      border-color:var(--hf-primary);
     }
     .hf-pdp-view__details{
       margin-top:20px;
