@@ -1474,7 +1474,11 @@
       line-height:1.4;
     }
     .hf-pdp-view__copy[data-product-installments],
-    .hf-pdp-view__copy[data-product-transfer],
+    .hf-pdp-view__copy[data-product-transfer]{
+      color:#111;
+      font-weight:500;
+    }
+    .hf-pdp-view__number,
     .hf-pdp-view__option-head strong{
       color:var(--hf-primary);
       font-weight:900;
@@ -3961,12 +3965,24 @@
       var mainMedia = view.querySelector('[data-product-main]');
       var sizeLabel = view.querySelector('[data-product-size-label]');
 
+      function paintProductNumbers(element, value) {
+        if (!element) return;
+        element.textContent = '';
+        String(value || '').split(/(\$?\d[\d.,]*(?:\s*%|%\s*OFF)?)/g).forEach(function(part) {
+          if (!part) return;
+          var node = document.createElement(/\d/.test(part) ? 'span' : 'span');
+          node.textContent = part;
+          if (/\d/.test(part)) node.className = 'hf-pdp-view__number';
+          element.appendChild(node);
+        });
+      }
+
       title.textContent = productName;
       priceEl.textContent = price;
       compareEl.textContent = compare;
       compareEl.hidden = !compare;
-      installmentsEl.textContent = installments;
-      transferEl.textContent = transfer;
+      paintProductNumbers(installmentsEl, installments);
+      paintProductNumbers(transferEl, transfer);
       transferEl.hidden = !transfer;
 
       function renderProductImage() {
