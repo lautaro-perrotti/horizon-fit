@@ -1474,7 +1474,7 @@
     }
     .hf-pdp-view__sizes{
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
     }
     .hf-pdp-view__option-head{
@@ -1515,50 +1515,52 @@
       object-fit:cover;
     }
     .hf-pdp-view__size{
-      min-width:44px;
-      height:40px;
-      border:1px solid rgba(11,11,15,.28);
-      border-radius:4px;
+      min-width:84px;
+      height:46px;
+      border:2px solid #d9d9d9;
+      border-radius:12px;
       background:#fff;
       color:#111;
       cursor:pointer;
-      font-weight:800;
-      box-shadow:0 1px 0 rgba(11,11,15,.08);
-      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+      font-size:13px;
+      font-weight:500;
+      box-shadow:none;
+      transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
     }
     .hf-pdp-view__size:hover{
-      border-color:rgba(11,11,15,.55);
-      background:#f7f7f7;
+      border-color:#111;
+      background:#fff;
     }
     .hf-pdp-view__size:focus-visible{
       outline:none;
       box-shadow:var(--focus);
     }
     .hf-pdp-view__size[aria-pressed="true"]{
-      border-color:var(--text);
-      background:var(--text);
-      color:var(--surface);
+      border-color:#111;
+      background:#fff;
+      color:#111;
     }
     .hf-pdp-view__actions{
       display:grid;
       gap:10px;
     }
     .hf-pdp-view__button{
-      min-height:48px;
+      min-height:52px;
       border:1px solid transparent;
-      border-radius:8px;
-      padding:12px 16px;
+      border-radius:999px;
+      padding:14px 28px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       cursor:pointer;
       font-weight:900;
       text-transform:uppercase;
-      letter-spacing:.04em;
+      letter-spacing:.32em;
+      font-size:11px;
     }
     .hf-pdp-view__button--primary{
-      background:var(--hf-primary);
-      color:var(--hf-white);
+      background:#ff8fc2;
+      color:#fff;
     }
     .hf-pdp-view__button--secondary{
       background:var(--surface);
@@ -1641,7 +1643,13 @@
       text-transform:uppercase;
       letter-spacing:.08em;
     }
-    body.hf-product-mode > :not(.nav):not(.hf-pdp-view):not(#topMarquee){
+    body.hf-product-mode > :not(.nav):not(.hf-pdp-view):not(#topMarquee):not(main){
+      display:none !important;
+    }
+    body.hf-product-mode > main{
+      display:block !important;
+    }
+    body.hf-product-mode > main > :not(.footer){
       display:none !important;
     }
     body.hf-product-mode{
