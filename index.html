@@ -1649,8 +1649,11 @@
     body.hf-product-mode > main{
       display:block !important;
     }
-    body.hf-product-mode > main > :not(.footer){
+    body.hf-product-mode > main > :not(.hf-pdp-view):not(.footer){
       display:none !important;
+    }
+    body.hf-product-mode .hf-pdp-view{
+      display:block !important;
     }
     body.hf-product-mode{
       padding-top:calc(var(--nav-h) + var(--announce-h));
@@ -3845,7 +3848,8 @@
   <script>
     (function() {
       var pageParams = new URLSearchParams(window.location.search);
-      if (pageParams.get('view') !== 'product') return;
+      var isProductPage = pageParams.get('view') === 'product' || pageParams.has('name') || pageParams.has('images');
+      if (!isProductPage) return;
 
       var fallbackImages = [
         'https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
@@ -3864,8 +3868,9 @@
       var transfer = pageParams.get('transfer') || '';
       var activeIndex = 0;
 
-      var view = document.createElement('main');
+      var view = document.createElement('section');
       view.className = 'hf-pdp-view';
+      view.setAttribute('role', 'main');
       view.innerHTML =
         '<div class="hf-pdp-view__layout">' +
           '<section class="hf-pdp-view__media" aria-label="Fotos del producto">' +
@@ -3933,7 +3938,7 @@
           '</section>' +
         '</div>';
 
-      document.body.insertBefore(view, document.querySelector('.nav')?.nextSibling || document.body.firstChild);
+      document.body.insertBefore(view, document.querySelector('main') || document.body.firstChild);
       document.body.classList.add('hf-product-mode');
       document.title = productName + ' | Horizon Fit';
 
