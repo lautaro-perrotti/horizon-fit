@@ -1411,7 +1411,7 @@
       transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease);
     }
     .hf-pdp-view__thumb[aria-current="true"]{
-      border-color:var(--text);
+      border-color:var(--hf-primary);
       transform:translateY(0) scale(1);
     }
     .hf-pdp-view__thumb:hover{
@@ -1730,36 +1730,12 @@
         max-height:790px;
         justify-content:center;
         gap:10px;
-        padding:0 10px 0 0;
-        scrollbar-width:thin;
-        scrollbar-color:rgba(11,11,15,.38) transparent;
+        padding:0;
+        scrollbar-width:none;
         -ms-overflow-style:none;
       }
       .hf-pdp-view__thumbs::-webkit-scrollbar{
-        display:block;
-        width:6px;
-      }
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button{
-        display:none !important;
-        width:0 !important;
-        height:0 !important;
-        background:transparent !important;
-      }
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button:single-button,
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button:vertical:decrement,
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button:vertical:increment,
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button:start,
-      .hf-pdp-view__thumbs::-webkit-scrollbar-button:end{
-        display:none !important;
-        width:0 !important;
-        height:0 !important;
-      }
-      .hf-pdp-view__thumbs::-webkit-scrollbar-track{
-        background:transparent;
-      }
-      .hf-pdp-view__thumbs::-webkit-scrollbar-thumb{
-        background:rgba(11,11,15,.34);
-        border-radius:999px;
+        display:none;
       }
       .hf-pdp-view__thumb{
         flex:0 0 auto;
