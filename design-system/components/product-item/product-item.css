@@ -97,6 +97,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--hf-primary) 55%, var(--border));
 }
 
 .hf-product-item__size {
@@ -156,6 +159,9 @@
   flex-direction: column;
   gap: 2px;
   margin-top: 4px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--hf-primary) 55%, var(--border));
 }
 
 .hf-product-item__price-row {
