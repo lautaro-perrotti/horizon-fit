@@ -1355,7 +1355,8 @@
       margin:0 auto;
       padding:16px var(--page-gutter) 48px;
       background:var(--surface);
-      --hf-pdp-sep: color-mix(in srgb, var(--hf-primary) 50%, var(--border));
+      --hf-pdp-sep: var(--border);
+      --hf-pdp-sep-w: 0.5px;
     }
     .hf-pdp-view__layout{
       display:grid;
@@ -1365,7 +1366,7 @@
       display:grid;
       gap:12px;
       padding-bottom:14px;
-      border-bottom:1px solid var(--hf-pdp-sep);
+      border-bottom:var(--hf-pdp-sep-w) solid var(--hf-pdp-sep);
     }
     .hf-pdp-view__main{
       position:relative;
@@ -1457,7 +1458,7 @@
       display:grid;
       gap:8px;
       padding-bottom:14px;
-      border-bottom:1px solid var(--hf-pdp-sep);
+      border-bottom:var(--hf-pdp-sep-w) solid var(--hf-pdp-sep);
     }
     .hf-pdp-view__price-row{
       display:flex;
@@ -1497,7 +1498,7 @@
       gap:10px;
       flex-wrap:wrap;
       padding-bottom:14px;
-      border-bottom:1px solid var(--hf-pdp-sep);
+      border-bottom:var(--hf-pdp-sep-w) solid var(--hf-pdp-sep);
     }
     .hf-pdp-view__option-head{
       display:flex;
@@ -1519,7 +1520,7 @@
       flex-wrap:wrap;
       margin-top:-4px;
       padding-bottom:14px;
-      border-bottom:1px solid var(--hf-pdp-sep);
+      border-bottom:var(--hf-pdp-sep-w) solid var(--hf-pdp-sep);
     }
     .hf-pdp-view__color{
       width:58px;

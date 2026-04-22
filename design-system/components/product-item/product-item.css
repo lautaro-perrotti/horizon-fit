@@ -99,7 +99,7 @@
   gap: 6px;
   padding-bottom: 10px;
   margin-bottom: 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--hf-primary) 55%, var(--border));
+  border-bottom: 0.5px solid var(--border);
 }
 
 .hf-product-item__size {
@@ -161,7 +161,7 @@
   margin-top: 4px;
   padding-bottom: 10px;
   margin-bottom: 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--hf-primary) 55%, var(--border));
+  border-bottom: 0.5px solid var(--border);
 }
 
 .hf-product-item__price-row {
