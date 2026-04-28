@@ -893,6 +893,60 @@
     }
     .drawer__bd{ padding: 16px 18px; overflow:auto; flex:1; }
     .drawer__ft{ padding: 16px 18px; border-top:1px solid var(--border); }
+    .drawer--left .drawer__panel{
+      left:0;
+      right:auto;
+      border-left:0;
+      border-right:1px solid var(--border);
+      transform: translateX(-14px);
+    }
+    .drawer--left.is-on .drawer__panel{
+      transform: translateX(0);
+    }
+    .menu-drawer__eyebrow{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+    }
+    .menu-drawer__nav{
+      display:grid;
+      gap:10px;
+    }
+    .menu-drawer__link{
+      width:100%;
+      text-align:left;
+      display:grid;
+      gap:4px;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid color-mix(in srgb, var(--hf-indigo) 10%, var(--border));
+      background:color-mix(in srgb, var(--surface) 88%, white);
+      color:var(--text);
+      transition:transform var(--fast) var(--ease), border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+    }
+    .menu-drawer__link:hover{
+      transform:translateY(-1px);
+      border-color:color-mix(in srgb, var(--hf-indigo) 24%, var(--border));
+      background:color-mix(in srgb, var(--hf-indigo) 4%, white);
+    }
+    .menu-drawer__link strong{
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.02em;
+      line-height:1.2;
+    }
+    .menu-drawer__link span{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .menu-drawer__cta{
+      display:grid;
+      gap:10px;
+    }
 
     /* -----------------------------
       8) TOAST
@@ -1670,7 +1724,7 @@
       text-transform:uppercase;
       letter-spacing:.08em;
     }
-    body.hf-product-mode > :not(.nav):not(.hf-pdp-view):not(#topMarquee):not(main){
+    body.hf-product-mode > :not(.nav):not(.hf-pdp-view):not(#topMarquee):not(main):not(.overlay):not(.modal):not(.drawer):not(.toasts):not(.tooltip){
       display:none !important;
     }
     body.hf-product-mode > main{
@@ -6171,6 +6225,49 @@
     </div>
   </div>
 
+  <!-- MENU DRAWER -->
+  <aside class="drawer drawer--left" id="menuDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="menuDrawerTitle">
+      <div class="drawer__hd">
+        <b id="menuDrawerTitle">Menú</b>
+        <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">×</button>
+      </div>
+      <div class="drawer__bd">
+        <p class="menu-drawer__eyebrow">Explorá Horizon Fit</p>
+        <nav class="menu-drawer__nav" aria-label="Navegación principal">
+          <a class="menu-drawer__link" href="#productGrid1" data-menu-link>
+            <strong>Productos destacados</strong>
+            <span>Novedades, best sellers y favoritos del drop.</span>
+          </a>
+          <a class="menu-drawer__link" href="#fullSlider" data-menu-link>
+            <strong>Conjuntos destacados</strong>
+            <span>Looks completos para entrenar y usar todos los días.</span>
+          </a>
+          <a class="menu-drawer__link" href="#homeCategories" data-menu-link>
+            <strong>Compra por categoría</strong>
+            <span>Entrá directo a tops, calzas, shorts y buzos.</span>
+          </a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link>
+            <strong>Tops y calzas</strong>
+            <span>Las siluetas esenciales de Horizon Fit.</span>
+          </a>
+          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link>
+            <strong>Horizon Fit in the wild</strong>
+            <span>Comunidad, inspiración y outfits reales.</span>
+          </a>
+          <a class="menu-drawer__link" href="#footerContact" data-menu-link>
+            <strong>Contacto</strong>
+            <span>Ayuda, cambios, envíos y atención.</span>
+          </a>
+        </nav>
+      </div>
+      <div class="drawer__ft menu-drawer__cta">
+        <button class="btn btn--secondary" id="openMenuCartBtn">Abrir carrito</button>
+        <button class="btn btn--primary" id="openMenuSearchBtn">Buscar productos</button>
+      </div>
+    </div>
+  </aside>
+
   <!-- DRAWER (CART) -->
   <aside class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
@@ -6308,39 +6405,6 @@
     })();
 
     /* -----------------------------
-      Dropdown
-    ------------------------------*/
-    const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
-    const menu = $("#menu");
-
-    function setMenu(open){
-      menu.setAttribute("aria-hidden", String(!open));
-      menuBtn.setAttribute("aria-expanded", String(open));
-      menu.style.display = open ? "block" : "none";
-      if(open){
-        // focus first item
-        const first = menu.querySelector('[role="menuitem"]');
-        if(first) first.focus?.();
-      }
-    }
-
-    menuBtn?.addEventListener("click", (e)=>{
-      e.stopPropagation();
-      const open = menu.getAttribute("aria-hidden") === "true";
-      setMenu(open);
-    });
-
-    document.addEventListener("click", ()=>{
-      if(menu && menu.getAttribute("aria-hidden") === "false") setMenu(false);
-    });
-
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape"){
-        if(menu && menu.getAttribute("aria-hidden") === "false") setMenu(false);
-      }
-    });
-
-    /* -----------------------------
       Tooltip (data-tooltip)
     ------------------------------*/
     const tooltip = $("#tooltip");
@@ -6411,6 +6475,8 @@
     ------------------------------*/
     const overlay = $("#overlay");
     const modal = $("#modal");
+    const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
+    const menuDrawer = $("#menuDrawer");
     const drawer = $("#drawer");
     const searchDrawer = $("#searchDrawer");
 
@@ -6437,6 +6503,24 @@
     function closeModal(){
       modal.classList.remove("is-on");
       modal.setAttribute("aria-hidden","true");
+      closeOverlay();
+      document.body.style.overflow="";
+      lastFocus?.focus?.();
+    }
+
+    function openMenuDrawer(){
+      lastFocus = document.activeElement;
+      openOverlay();
+      menuDrawer?.classList.add("is-on");
+      menuDrawer?.setAttribute("aria-hidden","false");
+      menuBtn?.setAttribute("aria-expanded","true");
+      document.body.style.overflow="hidden";
+      setTimeout(()=> menuDrawer?.querySelector(".menu-drawer__link")?.focus(), 20);
+    }
+    function closeMenuDrawer(){
+      menuDrawer?.classList.remove("is-on");
+      menuDrawer?.setAttribute("aria-hidden","true");
+      menuBtn?.setAttribute("aria-expanded","false");
       closeOverlay();
       document.body.style.overflow="";
       lastFocus?.focus?.();
@@ -6474,14 +6558,26 @@
     }
 
     // open buttons
-    $("#openModalBtn")?.addEventListener("click", ()=>{ setMenu(false); openModal(); });
+    menuBtn?.addEventListener("click", ()=>{
+      const isOpen = menuDrawer?.getAttribute("aria-hidden") === "false";
+      if(isOpen){
+        closeMenuDrawer();
+      } else {
+        openMenuDrawer();
+      }
+    });
+    $("#openModalBtn")?.addEventListener("click", openModal);
     $("#openModalBtn2")?.addEventListener("click", openModal);
-    $("#openCartBtn")?.addEventListener("click", ()=>{ setMenu(false); openDrawer(); });
+    $("#openMenuCartBtn")?.addEventListener("click", ()=>{ closeMenuDrawer(); openDrawer(); });
+    $("#openMenuSearchBtn")?.addEventListener("click", ()=>{ closeMenuDrawer(); openSearchDrawer(); });
     $("#openCartBtn2")?.addEventListener("click", openDrawer);
     $("#ctaQuickShop")?.addEventListener("click", openDrawer);
     $("#cartBtn")?.addEventListener("click", openDrawer);
     $("#searchBtn")?.addEventListener("click", openSearchDrawer);
     $("#searchBtnMobile")?.addEventListener("click", openSearchDrawer);
+    $$("[data-menu-link]").forEach(link => {
+      link.addEventListener("click", ()=> closeMenuDrawer());
+    });
 
     document.addEventListener("click", (e)=>{
       const actionBtn = e.target.closest?.("[data-product-action]");
@@ -6597,12 +6693,14 @@
 
     // close buttons
     $$("[data-close-modal]").forEach(b=> b.addEventListener("click", closeModal));
+    $$("[data-close-menu-drawer]").forEach(b=> b.addEventListener("click", closeMenuDrawer));
     $$("[data-close-drawer]").forEach(b=> b.addEventListener("click", closeDrawer));
     $$("[data-close-search]").forEach(b=> b.addEventListener("click", closeSearchDrawer));
 
     // overlay click closes
     overlay.addEventListener("click", ()=>{
       if(modal.classList.contains("is-on")) closeModal();
+      if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
       if(drawer.classList.contains("is-on")) closeDrawer();
       if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
     });
@@ -6611,6 +6709,7 @@
     document.addEventListener("keydown", (e)=>{
       if(e.key === "Escape"){
         if(modal.classList.contains("is-on")) closeModal();
+        if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
         if(drawer.classList.contains("is-on")) closeDrawer();
         if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
       }
@@ -6718,7 +6817,7 @@
       }[s]));
     }
 
-    $("#toastBtn")?.addEventListener("click", ()=>{ setMenu(false); toast({title:"Horizon Fit", message:"Toast de ejemplo (info).", variant:"info"}); });
+    $("#toastBtn")?.addEventListener("click", ()=>{ toast({title:"Horizon Fit", message:"Toast de ejemplo (info).", variant:"info"}); });
     $("#toastBtn2")?.addEventListener("click", ()=> toast({title:"Info", message:"Interacción suave, copy claro.", variant:"info"}));
     $("#toastBtnOk")?.addEventListener("click", ()=> toast({title:"Ok", message:"Producto agregado al carrito.", variant:"ok"}));
     $("#openToastDemo")?.addEventListener("click", ()=>{
@@ -6741,7 +6840,7 @@
       root.setAttribute("data-theme", next);
       toast({title:"Theme", message:`Modo ${next}`, variant:"info", timeout:1600});
     }
-    toggleThemeBtn?.addEventListener("click", ()=>{ setMenu(false); toggleTheme(); });
+    toggleThemeBtn?.addEventListener("click", toggleTheme);
 
     /* -----------------------------
       Quickshop buttons (product cards)
