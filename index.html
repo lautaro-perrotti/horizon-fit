@@ -904,48 +904,41 @@
       transform: translateX(0);
     }
     .menu-drawer__eyebrow{
-      margin:0 0 14px;
+      margin:0 0 10px;
       color:var(--muted);
       font-size:12px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:.16em;
       text-transform:uppercase;
     }
     .menu-drawer__nav{
       display:grid;
-      gap:10px;
+      gap:0;
     }
     .menu-drawer__link{
       width:100%;
       text-align:left;
       display:grid;
-      gap:4px;
-      padding:14px 16px;
-      border-radius:16px;
-      border:1px solid color-mix(in srgb, var(--hf-indigo) 10%, var(--border));
-      background:color-mix(in srgb, var(--surface) 88%, white);
+      gap:0;
+      padding:16px 0;
+      border:0;
+      border-bottom:1px solid var(--border);
+      background:transparent;
       color:var(--text);
-      transition:transform var(--fast) var(--ease), border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+      transition:color var(--fast) var(--ease), opacity var(--fast) var(--ease);
     }
     .menu-drawer__link:hover{
-      transform:translateY(-1px);
-      border-color:color-mix(in srgb, var(--hf-indigo) 24%, var(--border));
-      background:color-mix(in srgb, var(--hf-indigo) 4%, white);
+      color:var(--hf-primary);
     }
     .menu-drawer__link strong{
-      font-size:15px;
+      font-size:18px;
       font-weight:900;
-      letter-spacing:.02em;
+      letter-spacing:0;
       line-height:1.2;
+      color:inherit;
     }
-    .menu-drawer__link span{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.35;
-    }
-    .menu-drawer__cta{
-      display:grid;
-      gap:10px;
+    .menu-drawer__link:last-child{
+      border-bottom:0;
     }
 
     /* -----------------------------
@@ -6235,35 +6228,16 @@
       <div class="drawer__bd">
         <p class="menu-drawer__eyebrow">Explorá Horizon Fit</p>
         <nav class="menu-drawer__nav" aria-label="Navegación principal">
-          <a class="menu-drawer__link" href="#productGrid1" data-menu-link>
-            <strong>Productos destacados</strong>
-            <span>Novedades, best sellers y favoritos del drop.</span>
-          </a>
-          <a class="menu-drawer__link" href="#fullSlider" data-menu-link>
-            <strong>Conjuntos destacados</strong>
-            <span>Looks completos para entrenar y usar todos los días.</span>
-          </a>
-          <a class="menu-drawer__link" href="#homeCategories" data-menu-link>
-            <strong>Compra por categoría</strong>
-            <span>Entrá directo a tops, calzas, shorts y buzos.</span>
-          </a>
-          <a class="menu-drawer__link" href="#ecommerce" data-menu-link>
-            <strong>Tops y calzas</strong>
-            <span>Las siluetas esenciales de Horizon Fit.</span>
-          </a>
-          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link>
-            <strong>Horizon Fit in the wild</strong>
-            <span>Comunidad, inspiración y outfits reales.</span>
-          </a>
-          <a class="menu-drawer__link" href="#footerContact" data-menu-link>
-            <strong>Contacto</strong>
-            <span>Ayuda, cambios, envíos y atención.</span>
-          </a>
+          <a class="menu-drawer__link" href="#productGrid1" data-menu-link><strong>Productos destacados</strong></a>
+          <a class="menu-drawer__link" href="#fullSlider" data-menu-link><strong>Conjuntos destacados</strong></a>
+          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por categoría</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Tops</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Calzas</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Shorts</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Buzos</strong></a>
+          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the wild</strong></a>
+          <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
         </nav>
-      </div>
-      <div class="drawer__ft menu-drawer__cta">
-        <button class="btn btn--secondary" id="openMenuCartBtn">Abrir carrito</button>
-        <button class="btn btn--primary" id="openMenuSearchBtn">Buscar productos</button>
       </div>
     </div>
   </aside>
@@ -6476,11 +6450,19 @@
     const overlay = $("#overlay");
     const modal = $("#modal");
     const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
+    const legacyMenu = $("#menu");
     const menuDrawer = $("#menuDrawer");
     const drawer = $("#drawer");
     const searchDrawer = $("#searchDrawer");
 
     let lastFocus = null;
+
+    menuBtn?.setAttribute("aria-controls", "menuDrawer");
+    menuBtn?.setAttribute("aria-expanded", "false");
+    if(legacyMenu){
+      legacyMenu.setAttribute("aria-hidden", "true");
+      legacyMenu.style.display = "none";
+    }
 
     function openOverlay(){
       overlay.classList.add("is-on");
@@ -6568,8 +6550,6 @@
     });
     $("#openModalBtn")?.addEventListener("click", openModal);
     $("#openModalBtn2")?.addEventListener("click", openModal);
-    $("#openMenuCartBtn")?.addEventListener("click", ()=>{ closeMenuDrawer(); openDrawer(); });
-    $("#openMenuSearchBtn")?.addEventListener("click", ()=>{ closeMenuDrawer(); openSearchDrawer(); });
     $("#openCartBtn2")?.addEventListener("click", openDrawer);
     $("#ctaQuickShop")?.addEventListener("click", openDrawer);
     $("#cartBtn")?.addEventListener("click", openDrawer);
