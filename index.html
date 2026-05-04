@@ -7058,6 +7058,16 @@
     $$("[data-close-drawer]").forEach(b=> b.addEventListener("click", closeDrawer));
     $$("[data-close-search]").forEach(b=> b.addEventListener("click", closeSearchDrawer));
 
+    // click outside panel closes drawers
+    [menuDrawer, drawer, searchDrawer].forEach((shell) => {
+      shell?.addEventListener("click", (event) => {
+        if (event.target !== shell) return;
+        if (shell === menuDrawer) closeMenuDrawer();
+        if (shell === drawer) closeDrawer();
+        if (shell === searchDrawer) closeSearchDrawer();
+      });
+    });
+
     // overlay click closes
     overlay.addEventListener("click", ()=>{
       if(modal.classList.contains("is-on")) closeModal();
