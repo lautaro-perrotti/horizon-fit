@@ -884,14 +884,8 @@
       flex-direction:column;
     }
     .drawer.is-on .drawer__panel{ transform: translateX(0); opacity:1; }
-    .drawer__hd{ padding: 16px 18px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); }
-    .drawer__hd b{
-      font-size:24px;
-      line-height:1;
-      font-weight:950;
-      letter-spacing:.02em;
-    }
-    .drawer__bd{ padding: 16px 18px; overflow:auto; flex:1; }
+    .drawer__hd{ padding: 16px 18px 0; display:flex; justify-content:flex-end; align-items:center; border-bottom:0; }
+    .drawer__bd{ padding: 8px 18px 16px; overflow:auto; flex:1; }
     .drawer__ft{ padding: 16px 18px; border-top:1px solid var(--border); }
     .drawer--left .drawer__panel{
       left:0;
@@ -902,14 +896,6 @@
     }
     .drawer--left.is-on .drawer__panel{
       transform: translateX(0);
-    }
-    .menu-drawer__eyebrow{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.16em;
-      text-transform:uppercase;
     }
     .menu-drawer__nav{
       display:grid;
@@ -6220,23 +6206,23 @@
 
   <!-- MENU DRAWER -->
   <aside class="drawer drawer--left" id="menuDrawer" aria-hidden="true">
-    <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="menuDrawerTitle">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Navegaci&oacute;n principal">
       <div class="drawer__hd">
-        <b id="menuDrawerTitle">Menú</b>
-        <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">×</button>
+        <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">&times;</button>
       </div>
       <div class="drawer__bd">
-        <p class="menu-drawer__eyebrow">Explorá Horizon Fit</p>
-        <nav class="menu-drawer__nav" aria-label="Navegación principal">
+        <nav class="menu-drawer__nav" aria-label="Navegaci&oacute;n principal">
           <a class="menu-drawer__link" href="#productGrid1" data-menu-link><strong>Productos destacados</strong></a>
           <a class="menu-drawer__link" href="#fullSlider" data-menu-link><strong>Conjuntos destacados</strong></a>
-          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por categoría</strong></a>
+          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por categor&iacute;a</strong></a>
           <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Tops</strong></a>
           <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Calzas</strong></a>
           <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Shorts</strong></a>
           <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Buzos</strong></a>
           <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the wild</strong></a>
           <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
+        </nav>
+      </div>
         </nav>
       </div>
     </div>
