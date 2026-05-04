@@ -47,8 +47,22 @@
     }
     @font-face{
       font-family:'BlauerNue';
+      src:url('./TIPOGRAFIAS/BLAUERNUE-MEDIUM.OTF') format('opentype');
+      font-weight:500;
+      font-style:normal;
+      font-display:swap;
+    }
+    @font-face{
+      font-family:'BlauerNue';
       src:url('./TIPOGRAFIAS/BLAUERNUE-HEAVY.OTF') format('opentype');
       font-weight:900;
+      font-style:normal;
+      font-display:swap;
+    }
+    @font-face{
+      font-family:'ArchivoMenu';
+      src:url('./TIPOGRAFIAS/ARCHIVO-MEDIUM.OTF') format('opentype');
+      font-weight:500;
       font-style:normal;
       font-display:swap;
     }
@@ -902,6 +916,7 @@
       gap:0;
     }
     .menu-drawer__link{
+      font-family:'ArchivoMenu', var(--font-sans) !important;
       width:100%;
       text-align:left;
       display:grid;
@@ -917,9 +932,11 @@
       color:var(--hf-primary);
     }
     .menu-drawer__link strong{
+      font-family:inherit;
       font-size:18px;
-      font-weight:900;
-      letter-spacing:0;
+      font-weight:500 !important;
+      text-transform:uppercase;
+      letter-spacing:.04em !important;
       line-height:1.2;
       color:inherit;
     }
