@@ -6782,10 +6782,12 @@
 
     document.addEventListener("mouseover", (e)=>{
       const el = e.target.closest?.("[data-tooltip]");
-      if(el) showTooltip(el);
+      if(el && ttTarget !== el) showTooltip(el);
     });
     document.addEventListener("mouseout", (e)=>{
       const el = e.target.closest?.("[data-tooltip]");
+      const next = e.relatedTarget?.closest?.("[data-tooltip]");
+      if(el && next === el) return;
       if(el && ttTarget === el) hideTooltip();
     });
     window.addEventListener("scroll", ()=>{ if(ttTarget) hideTooltip(); }, {passive:true});
