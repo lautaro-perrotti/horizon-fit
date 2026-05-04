@@ -1758,22 +1758,24 @@
       position:relative;
       display:grid;
       gap:18px;
-      margin-top:28px;
-      padding:18px;
-      border-radius:28px;
-      background:linear-gradient(90deg, #f2f2f2 0 24%, #ead0be 24% 100%);
+      margin-top:44px;
+      padding:0;
+      border-radius:0;
+      background:transparent;
       overflow:hidden;
     }
     .hf-pdp-look__panel{
       position:relative;
       z-index:2;
       display:grid;
+      align-content:start;
       gap:18px;
       padding:28px 20px;
       border-radius:24px;
-      background:rgba(255,255,255,.94);
-      box-shadow:0 20px 60px rgba(17,17,17,.08);
-      max-width:460px;
+      background:#fff;
+      box-shadow:none;
+      max-width:none;
+      min-height:100%;
     }
     .hf-pdp-look__eyebrow{
       margin:0;
@@ -1868,17 +1870,13 @@
       min-height:520px;
       border-radius:28px;
       overflow:hidden;
-      background:transparent;
+      background:#fff;
       display:flex;
       align-items:stretch;
       justify-content:flex-end;
     }
     .hf-pdp-look__visual::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(90deg, rgba(234,208,190,.08), rgba(234,208,190,.28));
-      pointer-events:none;
+      content:none;
     }
     .hf-pdp-look__hero{
       position:absolute;
@@ -2067,12 +2065,12 @@
         grid-template-columns:minmax(360px, 440px) minmax(0, 1fr);
         align-items:stretch;
         min-height:780px;
-        padding:28px;
-        margin-top:32px;
+        padding:0;
+        margin-top:52px;
       }
       .hf-pdp-look__panel{
-        align-self:center;
         margin-left:28px;
+        height:100%;
       }
       .hf-pdp-look__visual{
         min-height:720px;
@@ -2086,9 +2084,10 @@
     }
     @media (max-width:767px){
       .hf-pdp-look{
-        padding:12px;
-        border-radius:18px;
-        background:linear-gradient(180deg, #ead0be 0 48%, #f5f5f3 48% 100%);
+        padding:0;
+        border-radius:0;
+        background:transparent;
+        margin-top:36px;
       }
       .hf-pdp-look__panel{
         max-width:none;
