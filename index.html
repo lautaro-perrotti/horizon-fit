@@ -982,6 +982,7 @@
       margin-top:18px;
       border-top:1px solid var(--border);
     }
+
     .menu-drawer__social a{
       width:22px;
       height:22px;
@@ -997,6 +998,7 @@
       display:block;
       flex:0 0 auto;
     }
+
     @media (prefers-reduced-motion: reduce){
       .overlay,
       .modal,
@@ -4830,21 +4832,30 @@
         </div>
 
         <aside class="hf-set-desktop-slider__info" id="setDesktopInfo" aria-live="polite">
-          <span class="badge badge--primary">Conformación del conjunto</span>
-          <h3 class="hf-set-desktop-slider__title" id="setDesktopInfoTitle">Set Motion</h3>
-          <p class="hf-set-desktop-slider__meta" id="setDesktopInfoMeta">Top + calza | Compresión media</p>
-          <ul class="hf-set-desktop-slider__list" id="setDesktopInfoList">
-            <li>Top Motion</li>
-            <li>Calza Range</li>
-            <li>6 cuotas sin interés</li>
-          </ul>
-          <div class="hf-set-desktop-slider__price">
-            <b id="setDesktopInfoPrice">$89.900</b>
-            <s id="setDesktopInfoCompare">$109.800</s>
+          <span class="badge badge--primary" style="margin-bottom: 12px;">Conformación del conjunto</span>
+          <h3 class="hf-product-item__title" id="setDesktopInfoTitle" style="font-size: 24px; margin-bottom: 4px;">Set Motion</h3>
+          <p class="small" id="setDesktopInfoMeta" style="margin-bottom: 16px;">Top + calza | Compresión media</p>
+          
+          <div style="margin-bottom: 20px;">
+            <p style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Incluye:</p>
+            <ul class="hf-set-desktop-slider__list" id="setDesktopInfoList" style="margin-bottom: 0;">
+              <li>Top Motion</li>
+              <li>Calza Range</li>
+            </ul>
           </div>
-          <div class="hf-set-desktop-slider__actions">
-            <a class="btn btn--primary" id="setDesktopBuyLink" href="#set-motion">Comprar set</a>
-            <a class="btn btn--secondary" id="setDesktopDetailLink" href="#set-motion-detalle">Ver detalle</a>
+
+          <div class="hf-product-item__pricing" style="border-bottom: 0; padding-bottom: 0; margin-bottom: 24px;">
+            <div class="hf-product-item__price-row">
+              <span class="hf-product-item__price" id="setDesktopInfoPrice" style="font-size: 24px;">$89.900</span>
+              <span class="hf-product-item__price-original" id="setDesktopInfoCompare" style="display: block; font-size: 18px;">$109.800</span>
+            </div>
+            <p class="hf-product-item__installments" id="setDesktopInfoInstallments">6 cuotas de: <span class="hf-product-item__installments-link">$14.983</span></p>
+            <p class="hf-product-item__transfer" id="setDesktopInfoTransfer">$76.415 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
+          </div>
+
+          <div class="hf-product-item__actions" style="grid-template-columns: 1fr 1fr;">
+            <a class="btn btn--primary" id="setDesktopBuyLink" href="#set-motion">Comprar ahora</a>
+            <a class="btn btn--secondary hf-product-item__cta--ghost" id="setDesktopDetailLink" href="#set-motion-detalle">Ver detalle</a>
           </div>
         </aside>
         </div>
@@ -4866,23 +4877,27 @@
                 <div class="productMedia" style="background:none;">
                   <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Motion">
                 </div>
-                <div class="productBody">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-                    <div>
-                      <b>Set Motion</b>
-                      <div class="small">Top + calza / Compresión media</div>
+                <div class="hf-product-item__body">
+                  <div class="hf-product-item__sizes">
+                    <button class="hf-product-item__size" aria-pressed="true">S</button>
+                    <button class="hf-product-item__size" aria-pressed="false">M</button>
+                    <button class="hf-product-item__size" aria-pressed="false">L</button>
+                  </div>
+                  <a href="index.html?name=SET+MOTION&price=%2489.900&compare=%24109.800&view=product" aria-label="Ver detalle de Set Motion" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">Set Motion</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">Top + calza / Compresión media</p>
+                  <div class="hf-product-item__pricing">
+                    <div class="hf-product-item__price-row">
+                      <span class="hf-product-item__price">$89.900</span>
+                      <span class="hf-product-item__price-original">$109.800</span>
                     </div>
-                    <span class="badge badge--ok">En stock</span>
+                    <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$14.983</a></p>
+                    <p class="hf-product-item__transfer">$76.415 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
                   </div>
-                  <div class="priceRow">
-                    <div class="price">$ 89.900</div>
-                    <div class="priceOld">$ 109.800</div>
-                    <span class="badge badge--primary">-18%</span>
-                  </div>
-                  <div class="swatches" aria-label="Colores Set Motion">
-                    <span class="swatch" style="background:#111;"></span>
-                    <span class="swatch" style="background:var(--hf-primary);"></span>
-                    <span class="swatch" style="background:var(--hf-accent);"></span>
+                  <div class="hf-product-item__actions">
+                    <button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="Set Motion">Agregar al carrito</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="Set Motion">Comprar ahora</button>
                   </div>
                 </div>
               </article>
@@ -4892,23 +4907,27 @@
                 <div class="productMedia" style="background:none;">
                   <img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Power">
                 </div>
-                <div class="productBody">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-                    <div>
-                      <b>Set Power</b>
-                      <div class="small">Top + short / Liviano y elástico</div>
+                <div class="hf-product-item__body">
+                  <div class="hf-product-item__sizes">
+                    <button class="hf-product-item__size" aria-pressed="true">S</button>
+                    <button class="hf-product-item__size" aria-pressed="false">M</button>
+                    <button class="hf-product-item__size" aria-pressed="false">L</button>
+                  </div>
+                  <a href="index.html?name=SET+POWER&price=%2472.900&compare=%2489.800&view=product" aria-label="Ver detalle de Set Power" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">Set Power</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">Top + short / Liviano y elástico</p>
+                  <div class="hf-product-item__pricing">
+                    <div class="hf-product-item__price-row">
+                      <span class="hf-product-item__price">$72.900</span>
+                      <span class="hf-product-item__price-original">$89.800</span>
                     </div>
-                    <span class="badge badge--ok">En stock</span>
+                    <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$12.150</a></p>
+                    <p class="hf-product-item__transfer">$61.965 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
                   </div>
-                  <div class="priceRow">
-                    <div class="price">$ 72.900</div>
-                    <div class="priceOld">$ 89.800</div>
-                    <span class="badge badge--primary">-19%</span>
-                  </div>
-                  <div class="swatches" aria-label="Colores Set Power">
-                    <span class="swatch" style="background:var(--hf-earth);"></span>
-                    <span class="swatch" style="background:var(--hf-warm);"></span>
-                    <span class="swatch" style="background:#111;"></span>
+                  <div class="hf-product-item__actions">
+                    <button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="Set Power">Agregar al carrito</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="Set Power">Comprar ahora</button>
                   </div>
                 </div>
               </article>
@@ -4918,23 +4937,27 @@
                 <div class="productMedia" style="background:none;">
                   <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Urban">
                 </div>
-                <div class="productBody">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-                    <div>
-                      <b>Set Urban</b>
-                      <div class="small">Buzo + calza / Athleisure diario</div>
+                <div class="hf-product-item__body">
+                  <div class="hf-product-item__sizes">
+                    <button class="hf-product-item__size" aria-pressed="true">S</button>
+                    <button class="hf-product-item__size" aria-pressed="false">M</button>
+                    <button class="hf-product-item__size" aria-pressed="false">L</button>
+                  </div>
+                  <a href="index.html?name=SET+URBAN&price=%24134.900&compare=%24154.800&view=product" aria-label="Ver detalle de Set Urban" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">Set Urban</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">Buzo + calza / Athleisure diario</p>
+                  <div class="hf-product-item__pricing">
+                    <div class="hf-product-item__price-row">
+                      <span class="hf-product-item__price">$134.900</span>
+                      <span class="hf-product-item__price-original">$154.800</span>
                     </div>
-                    <span class="badge badge--ok">En stock</span>
+                    <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$22.483</a></p>
+                    <p class="hf-product-item__transfer">$114.665 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
                   </div>
-                  <div class="priceRow">
-                    <div class="price">$ 134.900</div>
-                    <div class="priceOld">$ 154.800</div>
-                    <span class="badge badge--primary">-13%</span>
-                  </div>
-                  <div class="swatches" aria-label="Colores Set Urban">
-                    <span class="swatch" style="background:#4a4a4a;"></span>
-                    <span class="swatch" style="background:#1f1f1f;"></span>
-                    <span class="swatch" style="background:var(--hf-accent);"></span>
+                  <div class="hf-product-item__actions">
+                    <button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="Set Urban">Agregar al carrito</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="Set Urban">Comprar ahora</button>
                   </div>
                 </div>
               </article>
@@ -4944,23 +4967,27 @@
                 <div class="productMedia" style="background:none;">
                   <img src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Focus">
                 </div>
-                <div class="productBody">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-                    <div>
-                      <b>Set Focus</b>
-                      <div class="small">Top + biker / Bajo impacto</div>
+                <div class="hf-product-item__body">
+                  <div class="hf-product-item__sizes">
+                    <button class="hf-product-item__size" aria-pressed="true">S</button>
+                    <button class="hf-product-item__size" aria-pressed="false">M</button>
+                    <button class="hf-product-item__size" aria-pressed="false">L</button>
+                  </div>
+                  <a href="index.html?name=SET+FOCUS&price=%2469.900&compare=%2484.800&view=product" aria-label="Ver detalle de Set Focus" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">Set Focus</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">Top + biker / Bajo impacto</p>
+                  <div class="hf-product-item__pricing">
+                    <div class="hf-product-item__price-row">
+                      <span class="hf-product-item__price">$69.900</span>
+                      <span class="hf-product-item__price-original">$84.800</span>
                     </div>
-                    <span class="badge badge--ok">En stock</span>
+                    <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$11.650</a></p>
+                    <p class="hf-product-item__transfer">$59.415 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
                   </div>
-                  <div class="priceRow">
-                    <div class="price">$ 69.900</div>
-                    <div class="priceOld">$ 84.800</div>
-                    <span class="badge badge--primary">-18%</span>
-                  </div>
-                  <div class="swatches" aria-label="Colores Set Focus">
-                    <span class="swatch" style="background:#0e0e0e;"></span>
-                    <span class="swatch" style="background:#6f7f8f;"></span>
-                    <span class="swatch" style="background:var(--hf-green);"></span>
+                  <div class="hf-product-item__actions">
+                    <button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="Set Focus">Agregar al carrito</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="Set Focus">Comprar ahora</button>
                   </div>
                 </div>
               </article>
@@ -4970,23 +4997,27 @@
                 <div class="productMedia" style="background:none;">
                   <img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Set Energy">
                 </div>
-                <div class="productBody">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-                    <div>
-                      <b>Set Energy</b>
-                      <div class="small">Top + short / Entrenamiento funcional</div>
+                <div class="hf-product-item__body">
+                  <div class="hf-product-item__sizes">
+                    <button class="hf-product-item__size" aria-pressed="true">S</button>
+                    <button class="hf-product-item__size" aria-pressed="false">M</button>
+                    <button class="hf-product-item__size" aria-pressed="false">L</button>
+                  </div>
+                  <a href="index.html?name=SET+ENERGY&price=%2476.900&compare=%2492.800&view=product" aria-label="Ver detalle de Set Energy" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">Set Energy</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">Top + short / Entrenamiento funcional</p>
+                  <div class="hf-product-item__pricing">
+                    <div class="hf-product-item__price-row">
+                      <span class="hf-product-item__price">$76.900</span>
+                      <span class="hf-product-item__price-original">$92.800</span>
                     </div>
-                    <span class="badge badge--ok">En stock</span>
+                    <p class="hf-product-item__installments">6 cuotas de: <a href="#" class="hf-product-item__installments-link">$12.816</a></p>
+                    <p class="hf-product-item__transfer">$65.365 <span class="hf-product-item__transfer-label">con Transferencia</span></p>
                   </div>
-                  <div class="priceRow">
-                    <div class="price">$ 76.900</div>
-                    <div class="priceOld">$ 92.800</div>
-                    <span class="badge badge--primary">-17%</span>
-                  </div>
-                  <div class="swatches" aria-label="Colores Set Energy">
-                    <span class="swatch" style="background:var(--hf-primary);"></span>
-                    <span class="swatch" style="background:var(--hf-accent);"></span>
-                    <span class="swatch" style="background:var(--hf-earth);"></span>
+                  <div class="hf-product-item__actions">
+                    <button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="Set Energy">Agregar al carrito</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="Set Energy">Comprar ahora</button>
                   </div>
                 </div>
               </article>
@@ -5265,27 +5296,23 @@
       <div class="hf-social-strip__foot">
         <span>Seguimos en</span>
         <span class="hf-social-strip__ig" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3.5" y="3.5" width="17" height="17" rx="4.5"></rect>
-            <circle cx="12" cy="12" r="4.2"></circle>
-            <circle cx="17.4" cy="6.6" r="1"></circle>
-          </svg>
+          <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
         </span>
         <strong>@horizonfit</strong>
       </div>
 
-      <div class="hf-social-strip__brands" aria-label="Redes sociales Horizon Fit">
-        <a class="hf-social-strip__brand" href="#" aria-label="Instagram">
-          <span class="hf-social-strip__avatar hf-social-strip__avatar--brand" aria-hidden="true"></span>
+      <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
+        <a href="#" aria-label="Instagram">
+          <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
         </a>
-        <a class="hf-social-strip__brand" href="#" aria-label="Facebook">
-          <img src="https://cdn.simpleicons.org/facebook/1877F2" alt="Facebook">
+        <a href="#" aria-label="Facebook">
+          <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook">
         </a>
-        <a class="hf-social-strip__brand" href="#" aria-label="TikTok">
-          <img src="https://cdn.simpleicons.org/tiktok/111111" alt="TikTok">
+        <a href="#" aria-label="TikTok">
+          <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok">
         </a>
-        <a class="hf-social-strip__brand" href="#" aria-label="Spotify">
-          <img src="https://cdn.simpleicons.org/spotify/1DB954" alt="Spotify">
+        <a href="#" aria-label="Spotify">
+          <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify">
         </a>
       </div>
     </div>
@@ -6658,6 +6685,40 @@
 
         <div class="divider"></div>
         <div class="field">
+
+  <!-- DRAWER (CART) -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Carrito">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="cartItem">
+          <img class="cartThumb" src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Calza Range — Negro</b>
+            <div class="small">Talle M · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 59.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cartItem">
+          <img class="cartThumb" src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Motion" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Top Motion — Arena</b>
+            <div class="small">Talle S · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 34.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
           <div class="label">Código de descuento</div>
           <div class="row" style="gap:10px;">
             <input class="control" placeholder="HF-15" style="flex:1;" />
@@ -6702,7 +6763,7 @@
           <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
           <button class="chip chip--clickable" data-search-term="tops">Tops</button>
           <button class="chip chip--clickable" data-search-term="conjuntos">Conjuntos</button>
-          <button class="chip chip--clickable" data-search-term="accesorios">Accesorios</button>
+          <button class="chip chip--clickable" data-search-term="campera">Campera</button>
           <button class="chip chip--clickable" data-search-term="ofertas">Ofertas</button>
         </div>
         <div id="searchResults" style="margin-top:20px;"></div>
@@ -6716,13 +6777,21 @@
   <!-- TOOLTIP -->
   <div class="tooltip" id="tooltip" role="tooltip"></div>
 
+  <style>
+    /* Brand Font Overrides */
+    .hf-product-item__title,
+    .hf-set-desktop-slider__list li,
+    .hf-set-desktop-slider__info .small,
+    .hf-product-item__body .small,
+    .cartMeta b, 
+    .cartMeta .small {
+      font-family: 'BlauerNue', sans-serif !important;
+    }
+  </style>
+
   <script>
     /******************************************************************
       HORIZON FIT — DS JS (vanilla)
-      - dropdown, tooltip, tabs, accordion
-      - modal + drawer (ESC + click outside)
-      - toast
-      - ecommerce interactions: quickshop, size select, quantity stepper, add to cart
     ******************************************************************/
 
     const $ = (sel, root=document) => root.querySelector(sel);
@@ -6861,7 +6930,6 @@
       openOverlay();
       modal.classList.add("is-on");
       modal.setAttribute("aria-hidden","false");
-      // focus dialog
       setTimeout(()=> $(".modal__dialog", modal)?.focus(), 10);
       document.body.style.overflow="hidden";
     }
@@ -7075,270 +7143,6 @@
       if(modal.classList.contains("is-on")) closeModal();
       if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
       if(drawer.classList.contains("is-on")) closeDrawer();
-      if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
-    });
-
-    // ESC closes
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape"){
-        if(modal.classList.contains("is-on")) closeModal();
-        if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
-        if(drawer.classList.contains("is-on")) closeDrawer();
-        if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
-      }
-    });
-
-    // Search term chips
-    $$("[data-search-term]").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const term = chip.getAttribute("data-search-term");
-        const searchInput = $("#searchInput");
-        if(searchInput) {
-          searchInput.value = term;
-          searchInput.focus();
-        }
-      });
-    });
-
-    /* -----------------------------
-      Desktop Complete Set Slider
-    ------------------------------*/
-    (function initDesktopSetSlider() {
-      const root = $("#conjuntos-desktop-slider");
-      if (!root) return;
-
-      const track = $("#setDesktopTrack", root);
-      const slides = $$(".hf-set-desktop-slider__slide", root);
-      const prevBtn = $("#setDesktopPrev", root);
-      const nextBtn = $("#setDesktopNext", root);
-      const dots = $$(".hf-set-desktop-slider__dot", root);
-      const infoTitle = $("#setDesktopInfoTitle", root);
-      const infoMeta = $("#setDesktopInfoMeta", root);
-      const infoList = $("#setDesktopInfoList", root);
-      const infoPrice = $("#setDesktopInfoPrice", root);
-      const infoCompare = $("#setDesktopInfoCompare", root);
-      const buyLink = $("#setDesktopBuyLink", root);
-      const detailLink = $("#setDesktopDetailLink", root);
-      if (!track || !slides.length || !dots.length) return;
-
-      let index = 0;
-      const total = slides.length;
-
-      function renderInfo() {
-        const slide = slides[index];
-        if (!slide) return;
-
-        if (infoTitle) infoTitle.textContent = slide.dataset.title || "";
-        if (infoMeta) infoMeta.textContent = slide.dataset.meta || "";
-        if (infoPrice) infoPrice.textContent = slide.dataset.price || "";
-        if (infoCompare) infoCompare.textContent = slide.dataset.compare || "";
-        if (buyLink) buyLink.href = slide.dataset.buyLink || "#";
-        if (detailLink) detailLink.href = slide.dataset.detailLink || "#";
-
-        if (infoList) {
-          const items = (slide.dataset.items || "").split("|").filter(Boolean);
-          infoList.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
-        }
-      }
-
-      function render() {
-        track.style.transform = `translateX(-${index * 100}%)`;
-        dots.forEach((dot, i) => {
-          const on = i === index;
-          dot.classList.toggle("is-active", on);
-          dot.setAttribute("aria-current", on ? "true" : "false");
-        });
-        renderInfo();
-      }
-
-      function goTo(i) {
-        index = (i + total) % total;
-        render();
-      }
-
-      if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1));
-      if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1));
-      dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
-      render();
-    })();
-
-    /* -----------------------------
-      Toast
-    ------------------------------*/
-    const toasts = $("#toasts");
-
-    function toast({title="Listo", message="", variant="info", timeout=3200}){
-      const t = document.createElement("div");
-      t.className = `toast toast--${variant}`;
-      t.innerHTML = `
-        <div class="toast__dot" aria-hidden="true"></div>
-        <div>
-          <b>${escapeHtml(title)}</b>
-          <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
-        </div>
-        <button class="toast__x" aria-label="Cerrar">×</button>
-      `;
-      const x = $(".toast__x", t);
-      x.addEventListener("click", ()=> t.remove());
-      toasts.appendChild(t);
-      setTimeout(()=>{ t.remove(); }, timeout);
-    }
-
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-      }[s]));
-    }
-
-    $("#toastBtn")?.addEventListener("click", ()=>{ toast({title:"Horizon Fit", message:"Toast de ejemplo (info).", variant:"info"}); });
-    $("#toastBtn2")?.addEventListener("click", ()=> toast({title:"Info", message:"Interacción suave, copy claro.", variant:"info"}));
-    $("#toastBtnOk")?.addEventListener("click", ()=> toast({title:"Ok", message:"Producto agregado al carrito.", variant:"ok"}));
-    $("#openToastDemo")?.addEventListener("click", ()=>{
-      toast({title:"Info", message:"Tabs / accordion / modal / drawer listos.", variant:"info"});
-      setTimeout(()=> toast({title:"Ok", message:"Sistema funcionando en vanilla.", variant:"ok"}), 500);
-    });
-
-    $("#modalConfirm")?.addEventListener("click", ()=>{
-      closeModal();
-      toast({title:"Listo", message:"Te avisamos cuando vuelva stock.", variant:"ok"});
-    });
-
-    /* -----------------------------
-      Theme toggle
-    ------------------------------*/
-    const toggleThemeBtn = $("#toggleThemeBtn");
-    function toggleTheme(){
-      const root = document.body;
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      toast({title:"Theme", message:`Modo ${next}`, variant:"info", timeout:1600});
-    }
-    toggleThemeBtn?.addEventListener("click", toggleTheme);
-
-    /* -----------------------------
-      Quickshop buttons (product cards)
-    ------------------------------*/
-    $$("[data-quickshop]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const name = btn.getAttribute("data-quickshop");
-        openDrawer();
-        toast({title:"Quick shop", message:`Abriste el carrito para: ${name}`, variant:"info", timeout:2200});
-      });
-    });
-
-    /* -----------------------------
-      Size selector
-    ------------------------------*/
-    function normalizeSizesToSml(){
-      const allowedSizes = new Set(["S", "M", "L"]);
-      $$(".hf-product-item__size, .hf-pdp-view__size, .chip[data-size]").forEach(button=>{
-        const size = (button.getAttribute("data-size") || button.textContent || "").trim().toUpperCase();
-        if(!allowedSizes.has(size)){
-          button.remove();
-        }
-      });
-
-      $$(".hf-product-item__sizes, .hf-pdp-view__sizes, #sizeGrid").forEach(group=>{
-        const selected = group.querySelector('[aria-pressed="true"]');
-        if(selected) return;
-        const firstAvailable = Array.from(group.querySelectorAll("button")).find(button=>{
-          return button.getAttribute("aria-disabled") !== "true" && !button.classList.contains("is-disabled");
-        });
-        firstAvailable?.setAttribute("aria-pressed", "true");
-      });
-    }
-    normalizeSizesToSml();
-
-    const sizeGrid = $("#sizeGrid");
-    if(sizeGrid){
-      sizeGrid.addEventListener("click", (e)=>{
-        const b = e.target.closest?.("button.chip");
-        if(!b) return;
-        if(b.classList.contains("is-disabled") || b.getAttribute("aria-disabled")==="true") return;
-        $$(".chip", sizeGrid).forEach(x=> x.setAttribute("aria-pressed","false"));
-        b.setAttribute("aria-pressed","true");
-      });
-    }
-
-    /* -----------------------------
-      Stepper
-    ------------------------------*/
-    $$("[data-stepper]").forEach(step=>{
-      const input = $("input", step);
-      const dec = $("[data-dec]", step);
-      const inc = $("[data-inc]", step);
-
-      function clamp(v){ return Math.max(1, Math.min(99, v)); }
-      function setVal(v){ input.value = String(clamp(v)); }
-
-      dec.addEventListener("click", ()=> setVal(parseInt(input.value||"1",10)-1));
-      inc.addEventListener("click", ()=> setVal(parseInt(input.value||"1",10)+1));
-      input.addEventListener("input", ()=> setVal(parseInt(input.value||"1",10) || 1));
-    });
-
-    /* -----------------------------
-      Ecommerce: Add to cart
-    ------------------------------*/
-    $("#addToCartBtn")?.addEventListener("click", ()=>{
-      openDrawer();
-      toast({title:"Agregado", message:"Calza Range agregada al carrito.", variant:"ok"});
-    });
-
-    $$("[data-remove-item]").forEach(b=>{
-      b.addEventListener("click", ()=>{
-        const item = b.closest(".cartItem");
-        item?.remove();
-        toast({title:"Carrito", message:"Producto eliminado.", variant:"info"});
-      });
-    });
-
-    $("#applyCouponBtn")?.addEventListener("click", ()=>{
-      $("#couponHint").textContent = "Aplicado: HF-15 (demo)";
-      $("#cartSubtotal").textContent = "$ 80.580";
-      toast({title:"Descuento", message:"Código aplicado (demo).", variant:"ok"});
-    });
-
-    $("#goCheckoutBtn")?.addEventListener("click", ()=>{
-      closeDrawer();
-      toast({title:"Checkout", message:"Te llevaría al checkout (demo).", variant:"info"});
-      location.hash = "#patterns";
-    });
-
-    $("#payBtn")?.addEventListener("click", ()=>{
-      toast({title:"Pago", message:"Acción de pago (demo).", variant:"info"});
-    });
-
-    /* -----------------------------
-      Misc helpers
-    ------------------------------*/
-    $("#loadingBtn")?.addEventListener("click", ()=>{
-      toast({title:"Loading", message:"Este botón está en estado loading (demo).", variant:"info"});
-    });
-
-    $("#copyLinkBtn")?.addEventListener("click", async ()=>{
-      try{
-        await navigator.clipboard.writeText(location.href);
-        toast({title:"Copiado", message:"Link copiado al portapapeles.", variant:"ok", timeout:1700});
-      }catch{
-        toast({title:"No se pudo copiar", message:"Tu navegador bloqueó el clipboard.", variant:"info"});
-      }
-    });
-
-    $("#downloadHtmlBtn")?.addEventListener("click", ()=>{
-      const blob = new Blob([document.documentElement.outerHTML], {type:"text/html"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "design-system-horizonfit.html";
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast({title:"Guardado", message:"Descargaste el HTML (single file).", variant:"ok"});
-    });
-  </script>
-
-  <!-- Component JS imports -->
-  <script src="design-system/components/carousel/carousel.js"></script>
-  <script src="design-system/components/video-hero/video-hero.js"></script>
-  <script src="design-system/components/marquee/marquee.js"></script>
   <script src="design-system/components/info-banner/info-banner.js"></script>
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
