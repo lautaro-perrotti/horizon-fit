@@ -1,0 +1,87 @@
+services:
+  db:
+    image: mariadb:10.6
+    container_name: horizon-fit-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: horizon_fit
+      MYSQL_USER: horizon_fit
+      MYSQL_PASSWORD: horizon_fit
+      MYSQL_ROOT_PASSWORD: root
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3308:3306"
+    volumes:
+      - horizon_fit_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6.9.4-php8.2-apache
+    container_name: horizon-fit-wp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8088:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: horizon_fit
+      WORDPRESS_DB_USER: horizon_fit
+      WORDPRESS_DB_PASSWORD: horizon_fit
+      WORDPRESS_TABLE_PREFIX: hf_
+      HF_STOREFRONT_SOURCE_PATH: /opt/horizon-fit/index.html
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'http://localhost:8088');
+        define('WP_SITEURL', 'http://localhost:8088');
+        define('FS_METHOD', 'direct');
+        define('WP_MEMORY_LIMIT', '256M');
+    volumes:
+      - ./backend/wordpress:/var/www/html
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./index.html:/opt/horizon-fit/index.html:ro
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    container_name: horizon-fit-wpcli
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    working_dir: /var/www/html
+    entrypoint: ["wp"]
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: horizon_fit
+      WORDPRESS_DB_USER: horizon_fit
+      WORDPRESS_DB_PASSWORD: horizon_fit
+      WORDPRESS_TABLE_PREFIX: hf_
+      HF_STOREFRONT_SOURCE_PATH: /opt/horizon-fit/index.html
+    volumes:
+      - ./backend/wordpress:/var/www/html
+      - ./index.html:/opt/horizon-fit/index.html:ro
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: horizon-fit-pma
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  horizon_fit_db:
