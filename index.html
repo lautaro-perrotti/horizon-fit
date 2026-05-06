@@ -984,8 +984,8 @@
     }
 
     .menu-drawer__social a{
-      width:22px;
-      height:22px;
+      width:32px;
+      height:32px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
@@ -6427,6 +6427,9 @@
                 <label class="choice">
                   <input type="checkbox" checked />
                   <span>
+                <label class="choice">
+                  <input type="checkbox" checked />
+                  <span>
                     <b>Quiero recibir actualizaciones</b>
                     <small>Tracking y novedades de drops.</small>
                   </span>
@@ -6558,16 +6561,16 @@
               </div>
               <div class="footer__social" style="margin-top:12px;">
                 <a href="#" aria-label="Instagram">
-                  <img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="Instagram">
+                  <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
                 </a>
                 <a href="#" aria-label="Facebook">
-                  <img src="https://cdn.simpleicons.org/facebook/FFFFFF" alt="Facebook">
+                  <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
                 </a>
                 <a href="#" aria-label="TikTok">
-                  <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok">
+                  <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok" style="width:32px;height:32px;">
                 </a>
                 <a href="#" aria-label="Spotify">
-                  <img src="https://cdn.simpleicons.org/spotify/FFFFFF" alt="Spotify">
+                  <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify" style="width:32px;height:32px;">
                 </a>
               </div>
             </div>
@@ -6634,57 +6637,23 @@
           <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the wild</strong></a>
           <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
         </nav>
-        <div class="menu-drawer__social" aria-label="Redes sociales">
+        <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
           <a href="#" aria-label="Instagram">
-            <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
+            <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
           </a>
           <a href="#" aria-label="Facebook">
-            <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook">
+            <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
           </a>
           <a href="#" aria-label="TikTok">
-            <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok">
+            <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok" style="width:32px;height:32px;">
           </a>
           <a href="#" aria-label="Spotify">
-            <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify">
+            <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify" style="width:32px;height:32px;">
           </a>
         </div>
       </div>
     </div>
   </aside>
-
-  <!-- DRAWER (CART) -->
-  <aside class="drawer" id="drawer" aria-hidden="true">
-    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Carrito">
-      <div class="drawer__hd">
-        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">&times;</button>
-      </div>
-      <div class="drawer__bd">
-        <div class="cartItem">
-          <img class="cartThumb" src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Calza Range" style="object-fit:cover;">
-          <div class="cartMeta">
-            <b>Calza Range — Negro</b>
-            <div class="small">Talle M · Cant. 1</div>
-            <div class="cartRow">
-              <div class="small">$ 59.900</div>
-              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cartItem">
-          <img class="cartThumb" src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" alt="Top Motion" style="object-fit:cover;">
-          <div class="cartMeta">
-            <b>Top Motion — Arena</b>
-            <div class="small">Talle S · Cant. 1</div>
-            <div class="cartRow">
-              <div class="small">$ 34.900</div>
-              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="field">
 
   <!-- DRAWER (CART) -->
   <aside class="drawer" id="drawer" aria-hidden="true">
@@ -6787,17 +6756,17 @@
     .cartMeta .small {
       font-family: 'BlauerNue', sans-serif !important;
     }
+    .menu-drawer__social img, .footer__social img {
+      width: 32px;
+      height: 32px;
+    }
   </style>
 
   <script>
-    /******************************************************************
-      HORIZON FIT — DS JS (vanilla)
-    ******************************************************************/
-
     const $ = (sel, root=document) => root.querySelector(sel);
     const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-    // Fixed nav + marquee: keep document offset synced to their real heights.
+    // Fixed nav + marquee
     (function syncTopOffsets() {
       const navEl = document.querySelector('.nav');
       const marqueeEl = document.querySelector('#topMarquee');
@@ -6829,7 +6798,7 @@
     })();
 
     /* -----------------------------
-      Tooltip (data-tooltip)
+      Tooltip
     ------------------------------*/
     const tooltip = $("#tooltip");
     let ttTarget = null;
@@ -6902,7 +6871,6 @@
     const overlay = $("#overlay");
     const modal = $("#modal");
     const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
-    const legacyMenu = $("#menu");
     const menuDrawer = $("#menuDrawer");
     const drawer = $("#drawer");
     const searchDrawer = $("#searchDrawer");
@@ -6911,10 +6879,6 @@
 
     menuBtn?.setAttribute("aria-controls", "menuDrawer");
     menuBtn?.setAttribute("aria-expanded", "false");
-    if(legacyMenu){
-      legacyMenu.setAttribute("aria-hidden", "true");
-      legacyMenu.style.display = "none";
-    }
 
     function openOverlay(){
       overlay.classList.add("is-on");
@@ -6990,7 +6954,6 @@
       lastFocus?.focus?.();
     }
 
-    // open buttons
     menuBtn?.addEventListener("click", ()=>{
       const isOpen = menuDrawer?.getAttribute("aria-hidden") === "false";
       if(isOpen){
@@ -7001,27 +6964,10 @@
     });
     $("#openModalBtn")?.addEventListener("click", openModal);
     $("#openModalBtn2")?.addEventListener("click", openModal);
-    $("#openCartBtn2")?.addEventListener("click", openDrawer);
-    $("#ctaQuickShop")?.addEventListener("click", openDrawer);
     $("#cartBtn")?.addEventListener("click", openDrawer);
     $("#searchBtn")?.addEventListener("click", openSearchDrawer);
-    $("#searchBtnMobile")?.addEventListener("click", openSearchDrawer);
     $$("[data-menu-link]").forEach(link => {
       link.addEventListener("click", ()=> closeMenuDrawer());
-    });
-
-    document.addEventListener("click", (e)=>{
-      const actionBtn = e.target.closest?.("[data-product-action]");
-      if(!actionBtn) return;
-      const productName = actionBtn.getAttribute("data-product-name") || "Producto Horizon Fit";
-      openDrawer();
-      setTimeout(()=>{
-        toast({
-          title: actionBtn.getAttribute("data-product-action") === "buy" ? "Compra rápida" : "Producto agregado",
-          message: productName + " listo para continuar en el carrito.",
-          variant: "ok"
-        });
-      }, 120);
     });
 
     // Mobile logo alternating animation
@@ -7049,7 +6995,6 @@
       function startAnimation() {
         if (interval) clearInterval(interval);
         if (isMobile()) {
-          // Ensure first paint in mobile is logotipo
           isotipo.classList.remove("is-visible");
           logotipo.classList.remove("is-hidden");
           showingLogotipo = true;
@@ -7061,11 +7006,10 @@
       startAnimation();
     })();
 
-    // Style edit videos: load and play only near the viewport.
+    // Style edit videos
     (function initStyleEditVideos() {
       const videos = $$("[data-style-video]");
       if (!videos.length) return;
-
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       function prepare(video) {
@@ -7084,9 +7028,7 @@
         video.play().catch(() => {});
       }
 
-      function pause(video) {
-        video.pause();
-      }
+      function pause(video) { video.pause(); }
 
       if (!("IntersectionObserver" in window)) {
         videos.forEach(play);
@@ -7095,66 +7037,147 @@
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          const video = entry.target;
-          if (entry.isIntersecting) {
-            play(video);
-          } else {
-            pause(video);
-          }
+          if (entry.isIntersecting) play(entry.target);
+          else pause(entry.target);
         });
-      }, {
-        rootMargin: "220px 0px",
-        threshold: 0.18
-      });
+      }, { rootMargin: "220px 0px", threshold: 0.18 });
 
       videos.forEach((video) => observer.observe(video));
-
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          videos.forEach(pause);
-        } else {
-          videos.forEach((video) => {
-            const rect = video.getBoundingClientRect();
-            const nearViewport = rect.bottom > -220 && rect.top < window.innerHeight + 220;
-            if (nearViewport) play(video);
-          });
-        }
-      });
     })();
 
-    // close buttons
     $$("[data-close-modal]").forEach(b=> b.addEventListener("click", closeModal));
     $$("[data-close-menu-drawer]").forEach(b=> b.addEventListener("click", closeMenuDrawer));
     $$("[data-close-drawer]").forEach(b=> b.addEventListener("click", closeDrawer));
     $$("[data-close-search]").forEach(b=> b.addEventListener("click", closeSearchDrawer));
 
-    // click outside panel closes drawers
-    [menuDrawer, drawer, searchDrawer].forEach((shell) => {
-      shell?.addEventListener("click", (event) => {
-        if (event.target !== shell) return;
-        if (shell === menuDrawer) closeMenuDrawer();
-        if (shell === drawer) closeDrawer();
-        if (shell === searchDrawer) closeSearchDrawer();
-      });
-    });
-
-    // overlay click closes
     overlay.addEventListener("click", ()=>{
       if(modal.classList.contains("is-on")) closeModal();
       if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
       if(drawer.classList.contains("is-on")) closeDrawer();
+      if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+    });
+
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape"){
+        if(modal.classList.contains("is-on")) closeModal();
+        if(menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
+        if(drawer.classList.contains("is-on")) closeDrawer();
+        if(searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+      }
+    });
+
+    $$("[data-search-term]").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const term = chip.getAttribute("data-search-term");
+        const searchInput = $("#searchInput");
+        if(searchInput) {
+          searchInput.value = term;
+          searchInput.focus();
+        }
+      });
+    });
+
+    (function initDesktopSetSlider() {
+      const root = $("#conjuntos-desktop-slider");
+      if (!root) return;
+
+      const track = $("#setDesktopTrack", root);
+      const slides = $$(".hf-set-desktop-slider__slide", root);
+      const prevBtn = $("#setDesktopPrev", root);
+      const nextBtn = $("#setDesktopNext", root);
+      const dots = $$(".hf-set-desktop-slider__dot", root);
+      const infoTitle = $("#setDesktopInfoTitle", root);
+      const infoMeta = $("#setDesktopInfoMeta", root);
+      const infoList = $("#setDesktopInfoList", root);
+      const infoPrice = $("#setDesktopInfoPrice", root);
+      const infoCompare = $("#setDesktopInfoCompare", root);
+      const buyLink = $("#setDesktopBuyLink", root);
+      const detailLink = $("#setDesktopDetailLink", root);
+      const infoInstallments = $("#setDesktopInfoInstallments", root);
+      const infoTransfer = $("#setDesktopInfoTransfer", root);
+      if (!track || !slides.length || !dots.length) return;
+
+      let index = 0;
+      const total = slides.length;
+
+      function renderInfo() {
+        const slide = slides[index];
+        if (!slide) return;
+        if (infoTitle) infoTitle.textContent = slide.dataset.title || "";
+        if (infoMeta) infoMeta.textContent = slide.dataset.meta || "";
+        if (infoPrice) infoPrice.textContent = slide.dataset.price || "";
+        if (infoCompare) infoCompare.textContent = slide.dataset.compare || "";
+        if (buyLink) buyLink.href = slide.dataset.buyLink || "#";
+        if (detailLink) detailLink.href = slide.dataset.detailLink || "#";
+
+        if (infoInstallments || infoTransfer) {
+          const priceStr = slide.dataset.price || "$0";
+          const price = parseFloat(priceStr.replace(/[^0-9.]/g, "")) || 0;
+          if (infoInstallments) {
+            const instVal = Math.round(price / 6);
+            infoInstallments.innerHTML = `6 cuotas de: <span class="hf-product-item__installments-link">$${instVal.toLocaleString("es-AR")}</span>`;
+          }
+          if (infoTransfer) {
+            const transVal = Math.round(price * 0.85);
+            infoTransfer.innerHTML = `$${transVal.toLocaleString("es-AR")} <span class="hf-product-item__transfer-label">con Transferencia</span>`;
+          }
+        }
+        if (infoList) {
+          const items = (slide.dataset.items || "").split("|").filter(Boolean);
+          infoList.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+      }
+
+      function render() {
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((dot, i) => {
+          const on = i === index;
+          dot.classList.toggle("is-active", on);
+          dot.setAttribute("aria-current", on ? "true" : "false");
+        });
+        renderInfo();
+      }
+
+      function goTo(i) {
+        index = (i + total) % total;
+        render();
+      }
+
+      if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1));
+      if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1));
+      dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+      render();
+    })();
+
+    const toasts = $("#toasts");
+    function toast({title="Listo", message="", variant="info", timeout=3200}){
+      const t = document.createElement("div");
+      t.className = `toast toast--${variant}`;
+      t.innerHTML = `
+        <div class="toast__dot" aria-hidden="true"></div>
+        <div>
+          <b>${escapeHtml(title)}</b>
+          <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
+        </div>
+        <button class="toast__x" aria-label="Cerrar">&times;</button>
+      `;
+      const x = $(".toast__x", t);
+      x.addEventListener("click", ()=> t.remove());
+      toasts.appendChild(t);
+      setTimeout(()=>{ t.remove(); }, timeout);
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[s]));
+    }
+  </script>
+
   <script src="design-system/components/info-banner/info-banner.js"></script>
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
 
 

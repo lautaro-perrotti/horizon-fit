@@ -85,8 +85,30 @@
 .hf-product-item__body {
   display: flex;
   flex-direction: column;
-  gap: 0px !important;
+  align-items: center;
+  text-align: center;
+  gap: 4px !important;
   padding: 14px 0 0;
+}
+
+.hf-product-item__swatches {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.hf-product-item__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform var(--fast) var(--ease);
+}
+
+.hf-product-item__swatch:hover {
+  transform: scale(1.2);
 }
 
 /* ========================================
@@ -97,6 +119,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  justify-content: center;
   padding-bottom: 10px;
   margin-bottom: 10px;
   border-bottom: 0.5px solid var(--border);
@@ -167,6 +190,7 @@
 .hf-product-item__price-row {
   display: flex;
   align-items: baseline;
+  justify-content: center;
   gap: 8px;
 }
 
