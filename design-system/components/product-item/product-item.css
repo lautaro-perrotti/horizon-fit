@@ -246,10 +246,6 @@
   width: 100%;
 }
 
-.hf-product-item__cta--ghost {
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-}
-
 @media (min-width: 769px) {
   #productGrid1 .hf-product-item__sizes,
   #productGrid1 .hf-product-item__actions,

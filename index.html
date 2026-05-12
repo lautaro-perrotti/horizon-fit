@@ -715,42 +715,50 @@
       justify-content: center;
       gap: 10px;
       border: 1px solid transparent;
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-weight: 700;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       cursor: pointer;
-      transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast) var(--ease), border-color var(--fast) var(--ease), opacity var(--fast) var(--ease);
+      transition: all var(--fast) var(--ease);
+      font-size: 13px;
+      line-height: 1;
       user-select: none;
       white-space: nowrap;
     }
 
     .btn:active {
-      transform: translateY(1px) scale(.99);
+      transform: translateY(1px) scale(.98);
     }
 
     .btn:focus-visible {
       outline: none;
-      box-shadow: var(--focus);
+      box-shadow: 0 0 0 3px rgba(53, 0, 109, 0.2);
     }
 
     .btn--primary {
       background: var(--hf-primary);
-      color: var(--hf-white);
-      box-shadow: 0 12px 26px rgba(255, 94, 50, .22);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(53, 0, 109, 0.15);
     }
 
     .btn--primary:hover {
-      background: color-mix(in srgb, var(--hf-primary) 88%, var(--hf-primary-700));
+      background: var(--hf-primary-700);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(53, 0, 109, 0.25);
     }
 
     .btn--secondary {
-      background: var(--surface);
-      border-color: var(--border);
-      color: var(--text);
+      background: #fff;
+      border-color: var(--hf-primary);
+      color: var(--hf-primary);
     }
 
     .btn--secondary:hover {
-      background: var(--surface-2);
+      background: #f8f9ff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(53, 0, 109, 0.1);
     }
 
     .btn--ghost {
@@ -769,15 +777,16 @@
     }
 
     .btn--sm {
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
     }
 
     .btn--lg {
-      padding: 14px 18px;
-      border-radius: 16px;
-      font-size: 16px;
+      padding: 18px 36px;
+      border-radius: 14px;
+      font-size: 14px;
     }
 
     .btn[disabled],
@@ -2327,30 +2336,11 @@
     }
 
     .hf-pdp-view__button {
-      min-height: 52px;
-      border: 1px solid transparent;
-      border-radius: 999px;
-      padding: 14px 28px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .32em;
-      font-size: 11px;
+      width: 100%;
     }
 
     .hf-pdp-view__button--primary {
       margin-top: 16px;
-      background: var(--hf-primary);
-      color: #fff;
-    }
-
-    .hf-pdp-view__button--secondary {
-      background: var(--surface);
-      color: var(--hf-primary);
-      border-color: var(--hf-primary);
     }
 
     .hf-pdp-view__details {
@@ -2648,33 +2638,29 @@
       box-shadow: none;
     }
 
-    @media (min-width:1100px) {
+    @media (min-width:1380px) {
       .hf-pdp-view {
         width: 100%;
         max-width: none;
-        padding-top: 24px;
-        padding-inline: 34px;
+        margin: 0;
+        padding-top: 1.5rem;
+        padding-inline: 2.125rem;
       }
 
       .hf-pdp-view__layout {
-        --pdp-gallery-width: 914px;
-        --pdp-thumb-width: 156px;
-        --pdp-thumb-stack-gap: 22px;
-        --pdp-thumb-main-gap: 22px;
-        --pdp-main-height-factor: 1.25;
-        --pdp-thumb-height-factor: 1.5;
+        --pdp-gallery-width: 57.125rem;
+        --pdp-thumb-width: 9.75rem;
+        --pdp-thumb-stack-gap: 1.375rem;
+        --pdp-thumb-main-gap: 1.375rem;
         --pdp-main-width: calc(var(--pdp-gallery-width) - var(--pdp-thumb-width) - var(--pdp-thumb-main-gap));
-        --pdp-main-height: calc(var(--pdp-main-width) * var(--pdp-main-height-factor));
-        --pdp-thumb-height: calc(var(--pdp-thumb-width) * var(--pdp-thumb-height-factor));
-        grid-template-columns: minmax(0, var(--pdp-gallery-width)) minmax(360px, 1fr);
+        
+        grid-template-columns: minmax(0, var(--pdp-gallery-width)) minmax(22.5rem, 1fr);
         grid-template-rows: auto minmax(0, 1fr);
-        column-gap: 74px;
-        row-gap: 16px;
+        column-gap: 4.625rem;
+        row-gap: 1rem;
         align-items: start;
         align-content: start;
         justify-content: start;
-        height: var(--pdp-main-height);
-        min-height: var(--pdp-main-height);
       }
 
       .hf-pdp-view__info {
@@ -2694,7 +2680,7 @@
       }
 
       .hf-pdp-view__actions {
-        width: min(100%, 520px);
+        width: min(100%, 32.5rem);
         justify-self: start;
       }
 
@@ -2707,13 +2693,6 @@
         overflow: hidden;
         display: grid;
         grid-template-rows: auto minmax(0, 1fr);
-      }
-
-      .hf-pdp-view__main {
-        aspect-ratio: .783 / 1;
-        height: auto;
-        min-height: 0;
-        border-radius: 0;
       }
 
       .hf-pdp-view__media {
@@ -2729,10 +2708,11 @@
       .hf-pdp-view__main {
         grid-column: 2;
         grid-row: 1;
-        width: var(--pdp-main-width);
-        height: var(--pdp-main-height);
+        width: 100%;
         max-width: var(--pdp-main-width);
-        max-height: none;
+        aspect-ratio: 0.783 / 1;
+        height: auto;
+        border-radius: 0;
       }
 
       .hf-pdp-view__main img {
@@ -2744,8 +2724,8 @@
         grid-row: 1;
         flex-direction: column;
         overflow: hidden;
-        height: var(--pdp-main-height);
-        max-height: var(--pdp-main-height);
+        height: auto;
+        max-height: none;
         justify-content: flex-start;
         gap: var(--pdp-thumb-stack-gap);
         padding: 0;
@@ -2757,9 +2737,10 @@
 
       .hf-pdp-view__thumb {
         flex: 0 0 auto;
-        width: var(--pdp-thumb-width);
-        height: var(--pdp-thumb-height);
-        aspect-ratio: auto;
+        width: 100%;
+        max-width: var(--pdp-thumb-width);
+        aspect-ratio: 0.666 / 1;
+        height: auto;
         border-radius: 0;
       }
 
@@ -2771,13 +2752,13 @@
         grid-row: 2;
         min-height: 0;
         overflow-y: auto;
-        padding: 24px 14px 8px 0;
+        padding: 1.5rem 0.875rem 0.5rem 0;
         scrollbar-width: thin;
         scrollbar-color: var(--hf-primary) rgba(78, 15, 132, 0.14);
       }
 
       .hf-pdp-view__panel::-webkit-scrollbar {
-        width: 10px;
+        width: 0.625rem;
       }
 
       .hf-pdp-view__panel::-webkit-scrollbar-track {
@@ -2788,32 +2769,32 @@
       .hf-pdp-view__panel::-webkit-scrollbar-thumb {
         background: var(--hf-primary);
         border-radius: 999px;
-        border: 2px solid rgba(255, 255, 255, 0.72);
+        border: 0.125rem solid rgba(255, 255, 255, 0.72);
       }
 
       .hf-pdp-view__size {
-        min-width: 84px;
+        min-width: 5.25rem;
       }
 
       .hf-pdp-look {
-        grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+        grid-template-columns: minmax(22.5rem, 27.5rem) minmax(0, 1fr);
         align-items: stretch;
-        min-height: 780px;
+        min-height: 48.75rem;
         padding: 0;
-        margin-top: 52px;
+        margin-top: 3.25rem;
       }
 
       .hf-pdp-look__panel {
-        margin-left: 28px;
+        margin-left: 1.75rem;
         height: 100%;
       }
 
       .hf-pdp-look__visual {
-        min-height: 720px;
+        min-height: 45rem;
       }
     }
 
-    @media (max-width:1099px) {
+    @media (max-width:1379px) {
       .hf-pdp-look__visual {
         order: -1;
         min-height: 460px;
@@ -4094,11 +4075,11 @@
       <div class="hf-marquee__content">
         <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
+        <span class="hf-marquee__item">Envío gratis a todo el país</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
+        <span class="hf-marquee__item">Cambios y devoluciones sin cargo</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
+        <span class="hf-marquee__item">15% OFF con transferencia</span>
       </div>
     </div>
   </div>
@@ -4113,9 +4094,12 @@
     </video>
     <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
     <div class="hf-video-hero__content">
-      <!-- <span class="badge badge--primary hf-video-hero__badge">DROP 01</span> -->
-      <!-- <p class="hf-video-hero__eyebrow">Recordá: 3 y 6 cuotas sin interés · envío gratis desde $150.000 · cambios fáciles</p> -->
-      <!-- <h1 class="hf-video-hero__title" style="font-family: sans-serif;">Cruzá tus límites,<br>más allá de tus horizontes</h1> -->
+      <span class="badge badge--primary hf-video-hero__badge" style="margin-bottom: 24px; padding: 10px 20px; font-size: 14px;">NUEVA COLECCIÓN</span>
+      <h1 class="hf-video-hero__title" style="margin-bottom: 40px; font-weight: 900; line-height: 1.1; letter-spacing: -0.04em;">CRUZÁ TUS LÍMITES,<br>MÁS ALLÁ DEL HORIZONTE</h1>
+      <div class="hf-video-hero__actions" style="display: flex; gap: 20px; justify-content: center;">
+        <a href="#productGrid1" class="btn btn--primary btn--lg">Comprar ahora</a>
+        <a href="#fullSlider" class="btn btn--secondary btn--lg">Ver conjuntos</a>
+      </div>
     </div>
   </section>
 
@@ -5449,8 +5433,8 @@
         '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
         '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
         '<div class="hf-pdp-view__actions">' +
-        '<button class="hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +
-        '<button class="hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
+        '<button class="btn btn--primary hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +
+        '<button class="btn btn--secondary hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
         '</div>' +
         '</section>' +
         '<section class="hf-pdp-view__details" aria-label="Detalle del producto">' +
@@ -5746,8 +5730,8 @@
       var actions = document.createElement('div');
       actions.className = 'hf-product-item__actions';
       actions.innerHTML =
-        '<button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="cart" data-product-name="' + productName + '">Agregar al carrito</button>' +
-        '<button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost" type="button" data-product-action="buy" data-product-name="' + productName + '">Comprar ahora</button>';
+        '<button class="btn btn--primary btn--sm hf-product-item__cta" type="button" data-product-action="buy" data-product-name="' + productName + '">Comprar ahora</button>' +
+        '<button class="btn btn--secondary btn--sm hf-product-item__cta" type="button" data-product-action="detail" data-product-name="' + productName + '">Ver detalle</button>';
       pricing.insertAdjacentElement('afterend', actions);
     });
 
@@ -5998,10 +5982,9 @@
                 class="hf-product-item__transfer-label">con Transferencia</span></p>
           </div>
 
-          <div class="hf-product-item__actions" style="grid-template-columns: 1fr 1fr;">
-            <a class="btn btn--primary" id="setDesktopBuyLink" href="#set-motion">Comprar ahora</a>
-            <a class="btn btn--secondary hf-product-item__cta--ghost" id="setDesktopDetailLink"
-              href="#set-motion-detalle">Ver detalle</a>
+          <div class="hf-product-item__actions" style="grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px;">
+            <a class="btn btn--primary" id="setDesktopBuyLink" href="#set-motion" style="padding: 18px 24px;">Comprar ahora</a>
+            <a class="btn btn--secondary" id="setDesktopDetailLink" href="#set-motion-detalle" style="padding: 18px 24px;">Ver detalle</a>
           </div>
         </aside>
       </div>
@@ -6052,9 +6035,9 @@
                   </div>
                   <div class="hf-product-item__actions">
                     <button class="btn btn--primary btn--sm hf-product-item__cta" type="button"
-                      data-product-action="cart" data-product-name="Set Motion">Agregar al carrito</button>
-                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost"
-                      type="button" data-product-action="buy" data-product-name="Set Motion">Comprar ahora</button>
+                      data-product-action="cart" data-product-name="Set Motion">Comprar ahora</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta"
+                      type="button" data-product-action="buy" data-product-name="Set Motion">Ver detalle</button>
                   </div>
                 </div>
               </article>
@@ -6089,9 +6072,9 @@
                   </div>
                   <div class="hf-product-item__actions">
                     <button class="btn btn--primary btn--sm hf-product-item__cta" type="button"
-                      data-product-action="cart" data-product-name="Set Power">Agregar al carrito</button>
-                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost"
-                      type="button" data-product-action="buy" data-product-name="Set Power">Comprar ahora</button>
+                      data-product-action="cart" data-product-name="Set Power">Comprar ahora</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta"
+                      type="button" data-product-action="buy" data-product-name="Set Power">Ver detalle</button>
                   </div>
                 </div>
               </article>
@@ -6126,9 +6109,9 @@
                   </div>
                   <div class="hf-product-item__actions">
                     <button class="btn btn--primary btn--sm hf-product-item__cta" type="button"
-                      data-product-action="cart" data-product-name="Set Urban">Agregar al carrito</button>
-                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost"
-                      type="button" data-product-action="buy" data-product-name="Set Urban">Comprar ahora</button>
+                      data-product-action="cart" data-product-name="Set Urban">Comprar ahora</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta"
+                      type="button" data-product-action="buy" data-product-name="Set Urban">Ver detalle</button>
                   </div>
                 </div>
               </article>
@@ -6163,9 +6146,9 @@
                   </div>
                   <div class="hf-product-item__actions">
                     <button class="btn btn--primary btn--sm hf-product-item__cta" type="button"
-                      data-product-action="cart" data-product-name="Set Focus">Agregar al carrito</button>
-                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost"
-                      type="button" data-product-action="buy" data-product-name="Set Focus">Comprar ahora</button>
+                      data-product-action="cart" data-product-name="Set Focus">Comprar ahora</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta"
+                      type="button" data-product-action="buy" data-product-name="Set Focus">Ver detalle</button>
                   </div>
                 </div>
               </article>
@@ -6200,9 +6183,9 @@
                   </div>
                   <div class="hf-product-item__actions">
                     <button class="btn btn--primary btn--sm hf-product-item__cta" type="button"
-                      data-product-action="cart" data-product-name="Set Energy">Agregar al carrito</button>
-                    <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost"
-                      type="button" data-product-action="buy" data-product-name="Set Energy">Comprar ahora</button>
+                      data-product-action="cart" data-product-name="Set Energy">Comprar ahora</button>
+                    <button class="btn btn--secondary btn--sm hf-product-item__cta"
+                      type="button" data-product-action="buy" data-product-name="Set Energy">Ver detalle</button>
                   </div>
                 </div>
               </article>
@@ -6726,8 +6709,8 @@
               </div>
               <div class="card__bd">
                 <div class="row">
-                  <button class="btn btn--primary">Comprar ahora</button>
-                  <button class="btn btn--secondary">Agregar al carrito</button>
+                  <button class="btn btn--primary">Ver detalle</button>
+                  <button class="btn btn--secondary">Comprar ahora</button>
                   <button class="btn btn--ghost">Ver más</button>
                   <button class="btn btn--danger">Eliminar</button>
                 </div>
@@ -7218,7 +7201,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
 
@@ -7258,7 +7241,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
 
@@ -7293,7 +7276,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
 
@@ -7328,7 +7311,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
 
@@ -7363,7 +7346,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
 
@@ -7395,7 +7378,7 @@
                       </div>
                     </div>
                     <div class="hf-card__footer">
-                      <button class="btn btn--secondary btn--sm">Agregar al carrito</button>
+                      <button class="btn btn--secondary btn--sm">Comprar ahora</button>
                     </div>
                   </article>
                 </div>
@@ -7626,8 +7609,8 @@
                       Transferencia</span></p>
                 </div>
                 <div class="hf-product-item__actions">
-                  <button class="btn btn--primary btn--sm hf-product-item__cta">Agregar al carrito</button>
-                  <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost">Quick
+                  <button class="btn btn--primary btn--sm hf-product-item__cta">Comprar ahora</button>
+                  <button class="btn btn--secondary btn--sm hf-product-item__cta">Quick
                     shop</button>
                 </div>
               </div>
@@ -7664,8 +7647,8 @@
                       Transferencia</span></p>
                 </div>
                 <div class="hf-product-item__actions">
-                  <button class="btn btn--primary btn--sm hf-product-item__cta">Agregar al carrito</button>
-                  <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost">Quick
+                  <button class="btn btn--primary btn--sm hf-product-item__cta">Comprar ahora</button>
+                  <button class="btn btn--secondary btn--sm hf-product-item__cta">Quick
                     shop</button>
                 </div>
               </div>
@@ -7701,8 +7684,8 @@
                       Transferencia</span></p>
                 </div>
                 <div class="hf-product-item__actions">
-                  <button class="btn btn--primary btn--sm hf-product-item__cta">Agregar al carrito</button>
-                  <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost">Quick
+                  <button class="btn btn--primary btn--sm hf-product-item__cta">Comprar ahora</button>
+                  <button class="btn btn--secondary btn--sm hf-product-item__cta">Quick
                     shop</button>
                 </div>
               </div>
@@ -7739,8 +7722,8 @@
                       Transferencia</span></p>
                 </div>
                 <div class="hf-product-item__actions">
-                  <button class="btn btn--primary btn--sm hf-product-item__cta">Agregar al carrito</button>
-                  <button class="btn btn--secondary btn--sm hf-product-item__cta hf-product-item__cta--ghost">Quick
+                  <button class="btn btn--primary btn--sm hf-product-item__cta">Comprar ahora</button>
+                  <button class="btn btn--secondary btn--sm hf-product-item__cta">Quick
                     shop</button>
                 </div>
               </div>
@@ -7981,16 +7964,16 @@
           <div class="menu-drawer__social" aria-label="Redes sociales"
             style="justify-content: flex-start; margin-top: 16px;">
             <a href="#" aria-label="Instagram">
-              <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
+              <img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="Instagram">
             </a>
             <a href="#" aria-label="Facebook">
-              <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook">
+              <img src="https://cdn.simpleicons.org/facebook/FFFFFF" alt="Facebook">
             </a>
             <a href="#" aria-label="TikTok">
-              <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok">
+              <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok">
             </a>
             <a href="#" aria-label="Spotify">
-              <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify">
+              <img src="https://cdn.simpleicons.org/spotify/FFFFFF" alt="Spotify">
             </a>
           </div>
         </div>
@@ -8604,6 +8587,11 @@
     }
   </script>
 
+  <script src="design-system/components/marquee/marquee.js"></script>
+  <script src="design-system/components/carousel/carousel.js"></script>
+  <script src="design-system/components/video-hero/video-hero.js"></script>
+  <script src="design-system/components/lightbox/lightbox.js"></script>
+  <script src="design-system/components/banner/banner.js"></script>
   <script src="design-system/components/info-banner/info-banner.js"></script>
   <script src="design-system/components/trust-bar/trust-bar.js"></script>
 </body>
