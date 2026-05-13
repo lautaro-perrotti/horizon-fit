@@ -25,6 +25,17 @@
   border-radius: 0;
 }
 
+@media (min-width: 1024px) {
+  .hf-video-hero--full {
+    min-height: 70vh !important;
+    max-height: 70vh !important;
+    height: 70vh !important;
+  }
+  .hf-video-hero--full .hf-video-hero__media {
+    object-position: center 15%;
+  }
+}
+
 .hf-video-hero--tall {
   min-height: 600px;
 }
