@@ -2079,12 +2079,22 @@
     }
 
     .hf-pdp-view {
-      width: min(100%, 980px);
+      width: min(100%, 1200px);
       margin: 0 auto;
       padding: 16px var(--page-gutter) 48px;
       background: var(--surface);
       --hf-pdp-sep: var(--border);
       --hf-pdp-sep-w: 0.5px;
+    }
+
+    @media (min-width: 1024px) {
+      .hf-pdp-view {
+        width: calc(100% - 128px);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+      }
     }
 
     .hf-pdp-view__layout {
@@ -2640,11 +2650,11 @@
 
     @media (min-width:1380px) {
       .hf-pdp-view {
-        width: 100%;
-        max-width: none;
-        margin: 0;
+        width: calc(100% - 128px);
+        max-width: 1400px;
+        margin: 0 auto;
         padding-top: 1.5rem;
-        padding-inline: 2.125rem;
+        padding-inline: 0;
       }
 
       .hf-pdp-view__layout {
