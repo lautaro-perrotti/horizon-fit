@@ -3438,7 +3438,7 @@
     /* Desktop-only complete set slider (1 image per view) */
     .hf-set-desktop-slider {
       background: var(--surface);
-      padding: 16px 0 72px;
+      padding: 16px 0 32px;
     }
 
     .hf-set-desktop-slider .container {
@@ -3480,8 +3480,7 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       background: var(--surface-2);
-      flex: 1;
-      min-height: 420px;
+      height: 540px;
     }
 
     .hf-set-desktop-slider__arrow {
@@ -3568,7 +3567,6 @@
     }
 
     .hf-set-desktop-slider__price {
-      margin-top: auto;
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -4151,11 +4149,6 @@
       <div class="hf-marquee__content">
         <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">Envío gratis a todo el país</span>
-        <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">Cambios y devoluciones sin cargo</span>
-        <span class="hf-marquee__separator" aria-hidden="true"></span>
-        <span class="hf-marquee__item">15% OFF con transferencia</span>
       </div>
     </div>
   </div>
@@ -5775,6 +5768,8 @@
             });
             view.querySelectorAll('[data-product-panel]').forEach(function (panel) {
               panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === target);
+            });
+          });
         });
         renderProductImage();
       }
@@ -6002,7 +5997,8 @@
       updateOverlayTop();
       updateControls();
     });
-  </script>
+  })();
+</script>
 
   <!-- COMPLETE SET DESKTOP SLIDER -->
   <section class="hf-set-desktop-slider" id="conjuntos-desktop-slider">
