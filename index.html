@@ -2792,6 +2792,78 @@
       .hf-pdp-look__visual {
         min-height: 45rem;
       }
+      
+      @media (max-width:1379px) {
+      .hf-pdp-look__visual {
+        order: -1;
+      }
+    }
+
+    /* -----------------------------
+        COLLECTION VIEW STYLES
+      ------------------------------*/
+    .hf-collection-view {
+      padding: 3rem var(--page-gutter) 6rem;
+      background: var(--surface);
+    }
+
+    .hf-collection-view__header {
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .hf-collection-view__title {
+      font-family: 'BlauerNue', var(--font-sans) !important;
+      font-size: clamp(32px, 6vw, 56px);
+      font-weight: 900 !important;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .hf-collection-view__subtitle {
+      font-size: clamp(14px, 1.5vw, 18px);
+      color: var(--muted);
+      max-width: 60ch;
+      margin: 0;
+    }
+
+    .hf-collection-view__grid {
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 1380px) {
+      .hf-collection-view {
+        padding-inline: 2.125rem;
+      }
+      
+      .hf-collection-view__grid {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 2rem;
+        row-gap: 3.5rem;
+      }
+    }
+
+    body.hf-collection-mode> :not(.nav):not(.hf-collection-view):not(#topMarquee):not(main):not(.overlay):not(.modal):not(.drawer):not(.toasts):not(.tooltip) {
+      display: none !important;
+    }
+
+    body.hf-collection-mode>main {
+      display: block !important;
+    }
+
+    body.hf-collection-mode>main> :not(.hf-collection-view):not(.footer) {
+      display: none !important;
+    }
+
+    body.hf-collection-mode {
+      padding-top: calc(var(--nav-h) + var(--announce-h));
+      background: var(--surface);
+    }
+
+    body.hf-collection-mode .nav {
+      top: var(--announce-h);
     }
 
     @media (max-width:1379px) {
@@ -3397,6 +3469,8 @@
 
     .hf-set-desktop-slider__media-col {
       min-width: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .hf-set-desktop-slider__viewport {
@@ -3406,7 +3480,8 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       background: var(--surface-2);
-      height: clamp(180px, 26vw, 420px);
+      flex: 1;
+      min-height: 420px;
     }
 
     .hf-set-desktop-slider__arrow {
@@ -4050,6 +4125,7 @@
       <!-- Menu hamburguesa -->
       <div class="menu" role="menu" aria-hidden="true" id="menu" style="display:none;">
         <div class="menu__grid">
+          <a role="menuitem" href="index.html?view=collection">Colección completa</a>
           <a role="menuitem" href="#productGrid1">Productos destacados</a>
           <a role="menuitem" href="#fullSlider">Conjuntos destacados</a>
           <a role="menuitem" href="#homeCategories">Compra por categoría</a>
@@ -4095,11 +4171,6 @@
     <div class="hf-video-hero__overlay hf-video-hero__overlay--gradient"></div>
     <div class="hf-video-hero__content">
       <span class="badge badge--primary hf-video-hero__badge" style="margin-bottom: 24px; padding: 10px 20px; font-size: 14px;">NUEVA COLECCIÓN</span>
-      <h1 class="hf-video-hero__title" style="margin-bottom: 40px; font-weight: 900; line-height: 1.1; letter-spacing: -0.04em;">CRUZÁ TUS LÍMITES,<br>MÁS ALLÁ DEL HORIZONTE</h1>
-      <div class="hf-video-hero__actions" style="display: flex; gap: 20px; justify-content: center;">
-        <a href="#productGrid1" class="btn btn--primary btn--lg">Comprar ahora</a>
-        <a href="#fullSlider" class="btn btn--secondary btn--lg">Ver conjuntos</a>
-      </div>
     </div>
   </section>
 
@@ -5382,336 +5453,398 @@
   <script>
     (function () {
       var pageParams = new URLSearchParams(window.location.search);
-      var isProductPage = pageParams.get('view') === 'product' || pageParams.has('name') || pageParams.has('images');
-      if (!isProductPage) return;
+      var viewParam = pageParams.get('view');
 
-      var fallbackImages = [
-        'https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
-        'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
-        'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
-        'https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
-        'https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1'
-      ];
-      var images = (pageParams.get('images') || '').split('|').filter(Boolean);
-      if (!images.length) images = fallbackImages;
-
-      var productName = pageParams.get('name') || 'Producto Horizon Fit';
-      var price = pageParams.get('price') || '$54.990 ARS';
-      var compare = pageParams.get('compare') || '';
-      var installments = pageParams.get('installments') || '6 cuotas sin interés';
-      var transfer = pageParams.get('transfer') || '';
-      var activeIndex = 0;
-
-      var view = document.createElement('section');
-      view.className = 'hf-pdp-view';
-      view.setAttribute('role', 'main');
-      view.innerHTML =
-        '<div class="hf-pdp-view__layout">' +
-        '<section class="hf-pdp-view__media" aria-label="Fotos del producto">' +
-        '<div class="hf-pdp-view__main" data-product-main>' +
-        '<img data-product-main-image src="" alt="">' +
-        '</div>' +
-        '<div class="hf-pdp-view__thumbs" data-product-thumbs aria-label="Miniaturas"></div>' +
-        '</section>' +
-        '<section class="hf-pdp-view__info" aria-label="Información del producto">' +
-        '<p class="hf-pdp-view__kicker">Seamless collection</p>' +
-        '<h1 class="hf-pdp-view__title"></h1>' +
-        '<div class="hf-pdp-view__pricing">' +
-        '<div class="hf-pdp-view__price-row">' +
-        '<span class="hf-pdp-view__price"></span>' +
-        '<span class="hf-pdp-view__compare"></span>' +
-        '</div>' +
-        '<p class="hf-pdp-view__copy" data-product-installments></p>' +
-        '<p class="hf-pdp-view__copy" data-product-transfer></p>' +
-        '</div>' +
-        '<div class="hf-pdp-view__option-head"><span>Talle: <strong data-product-size-label>S</strong></span><a href="#" data-product-size-guide>Tabla de talles</a></div>' +
-        '<div class="hf-pdp-view__sizes" aria-label="Seleccionar talle">' +
-        '<button class="hf-pdp-view__size" type="button" aria-pressed="true">S</button>' +
-        '<button class="hf-pdp-view__size" type="button" aria-pressed="false">M</button>' +
-        '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
-        '</div>' +
-        '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
-        '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
-        '<div class="hf-pdp-view__actions">' +
-        '<button class="btn btn--primary hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +
-        '<button class="btn btn--secondary hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
-        '</div>' +
-        '</section>' +
-        '<section class="hf-pdp-view__details" aria-label="Detalle del producto">' +
-        '<div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">' +
-        '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>' +
-        '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="care">Lavado y cuidado</button>' +
-        '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>' +
-        '</div>' +
-        '<div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">' +
-        '<h2>Seamless</h2>' +
-        '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para potenciar tu figura y acompañarte en cada movimiento sin perder estilo ni confort.</p>' +
-        '<p>Su calce anatómico ofrece soporte justo y estructura.</p>' +
-        '<p><em>Sin tazas.</em></p>' +
-        '<ul>' +
-        '<li>- <strong>Composición:</strong> Tejido de punto 94% nylon · 6% elastano</li>' +
-        '<li>- Tejido seamless para comodidad y soporte evitando el roce.</li>' +
-        '<li>- Ajuste suave con elasticidad para entrenamiento y uso diario.</li>' +
-        '</ul>' +
-        '<p>VIDEO - <a href="#">Como cuidar tus prendas SEAMLESS</a></p>' +
-        '</div>' +
-        '<div class="hf-pdp-view__panel" data-product-panel="care" role="tabpanel">' +
-        '<h2>Lavado</h2>' +
-        '<p>Lavar a mano o en ciclo delicado con agua fría. Usar jabón neutro y evitar suavizantes para conservar la elasticidad del tejido.</p>' +
-        '<ul>' +
-        '<li>- No usar lavandina.</li>' +
-        '<li>- No centrifugar en caliente.</li>' +
-        '<li>- Secar a la sombra y no planchar sobre estampas o avíos.</li>' +
-        '</ul>' +
-        '</div>' +
-        '<div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">' +
-        '<h2>Talles</h2>' +
-        '<table class="hf-pdp-view__size-table">' +
-        '<thead><tr><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>' +
-        '<tbody><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr></tbody>' +
-        '</table>' +
-        '</div>' +
-        '</section>' +
-        '</div>' +
-        '<section class="hf-pdp-look" aria-label="El look completo">' +
-        '<div class="hf-pdp-look__panel">' +
-        '<p class="hf-pdp-look__eyebrow">Styling edit</p>' +
-        '<h2 class="hf-pdp-look__title">El look completo</h2>' +
-        '<div class="hf-pdp-look__list" data-product-look-list></div>' +
-        '</div>' +
-        '<div class="hf-pdp-look__visual">' +
-        '<span class="hf-pdp-look__tag" data-product-look-tag></span>' +
-        '<img class="hf-pdp-look__hero" data-product-look-image src="" alt="">' +
-        '</div>' +
-        '</section>';
-
-      var mainRoot = document.querySelector('main');
-      var footer = mainRoot ? mainRoot.querySelector('.footer') : null;
-      if (mainRoot) {
-        mainRoot.insertBefore(view, footer || mainRoot.firstChild);
-      } else {
-        document.body.insertBefore(view, document.body.firstChild);
-      }
-      document.body.classList.add('hf-product-mode');
-      document.title = productName + ' | Horizon Fit';
-
-      var mainImage = view.querySelector('[data-product-main-image]');
-      var thumbs = view.querySelector('[data-product-thumbs]');
-      var colors = view.querySelector('[data-product-colors]');
-      var title = view.querySelector('.hf-pdp-view__title');
-      var priceEl = view.querySelector('.hf-pdp-view__price');
-      var compareEl = view.querySelector('.hf-pdp-view__compare');
-      var installmentsEl = view.querySelector('[data-product-installments]');
-      var transferEl = view.querySelector('[data-product-transfer]');
-      var mainMedia = view.querySelector('[data-product-main]');
-      var sizeLabel = view.querySelector('[data-product-size-label]');
-      var lookList = view.querySelector('[data-product-look-list]');
-      var lookImage = view.querySelector('[data-product-look-image]');
-      var lookTag = view.querySelector('[data-product-look-tag]');
-
-      function paintProductNumbers(element, value) {
-        if (!element) return;
-        element.textContent = '';
-        String(value || '').split(/(\$?\d[\d.,]*(?:\s*%|%\s*OFF)?)/g).forEach(function (part) {
-          if (!part) return;
-          var node = document.createElement(/\d/.test(part) ? 'span' : 'span');
-          node.textContent = part;
-          if (/\d/.test(part)) node.className = 'hf-pdp-view__number';
-          element.appendChild(node);
-        });
+      if (viewParam === 'product' || pageParams.has('name')) {
+        renderProductPage(pageParams);
+      } else if (viewParam === 'collection') {
+        renderCollectionPage();
       }
 
-      function escapeHtml(value) {
-        return String(value || '').replace(/[&<>"']/g, function (char) {
-          return ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-          })[char];
-        });
-      }
+      function renderProductPage(pageParams) {
+        var fallbackImages = [
+          'https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+          'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+          'https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+          'https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1',
+          'https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1'
+        ];
+        var images = (pageParams.get('images') || '').split('|').filter(Boolean);
+        if (!images.length) images = fallbackImages;
 
-      function buildProductUrlFromCard(item) {
-        if (!item) return '#';
-        var titleEl = item.querySelector('.hf-product-item__title');
-        var priceNode = item.querySelector('.hf-product-item__price');
-        var compareNode = item.querySelector('.hf-product-item__price-original');
-        var installmentsNode = item.querySelector('.hf-product-item__installments');
-        var transferNode = item.querySelector('.hf-product-item__transfer');
-        var imageEls = item.querySelectorAll('.hf-product-item__slide img');
-        if (!titleEl || !imageEls.length) return '#';
+        var productName = pageParams.get('name') || 'Producto Horizon Fit';
+        var price = pageParams.get('price') || '$54.990 ARS';
+        var compare = pageParams.get('compare') || '';
+        var installments = pageParams.get('installments') || '6 cuotas sin interés';
+        var transfer = pageParams.get('transfer') || '';
+        var activeIndex = 0;
 
-        var productImages = Array.prototype.map.call(imageEls, function (img) {
-          return img.getAttribute('src');
-        }).filter(Boolean);
+        var view = document.createElement('section');
+        view.className = 'hf-pdp-view';
+        view.setAttribute('role', 'main');
+        view.innerHTML =
+          '<div class="hf-pdp-view__layout">' +
+          '<section class="hf-pdp-view__media" aria-label="Fotos del producto">' +
+          '<div class="hf-pdp-view__main" data-product-main>' +
+          '<img data-product-main-image src="" alt="">' +
+          '</div>' +
+          '<div class="hf-pdp-view__thumbs" data-product-thumbs aria-label="Miniaturas"></div>' +
+          '</section>' +
+          '<section class="hf-pdp-view__info" aria-label="Información del producto">' +
+          '<p class="hf-pdp-view__kicker">Seamless collection</p>' +
+          '<h1 class="hf-pdp-view__title"></h1>' +
+          '<div class="hf-pdp-view__pricing">' +
+          '<div class="hf-pdp-view__price-row">' +
+          '<span class="hf-pdp-view__price"></span>' +
+          '<span class="hf-pdp-view__compare"></span>' +
+          '</div>' +
+          '<p class="hf-pdp-view__copy" data-product-installments></p>' +
+          '<p class="hf-pdp-view__copy" data-product-transfer></p>' +
+          '</div>' +
+          '<div class="hf-pdp-view__option-head"><span>Talle: <strong data-product-size-label>S</strong></span><a href="#" data-product-size-guide>Tabla de talles</a></div>' +
+          '<div class="hf-pdp-view__sizes" aria-label="Seleccionar talle">' +
+          '<button class="hf-pdp-view__size" type="button" aria-pressed="true">S</button>' +
+          '<button class="hf-pdp-view__size" type="button" aria-pressed="false">M</button>' +
+          '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
+          '</div>' +
+          '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
+          '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
+          '<div class="hf-pdp-view__actions">' +
+          '<button class="btn btn--primary hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +
+          '<button class="btn btn--secondary hf-pdp-view__button hf-pdp-view__button--secondary" type="button">Comprar ahora</button>' +
+          '</div>' +
+          '</section>' +
+          '<section class="hf-pdp-view__details" aria-label="Detalle del producto">' +
+          '<div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">' +
+          '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>' +
+          '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="care">Lavado y cuidado</button>' +
+          '<button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>' +
+          '</div>' +
+          '<div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">' +
+          '<h2>Seamless</h2>' +
+          '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para potenciar tu figura y acompañarte en cada movimiento sin perder estilo ni confort.</p>' +
+          '<p>Su calce anatómico ofrece soporte justo y estructura.</p>' +
+          '<p><em>Sin tazas.</em></p>' +
+          '<ul>' +
+          '<li>- <strong>Composición:</strong> Tejido de punto 94% nylon · 6% elastano</li>' +
+          '<li>- Tejido seamless para comodidad y soporte evitando el roce.</li>' +
+          '<li>- Ajuste suave con elasticidad para entrenamiento y uso diario.</li>' +
+          '</ul>' +
+          '<p>VIDEO - <a href="#">Como cuidar tus prendas SEAMLESS</a></p>' +
+          '</div>' +
+          '<div class="hf-pdp-view__panel" data-product-panel="care" role="tabpanel">' +
+          '<h2>Lavado</h2>' +
+          '<p>Lavar a mano o en ciclo delicado con agua fría. Usar jabón neutro y evitar suavizantes para conservar la elasticidad del tejido.</p>' +
+          '<ul>' +
+          '<li>- No usar lavandina.</li>' +
+          '<li>- No centrifugar en caliente.</li>' +
+          '<li>- Secar a la sombra y no planchar sobre estampas o avíos.</li>' +
+          '</ul>' +
+          '</div>' +
+          '<div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">' +
+          '<h2>Talles</h2>' +
+          '<table class="hf-pdp-view__size-table">' +
+          '<thead><tr><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>' +
+          '<tbody><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr></tbody>' +
+          '</table>' +
+          '</div>' +
+          '</section>' +
+          '</div>' +
+          '<section class="hf-pdp-look" aria-label="El look completo">' +
+          '<div class="hf-pdp-look__panel">' +
+          '<p class="hf-pdp-look__eyebrow">Styling edit</p>' +
+          '<h2 class="hf-pdp-look__title">El look completo</h2>' +
+          '<div class="hf-pdp-look__list" data-product-look-list></div>' +
+          '</div>' +
+          '<div class="hf-pdp-look__visual">' +
+          '<span class="hf-pdp-look__tag" data-product-look-tag></span>' +
+          '<img class="hf-pdp-look__hero" data-product-look-image src="" alt="">' +
+          '</div>' +
+          '</section>';
 
-        var params = new URLSearchParams({
-          name: titleEl.textContent.trim(),
-          price: priceNode ? priceNode.textContent.trim() : '',
-          compare: compareNode ? compareNode.textContent.trim() : '',
-          installments: installmentsNode ? installmentsNode.textContent.trim() : '',
-          transfer: transferNode ? transferNode.textContent.trim() : '',
-          images: productImages.join('|')
-        });
-        params.set('view', 'product');
-        return 'index.html?' + params.toString();
-      }
-
-      function renderLookComplete() {
-        if (!lookList) return;
-        var relatedCards = Array.prototype.filter.call(document.querySelectorAll('.hf-product-item--slider'), function (item) {
-          var itemTitle = item.querySelector('.hf-product-item__title');
-          return itemTitle && itemTitle.textContent.trim() !== productName;
-        }).slice(0, 3);
-
-        if (!relatedCards.length) {
-          relatedCards = Array.prototype.slice.call(document.querySelectorAll('.hf-product-item--slider'), 0, 3);
-        }
-
-        lookList.innerHTML = relatedCards.map(function (item) {
-          var itemTitle = item.querySelector('.hf-product-item__title');
-          var itemPrice = item.querySelector('.hf-product-item__price');
-          var itemImage = item.querySelector('.hf-product-item__slide img');
-          var productUrl = buildProductUrlFromCard(item);
-          return '' +
-            '<article class="hf-pdp-look__item">' +
-            '<a class="hf-pdp-look__thumb" href="' + escapeHtml(productUrl) + '" aria-label="Ver ' + escapeHtml(itemTitle ? itemTitle.textContent.trim() : 'producto') + '">' +
-            '<img src="' + escapeHtml(itemImage ? itemImage.getAttribute('src') : '') + '" alt="">' +
-            '</a>' +
-            '<div class="hf-pdp-look__meta">' +
-            '<h3 class="hf-pdp-look__name">' + escapeHtml(itemTitle ? itemTitle.textContent.trim() : 'Producto Horizon Fit') + '</h3>' +
-            '<p class="hf-pdp-look__price">' + escapeHtml(itemPrice ? itemPrice.textContent.trim() : '') + '</p>' +
-            '<a class="hf-pdp-look__button" href="' + escapeHtml(productUrl) + '">Comprar</a>' +
-            '</div>' +
-            '</article>';
-        }).join('');
-      }
-
-      title.textContent = productName;
-      priceEl.textContent = price;
-      compareEl.textContent = compare;
-      compareEl.hidden = !compare;
-      paintProductNumbers(installmentsEl, installments);
-      paintProductNumbers(transferEl, transfer);
-      transferEl.hidden = !transfer;
-      if (lookTag) lookTag.textContent = productName;
-      renderLookComplete();
-
-      function renderProductImage() {
-        var nextSrc = images[activeIndex];
-        if (mainImage.getAttribute('src') !== nextSrc) {
-          mainMedia.classList.add('is-changing');
-          window.setTimeout(function () {
-            mainImage.onload = function () {
-              mainMedia.classList.remove('is-changing');
-              mainImage.onload = null;
-              mainImage.onerror = null;
-            };
-            mainImage.onerror = function () {
-              mainMedia.classList.remove('is-changing');
-              mainImage.onload = null;
-              mainImage.onerror = null;
-            };
-            mainImage.src = nextSrc;
-            mainImage.alt = productName + ' foto ' + (activeIndex + 1);
-            if (mainImage.complete) {
-              mainMedia.classList.remove('is-changing');
-              mainImage.onload = null;
-              mainImage.onerror = null;
-            }
-          }, 110);
+        var mainRoot = document.querySelector('main');
+        var footer = mainRoot ? mainRoot.querySelector('.footer') : null;
+        if (mainRoot) {
+          mainRoot.insertBefore(view, footer || mainRoot.firstChild);
         } else {
-          mainImage.alt = productName + ' foto ' + (activeIndex + 1);
+          document.body.insertBefore(view, document.body.firstChild);
         }
-        if (lookImage) {
-          lookImage.src = nextSrc;
-          lookImage.alt = productName + ' look principal';
-        }
-        Array.prototype.forEach.call(thumbs.children, function (button, i) {
-          button.setAttribute('aria-current', i === activeIndex ? 'true' : 'false');
-        });
-      }
+        document.body.classList.add('hf-product-mode');
+        document.title = productName + ' | Horizon Fit';
 
-      function goToProductImage(index) {
-        activeIndex = (index + images.length) % images.length;
+        var mainImage = view.querySelector('[data-product-main-image]');
+        var thumbs = view.querySelector('[data-product-thumbs]');
+        var colors = view.querySelector('[data-product-colors]');
+        var title = view.querySelector('.hf-pdp-view__title');
+        var priceEl = view.querySelector('.hf-pdp-view__price');
+        var compareEl = view.querySelector('.hf-pdp-view__compare');
+        var installmentsEl = view.querySelector('[data-product-installments]');
+        var transferEl = view.querySelector('[data-product-transfer]');
+        var mainMedia = view.querySelector('[data-product-main]');
+        var sizeLabel = view.querySelector('[data-product-size-label]');
+        var lookList = view.querySelector('[data-product-look-list]');
+        var lookImage = view.querySelector('[data-product-look-image]');
+        var lookTag = view.querySelector('[data-product-look-tag]');
+
+        function paintProductNumbers(element, value) {
+          if (!element) return;
+          element.textContent = '';
+          String(value || '').split(/(\$?\d[\d.,]*(?:\s*%|%\s*OFF)?)/g).forEach(function (part) {
+            if (!part) return;
+            var node = document.createElement('span');
+            node.textContent = part;
+            if (/\d/.test(part)) node.className = 'hf-pdp-view__number';
+            element.appendChild(node);
+          });
+        }
+
+        function escapeHtml(value) {
+          return String(value || '').replace(/[&<>"']/g, function (char) {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+          });
+        }
+
+        function buildProductUrlFromCard(item) {
+          if (!item) return '#';
+          var titleEl = item.querySelector('.hf-product-item__title');
+          var priceNode = item.querySelector('.hf-product-item__price');
+          var compareNode = item.querySelector('.hf-product-item__price-original');
+          var installmentsNode = item.querySelector('.hf-product-item__installments');
+          var transferNode = item.querySelector('.hf-product-item__transfer');
+          var imageEls = item.querySelectorAll('.hf-product-item__slide img');
+          if (!titleEl || !imageEls.length) return '#';
+
+          var productImages = Array.prototype.map.call(imageEls, function (img) {
+            return img.getAttribute('src');
+          }).filter(Boolean);
+
+          var params = new URLSearchParams({
+            name: titleEl.textContent.trim(),
+            price: priceNode ? priceNode.textContent.trim() : '',
+            compare: compareNode ? compareNode.textContent.trim() : '',
+            installments: installmentsNode ? installmentsNode.textContent.trim() : '',
+            transfer: transferNode ? transferNode.textContent.trim() : '',
+            images: productImages.join('|')
+          });
+          params.set('view', 'product');
+          return 'index.html?' + params.toString();
+        }
+
+        function renderLookComplete() {
+          if (!lookList) return;
+          var relatedCards = Array.prototype.filter.call(document.querySelectorAll('.hf-product-item--slider'), function (item) {
+            var itemTitle = item.querySelector('.hf-product-item__title');
+            return itemTitle && itemTitle.textContent.trim() !== productName;
+          }).slice(0, 3);
+
+          if (!relatedCards.length) {
+            relatedCards = Array.prototype.slice.call(document.querySelectorAll('.hf-product-item--slider'), 0, 3);
+          }
+
+          lookList.innerHTML = relatedCards.map(function (item) {
+            var itemTitle = item.querySelector('.hf-product-item__title');
+            var itemPrice = item.querySelector('.hf-product-item__price');
+            var itemImage = item.querySelector('.hf-product-item__slide img');
+            var productUrl = buildProductUrlFromCard(item);
+            return '' +
+              '<article class="hf-pdp-look__item">' +
+              '<a class="hf-pdp-look__thumb" href="' + escapeHtml(productUrl) + '" aria-label="Ver ' + escapeHtml(itemTitle ? itemTitle.textContent.trim() : 'producto') + '">' +
+              '<img src="' + escapeHtml(itemImage ? itemImage.getAttribute('src') : '') + '" alt="">' +
+              '</a>' +
+              '<div class="hf-pdp-look__meta">' +
+              '<h3 class="hf-pdp-look__name">' + escapeHtml(itemTitle ? itemTitle.textContent.trim() : 'Producto Horizon Fit') + '</h3>' +
+              '<p class="hf-pdp-look__price">' + escapeHtml(itemPrice ? itemPrice.textContent.trim() : '') + '</p>' +
+              '<a class="hf-pdp-look__button" href="' + escapeHtml(productUrl) + '">Comprar</a>' +
+              '</div>' +
+              '</article>';
+          }).join('');
+        }
+
+        title.textContent = productName;
+        priceEl.textContent = price;
+        compareEl.textContent = compare;
+        compareEl.hidden = !compare;
+        paintProductNumbers(installmentsEl, installments);
+        paintProductNumbers(transferEl, transfer);
+        transferEl.hidden = !transfer;
+        if (lookTag) lookTag.textContent = productName;
+        renderLookComplete();
+
+        function renderProductImage() {
+          var nextSrc = images[activeIndex];
+          if (mainImage.getAttribute('src') !== nextSrc) {
+            mainMedia.classList.add('is-changing');
+            window.setTimeout(function () {
+              mainImage.onload = function () {
+                mainMedia.classList.remove('is-changing');
+                mainImage.onload = null;
+                mainImage.onerror = null;
+              };
+              mainImage.onerror = function () {
+                mainMedia.classList.remove('is-changing');
+                mainImage.onload = null;
+                mainImage.onerror = null;
+              };
+              mainImage.src = nextSrc;
+              mainImage.alt = productName + ' foto ' + (activeIndex + 1);
+              if (mainImage.complete) {
+                mainMedia.classList.remove('is-changing');
+                mainImage.onload = null;
+                mainImage.onerror = null;
+              }
+            }, 110);
+          } else {
+            mainImage.alt = productName + ' foto ' + (activeIndex + 1);
+          }
+          if (lookImage) {
+            lookImage.src = nextSrc;
+            lookImage.alt = productName + ' look principal';
+          }
+          Array.prototype.forEach.call(thumbs.children, function (button, i) {
+            button.setAttribute('aria-current', i === activeIndex ? 'true' : 'false');
+          });
+        }
+
+        function goToProductImage(index) {
+          activeIndex = (index + images.length) % images.length;
+          renderProductImage();
+        }
+
+        images.forEach(function (src, index) {
+          var button = document.createElement('button');
+          button.className = 'hf-pdp-view__thumb';
+          button.type = 'button';
+          button.setAttribute('aria-label', 'Ver foto ' + (index + 1));
+          button.style.setProperty('--thumb-delay', (index * 70) + 'ms');
+          button.innerHTML = '<img src="' + src + '" alt="">';
+          button.addEventListener('click', function () { goToProductImage(index); });
+          thumbs.appendChild(button);
+        });
+
+        images.slice(0, 4).forEach(function (src, index) {
+          var button = document.createElement('button');
+          button.className = 'hf-pdp-view__color';
+          button.type = 'button';
+          button.setAttribute('aria-label', 'Seleccionar color ' + (index + 1));
+          button.setAttribute('aria-current', index === 0 ? 'true' : 'false');
+          button.innerHTML = '<img src="' + src + '" alt="">';
+          button.addEventListener('click', function () {
+            Array.prototype.forEach.call(colors.children, function (item) {
+              item.setAttribute('aria-current', 'false');
+            });
+            button.setAttribute('aria-current', 'true');
+            goToProductImage(index);
+          });
+          colors.appendChild(button);
+        });
+
+        var startX = null;
+        mainMedia.addEventListener('pointerdown', function (event) {
+          startX = event.clientX;
+        });
+        mainMedia.addEventListener('pointerup', function (event) {
+          if (startX === null) return;
+          var delta = event.clientX - startX;
+          startX = null;
+          if (Math.abs(delta) < 40) return;
+          goToProductImage(delta < 0 ? activeIndex + 1 : activeIndex - 1);
+        });
+
+        view.querySelectorAll('.hf-pdp-view__size').forEach(function (button) {
+          button.addEventListener('click', function () {
+            view.querySelectorAll('.hf-pdp-view__size').forEach(function (size) {
+              size.setAttribute('aria-pressed', 'false');
+            });
+            button.setAttribute('aria-pressed', 'true');
+            if (sizeLabel) sizeLabel.textContent = button.textContent.trim();
+          });
+        });
+
+        view.querySelector('[data-product-size-guide]')?.addEventListener('click', function (event) {
+          event.preventDefault();
+          var tab = view.querySelector('[data-product-tab="sizes"]');
+          tab?.click();
+          view.querySelector('.hf-pdp-view__details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        view.querySelectorAll('[data-product-tab]').forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            var target = tab.getAttribute('data-product-tab');
+            view.querySelectorAll('[data-product-tab]').forEach(function (item) {
+              item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
+            });
+            view.querySelectorAll('[data-product-panel]').forEach(function (panel) {
+              panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === target);
+        });
         renderProductImage();
       }
 
-      images.forEach(function (src, index) {
-        var button = document.createElement('button');
-        button.className = 'hf-pdp-view__thumb';
-        button.type = 'button';
-        button.setAttribute('aria-label', 'Ver foto ' + (index + 1));
-        button.style.setProperty('--thumb-delay', (index * 70) + 'ms');
-        button.innerHTML = '<img src="' + src + '" alt="">';
-        button.addEventListener('click', function () { goToProductImage(index); });
-        thumbs.appendChild(button);
-      });
+      function renderCollectionPage() {
+        var view = document.createElement('section');
+        view.className = 'hf-collection-view';
+        view.innerHTML =
+          '<div class="container">' +
+          '  <header class="hf-collection-view__header">' +
+          '    <h1 class="hf-collection-view__title">Nueva Colección</h1>' +
+          '    <p class="hf-collection-view__subtitle">Explorá nuestra línea seamless diseñada para el alto rendimiento.</p>' +
+          '  </header>' +
+          '  <div class="hf-collection" data-hf="collection">' +
+          '    <div class="hf-collection__filters" style="margin-bottom: 2rem;">' +
+          '      <div class="hf-collection__filter-group">' +
+          '        <button class="hf-filter-chip is-active" data-filter="all">Todos</button>' +
+          '        <button class="hf-filter-chip" data-filter="leggings">Calzas</button>' +
+          '        <button class="hf-filter-chip" data-filter="tops">Tops</button>' +
+          '        <button class="hf-filter-chip" data-filter="hoodies">Buzos</button>' +
+          '      </div>' +
+          '      <div class="hf-collection__sort">' +
+          '        <span class="hf-collection__sort-label">Ordenar:</span>' +
+          '        <select class="hf-collection__sort-select">' +
+          '          <option>Más recientes</option>' +
+          '          <option>Menor precio</option>' +
+          '          <option>Mayor precio</option>' +
+          '        </select>' +
+          '      </div>' +
+          '    </div>' +
+          '    <div class="hf-grid hf-grid--cols-3 hf-collection-view__grid" id="collectionGrid"></div>' +
+          '  </div>' +
+          '</div>';
 
-      images.slice(0, 4).forEach(function (src, index) {
-        var button = document.createElement('button');
-        button.className = 'hf-pdp-view__color';
-        button.type = 'button';
-        button.setAttribute('aria-label', 'Seleccionar color ' + (index + 1));
-        button.setAttribute('aria-current', index === 0 ? 'true' : 'false');
-        button.innerHTML = '<img src="' + src + '" alt="">';
-        button.addEventListener('click', function () {
-          Array.prototype.forEach.call(colors.children, function (item) {
-            item.setAttribute('aria-current', 'false');
+        var mainRoot = document.querySelector('main');
+        var footer = mainRoot ? mainRoot.querySelector('.footer') : null;
+        if (mainRoot) {
+          mainRoot.insertBefore(view, footer || mainRoot.firstChild);
+        }
+        document.body.classList.add('hf-collection-mode');
+        document.title = 'Colección | Horizon Fit';
+
+        var grid = view.querySelector('#collectionGrid');
+        // Get products from the featured sections
+        var baseProducts = Array.from(document.querySelectorAll('.section--featured-products .hf-product-item--slider')).slice(0, 12);
+        
+        if (!baseProducts.length) {
+          baseProducts = Array.from(document.querySelectorAll('.hf-product-item--slider')).slice(0, 12);
+        }
+
+        for (var i = 0; i < 12; i++) {
+          var original = baseProducts[i % baseProducts.length];
+          if (!original) continue;
+          var clone = original.cloneNode(true);
+          grid.appendChild(clone);
+        }
+
+        window.setTimeout(function() {
+          grid.querySelectorAll('.hf-product-item').forEach(function(item) {
+             item.addEventListener('click', function(e) {
+               if (e.target.closest('button, a')) return;
+               var url = buildProductUrlFromCard(item);
+               if (url && url !== '#') window.location.href = url;
+             });
           });
-          button.setAttribute('aria-current', 'true');
-          goToProductImage(index);
-        });
-        colors.appendChild(button);
-      });
+        }, 200);
+      }
 
-      var startX = null;
-      mainMedia.addEventListener('pointerdown', function (event) {
-        startX = event.clientX;
-      });
-      mainMedia.addEventListener('pointerup', function (event) {
-        if (startX === null) return;
-        var delta = event.clientX - startX;
-        startX = null;
-        if (Math.abs(delta) < 40) return;
-        goToProductImage(delta < 0 ? activeIndex + 1 : activeIndex - 1);
-      });
-
-      view.querySelectorAll('.hf-pdp-view__size').forEach(function (button) {
-        button.addEventListener('click', function () {
-          view.querySelectorAll('.hf-pdp-view__size').forEach(function (size) {
-            size.setAttribute('aria-pressed', 'false');
-          });
-          button.setAttribute('aria-pressed', 'true');
-          if (sizeLabel) sizeLabel.textContent = button.textContent.trim();
-        });
-      });
-
-      view.querySelector('[data-product-size-guide]')?.addEventListener('click', function (event) {
-        event.preventDefault();
-        var tab = view.querySelector('[data-product-tab="sizes"]');
-        tab?.click();
-        view.querySelector('.hf-pdp-view__details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      view.querySelectorAll('[data-product-tab]').forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          var target = tab.getAttribute('data-product-tab');
-          view.querySelectorAll('[data-product-tab]').forEach(function (item) {
-            item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
-          });
-          view.querySelectorAll('[data-product-panel]').forEach(function (panel) {
-            panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === target);
-          });
-        });
-      });
-
-      renderProductImage();
-    })();
-
-    document.querySelectorAll('.hf-product-item--slider').forEach(function (item) {
+      // Initial setup for existing products on the page
+      document.querySelectorAll('.hf-product-item--slider').forEach(function (item) {
       var imgs = item.querySelectorAll('.hf-product-item__slide img');
       if (!imgs || imgs.length < 2) return;
       var firstSrc = imgs[0].getAttribute('src');
