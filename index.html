@@ -6235,27 +6235,15 @@
       }
     }
 
-    /* Unified Desktop scale (0.9) for consistent premium dimensions */
+    /* Unified Fluid Desktop scale for consistent premium dimensions and perfect layout preservation */
     @media (min-width: 1024px) {
       #home-pdp-look .hf-pdp-look {
         padding: 0 !important;
         margin: 0;
-        transform: scale(0.9) !important;
+        --scale-factor: clamp(0.70, calc(0.70 + (0.90 - 0.70) * ((100vw - 1024px) / 356)), 0.90);
+        transform: scale(var(--scale-factor)) !important;
         transform-origin: center top !important;
-        margin-bottom: -78px !important;
-      }
-    }
-
-    /* Standard/Smaller Desktop Look adjustments (1024px to 1379px) to preserve focal point */
-    @media (min-width: 1024px) and (max-width: 1379px) {
-      #home-pdp-look .hf-pdp-look__visual {
-        width: 90% !important;
-      }
-      #home-pdp-look .hf-pdp-look__hero {
-        object-position: 68% center !important;
-      }
-      #home-pdp-look .hf-pdp-look__panel {
-        width: 24rem !important;
+        margin-bottom: calc(-780px * (1 - var(--scale-factor))) !important;
       }
     }
   </style>
