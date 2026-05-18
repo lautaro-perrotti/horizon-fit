@@ -463,7 +463,7 @@
 }
 
 .hf-product-grid--h-scroll .hf-product-item {
-  flex: 0 0 calc(25% - 12px);
+  flex: 0 0 calc(25vw - 68px);
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
