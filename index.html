@@ -2903,7 +2903,7 @@
           overflow-y: auto;
           padding-right: 12px;
           scrollbar-width: thin;
-          scrollbar-color: var(--hf-primary) transparent;
+          scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
         }
 
         .hf-pdp-look__list::-webkit-scrollbar {
@@ -2915,8 +2915,12 @@
         }
 
         .hf-pdp-look__list::-webkit-scrollbar-thumb {
-          background-color: var(--hf-primary);
+          background-color: rgba(0, 0, 0, 0.2);
           border-radius: 3px;
+        }
+
+        .hf-pdp-look__list::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(0, 0, 0, 0.4);
         }
 
         .hf-pdp-look__visual {
@@ -6250,7 +6254,7 @@
       <div class="hf-pdp-look__panel">
         <p class="hf-pdp-look__eyebrow">Styling edit</p>
         <h2 class="hf-pdp-look__title">El look completo</h2>
-        <div class="hf-pdp-look__list" data-product-look-list="">
+        <div class="hf-pdp-look__list" data-product-look-list="" tabindex="0" role="region" aria-label="Lista de productos del look completo">
           <article class="hf-pdp-look__item"><a class="hf-pdp-look__thumb"
               href="index.html?name=BLACK+HIGH+TOP&amp;price=%2454.990+ARS&amp;compare=%24109.990&amp;installments=6+cuotas+de%3A+%249.165&amp;transfer=%2446.742+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F3757376%2Fpexels-photo-3757376.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056723%2Fpexels-photo-4056723.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056535%2Fpexels-photo-4056535.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product"
               aria-label="Ver BLACK HIGH TOP"><img
