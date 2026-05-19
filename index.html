@@ -6262,11 +6262,71 @@
       }
 
       #home-pdp-look {
+        position: relative;
         padding-inline: 56px !important;
       }
 
       #conjuntos-mobile-carousel {
         display: none !important;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel {
+        position: relative;
+        overflow: visible;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__viewport {
+        overflow: hidden;
+        border-radius: 0;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__track {
+        gap: 0 !important;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__slide {
+        flex: 0 0 100%;
+        min-width: 100%;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__dots {
+        display: none !important;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
+        position: absolute;
+        top: 50%;
+        z-index: 20;
+        display: flex;
+        width: 24px;
+        height: 48px;
+        border: 0;
+        border-radius: 0;
+        background: rgba(0, 0, 0, 0.48);
+        color: #fff;
+        box-shadow: none;
+        padding: 0;
+        transform: translateY(-50%);
+        transition: none;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
+        background: rgba(0, 0, 0, 0.62);
+        transform: translateY(-50%);
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--prev {
+        left: -12px;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--next {
+        right: -12px;
+      }
+
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.6;
       }
     }
 
@@ -8910,6 +8970,159 @@
       if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1));
       dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
       render();
+    })();
+
+    (function initDesktopFeaturedSets() {
+      const root = $("#home-pdp-look");
+      if (!root) return;
+
+      const sourceLook = $(".hf-pdp-look", root);
+      if (!sourceLook) return;
+
+      const desktopSets = [
+        {
+          title: "Set Motion",
+          meta: "Top + calza / Compresion media",
+          image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Top Motion", price: "$34.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Motion", price: "$64.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Power",
+          meta: "Top + short / Liviano y elastico",
+          image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Sports Bra Energy", price: "$34.990 ARS", image: "https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Shorts Training", price: "$39.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Tank Fitted", price: "$29.990 ARS", image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Urban",
+          meta: "Buzo + calza / Athleisure diario",
+          image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Hoodie Oversize", price: "$89.990 ARS", image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Compresion", price: "$64.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Buzo Zip", price: "$94.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Focus",
+          meta: "Top + biker / Bajo impacto",
+          image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Black High Top", price: "$54.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Black High Legging", price: "$64.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Biker Short", price: "$29.990 ARS", image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Energy",
+          meta: "Top + short / Entrenamiento funcional",
+          image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Top Halter", price: "$25.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Short Running", price: "$39.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Bra Deportivo", price: "$29.990 ARS", image: "https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Yoga",
+          meta: "Studio suave / Soporte diario",
+          image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Tank Top Flow", price: "$44.990 ARS", image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Push Up", price: "$59.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Buzo Crop", price: "$69.990 ARS", image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Studio",
+          meta: "Crop + jogger / Post entrenamiento",
+          image: "https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Crop Top Arena", price: "$34.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Jogger Slim", price: "$84.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Oversize", price: "$44.990 ARS", image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Training",
+          meta: "Set completo / Alto rendimiento",
+          image: "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Set Entrenamiento", price: "$99.990 ARS", image: "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Jogger Classic", price: "$74.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        }
+      ];
+
+      function buildSetItemUrl(item) {
+        const params = new URLSearchParams({
+          name: item.name,
+          price: item.price,
+          compare: "",
+          installments: "",
+          transfer: "",
+          images: item.image,
+          view: "product"
+        });
+        return "index.html?" + params.toString();
+      }
+
+      function renderSetItem(item) {
+        const href = buildSetItemUrl(item);
+        return '' +
+          '<article class="hf-pdp-look__item">' +
+          '<a class="hf-pdp-look__thumb" href="' + escapeHtml(href) + '" aria-label="Ver ' + escapeHtml(item.name) + '">' +
+          '<img src="' + escapeHtml(item.image) + '" alt="">' +
+          '</a>' +
+          '<div class="hf-pdp-look__meta">' +
+          '<h3 class="hf-pdp-look__name">' + escapeHtml(item.name) + '</h3>' +
+          '<p class="hf-pdp-look__price">' + escapeHtml(item.price) + '</p>' +
+          '<a class="hf-pdp-look__button" href="' + escapeHtml(href) + '">Comprar</a>' +
+          '</div>' +
+          '</article>';
+      }
+
+      function renderSetSlide(set, index) {
+        return '' +
+          '<div class="hf-carousel__slide">' +
+          '<section class="hf-pdp-look" aria-label="' + escapeHtml(set.title) + '">' +
+          '<div class="hf-pdp-look__panel">' +
+          '<p class="hf-pdp-look__eyebrow">Conjunto ' + (index + 1) + ' de ' + desktopSets.length + '</p>' +
+          '<h2 class="hf-pdp-look__title">' + escapeHtml(set.title) + '</h2>' +
+          '<div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">' +
+          set.items.map(renderSetItem).join('') +
+          '</div>' +
+          '</div>' +
+          '<div class="hf-pdp-look__visual">' +
+          '<span class="hf-pdp-look__tag">' + escapeHtml(set.meta) + '</span>' +
+          '<img class="hf-pdp-look__hero" src="' + escapeHtml(set.image) + '" alt="' + escapeHtml(set.title) + ' look principal">' +
+          '</div>' +
+          '</section>' +
+          '</div>';
+      }
+
+      const carousel = document.createElement("div");
+      carousel.className = "hf-carousel hf-pdp-look-carousel";
+      carousel.id = "desktopSetCarousel";
+      carousel.setAttribute("data-hf", "carousel");
+      carousel.setAttribute("data-hf-carousel", '{"loop":true,"dots":false,"arrows":true,"draggable":true,"itemsToShow":1,"gap":0,"speed":300}');
+      carousel.setAttribute("aria-label", "Conjuntos destacados en desktop");
+      carousel.innerHTML =
+        '<div class="hf-carousel__viewport">' +
+        '<div class="hf-carousel__track">' +
+        desktopSets.map(renderSetSlide).join('') +
+        '</div>' +
+        '</div>';
+
+      sourceLook.replaceWith(carousel);
     })();
 
     const toasts = $("#toasts");
