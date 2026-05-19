@@ -1,0 +1,19 @@
+/*
+Theme Name: Horizon Fit Blank
+Theme URI: https://horizon-fit.local
+Description: Minimal theme - frontend served by index.html
+Version: 1.0.0
+Author: Horizon Fit
+Text Domain: horizon-fit-blank
+Domain Path: /languages
+*/
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}

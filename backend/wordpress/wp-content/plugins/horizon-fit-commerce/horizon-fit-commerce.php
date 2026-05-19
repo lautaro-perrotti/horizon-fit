@@ -17,6 +17,21 @@ define('HF_COMMERCE_URL', plugin_dir_url(__FILE__));
 
 require_once HF_COMMERCE_DIR . 'includes/catalog-data.php';
 
+// Habilitar REST API pública para WooCommerce sin autenticación
+// Este filter intercepta la validación de permisos de WooCommerce
+add_filter('rest_authentication_errors', '__return_true', 0);
+
+// Crear usuario anónimo con capacidades de lectura para REST
+add_action('init', function() {
+    if (defined('REST_REQUEST') && REST_REQUEST && !is_user_logged_in()) {
+        // Creatr un "usuario anónimo" con permisos básicos de lectura
+        $anon_user = new WP_User(0);
+        $anon_user->add_cap('read');
+        $anon_user->add_cap('read_product');
+        $anon_user->add_cap('read_order');
+    }
+});
+
 function hf_commerce_boot() {
     if (! class_exists('WooCommerce')) {
         return;

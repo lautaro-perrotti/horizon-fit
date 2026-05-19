@@ -36,16 +36,25 @@ services:
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
-      HF_STOREFRONT_SOURCE_PATH: /opt/horizon-fit/index.html
+      HF_STOREFRONT_SOURCE_PATH: /var/www/html/index.html
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_HOME', 'http://localhost:8088');
         define('WP_SITEURL', 'http://localhost:8088');
+        define('WP_REST_ALLOWED_HOSTS', ['localhost:8088', '*']);
         define('FS_METHOD', 'direct');
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
-      - ./backend/wordpress:/var/www/html
+      - horizon_fit_html:/var/www/html
+      - ./index.html:/var/www/html/index.html:ro
+      - ./design-system:/var/www/html/design-system:ro
+      - ./assets:/var/www/html/assets:ro
+      - ./TIPOGRAFIAS:/var/www/html/TIPOGRAFIAS:ro
+      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins:ro
+      - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+      - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
+      - ./.htaccess:/var/www/html/.htaccess:ro
+      - ./docker/apache/horizon-fit.conf:/etc/apache2/sites-available/000-default.conf:ro
       - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
-      - ./index.html:/opt/horizon-fit/index.html:ro
 
   wpcli:
     image: wordpress:cli-php8.2
@@ -63,10 +72,13 @@ services:
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
-      HF_STOREFRONT_SOURCE_PATH: /opt/horizon-fit/index.html
+      HF_STOREFRONT_SOURCE_PATH: /var/www/html/index.html
     volumes:
       - ./backend/wordpress:/var/www/html
-      - ./index.html:/opt/horizon-fit/index.html:ro
+      - ./index.html:/var/www/html/index.html:ro
+      - ./design-system:/var/www/html/design-system:ro
+      - ./assets:/var/www/html/assets:ro
+      - ./TIPOGRAFIAS:/var/www/html/TIPOGRAFIAS:ro
 
   phpmyadmin:
     image: phpmyadmin:5-apache
@@ -85,3 +97,4 @@ services:
 
 volumes:
   horizon_fit_db:
+  horizon_fit_html:

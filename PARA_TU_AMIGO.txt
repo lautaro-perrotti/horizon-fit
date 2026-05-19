@@ -1,0 +1,350 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                   HORIZON FIT - INSTRUCCIONES PARA HOSTINGER                ║
+║                                                                              ║
+║                         (Para la persona que sube)                          ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+¡HOLA! Te encargaron subir Horizon Fit a Hostinger. Aquí están los pasos.
+
+No es complicado, solo sigue esto en orden. Lee dos veces si no entiendes algo.
+
+
+📋 ANTES DE EMPEZAR: INFORMACIÓN QUE NECESITAS
+═════════════════════════════════════════════════════════════════════════════════
+
+Te van a dar estos datos (pídelos si no los tienes):
+
+  1. Acceso SSH:
+     - Host/IP del VPS
+     - Usuario (ej: u123456)
+     - Contraseña O archivo .pem con clave privada
+
+  2. Datos de base de datos que vamos a crear:
+     - Nombre: horizon_fit_prod
+     - Usuario: horizon_prod
+     - Contraseña: TÚ LA ELIGES (algo fuerte, ej: Ae#9xK@2mPq$Lv5W)
+
+  3. URL del repositorio GitHub (el código)
+     - Ej: https://github.com/usuario/horizon-fit.git
+
+
+🚀 PASO A PASO
+═════════════════════════════════════════════════════════════════════════════════
+
+PASO 1: Crear base de datos en Hostinger
+─────────────────────────────────────────────────────────────────────────────
+
+1. Abre panel.hostinger.com
+2. Ve a Bases de Datos
+3. Click "+ Crear base de datos"
+4. Llena:
+   - Nombre: horizon_fit_prod
+   - Usuario: horizon_prod
+   - Contraseña: Elige una FUERTE (mínimo 12 caracteres, números, símbolos)
+   - Charset: utf8mb4
+5. Click Crear
+
+GUARDA ESTOS DATOS. Los necesitarás después.
+
+
+PASO 2: Conectarte por SSH
+─────────────────────────────────────────────────────────────────────────────
+
+Abre Terminal (Mac/Linux) o PowerShell (Windows) en tu computadora.
+
+Escribe:
+
+  ssh -i ruta/a/clave.pem u123456@IP_DEL_VPS
+
+O si usas contraseña:
+
+  ssh u123456@IP_DEL_VPS
+
+Ingresa la contraseña que Hostinger te envió.
+
+Si funciona, deberías ver algo como:
+
+  u123456@vps-123456:~$
+
+(Dentro del servidor remoto. Genial, ya estamos dentro!)
+
+
+PASO 3: Descargar el código
+─────────────────────────────────────────────────────────────────────────────
+
+Desde la terminal SSH:
+
+  cd ~
+  git clone https://github.com/usuario/horizon-fit.git
+  cd horizon-fit
+  ls -la
+
+Deberías ver: index.html, design-system/, docker-compose.yml, etc.
+
+
+PASO 4: Configurar docker-compose.yml
+─────────────────────────────────────────────────────────────────────────────
+
+Este archivo le dice a Docker qué hacer. Necesitas cambiar algunos valores.
+
+Abre el archivo:
+
+  nano docker-compose.yml
+
+Busca estas líneas (están cerca de WORDPRESS_DB_HOST):
+
+  WORDPRESS_DB_NAME: horizon_fit_prod
+  WORDPRESS_DB_USER: horizon_prod
+  WORDPRESS_DB_PASSWORD: Ae#9xK@2mPq$Lv5W
+  WP_HOME: https://tudominio.com
+  WP_SITEURL: https://tudominio.com
+
+CÁMBIALAS:
+  - WORDPRESS_DB_PASSWORD: la contraseña que creaste en Paso 1
+  - WP_HOME: tu dominio real (ej: https://horizonfit.com)
+  - WP_SITEURL: el mismo dominio
+
+Para salvar en nano:
+  Presiona Ctrl + X
+  Presiona Y
+  Presiona Enter
+
+
+PASO 5: Levantar Docker
+─────────────────────────────────────────────────────────────────────────────
+
+Desde la carpeta horizon-fit:
+
+  docker-compose up -d
+
+Espera 2-3 minutos. La primera vez tarda porque descarga imágenes.
+
+Verifica que está funcionando:
+
+  docker-compose ps
+
+Deberías ver 3 contenedores (db, wordpress, phpmyadmin) todos "Up".
+
+
+PASO 6: Acceder al sitio
+─────────────────────────────────────────────────────────────────────────────
+
+Abre navegador:
+
+  http://IP_DEL_VPS
+
+Debería mostrar el sitio (index.html) con el diseño.
+
+Si NO aparece, espera más tiempo. Si sigue sin aparecer:
+
+  docker-compose logs wordpress | tail -20
+
+Esto muestra qué está pasando.
+
+
+PASO 7: Configurar dominio
+─────────────────────────────────────────────────────────────────────────────
+
+En Hostinger:
+
+1. Ve a Dominios
+2. Selecciona tu dominio
+3. Ve a DNS
+4. Asegúrate que los registros A apunten a la IP de tu VPS
+
+Espera hasta 24 horas para que se propague.
+
+Mientras, accede por IP: http://IP_DEL_VPS
+
+
+PASO 8: WordPress inicial
+─────────────────────────────────────────────────────────────────────────────
+
+Accede a:
+
+  http://IP_O_DOMINIO/wp-admin
+
+Si pide login:
+  Usuario: wordpress
+  Contraseña: (la que esté en WORDPRESS_DB_PASSWORD en docker-compose.yml)
+
+Si ves el panel de WordPress = ¡ÉXITO!
+
+Verifica:
+  - WooCommerce está activo (en Plugins)
+  - horizon-fit-commerce está activo (en Plugins)
+
+
+PASO 9: Importar datos de prueba (OPCIONAL)
+─────────────────────────────────────────────────────────────────────────────
+
+Si quieres que tenga productos:
+
+1. Ve a WooCommerce en el panel
+2. Busca Horizon Fit → Seeder de catálogo
+3. Click "Importar catálogo base"
+4. Espera 1-2 minutos
+
+Listo. Ahora tiene 28 productos + categorías + colecciones.
+
+
+PASO 10: HTTPS (SSL)
+─────────────────────────────────────────────────────────────────────────────
+
+En Hostinger:
+
+1. Ve a SSL
+2. Si está deshabilitado, click Activar
+3. Hostinger crea automáticamente (Let's Encrypt, gratis)
+
+Ahora puedes acceder con https://tudominio.com
+
+
+PASO 11: Backups automáticos
+─────────────────────────────────────────────────────────────────────────────
+
+En Hostinger:
+
+1. Ve a Backups
+2. Click Automático
+3. Elige frecuencia (diaria = bien)
+
+Ahora se backupea automáticamente.
+
+
+✅ VERIFICAR QUE TODO FUNCIONA
+═════════════════════════════════════════════════════════════════════════════════
+
+Checklist final:
+
+  ✓ SSH conectado al VPS
+  ✓ docker-compose.yml configurado con credenciales correctas
+  ✓ Docker levantado (docker-compose ps muestra todo "Up")
+  ✓ http://IP_DEL_VPS muestra el sitio
+  ✓ http://IP_DEL_VPS/wp-admin accesible
+  ✓ WordPress admin funciona
+  ✓ Dominio apuntado (puede tardar 24h)
+  ✓ HTTPS funcionando
+  ✓ Backups automáticos activos
+
+Si todo esto está OK → ¡ESTÁ HECHO! 🎉
+
+
+🐛 SI ALGO SALE MAL
+═════════════════════════════════════════════════════════════════════════════════
+
+No carga el sitio:
+  1. Espera más tiempo (a veces tarda 5 min)
+  2. Ver logs: docker-compose logs wordpress | tail -20
+  3. Reiniciar: docker-compose down && docker-compose up -d
+
+"Connection refused":
+  → Docker sigue iniciando. Espera 2-3 minutos más.
+
+"Port already in use":
+  → Otro servicio usa puerto 80. Contacta soporte Hostinger.
+
+WordPress muestra error de BD:
+  → Las credenciales en docker-compose.yml no coinciden con la BD.
+  → Verifica WORDPRESS_DB_PASSWORD, WORDPRESS_DB_NAME, WORDPRESS_DB_USER
+
+"No such file or directory: docker-compose.yml":
+  → No estás en la carpeta correcta.
+  → Haz: cd horizon-fit
+
+
+📝 COMANDOS ÚTILES (SSH)
+═════════════════════════════════════════════════════════════════════════════════
+
+Ver logs en vivo:
+  docker-compose logs -f wordpress
+
+Detener servicios (sin borrar datos):
+  docker-compose down
+
+Reiniciar WordPress:
+  docker-compose restart wordpress
+
+Ver estado:
+  docker-compose ps
+
+Ver espacio del servidor:
+  df -h
+
+Ver procesos corriendo:
+  docker ps
+
+
+🔐 CAMBIAR CONTRASEÑA DE WORDPRESS DESPUÉS
+═════════════════════════════════════════════════════════════════════════════════
+
+Si quieres cambiar la contraseña de usuario admin:
+
+  docker-compose exec wordpress wp user set-password admin nuevacontraseña
+
+Ejemplo:
+  docker-compose exec wordpress wp user set-password admin MiContraseña123!
+
+
+📞 CONTACTAR SOPORTE HOSTINGER
+═════════════════════════════════════════════════════════════════════════════════
+
+Si algo no funciona y no sabes qué hacer:
+
+1. Ve a soporte.hostinger.com
+2. Abre ticket diciendo:
+   - "Levantamos Docker con imagen wordpress:6.9.4-php8.2-apache"
+   - "Levantamos mariadb:10.6"
+   - "Puerto 80 no responde" (o el problema específico)
+   - Copia los logs: docker-compose logs wordpress | tail -50
+
+
+🎯 DESPUÉS DE DEPLOYAR
+═════════════════════════════════════════════════════════════════════════════════
+
+El sitio está en producción. Ahora:
+
+✅ El frontend (index.html) se actualiza por SFTP o git pull
+✅ Los productos se editan en http://tudominio.com/wp-admin
+✅ Los datos están en BD MariaDB (backupeados automáticamente)
+✅ HTTPS funciona automáticamente
+
+
+⚡ RESUMEN ULTRA-RÁPIDO
+═════════════════════════════════════════════════════════════════════════════════
+
+1. Crear BD en Hostinger (horizon_fit_prod / horizon_prod / contraseña fuerte)
+2. SSH al VPS
+3. git clone https://github.com/usuario/horizon-fit.git
+4. nano docker-compose.yml → cambiar credenciales + dominio
+5. docker-compose up -d
+6. Esperar 2-3 min
+7. Abrir http://IP_DEL_VPS en navegador
+8. Ver que carga el sitio ✓
+9. Abrir http://IP_DEL_VPS/wp-admin ✓
+10. Apuntar dominio en Hostinger
+11. Esperar 24h para propagación DNS
+12. Listo
+
+Total: 30 minutos (más 24h para DNS).
+
+
+¿PREGUNTAS?
+═════════════════════════════════════════════════════════════════════════════════
+
+Si no entiendes algo:
+- Lee dos veces
+- Busca en Google "docker-compose" o "ssh hostinger"
+- Contacta soporte Hostinger
+
+Está todo documentado. No es mágico, solo pasos.
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                              ¡BUENA SUERTE! 🚀
+
+═════════════════════════════════════════════════════════════════════════════════

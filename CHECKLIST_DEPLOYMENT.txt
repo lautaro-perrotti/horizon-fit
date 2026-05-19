@@ -1,0 +1,270 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║            ✅ CHECKLIST DE DEPLOYMENT HORIZON FIT A HOSTINGER              ║
+║                                                                              ║
+║                (Imprímelo y tachá mientras avanzas)                        ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+ANTES DE EMPEZAR
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Tengo acceso SSH a Hostinger (usuario + contraseña o .pem)
+  ☐ Tengo acceso al panel Hostinger
+  ☐ Tengo Git instalado en mi computadora
+  ☐ Tengo acceso al repositorio GitHub con el código
+  ☐ Tengo una contraseña fuerte lista (para la BD)
+
+  Nota: Si falta algo, pídele a quien te encargó la tarea.
+
+
+PASO 1: CREAR BASE DE DATOS EN HOSTINGER
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Entré a panel.hostinger.com
+  ☐ Fui a Bases de Datos
+  ☐ Clickeé "+ Crear base de datos"
+  ☐ Creé:
+     - Nombre: horizon_fit_prod
+     - Usuario: horizon_prod
+     - Contraseña: _________________________ (anota la que elegiste)
+     - Charset: utf8mb4
+  ☐ Guardé los datos en un lugar seguro
+
+
+PASO 2: CONECTAR POR SSH
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Abrí Terminal (Mac/Linux) o PowerShell (Windows)
+  ☐ Ejecuté comando SSH:
+     ssh u123456@IP_DEL_VPS
+     (o con archivo .pem si es el caso)
+  ☐ Ingresé contraseña
+  ☐ Veo el prompt: u123456@vps-123456:~$
+  ☐ Estoy adentro del servidor SSH ✓
+
+
+PASO 3: DESCARGAR CÓDIGO
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Ejecuté: cd ~
+  ☐ Ejecuté: git clone https://github.com/usuario/horizon-fit.git
+  ☐ Ejecuté: cd horizon-fit
+  ☐ Ejecuté: ls -la
+  ☐ Veo archivos: index.html, design-system/, docker-compose.yml, etc.
+  ☐ El código está descargado ✓
+
+
+PASO 4: CONFIGURAR docker-compose.yml
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Ejecuté: nano docker-compose.yml
+  ☐ Busqué y cambié:
+     WORDPRESS_DB_NAME: horizon_fit_prod
+     WORDPRESS_DB_USER: horizon_prod
+     WORDPRESS_DB_PASSWORD: _________________________ (la que creaste)
+     WP_HOME: https://_________________________ (tu dominio)
+     WP_SITEURL: https://_________________________ (tu dominio)
+  ☐ Presioné Ctrl + X
+  ☐ Presioné Y
+  ☐ Presioné Enter
+  ☐ El archivo se guardó ✓
+
+
+PASO 5: LEVANTAR DOCKER
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Ejecuté: docker-compose up -d
+  ☐ Esperé 2-3 minutos (la primera vez tarda)
+  ☐ Ejecuté: docker-compose ps
+  ☐ Veo 3 contenedores todos en estado "Up":
+     - horizon-fit-db
+     - horizon-fit-wp
+     - horizon-fit-pma
+  ☐ Docker está levantado ✓
+
+  Si algo falla:
+  ☐ Ejecuté: docker-compose logs wordpress | tail -20
+  ☐ Leí el error para entender qué pasó
+
+
+PASO 6: VERIFICAR QUE CARGA EL SITIO
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Abrí navegador
+  ☐ Fui a http://IP_DEL_VPS (la IP del VPS)
+  ☐ Vi que carga el sitio (index.html con tu diseño)
+  ☐ Fui a http://IP_DEL_VPS/wp-admin
+  ☐ Vi el login de WordPress
+  ☐ Ingresé: usuario=wordpress, contraseña=la de WORDPRESS_DB_PASSWORD
+  ☐ Entré al panel de WordPress ✓
+
+
+PASO 7: VERIFICAR PLUGINS
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ En WordPress, fui a Plugins
+  ☐ Veo "WooCommerce" activo
+  ☐ Veo "Horizon Fit Commerce" activo
+  ☐ Si alguno está inactivo:
+     ☐ Clickeé "Activar"
+  ☐ Plugins listos ✓
+
+
+PASO 8: APUNTAR DOMINIO
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Entré a panel.hostinger.com
+  ☐ Fui a Dominios
+  ☐ Seleccioné mi dominio
+  ☐ Fui a DNS
+  ☐ Verifiqué que los registros A apunten a la IP del VPS
+  ☐ Hicé los cambios necesarios
+  ☐ Dominio apuntado (esperando propagación DNS - hasta 24h)
+
+  Mientras tanto:
+  ☐ Sigo accediendo por IP: http://IP_DEL_VPS
+
+
+PASO 9: ESPERAR DNS Y PROBAR CON DOMINIO
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Esperé entre 5 minutos y 24 horas
+  ☐ Abrí http://tudominio.com en navegador
+  ☐ Vi que carga el sitio
+  ☐ Abrí http://tudominio.com/wp-admin
+  ☐ Vi que funciona WordPress
+  ☐ Dominio funciona ✓
+
+
+PASO 10: HABILITAR HTTPS
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Entré a panel.hostinger.com
+  ☐ Fui a SSL
+  ☐ Verifiqué que esté habilitado
+  ☐ Si no estaba, clickeé "Activar"
+  ☐ Hostinger creó certificado automáticamente
+  ☐ Ahora accedo por https://tudominio.com
+  ☐ HTTPS funciona ✓
+
+
+PASO 11: CONFIGURAR BACKUPS AUTOMÁTICOS
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Entré a panel.hostinger.com
+  ☐ Fui a Backups
+  ☐ Clickeé "Automático"
+  ☐ Elegí frecuencia: ☐ Diaria ☐ Semanal ☐ Mensual
+  ☐ Se activó automático
+  ☐ Backups configurados ✓
+
+
+PASO 12: (OPCIONAL) IMPORTAR CATÁLOGO DE PRUEBA
+═════════════════════════════════════════════════════════════════════════════════
+
+  ☐ Entré a https://tudominio.com/wp-admin
+  ☐ Fui a WooCommerce
+  ☐ Busqué "Horizon Fit"
+  ☐ Clickeé "Seeder de catálogo"
+  ☐ Clickeé "Importar catálogo base"
+  ☐ Esperé 1-2 minutos a que termine
+  ☐ Veo: "Catálogo importado: X productos, Y categorías, Z colecciones"
+  ☐ Catálogo importado ✓
+
+  (Este paso es OPCIONAL. Solo si quieres datos de prueba)
+
+
+✅ VERIFICACIÓN FINAL
+═════════════════════════════════════════════════════════════════════════════════
+
+Marca TODO esto como OK:
+
+  ☐ https://tudominio.com carga el sitio
+  ☐ https://tudominio.com/wp-admin es accesible
+  ☐ WooCommerce + Horizon Fit Commerce están activos
+  ☐ HTTPS funciona (barra de seguridad en navegador)
+  ☐ Backups automáticos están configurados
+  ☐ Docker está corriendo (docker-compose ps muestra todo Up)
+
+Si todo está ☐, entonces:
+
+                          🎉 ¡DEPLOYMENT EXITOSO! 🎉
+
+
+📝 NOTAS IMPORTANTE
+═════════════════════════════════════════════════════════════════════════════════
+
+Contrasenas y datos sensibles:
+  ☐ Guardé seguro: usuario BD, contraseña BD, contraseña WordPress
+  ☐ NO los compartí por email sin encriptar
+  ☐ Los anoté en un lugar seguro (gestor de contraseñas)
+
+Para el futuro:
+  ☐ Los logs se ven con: docker-compose logs wordpress
+  ☐ Para reiniciar: docker-compose restart wordpress
+  ☐ Para actualizar código: git pull desde SSH
+  ☐ Para editar productos: https://tudominio.com/wp-admin
+
+
+🐛 SI ALGO SALIÓ MAL
+═════════════════════════════════════════════════════════════════════════════════
+
+Troubleshooting rápido:
+
+1. No carga nada:
+   ☐ Esperé 5+ minutos
+   ☐ Verifiqué IP correcta
+   ☐ Ejecuté: docker-compose logs wordpress | tail -20
+   ☐ Busqué el error
+
+2. WordPress no carga:
+   ☐ Verifiqué credenciales en docker-compose.yml
+   ☐ Verifiqué que BD existe en Hostinger
+   ☐ Verifiqué puerto SSH (22) no bloqueado
+
+3. HTTPS no funciona:
+   ☐ Esperé 10+ minutos a que se propague certificado
+   ☐ Verifiqué SSL activo en Hostinger
+   ☐ Probé http://tudominio.com (a veces Apache redirige automáticamente)
+
+4. Dominio muestra página de Hostinger:
+   ☐ DNS aún propagando, espera hasta 24h
+   ☐ Verifiqué registros A correctos en Hostinger
+   ☐ Probé con: nslookup tudominio.com
+
+
+📞 SI NECESITAS AYUDA
+═════════════════════════════════════════════════════════════════════════════════
+
+Antes de pedir ayuda:
+  ☐ Leí DEPLOYMENT_HOSTINGER.md (archivo que vino con el código)
+  ☐ Leí PARA_TU_AMIGO.txt (instrucciones detalladas)
+  ☐ Googlee el error específico
+  ☐ Contacté soporte Hostinger mostrando: docker-compose logs wordpress
+
+Para contactar desarrollador:
+  ☐ Anoté exactamente qué paso falló
+  ☐ Anoté el error que apareció
+  ☐ Anoté el comando que ejecuté
+  ☐ Mostré los logs: docker-compose logs wordpress | tail -50
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                    ¡TODO DEBE ESTAR LISTO EN 30 MIN!
+
+                  (Más 24h si el dominio necesita propagación DNS)
+
+═════════════════════════════════════════════════════════════════════════════════
+
+
+FIRMA DE FINALIZACIÓN
+═════════════════════════════════════════════════════════════════════════════════
+
+Yo ________________________ completé el deployment exitosamente el ___/___/___
+
+Sitio en producción: https://________________________________
+
+Contacto: ________________________ Teléfono: ________________________

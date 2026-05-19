@@ -1,0 +1,22 @@
+# BEGIN Horizon Fit Frontend Routing
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Permitir archivos y directorios reales
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Rutas de WordPress que deben pasar sin reescritura
+  RewriteRule ^(wp-admin|wp-json|wp-includes|wp-content|wp-login\.php|xmlrpc\.php|index\.php) - [L]
+
+  # Rutas de assets que deben pasar sin reescritura
+  RewriteRule ^(design-system|assets|TIPOGRAFIAS)/ - [L]
+
+  # SPA: Cualquier otra ruta → index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.html [QSA,L]
+</IfModule>
+# END Horizon Fit Frontend Routing
