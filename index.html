@@ -3269,15 +3269,16 @@
           gap: 18px;
         }
 
-        /* Ocultar 3er tile en desktop */
-        .hf-style-tile:nth-child(3) {
+        /* Ocultar tiles exclusivos de mobile en desktop */
+        .hf-style-tile:nth-child(3),
+        .hf-style-edit__grid .hf-style-tile--mobile-only {
           display: none;
         }
 
         .hf-style-tile {
           position: relative;
           display: block;
-          height: clamp(280px, 30vw, 460px);
+          height: clamp(260px, 27vw, 410px);
           min-width: 0;
           width: 100%;
           border-radius: var(--r-2);
@@ -6867,6 +6868,24 @@
           </div>
           <div class="hf-style-tile__body">
             <h3 class="hf-style-tile__title">Urbano</h3>
+            <span class="hf-style-tile__cta">Quiero ver</span>
+            <span class="hf-style-tile__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14" />
+                <path d="M13 6l6 6-6 6" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a href="#fullSlider" class="hf-style-tile hf-style-tile--mobile-only" aria-label="Ver estilo Prints">
+          <div class="hf-style-tile__media">
+            <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
+              <source src="assets/style-tile-prints.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="hf-style-tile__body">
+            <h3 class="hf-style-tile__title">Prints</h3>
             <span class="hf-style-tile__cta">Quiero ver</span>
             <span class="hf-style-tile__arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
