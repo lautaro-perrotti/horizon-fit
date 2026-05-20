@@ -3983,7 +3983,7 @@
         box-shadow: none;
         transition: none;
         padding: 0;
-        top: clamp(140px, calc((100vw - (2 * var(--page-gutter)) - (2 * var(--set-mobile-carousel-inset))) * 0.625), 260px);
+        top: var(--set-mobile-carousel-nav-top, calc((100vw - (2 * var(--page-gutter)) - (2 * var(--set-mobile-carousel-inset))) * 0.625));
         transform: translateY(-50%);
       }
 
@@ -6617,6 +6617,19 @@
 
   <script>
     (function () {
+      function updateSetMobileCarouselNavTop() {
+        var el = document.getElementById('setMobileCarousel');
+        if (!el) return;
+
+        var media = el.querySelector('.hf-carousel__slide[aria-hidden="false"] .productMedia') ||
+          el.querySelector('.productMedia');
+        if (!media) return;
+
+        var carouselRect = el.getBoundingClientRect();
+        var mediaRect = media.getBoundingClientRect();
+        el.style.setProperty('--set-mobile-carousel-nav-top', ((mediaRect.top - carouselRect.top) + (mediaRect.height / 2)) + 'px');
+      }
+
       function ensureSetMobileCarousel() {
         var el = document.getElementById('setMobileCarousel');
         if (!el || !window.HFCarousel) return;
@@ -6631,9 +6644,16 @@
             gap: 12
           });
         }
+        updateSetMobileCarouselNavTop();
       }
 
       window.addEventListener('load', ensureSetMobileCarousel);
+      window.addEventListener('resize', updateSetMobileCarouselNavTop);
+      document.addEventListener('hf:carousel:change', function (event) {
+        if (event.target && event.target.id === 'setMobileCarousel') {
+          updateSetMobileCarouselNavTop();
+        }
+      });
       window.addEventListener('resize', ensureSetMobileCarousel);
       document.addEventListener('DOMContentLoaded', ensureSetMobileCarousel);
     })();
@@ -8987,7 +9007,7 @@
           items: [
             { name: "Top Motion", price: "$34.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
             { name: "Calza Motion", price: "$64.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
-            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
           ]
         },
         {
@@ -8996,7 +9016,7 @@
           image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
           items: [
             { name: "Sports Bra Energy", price: "$34.990 ARS", image: "https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
-            { name: "Shorts Training", price: "$39.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Shorts Training", price: "$39.990 ARS", image: "https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
             { name: "Tank Fitted", price: "$29.990 ARS", image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
           ]
         },
@@ -9026,7 +9046,7 @@
           image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
           items: [
             { name: "Top Halter", price: "$25.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
-            { name: "Short Running", price: "$39.990 ARS", image: "https://images.pexels.com/photos/4056589/pexels-photo-4056589.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Short Running", price: "$39.990 ARS", image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
             { name: "Bra Deportivo", price: "$29.990 ARS", image: "https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
           ]
         },
