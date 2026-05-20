@@ -6420,7 +6420,7 @@
 
       <div class="hf-carousel hf-carousel--responsive hf-carousel--show-nav-mobile" id="setMobileCarousel"
         data-hf="carousel"
-        data-hf-carousel='{"loop":true,"dots":true,"arrows":true,"draggable":true,"itemsToShow":1,"gap":12}'
+        data-hf-carousel='{"loop":true,"seamlessLoop":true,"dots":true,"arrows":true,"draggable":true,"itemsToShow":1,"gap":12}'
         aria-label="Conjuntos en mobile">
         <div class="hf-carousel__viewport">
           <div class="hf-carousel__track">
@@ -6637,6 +6637,7 @@
         if (!el._hfCarousel) {
           window.HFCarousel.create(el, {
             loop: true,
+            seamlessLoop: true,
             dots: true,
             arrows: true,
             draggable: true,
@@ -9133,7 +9134,7 @@
       carousel.className = "hf-carousel hf-pdp-look-carousel";
       carousel.id = "desktopSetCarousel";
       carousel.setAttribute("data-hf", "carousel");
-      carousel.setAttribute("data-hf-carousel", '{"loop":true,"dots":false,"arrows":true,"draggable":true,"itemsToShow":1,"gap":0,"speed":300}');
+      carousel.setAttribute("data-hf-carousel", '{"loop":true,"seamlessLoop":true,"dots":false,"arrows":true,"draggable":true,"itemsToShow":1,"gap":0,"speed":300}');
       carousel.setAttribute("aria-label", "Conjuntos destacados en desktop");
       carousel.innerHTML =
         '<div class="hf-carousel__viewport">' +

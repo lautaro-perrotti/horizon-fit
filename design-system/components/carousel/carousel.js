@@ -32,6 +32,7 @@
       threshold: 50,
       itemsToShow: 1,
       gap: 16,
+      seamlessLoop: false,
       ...parsedData,
       ...options
     };
@@ -56,6 +57,7 @@
     let startY = 0;
     let startScrollLeft = 0;
     let currentTranslate = 0;
+    let activeLoopClones = [];
 
     // Reduced motion check
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -71,11 +73,12 @@
       return Math.max(0, slides.length - config.itemsToShow);
     }
 
-    // Update carousel position
-    function updatePosition(animate = true) {
-      const slideWidth = getSlideWidth();
-      const offset = currentIndex * (slideWidth + config.gap);
-      currentTranslate = -offset;
+    function getStepSize() {
+      return getSlideWidth() + config.gap;
+    }
+
+    function setTrackPosition(index, animate = true) {
+      currentTranslate = -(index * getStepSize());
 
       if (prefersReducedMotion || !animate) {
         track.style.transition = 'none';
@@ -84,13 +87,29 @@
       }
 
       track.style.transform = `translateX(${currentTranslate}px)`;
+    }
 
-      // Update slides ARIA
+    function updateSlideVisibility() {
       slides.forEach((slide, idx) => {
         const isVisible = idx >= currentIndex && idx < currentIndex + config.itemsToShow;
         slide.setAttribute('aria-hidden', !isVisible);
         slide.inert = !isVisible;
       });
+    }
+
+    function emitChange() {
+      el.dispatchEvent(new CustomEvent('hf:carousel:change', {
+        detail: { index: currentIndex, slide: slides[currentIndex] },
+        bubbles: true
+      }));
+    }
+
+    // Update carousel position
+    function updatePosition(animate = true) {
+      setTrackPosition(currentIndex, animate);
+
+      // Update slides ARIA
+      updateSlideVisibility();
 
       // Update arrows state
       updateArrows();
@@ -99,10 +118,48 @@
       updateDots();
 
       // Emit event
-      el.dispatchEvent(new CustomEvent('hf:carousel:change', {
-        detail: { index: currentIndex, slide: slides[currentIndex] },
-        bubbles: true
-      }));
+      emitChange();
+    }
+
+    function createForwardLoopClones() {
+      const cloneCount = Math.max(1, config.itemsToShow);
+      return slides.slice(0, cloneCount).map(slide => {
+        const clone = slide.cloneNode(true);
+        clone.classList.add('hf-carousel__slide--clone');
+        clone.setAttribute('aria-hidden', 'true');
+        clone.inert = true;
+        track.appendChild(clone);
+        return clone;
+      });
+    }
+
+    function clearLoopClones(clones) {
+      clones.forEach(clone => clone.remove());
+    }
+
+    function goForwardToStart() {
+      if (animationTimer) {
+        clearTimeout(animationTimer);
+        animationTimer = null;
+      }
+
+      clearLoopClones(activeLoopClones);
+      activeLoopClones = createForwardLoopClones();
+      isAnimating = true;
+      setTrackPosition(currentIndex + 1, true);
+
+      animationTimer = setTimeout(() => {
+        currentIndex = 0;
+        setTrackPosition(currentIndex, false);
+        clearLoopClones(activeLoopClones);
+        activeLoopClones = [];
+        updateSlideVisibility();
+        updateArrows();
+        updateDots();
+        emitChange();
+        isAnimating = false;
+        animationTimer = null;
+      }, config.speed);
     }
 
     // Navigation
@@ -110,6 +167,11 @@
       const maxIndex = getMaxIndex();
 
       if (config.loop) {
+        if (config.seamlessLoop && animate && !prefersReducedMotion && index > maxIndex && currentIndex === maxIndex) {
+          goForwardToStart();
+          return;
+        }
+
         if (index < 0) index = maxIndex;
         if (index > maxIndex) index = 0;
       } else {
@@ -390,6 +452,7 @@
     function destroy() {
       stopAutoplay();
       if (animationTimer) clearTimeout(animationTimer);
+      clearLoopClones(activeLoopClones);
 
       if (prevBtn) prevBtn.remove();
       if (nextBtn) nextBtn.remove();
