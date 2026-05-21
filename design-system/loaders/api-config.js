@@ -65,6 +65,9 @@
     // Hero Settings
     heroSettings: () => fetchAPI('/wp-json/wp/v2/settings/hero'),
 
+    // Page Sections - Secciones dinámicas de una página
+    pageSections: (slug) => fetchAPI(`/wp-json/wp/v2/pages/${slug}/sections`),
+
     // WooCommerce: Categorías de productos
     categories: (params = {}) => {
       const qs = new URLSearchParams({ per_page: 4, ...params });

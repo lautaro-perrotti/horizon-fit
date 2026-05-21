@@ -36,6 +36,9 @@ services:
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
+      DB_HOST: db
+      DB_USER: horizon_fit
+      DB_PASSWORD: horizon_fit
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_HOME', 'http://localhost:8089');
         define('WP_SITEURL', 'http://localhost:8089');
@@ -50,6 +53,8 @@ services:
       - ./docker/wordpress/wp-htaccess:/var/www/html/.htaccess:ro
       - ./docker/apache/horizon-fit-api.conf:/etc/apache2/sites-available/000-default.conf:ro
       - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./docker/wordpress/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: /entrypoint.sh
 
   spa:
     image: httpd:2.4-alpine
