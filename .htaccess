@@ -1,22 +1,15 @@
-# BEGIN Horizon Fit Frontend Routing
+# SPA Routing: SPA handles its own routes
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Permitir archivos y directorios reales
+  # Real files and directories pass through
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Rutas de WordPress que deben pasar sin reescritura
-  RewriteRule ^(wp-admin|wp-json|wp-includes|wp-content|wp-login\.php|xmlrpc\.php|index\.php) - [L]
-
-  # Rutas de assets que deben pasar sin reescritura
-  RewriteRule ^(design-system|assets|TIPOGRAFIAS)/ - [L]
-
-  # SPA: Cualquier otra ruta → index.html
+  # SPA fallback: all non-existent routes → index.html (for SPA routing)
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^(.*)$ index.html [QSA,L]
 </IfModule>
-# END Horizon Fit Frontend Routing

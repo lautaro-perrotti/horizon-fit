@@ -29,56 +29,57 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8088:80"
+      - "8089:80"
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: horizon_fit
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
-      HF_STOREFRONT_SOURCE_PATH: /var/www/html/index.html
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_HOME', 'http://localhost:8088');
-        define('WP_SITEURL', 'http://localhost:8088');
-        define('WP_REST_ALLOWED_HOSTS', ['localhost:8088', '*']);
+        define('WP_HOME', 'http://localhost:8089');
+        define('WP_SITEURL', 'http://localhost:8089');
+        define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '*']);
         define('FS_METHOD', 'direct');
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
       - horizon_fit_html:/var/www/html
-      - ./index.html:/var/www/html/index.html:ro
-      - ./design-system:/var/www/html/design-system:ro
-      - ./assets:/var/www/html/assets:ro
-      - ./TIPOGRAFIAS:/var/www/html/TIPOGRAFIAS:ro
-      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins:ro
+      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
-      - ./.htaccess:/var/www/html/.htaccess:ro
-      - ./docker/apache/horizon-fit.conf:/etc/apache2/sites-available/000-default.conf:ro
+      - ./docker/wordpress/wp-htaccess:/var/www/html/.htaccess:ro
+      - ./docker/apache/horizon-fit-api.conf:/etc/apache2/sites-available/000-default.conf:ro
       - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+
+  spa:
+    image: httpd:2.4-alpine
+    container_name: horizon-fit-spa
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./design-system:/usr/local/apache2/htdocs/design-system:ro
+      - ./assets:/usr/local/apache2/htdocs/assets:ro
+      - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro
+      - ./docker/apache/spa.conf:/usr/local/apache2/conf/httpd.conf:ro
 
   wpcli:
     image: wordpress:cli-php8.2
     container_name: horizon-fit-wpcli
     depends_on:
-      db:
-        condition: service_healthy
       wordpress:
         condition: service_started
     working_dir: /var/www/html
-    entrypoint: ["wp"]
+    entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: horizon_fit
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
-      HF_STOREFRONT_SOURCE_PATH: /var/www/html/index.html
     volumes:
-      - ./backend/wordpress:/var/www/html
-      - ./index.html:/var/www/html/index.html:ro
-      - ./design-system:/var/www/html/design-system:ro
-      - ./assets:/var/www/html/assets:ro
-      - ./TIPOGRAFIAS:/var/www/html/TIPOGRAFIAS:ro
+      - horizon_fit_html:/var/www/html
 
   phpmyadmin:
     image: phpmyadmin:5-apache
@@ -88,7 +89,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8089:80"
+      - "8090:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306

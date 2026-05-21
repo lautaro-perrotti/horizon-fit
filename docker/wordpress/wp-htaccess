@@ -1,0 +1,23 @@
+# WordPress REST API and Admin
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Allow real files and directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # REST API: /wp-json/* routes to index.php for WordPress to handle
+  RewriteCond %{REQUEST_URI} ^/wp-json(/|$)
+  RewriteRule ^ /index.php [QSA,L]
+
+  # WordPress paths that must not be rewritten
+  RewriteRule ^(wp-admin|wp-login\.php|wp-includes|wp-content|xmlrpc\.php)(/|$) - [L]
+
+  # Default: Rewrite everything else to index.php (for WordPress routing)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.php [QSA,L]
+</IfModule>
+
