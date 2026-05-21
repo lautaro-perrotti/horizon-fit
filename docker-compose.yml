@@ -59,7 +59,7 @@ services:
       - "8088:80"
     volumes:
       - ./index.html:/usr/local/apache2/htdocs/index.html:ro
-      - ./design-system:/usr/local/apache2/htdocs/design-system:ro
+      - ./design-system:/usr/local/apache2/htdocs/design-system
       - ./assets:/usr/local/apache2/htdocs/assets:ro
       - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro
       - ./docker/apache/spa.conf:/usr/local/apache2/conf/httpd.conf:ro
