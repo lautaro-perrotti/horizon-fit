@@ -22,6 +22,16 @@ require_once HF_COMMERCE_DIR . 'includes/marquee-settings.php';
 // Este filter intercepta la validación de permisos de WooCommerce
 add_filter('rest_authentication_errors', '__return_true', 0);
 
+// Agregar headers CORS para permitir acceso desde frontend
+add_action('rest_api_init', function() {
+    add_filter('rest_pre_serve_request', function($served) {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        return $served;
+    });
+}, 15);
+
 // Crear usuario anónimo con capacidades de lectura para REST
 add_action('init', function() {
     if (defined('REST_REQUEST') && REST_REQUEST && !is_user_logged_in()) {
