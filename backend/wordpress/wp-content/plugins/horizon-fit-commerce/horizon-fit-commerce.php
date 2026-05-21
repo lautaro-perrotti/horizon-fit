@@ -17,6 +17,7 @@ define('HF_COMMERCE_URL', plugin_dir_url(__FILE__));
 
 require_once HF_COMMERCE_DIR . 'includes/catalog-data.php';
 require_once HF_COMMERCE_DIR . 'includes/marquee-settings.php';
+require_once HF_COMMERCE_DIR . 'includes/hero-settings.php';
 
 // Habilitar REST API pública para WooCommerce sin autenticación
 // Este filter intercepta la validación de permisos de WooCommerce
