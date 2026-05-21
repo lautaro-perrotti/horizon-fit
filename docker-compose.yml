@@ -51,6 +51,7 @@ services:
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
       - ./docker/wordpress/wp-htaccess:/var/www/html/.htaccess:ro
+      - ./docker/wordpress/wp-config-sample.php:/wp-config-sample.php:ro
       - ./docker/apache/horizon-fit-api.conf:/etc/apache2/sites-available/000-default.conf:ro
       - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
       - ./docker/wordpress/entrypoint.sh:/entrypoint.sh:ro
