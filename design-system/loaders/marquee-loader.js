@@ -28,17 +28,56 @@
       return;
     }
 
-    const text = settings.text || '3 y 6 cuotas sin interés';
+    const messages = Array.isArray(settings.messages) ? settings.messages : ['3 y 6 cuotas sin interés'];
     const speed = settings.speed || 20;
 
     // Update marquee speed
     marquee.setAttribute('data-speed', speed);
     marquee.style.setProperty('--marquee-speed', `${speed}s`);
 
-    // Update text content
-    const items = marquee.querySelectorAll('.hf-marquee__item');
-    items.forEach(item => {
-      item.textContent = text;
+    // Clear existing content
+    const track = marquee.querySelector('.hf-marquee__track');
+    if (!track) return;
+
+    track.innerHTML = '';
+
+    // Add messages
+    messages.forEach((msg, index) => {
+      // Main content
+      const content = document.createElement('div');
+      content.className = 'hf-marquee__content';
+      const item = document.createElement('span');
+      item.className = 'hf-marquee__item';
+      item.textContent = msg;
+      content.appendChild(item);
+      track.appendChild(content);
+
+      // Separator
+      if (index < messages.length - 1) {
+        const sep = document.createElement('span');
+        sep.className = 'hf-marquee__separator hf-marquee__separator--between';
+        sep.setAttribute('aria-hidden', 'true');
+        track.appendChild(sep);
+      }
+    });
+
+    // Add duplicates for infinite loop (aria-hidden)
+    messages.forEach((msg, index) => {
+      const contentDupe = document.createElement('div');
+      contentDupe.className = 'hf-marquee__content';
+      contentDupe.setAttribute('aria-hidden', 'true');
+      const itemDupe = document.createElement('span');
+      itemDupe.className = 'hf-marquee__item';
+      itemDupe.textContent = msg;
+      contentDupe.appendChild(itemDupe);
+      track.appendChild(contentDupe);
+
+      if (index < messages.length - 1) {
+        const sepDupe = document.createElement('span');
+        sepDupe.className = 'hf-marquee__separator hf-marquee__separator--between';
+        sepDupe.setAttribute('aria-hidden', 'true');
+        track.appendChild(sepDupe);
+      }
     });
   }
 
