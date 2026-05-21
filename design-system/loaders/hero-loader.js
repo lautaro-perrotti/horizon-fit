@@ -44,10 +44,20 @@
             source.setAttribute('src', videoDesktop || '');
           }
         });
-        // Reload video
+        // Force reload video
         video.load();
+        video.play().catch(() => {});
       }
     }
+
+    // Re-render on window resize to pick up correct video source
+    window.addEventListener('resize', () => {
+      const video = heroSection.querySelector('video');
+      if (video) {
+        video.load();
+        video.play().catch(() => {});
+      }
+    });
 
     // Update title if provided
     if (settings.title) {
