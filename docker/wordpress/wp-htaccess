@@ -3,6 +3,9 @@
   RewriteEngine On
   RewriteBase /
 
+  # Redirect home to wp-admin
+  RewriteRule ^/?$ /wp-admin/ [L,R=301]
+
   # Allow real files and directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
