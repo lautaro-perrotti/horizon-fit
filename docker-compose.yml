@@ -40,13 +40,7 @@ services:
       DB_USER: horizon_fit
       DB_PASSWORD: horizon_fit
       WORDPRESS_CONFIG_EXTRA: |
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8089';
-        $wp_url = $protocol . '://' . $http_host;
-        define('WP_HOME', $wp_url);
-        define('WP_SITEURL', $wp_url);
         define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*']);
-        define('COOKIE_DOMAIN', false);
         define('FS_METHOD', 'direct');
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
