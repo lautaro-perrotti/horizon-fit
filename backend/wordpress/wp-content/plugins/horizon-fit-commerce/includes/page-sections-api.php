@@ -51,8 +51,13 @@ function hf_get_page_sections($request) {
     // Obtener todas las secciones de esta página
     $sections = get_posts([
         'post_type' => 'hf_page_section',
-        'meta_key' => '_hf_page_id',
-        'meta_value' => $page_id,
+        'meta_query' => [
+            [
+                'key' => '_hf_page_id',
+                'value' => $page_id,
+                'compare' => '='
+            ]
+        ],
         'numberposts' => -1,
         'orderby' => 'meta_value_num',
         'meta_key' => '_hf_section_order',

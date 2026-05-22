@@ -86,6 +86,8 @@ services:
       WORDPRESS_TABLE_PREFIX: hf_
     volumes:
       - horizon_fit_html:/var/www/html
+      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
 
   phpmyadmin:
     image: phpmyadmin:5-apache
