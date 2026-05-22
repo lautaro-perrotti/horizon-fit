@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Page Sections - Custom Post Types
  * Registra hf_page y hf_page_section

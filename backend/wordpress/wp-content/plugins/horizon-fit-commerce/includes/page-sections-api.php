@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Page Sections REST API
  * Endpoint para obtener secciones de una página ordenadas
