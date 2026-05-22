@@ -1,110 +1,46 @@
-/**
- * Page Renderer
- * Carga y renderiza dinámicamente secciones de una página desde WordPress
- */
+﻿// Detecta la página actual y carga secciones desde API
 
-(function() {
-  'use strict';
+(async function() {
+  const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8089'
+    : http://:8089;
 
-  // Detectar página actual desde URL
-  function getCurrentPageSlug() {
-    const path = window.location.pathname.toLowerCase();
+  // Detectar página slug del URL o usar 'home' por defecto
+  let pageSlug = 'home';
+  const path = window.location.pathname.split('/').filter(Boolean);
+  if (path.length > 0 && path[0] !== 'index.html') {
+    pageSlug = path[0];
+  }
 
-    // Si es raíz o home
-    if (path === '/' || path === '' || path === '/index.html') {
-      return 'home';
+  console.log('Page slug:', pageSlug);
+
+  try {
+    // Fetch las secciones desde API
+    const response = await fetch(${ API_BASE }/wp-json/wp/v2/pages//sections);
+    if (!response.ok) throw new Error(HTTP );
+
+    const sections = await response.json();
+    console.log('Sections loaded:', sections);
+
+    // Renderizar cada sección
+    const pageContent = document.getElementById('page-content') || document.body;
+
+    for (const section of sections) {
+      if (!section.visible) continue;
+
+      console.log(Rendering section:  (order ));
+
+      // Cargar el loader específico para este tipo de sección
+      const loaderScript = document.createElement('script');
+      loaderScript.src = design-system/loaders/-loader.js;
+      loaderScript.dataset.sectionId = section.id;
+      loaderScript.dataset.sectionData = JSON.stringify(section);
+
+      document.head.appendChild(loaderScript);
     }
-
-    // Extraer slug de la URL
-    const segments = path.split('/').filter(s => s);
-    return segments[0] || 'home';
+  } catch (error) {
+    console.error('Error loading page sections:', error);
+    // Fallback: cargar archivo estático como respaldo
+    // document.body.innerHTML = '<h1>Error cargando página</h1>';
   }
-
-  async function initPageRenderer() {
-    const pageSlug = getCurrentPageSlug();
-
-    try {
-      const sections = await HF.API.pageSections(pageSlug);
-
-      if (!sections || sections.length === 0) {
-        console.log(`No sections found for page: ${pageSlug}`);
-        return;
-      }
-
-      // Ordenar por order (redundante pero seguro)
-      sections.sort((a, b) => a.order - b.order);
-
-      // Renderizar cada sección
-      for (const section of sections) {
-        if (!section.visible) {
-          console.log(`Section ${section.id} (${section.type}) skipped (not visible)`);
-          continue;
-        }
-
-        renderSection(section);
-      }
-
-      console.log(`Page sections loaded for "${pageSlug}":`, sections);
-    } catch (error) {
-      console.warn(`Failed to load page sections for "${pageSlug}"`, error);
-    }
-  }
-
-  function renderSection(section) {
-    const { id, type, settings } = section;
-
-    switch (type) {
-      case 'marquee':
-        renderMarqueeSection(settings);
-        break;
-      case 'hero':
-        renderHeroSection(settings);
-        break;
-      case 'productos':
-        renderProductosSection(settings);
-        break;
-      case 'testimonios':
-        renderTestimoniosSection(settings);
-        break;
-      case 'info_banner':
-        renderInfoBannerSection(settings);
-        break;
-      default:
-        console.warn(`Unknown section type: ${type}`);
-    }
-  }
-
-  function renderMarqueeSection(settings) {
-    // Marquee ya se renderiza via marquee-loader.js
-    // Solo aseguramos que los datos estén disponibles
-    if (HF.marqueeSettings) {
-      HF.marqueeSettings = settings;
-    }
-  }
-
-  function renderHeroSection(settings) {
-    // Hero ya se renderiza via hero-loader.js
-    // Solo aseguramos que los datos estén disponibles
-    if (HF.heroSettings) {
-      HF.heroSettings = settings;
-    }
-  }
-
-  function renderProductosSection(settings) {
-    // Placeholder para futuro loader de productos
-    console.log('Productos section:', settings);
-  }
-
-  function renderTestimoniosSection(settings) {
-    // Placeholder para futuro loader de testimonios
-    console.log('Testimonios section:', settings);
-  }
-
-  function renderInfoBannerSection(settings) {
-    // Placeholder para futuro loader de info banners
-    console.log('Info banner section:', settings);
-  }
-
-  // Inicializar cuando el DOM esté listo
-  document.addEventListener('DOMContentLoaded', initPageRenderer);
 })();

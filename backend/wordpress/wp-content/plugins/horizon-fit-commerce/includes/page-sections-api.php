@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Page Sections REST API
  * Endpoint para obtener secciones de una página ordenadas
@@ -8,10 +8,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * Register REST endpoint para obtener secciones de una página
- * GET /wp-json/wp/v2/pages/{slug}/sections
- */
 function hf_register_page_sections_endpoint() {
     register_rest_route('wp/v2', '/pages/(?P<slug>[a-z0-9_-]+)/sections', [
         'methods' => 'GET',
@@ -19,7 +15,7 @@ function hf_register_page_sections_endpoint() {
         'permission_callback' => '__return_true',
         'args' => [
             'slug' => [
-                'description' => 'Page slug (home, collections, product, checkout)',
+                'description' => 'Page slug',
                 'type' => 'string',
                 'required' => true,
             ]
@@ -34,8 +30,7 @@ function hf_get_page_sections($request) {
     // Obtener la página por slug
     $page = get_posts([
         'post_type' => 'hf_page',
-        'meta_key' => '_hf_page_slug',
-        'meta_value' => $slug,
+        'name' => $slug,
         'numberposts' => 1
     ]);
 
@@ -48,7 +43,7 @@ function hf_get_page_sections($request) {
 
     $page_id = $page[0]->ID;
 
-    // Obtener todas las secciones de esta página
+    // Obtener todas las secciones de esta página, ordenadas por orden
     $sections = get_posts([
         'post_type' => 'hf_page_section',
         'meta_query' => [
@@ -72,37 +67,12 @@ function hf_get_page_sections($request) {
         $section_order = get_post_meta($section->ID, '_hf_section_order', true);
         $section_settings = get_post_meta($section->ID, '_hf_section_settings', true);
 
-        // Obtener configuración específica según tipo de sección
-        $settings = [];
-        if ($section_type === 'marquee') {
-            // Marquee usa configuración global
-            $settings = [
-                'messages' => json_decode(get_option('hf_marquee_messages', '[]'), true),
-                'speed' => (int) get_option('hf_marquee_speed', 20)
-            ];
-        } elseif ($section_type === 'hero') {
-            // Hero usa configuración global
-            $settings = [
-                'video_mobile' => get_option('hf_hero_video_mobile', ''),
-                'video_desktop' => get_option('hf_hero_video_desktop', ''),
-                'title' => get_option('hf_hero_title', ''),
-                'subtitle' => get_option('hf_hero_subtitle', ''),
-                'button1_text' => get_option('hf_hero_button1_text', ''),
-                'button1_url' => get_option('hf_hero_button1_url', ''),
-                'button2_text' => get_option('hf_hero_button2_text', ''),
-                'button2_url' => get_option('hf_hero_button2_url', '')
-            ];
-        } else {
-            // Otras secciones usan su propia configuración JSON
-            $settings = $section_settings ? json_decode($section_settings, true) : [];
-        }
-
         $formatted_sections[] = [
             'id' => $section->ID,
             'type' => $section_type,
             'order' => (int) $section_order,
             'visible' => (bool) $is_visible,
-            'settings' => $settings
+            'settings' => $section_settings ? json_decode($section_settings, true) : []
         ];
     }
 
