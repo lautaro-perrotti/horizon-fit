@@ -16,9 +16,14 @@ define('SECURE_AUTH_SALT', '~Z6DW,H;k&*lhI=9w<-K4}P*j<E6GR-S|2W$jN"hK:B)M}pY$&['
 define('LOGGED_IN_SALT',   '8|9@T5#$<Y1J[&9Aq;2*Y/7d,&kS.!G<#>8q^{Vt;RFJ^G@|Wp');
 define('NONCE_SALT',       '#>|B2B+cFy5<5$M~4<}h#&d/|:+z,L!e(M%L7/k`5f5l^&M.z"g');
 
-define('WP_HOME', 'http://localhost:8089');
-define('WP_SITEURL', 'http://localhost:8089');
-define('WP_REST_ALLOWED_HOSTS', array('localhost:8089', 'localhost:8088', '*'));
+// Detectar automáticamente el protocolo y host
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+$http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8089';
+$wp_url = $protocol . '://' . $http_host;
+
+define('WP_HOME', $wp_url);
+define('WP_SITEURL', $wp_url);
+define('WP_REST_ALLOWED_HOSTS', array('localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*'));
 define('FS_METHOD', 'direct');
 define('WP_MEMORY_LIMIT', '256M');
 
