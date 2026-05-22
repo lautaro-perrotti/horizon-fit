@@ -24,6 +24,9 @@ $wp_url = $protocol . '://' . $http_host;
 define('WP_HOME', $wp_url);
 define('WP_SITEURL', $wp_url);
 define('WP_REST_ALLOWED_HOSTS', array('localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*'));
+
+// Force cookie domain to work on both localhost and VPS
+define('COOKIE_DOMAIN', false);
 define('FS_METHOD', 'direct');
 define('WP_MEMORY_LIMIT', '256M');
 
