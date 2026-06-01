@@ -135,5 +135,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', __DIR__ . '/' );
 }
 
+// Horizon Fit: Redirect ONLY root (/) to wp-admin
+if ( trim( $_SERVER['REQUEST_URI'], '/' ) === '' ) {
+	header( 'Location: /wp-admin/', true, 301 );
+	die();
+}
+
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';

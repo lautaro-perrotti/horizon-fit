@@ -8,6 +8,10 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
+  # Horizon Fit: Redirect ONLY root to wp-admin
+  RewriteCond %{REQUEST_URI} ^/$
+  RewriteRule ^$ /wp-admin/ [L,R=301]
+
   # REST API: /wp-json/* routes to index.php for WordPress to handle
   RewriteCond %{REQUEST_URI} ^/wp-json(/|$)
   RewriteRule ^ /index.php [QSA,L]
