@@ -1,0 +1,14 @@
+{
+  "slug": "home",
+  "sections": [
+    {
+      "id": "featured-products",
+      "type": "featured-products",
+      "order": 10,
+      "visible": true,
+      "title": "Productos destacados",
+      "template": "design-system/components/sections/featured-products.html",
+      "productsSource": "http://localhost:8089/wp-content/uploads/horizon-fit-cache/featured-products.json"
+    }
+  ]
+}

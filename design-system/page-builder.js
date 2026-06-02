@@ -1,13 +1,35 @@
 (function() {
   'use strict';
 
-  const PRODUCTS_JSON_URL = 'http://localhost:8089/wp-content/uploads/horizon-fit-cache/featured-products.json';
+  const root = document.querySelector('[data-page-src]');
 
-  function setText(root, selector, value) {
-    const element = root.querySelector(selector);
+  function setText(rootElement, selector, value) {
+    const element = rootElement.querySelector(selector);
     if (element) {
       element.textContent = value || '';
     }
+  }
+
+  async function getJSON(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(url + ' failed: ' + response.status);
+    }
+    return response.json();
+  }
+
+  async function getHTML(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(url + ' failed: ' + response.status);
+    }
+    return response.text();
+  }
+
+  function htmlToFragment(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html.trim();
+    return template.content.cloneNode(true);
   }
 
   function setProductImages(card, product) {
@@ -66,8 +88,8 @@
     });
   }
 
-  function renderProduct(template, product) {
-    const card = template.cloneNode(true);
+  function renderProduct(productTemplate, product) {
+    const card = productTemplate.cloneNode(true);
 
     card.dataset.productId = product.id || '';
 
@@ -99,46 +121,6 @@
     }
 
     return card;
-  }
-
-  async function renderFeaturedProducts() {
-    const grid = document.querySelector('#productGrid1');
-    if (!grid) {
-      return;
-    }
-
-    const template = document.querySelector('#hfProductItemTemplate');
-    if (!template) {
-      return;
-    }
-
-    const response = await fetch(PRODUCTS_JSON_URL, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error('Featured products JSON failed: ' + response.status);
-    }
-
-    const products = await response.json();
-    if (!Array.isArray(products)) {
-      throw new Error('Featured products JSON is not an array');
-    }
-
-    if (!products.length) {
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-
-    products.forEach(product => {
-      const cardTemplate = template.content.querySelector('.hf-product-item');
-      if (cardTemplate) {
-        fragment.appendChild(renderProduct(cardTemplate, product));
-      }
-    });
-
-    grid.innerHTML = '';
-    grid.appendChild(fragment);
-
-    initProductScrollShell(grid.closest('[data-grid-shell]'));
   }
 
   function initProductScrollShell(shell) {
@@ -186,9 +168,76 @@
     updateButtons();
   }
 
+  async function hydrateProducts(sectionElement, sectionConfig) {
+    const source = sectionConfig.productsSource;
+    const grid = sectionElement.querySelector('[data-products-grid]');
+    const template = sectionElement.querySelector('[data-product-template]');
+    const productTemplate = template ? template.content.querySelector('.hf-product-item') : null;
+
+    if (!source || !grid || !productTemplate) {
+      return;
+    }
+
+    const products = await getJSON(source);
+    if (!Array.isArray(products) || !products.length) {
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    products.forEach(product => {
+      fragment.appendChild(renderProduct(productTemplate, product));
+    });
+
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+    initProductScrollShell(sectionElement.querySelector('[data-grid-shell]'));
+  }
+
+  async function renderSection(sectionConfig) {
+    if (!sectionConfig || sectionConfig.visible === false || !sectionConfig.template) {
+      return null;
+    }
+
+    const fragment = htmlToFragment(await getHTML(sectionConfig.template));
+    const sectionElement = fragment.firstElementChild;
+
+    if (!sectionElement) {
+      return null;
+    }
+
+    setText(sectionElement, '[data-section-title]', sectionConfig.title || '');
+    await hydrateProducts(sectionElement, sectionConfig);
+
+    return sectionElement;
+  }
+
+  async function renderPage() {
+    if (!root) {
+      return;
+    }
+
+    const page = await getJSON(root.dataset.pageSrc);
+    const sections = Array.isArray(page.sections) ? page.sections : [];
+    const orderedSections = sections
+      .filter(section => section && section.visible !== false)
+      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+    const fragment = document.createDocumentFragment();
+
+    for (const section of orderedSections) {
+      const element = await renderSection(section);
+      if (element) {
+        fragment.appendChild(element);
+      }
+    }
+
+    root.innerHTML = '';
+    root.appendChild(fragment);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderFeaturedProducts);
+    document.addEventListener('DOMContentLoaded', renderPage);
   } else {
-    renderFeaturedProducts();
+    renderPage();
   }
 })();
