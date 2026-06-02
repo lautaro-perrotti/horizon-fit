@@ -1,2 +1,24 @@
 # PDF files
 HORIZON.pdf
+
+# WordPress uploads (generadas localmente, no versionadas)
+backend/wordpress/wp-content/uploads/
+
+# Node modules
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+.cache/
