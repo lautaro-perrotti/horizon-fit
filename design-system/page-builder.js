@@ -68,9 +68,13 @@ const PAGE_BUILDER = (() => {
         wrapper.innerHTML = componentHtml;
         const sectionEl = wrapper.firstElementChild;
 
+        // Handle optional title
         if (section.config?.title) {
           const titleEl = sectionEl.querySelector('[data-section-title]');
           if (titleEl) titleEl.textContent = section.config.title;
+        } else {
+          const headEl = sectionEl.querySelector('.hf-section-head');
+          if (headEl) headEl.style.display = 'none';
         }
 
         root.appendChild(sectionEl);
