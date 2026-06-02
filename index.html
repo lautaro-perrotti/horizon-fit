@@ -4323,8 +4323,31 @@
 <body>
   <main id="hfPageBuilderRoot" data-page-src="/design-system/pages/home.json"></main>
   <script src="/design-system/components/marquee/marquee.js"></script>
-  <script src="/design-system/page-builder.js?v=spa-render-priority-20260602"></script>
+  <script src="/design-system/components/carousel/carousel.js"></script>
+  <script src="/design-system/page-builder.js?v=spa-json-only-20260602"></script>
   <script>
+    function updateSetMobileCarouselNavTop() {
+      var carousel = document.getElementById('setMobileCarousel');
+      if (!carousel) return;
+      var media = carousel.querySelector('.hf-carousel__slide[aria-hidden="false"] .productMedia') ||
+        carousel.querySelector('.productMedia');
+      if (!media) return;
+
+      var carouselRect = carousel.getBoundingClientRect();
+      var mediaRect = media.getBoundingClientRect();
+      carousel.style.setProperty('--set-mobile-carousel-nav-top', ((mediaRect.top - carouselRect.top) + (mediaRect.height / 2)) + 'px');
+    }
+
+    function initDataCarousels() {
+      if (!window.HFCarousel) return;
+      document.querySelectorAll('[data-hf="carousel"]').forEach(function (carousel) {
+        if (!carousel._hfCarousel) {
+          window.HFCarousel.create(carousel);
+        }
+      });
+      updateSetMobileCarouselNavTop();
+    }
+
     function initCarousels() {
       document.querySelectorAll('[data-grid-shell]').forEach(function (shell) {
         var grid = shell.querySelector('.hf-product-grid--h-scroll');
@@ -4372,7 +4395,20 @@
         });
         updateControls();
       });
+
+      initDataCarousels();
     }
+
+    document.addEventListener('hf:carousel:change', function (event) {
+      if (event.target && event.target.id === 'setMobileCarousel') {
+        updateSetMobileCarouselNavTop();
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      initDataCarousels();
+      updateSetMobileCarouselNavTop();
+    });
 
     // Ejecutar cuando page-builder haya terminado de cargar los componentes
     if (document.readyState === 'loading') {

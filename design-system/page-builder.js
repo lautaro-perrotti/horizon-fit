@@ -29,8 +29,8 @@ const PAGE_BUILDER = (() => {
     return promise;
   }
 
-  const PRODUCT_DATA_SRC = 'http://localhost:8089/wp-json/wp/v2/pages/home/products';
-  const PRODUCT_DATA_FALLBACK_SRC = '/design-system/data/featured-products.json';
+  const PRODUCT_DATA_SRC = '/design-system/data/featured-products.json';
+  const PRODUCT_DATA_FALLBACK_SRC = '/featured-products.json';
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
   const isProductRoute = () => {
@@ -933,9 +933,12 @@ const PAGE_BUILDER = (() => {
   return { init, initNavbarAndMenuDrawer, initNavbarScroll };
 })();
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => PAGE_BUILDER.init());
-} else {
-  PAGE_BUILDER.init();
+if (!window.__HF_PAGE_BUILDER_STARTED__) {
+  window.__HF_PAGE_BUILDER_STARTED__ = true;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => PAGE_BUILDER.init(), { once: true });
+  } else {
+    PAGE_BUILDER.init();
+  }
 }
 
