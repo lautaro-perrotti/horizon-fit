@@ -16,9 +16,14 @@ define('SECURE_AUTH_SALT', '~Z6DW,H;k&*lhI=9w<-K4}P*j<E6GR-S|2W$jN"hK:B)M}pY$&['
 define('LOGGED_IN_SALT',   '8|9@T5#$<Y1J[&9Aq;2*Y/7d,&kS.!G<#>8q^{Vt;RFJ^G@|Wp');
 define('NONCE_SALT',       '#>|B2B+cFy5<5$M~4<}h#&d/|:+z,L!e(M%L7/k`5f5l^&M.z"g');
 
-// Detectar automáticamente el protocolo y host
+// Detectar automáticamente el protocolo y host.
+// - En el navegador: usa HTTP_HOST del request (funciona en local y en VPS).
+// - En WP-CLI/cron (sin HTTP_HOST): usa la env var WP_PUBLIC_HOST.
+//   Así la cache de productos/imágenes se genera con el dominio público
+//   correcto en cada entorno, sin tener que parchear a mano tras cada deploy.
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-$http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost:8089';
+$fallback_host = getenv('WP_PUBLIC_HOST') ?: 'localhost:8089';
+$http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $fallback_host;
 $wp_url = $protocol . '://' . $http_host;
 
 define('WP_HOME', $wp_url);

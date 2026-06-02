@@ -39,6 +39,9 @@ services:
       DB_HOST: db
       DB_USER: horizon_fit
       DB_PASSWORD: horizon_fit
+      # Host público para WP-CLI/cron (sin HTTP_HOST). Default local; en la VPS
+      # se sobreescribe con un archivo .env (WP_PUBLIC_HOST=187.77.28.61:8089).
+      WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*']);
         define('FS_METHOD', 'direct');
@@ -83,6 +86,9 @@ services:
       WORDPRESS_DB_USER: horizon_fit
       WORDPRESS_DB_PASSWORD: horizon_fit
       WORDPRESS_TABLE_PREFIX: hf_
+      # Mismo host público que wordpress: así la cache que regenera WP-CLI/cron
+      # usa el dominio correcto del entorno (local o VPS) sin parches manuales.
+      WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
     volumes:
       - horizon_fit_html:/var/www/html
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins

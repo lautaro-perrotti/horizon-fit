@@ -29,5 +29,16 @@ if [ ! -f /var/www/html/wp-config.php ]; then
   echo "WordPress installed!"
 fi
 
+# Mantener wp-config.php sincronizado con la plantilla del repo aunque ya exista.
+# Sin esto, los cambios al wp-config-sample (ej. el fallback de host por env var)
+# nunca llegarían a un contenedor con WordPress ya instalado, y habría que
+# parchear a mano tras cada deploy.
+if [ -f /wp-config-sample.php ] && [ -f /var/www/html/wp-config.php ]; then
+  if ! cmp -s /wp-config-sample.php /var/www/html/wp-config.php; then
+    echo "Sincronizando wp-config.php con la plantilla del repo..."
+    cp /wp-config-sample.php /var/www/html/wp-config.php
+  fi
+fi
+
 # Run Apache
 exec apache2-foreground
