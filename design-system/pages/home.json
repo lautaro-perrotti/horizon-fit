@@ -2,6 +2,20 @@
   "slug": "home",
   "sections": [
     {
+      "id": "marquee",
+      "type": "marquee",
+      "order": -2,
+      "visible": true,
+      "component": "design-system/components/sections/marquee.html"
+    },
+    {
+      "id": "navbar",
+      "type": "navbar",
+      "order": -1,
+      "visible": true,
+      "component": "design-system/components/sections/navbar.html"
+    },
+    {
       "id": "hero",
       "type": "hero",
       "order": 0,
