@@ -22,9 +22,10 @@
       "visible": true,
       "component": "design-system/components/sections/hero.html",
       "config": {
-        "videoDesktop": "assets/hero-desktop-optimized.mp4",
-        "videoMobile": "assets/hero-desktop-optimized.mp4",
-        "poster": "assets/hero-poster.jpg"
+        "videoDesktop": "assets/hero-desktop.mp4",
+        "videoMobile": "assets/hero-mobile.mp4",
+        "poster": "assets/hero-poster-desktop.jpg",
+        "posterMobile": "assets/hero-poster-mobile.jpg"
       }
     },
     {
