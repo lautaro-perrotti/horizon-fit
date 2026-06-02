@@ -2,13 +2,20 @@
   "slug": "home",
   "sections": [
     {
+      "id": "hero",
+      "type": "hero",
+      "order": 1,
+      "visible": true,
+      "component": "design-system/components/sections/hero.html"
+    },
+    {
       "id": "featured-products",
       "type": "featured-products",
-      "order": 10,
+      "order": 2,
       "visible": true,
       "title": "Productos destacados",
-      "template": "design-system/components/sections/featured-products.html",
-      "productsSource": "http://localhost:8089/wp-content/uploads/horizon-fit-cache/featured-products.json"
+      "component": "design-system/components/sections/featured-products.html",
+      "productsSource": "design-system/data/featured-products.json"
     }
   ]
 }

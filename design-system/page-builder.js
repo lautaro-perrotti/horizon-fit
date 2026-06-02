@@ -194,11 +194,13 @@
   }
 
   async function renderSection(sectionConfig) {
-    if (!sectionConfig || sectionConfig.visible === false || !sectionConfig.template) {
+    const componentPath = sectionConfig ? (sectionConfig.component || sectionConfig.template) : '';
+
+    if (!sectionConfig || sectionConfig.visible === false || !componentPath) {
       return null;
     }
 
-    const fragment = htmlToFragment(await getHTML(sectionConfig.template));
+    const fragment = htmlToFragment(await getHTML(componentPath));
     const sectionElement = fragment.firstElementChild;
 
     if (!sectionElement) {
