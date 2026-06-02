@@ -47,7 +47,7 @@ const PAGE_RENDERER = (() => {
 
   const loadLoaderScript = (type) => {
     return new Promise((resolve) => {
-      const loaderPath = 'design-system/loaders/' + type + '-loader.js';
+      const loaderPath = 'design-system/loaders/' + type + '-loader.js?t=' + Date.now();
 
       if (loadedScripts[loaderPath]) {
         resolve();

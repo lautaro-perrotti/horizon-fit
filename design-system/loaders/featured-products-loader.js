@@ -1,8 +1,8 @@
 const baseUrl = 'http://localhost:8089';
-const cacheUrl = 'http://localhost:8089/wp-content/uploads/horizon-fit-cache/featured-products.json';
+const cacheUrl = 'http://localhost:8089/wp-json/wp/v2/pages/home/products';
 
 window.FEATURED_PRODUCTS_LOADER = {
-  fetchProducts: async (collectionSlug, limit) => {
+  async fetchProducts(collectionSlug, limit) {
     try {
       const response = await fetch(cacheUrl, {
         headers: { 'Accept': 'application/json' },
@@ -34,7 +34,7 @@ window.FEATURED_PRODUCTS_LOADER = {
     }
   },
 
-  init: async (sectionElement, section) => {
+  async init(sectionElement, section) {
     const settings = section.settings || {};
     const collectionSlug = settings.collection_slug;
     const limit = settings.limit || 8;
