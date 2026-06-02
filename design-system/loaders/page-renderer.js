@@ -69,16 +69,24 @@ const PAGE_RENDERER = (() => {
     const { type, settings = {} } = section;
 
     const componentHtml = await loadSectionComponent(type);
-    if (!componentHtml) return null;
+    if (!componentHtml) {
+      console.warn('No HTML for section type: ' + type);
+      return null;
+    }
 
     const container = document.createElement('div');
     container.innerHTML = componentHtml;
     const sectionElement = container.firstElementChild;
 
+    console.log('Rendering section type: ' + type);
+
     await loadLoaderScript(type);
 
     const loaderName = type.toUpperCase() + '_LOADER';
+    console.log('Looking for loader: ' + loaderName + ', exists: ' + (window[loaderName] ? 'YES' : 'NO'));
+
     if (window[loaderName] && window[loaderName].init) {
+      console.log('Calling init for ' + type);
       window[loaderName].init(sectionElement, section);
     }
 
