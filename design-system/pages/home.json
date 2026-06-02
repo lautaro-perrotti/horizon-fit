@@ -2,20 +2,15 @@
   "slug": "home",
   "sections": [
     {
-      "id": "hero",
-      "type": "hero",
-      "order": 1,
-      "visible": true,
-      "component": "design-system/components/sections/hero.html"
-    },
-    {
       "id": "featured-products",
       "type": "featured-products",
-      "order": 2,
+      "order": 1,
       "visible": true,
-      "title": "Productos destacados",
       "component": "design-system/components/sections/featured-products.html",
-      "productsSource": "design-system/data/featured-products.json"
+      "data": "design-system/data/featured-products.json",
+      "config": {
+        "title": "Productos destacados"
+      }
     }
   ]
 }

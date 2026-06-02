@@ -1,245 +1,106 @@
-(function() {
-  'use strict';
+const PAGE_BUILDER = (() => {
+  const init = async () => {
+    const root = document.getElementById('hfPageBuilderRoot');
+    if (!root) return;
 
-  const root = document.querySelector('[data-page-src]');
+    const pageSrc = root.getAttribute('data-page-src');
+    if (!pageSrc) return;
 
-  function setText(rootElement, selector, value) {
-    const element = rootElement.querySelector(selector);
-    if (element) {
-      element.textContent = value || '';
-    }
-  }
+    try {
+      const pageConfigResp = await fetch(pageSrc);
+      const pageConfig = await pageConfigResp.json();
 
-  async function getJSON(url) {
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(url + ' failed: ' + response.status);
-    }
-    return response.json();
-  }
+      if (!pageConfig.sections) return;
 
-  async function getHTML(url) {
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(url + ' failed: ' + response.status);
-    }
-    return response.text();
-  }
+      const sections = pageConfig.sections.sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  function htmlToFragment(html) {
-    const template = document.createElement('template');
-    template.innerHTML = html.trim();
-    return template.content.cloneNode(true);
-  }
+      for (const section of sections) {
+        if (section.visible === false) continue;
 
-  function setProductImages(card, product) {
-    const images = Array.isArray(product.images) ? product.images.filter(Boolean) : [];
-    const slides = Array.from(card.querySelectorAll('.hf-product-item__slide'));
-    const dots = Array.from(card.querySelectorAll('.hf-product-item__dot'));
+        const componentResp = await fetch(section.component);
+        const componentHtml = await componentResp.text();
 
-    slides.forEach((slide, index) => {
-      const image = images[index];
-      const img = slide.querySelector('img');
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = componentHtml;
+        const sectionEl = wrapper.firstElementChild;
 
-      if (!image || !img) {
-        slide.remove();
-        return;
+        if (section.config?.title) {
+          const titleEl = sectionEl.querySelector('[data-section-title]');
+          if (titleEl) titleEl.textContent = section.config.title;
+        }
+
+        if (section.type === 'featured-products' && section.data) {
+          await renderFeaturedProducts(sectionEl, section);
+        }
+
+        root.appendChild(sectionEl);
       }
-
-      img.src = image;
-      img.alt = product.name || '';
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
-    });
-
-    dots.forEach((dot, index) => {
-      if (!images[index]) {
-        dot.remove();
-        return;
-      }
-
-      dot.dataset.slide = String(index);
-      dot.classList.toggle('is-active', index === 0);
-    });
-  }
-
-  function setProductSizes(card, product) {
-    const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean) : [];
-    const sizeWrap = card.querySelector('.hf-product-item__sizes');
-
-    if (!sizeWrap) {
-      return;
+    } catch (e) {
+      console.error('Page builder error:', e);
     }
+  };
 
-    if (!sizes.length) {
-      sizeWrap.remove();
-      return;
-    }
+  const renderFeaturedProducts = async (sectionEl, section) => {
+    try {
+      const productsResp = await fetch(section.data);
+      const products = await productsResp.json();
 
-    sizeWrap.innerHTML = '';
+      const limit = Number(section.config?.limit || 0);
+      const visibleProducts = limit > 0 ? products.slice(0, limit) : products;
 
-    sizes.forEach(size => {
-      const button = document.createElement('button');
-      button.className = 'hf-product-item__size';
-      button.type = 'button';
-      button.setAttribute('aria-pressed', 'false');
-      button.textContent = size;
-      sizeWrap.appendChild(button);
-    });
-  }
+      const grid = sectionEl.querySelector('[data-products-slot]') || sectionEl.querySelector('[data-products-grid]');
+      if (!grid) return;
 
-  function renderProduct(productTemplate, product) {
-    const card = productTemplate.cloneNode(true);
+      const template = sectionEl.querySelector('[data-product-template]');
+      if (!template) return;
 
-    card.dataset.productId = product.id || '';
+      visibleProducts.forEach(product => {
+        const clone = template.content.cloneNode(true);
 
-    setProductImages(card, product);
-    setProductSizes(card, product);
-    setText(card, '.hf-product-item__badge', product.badge || '');
-    setText(card, '.hf-product-item__title', product.name || '');
-    setText(card, '.hf-product-item__price', product.priceText || '');
-    setText(card, '.hf-product-item__price-original', product.priceOriginal || '');
-    setText(card, '.hf-product-item__installments', product.installmentsText || '');
-    setText(card, '.hf-product-item__transfer', product.transferText || '');
+        const link = clone.querySelector('.hf-product-item__link');
+        if (link) link.href = product.permalink || '#';
 
-    card.querySelectorAll('a').forEach(link => {
-      link.href = product.permalink || '#';
-    });
+        const title = clone.querySelector('.hf-product-item__title');
+        if (title) title.textContent = product.name || '';
 
-    if (!product.badge) {
-      const badge = card.querySelector('.hf-product-item__badge');
-      if (badge) {
-        badge.remove();
-      }
-    }
+        const price = clone.querySelector('.hf-product-item__price');
+        if (price) price.textContent = product.priceText || '';
 
-    if (!product.priceOriginal) {
-      const original = card.querySelector('.hf-product-item__price-original');
-      if (original) {
-        original.remove();
-      }
-    }
+        const priceOrig = clone.querySelector('.hf-product-item__price-original');
+        if (priceOrig) priceOrig.textContent = product.priceOriginal || '';
 
-    return card;
-  }
+        const badge = clone.querySelector('.hf-product-item__badge');
+        if (badge) badge.textContent = product.badge || '';
 
-  function initProductScrollShell(shell) {
-    if (!shell) {
-      return;
-    }
-
-    const grid = shell.querySelector('.hf-product-grid--h-scroll');
-    const buttons = Array.from(shell.querySelectorAll('.hf-carousel__nav'));
-
-    if (!grid || !buttons.length) {
-      return;
-    }
-
-    function getStep() {
-      const firstCard = grid.querySelector('.hf-product-item');
-      if (!firstCard) {
-        return grid.clientWidth;
-      }
-
-      const styles = window.getComputedStyle(grid);
-      const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-      return firstCard.getBoundingClientRect().width + gap;
-    }
-
-    function updateButtons() {
-      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth - 2);
-      buttons.forEach(button => {
-        const dir = Number(button.dataset.dir || 0);
-        button.disabled = dir < 0 ? grid.scrollLeft <= 2 : grid.scrollLeft >= maxScroll;
-      });
-    }
-
-    buttons.forEach(button => {
-      button.addEventListener('click', () => {
-        grid.scrollBy({
-          left: getStep() * Number(button.dataset.dir || 0),
-          behavior: 'smooth',
+        const images = product.imageObjects || product.images || [];
+        const imgElements = clone.querySelectorAll('.hf-product-item__slide img');
+        imgElements.forEach((img, idx) => {
+          if (images[idx]) {
+            const imgUrl = typeof images[idx] === 'string' ? images[idx] : images[idx].url;
+            img.src = imgUrl;
+            img.alt = product.name || '';
+          }
         });
+
+        const sizesEl = clone.querySelector('.hf-product-item__sizes');
+        if (sizesEl && product.sizes && product.sizes.length > 0) {
+          sizesEl.innerHTML = product.sizes.map(s => '<span>' + s + '</span>').join('');
+        }
+
+        grid.appendChild(clone);
       });
-    });
 
-    grid.addEventListener('scroll', updateButtons, { passive: true });
-    window.addEventListener('resize', updateButtons);
-    updateButtons();
-  }
-
-  async function hydrateProducts(sectionElement, sectionConfig) {
-    const source = sectionConfig.productsSource;
-    const grid = sectionElement.querySelector('[data-products-grid]');
-    const template = sectionElement.querySelector('[data-product-template]');
-    const productTemplate = template ? template.content.querySelector('.hf-product-item') : null;
-
-    if (!source || !grid || !productTemplate) {
-      return;
+      console.log('Rendered ' + visibleProducts.length + ' featured products');
+    } catch (e) {
+      console.error('Featured products error:', e);
     }
+  };
 
-    const products = await getJSON(source);
-    if (!Array.isArray(products) || !products.length) {
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-    products.forEach(product => {
-      fragment.appendChild(renderProduct(productTemplate, product));
-    });
-
-    grid.innerHTML = '';
-    grid.appendChild(fragment);
-    initProductScrollShell(sectionElement.querySelector('[data-grid-shell]'));
-  }
-
-  async function renderSection(sectionConfig) {
-    const componentPath = sectionConfig ? (sectionConfig.component || sectionConfig.template) : '';
-
-    if (!sectionConfig || sectionConfig.visible === false || !componentPath) {
-      return null;
-    }
-
-    const fragment = htmlToFragment(await getHTML(componentPath));
-    const sectionElement = fragment.firstElementChild;
-
-    if (!sectionElement) {
-      return null;
-    }
-
-    setText(sectionElement, '[data-section-title]', sectionConfig.title || '');
-    await hydrateProducts(sectionElement, sectionConfig);
-
-    return sectionElement;
-  }
-
-  async function renderPage() {
-    if (!root) {
-      return;
-    }
-
-    const page = await getJSON(root.dataset.pageSrc);
-    const sections = Array.isArray(page.sections) ? page.sections : [];
-    const orderedSections = sections
-      .filter(section => section && section.visible !== false)
-      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-
-    const fragment = document.createDocumentFragment();
-
-    for (const section of orderedSections) {
-      const element = await renderSection(section);
-      if (element) {
-        fragment.appendChild(element);
-      }
-    }
-
-    root.innerHTML = '';
-    root.appendChild(fragment);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderPage);
-  } else {
-    renderPage();
-  }
+  return { init };
 })();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => PAGE_BUILDER.init());
+} else {
+  PAGE_BUILDER.init();
+}

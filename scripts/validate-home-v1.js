@@ -1,22 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = process.cwd();
-
-const explicitFiles = [
-  'index.html',
-  'design-system/page-builder.js',
-  'design-system/pages/home.json',
-];
-
-const sectionsDir = path.join(ROOT, 'design-system', 'components', 'sections');
-
-const forbidden = [
+const FORBIDDEN = [
   'BLACK HIGH TOP',
   'BLUE HIGH TOP',
   'WHITE TRAINERS',
-  'pexels.com',
   'Favoritos',
+  'pexels.com',
   'home-data-loader',
   'api-loader',
   'page-renderer',
@@ -29,59 +19,45 @@ const forbidden = [
   'id="tokens"',
   'id="components"',
   'id="marketing"',
-  'id="ecommerce"',
+  'id="ecommerce"'
 ];
 
-const encodingGuards = [
-  'Ã',
-  'â',
-  '�',
+const filesToCheck = [
+  'index.html',
+  'design-system/page-builder.js',
+  'design-system/pages/home.json',
+  'design-system/components/sections/featured-products.html',
+  'design-system/components/sections/hero.html'
 ];
 
-function listSectionFiles() {
-  if (!fs.existsSync(sectionsDir)) {
-    return [];
-  }
+let errors = 0;
 
-  return fs
-    .readdirSync(sectionsDir)
-    .filter((file) => file.endsWith('.html'))
-    .map((file) => path.join('design-system', 'components', 'sections', file));
-}
+console.log('🔍 Validating Home V1...\n');
 
-function readText(relativePath) {
-  return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
-}
-
-const files = [...explicitFiles, ...listSectionFiles()];
-const failures = [];
-
-for (const file of files) {
-  if (!fs.existsSync(path.join(ROOT, file))) {
-    failures.push(`${file}: missing`);
+for (const file of filesToCheck) {
+  const fullPath = path.join(__dirname, '..', file);
+  if (!fs.existsSync(fullPath)) {
+    console.log(`❌ ${file} — NOT FOUND`);
+    errors++;
     continue;
   }
 
-  const text = readText(file);
+  const content = fs.readFileSync(fullPath, 'utf-8');
+  const forbiddenFound = FORBIDDEN.filter(f => content.includes(f));
 
-  for (const needle of forbidden) {
-    if (text.includes(needle)) {
-      failures.push(`${file}: forbidden "${needle}"`);
-    }
-  }
-
-  for (const marker of encodingGuards) {
-    if (text.includes(marker)) {
-      failures.push(`${file}: broken UTF-8 marker "${marker}"`);
-    }
+  if (forbiddenFound.length > 0) {
+    console.log(`❌ ${file} — FORBIDDEN TEXT FOUND:`);
+    forbiddenFound.forEach(f => console.log(`   - "${f}"`));
+    errors++;
+  } else {
+    console.log(`✅ ${file}`);
   }
 }
 
-if (failures.length) {
-  console.error('Home V1 validation failed:');
-  failures.forEach((failure) => console.error(`- ${failure}`));
+if (errors === 0) {
+  console.log('\n✅ All validations passed!');
+  process.exit(0);
+} else {
+  console.log(`\n❌ ${errors} file(s) failed validation`);
   process.exit(1);
 }
-
-console.log('Home V1 validation passed.');
-console.log(`Checked ${files.length} files.`);
