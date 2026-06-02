@@ -262,9 +262,10 @@ const PAGE_BUILDER = (() => {
     if (config.videoDesktop) video.setAttribute('data-desktop', resolveMediaUrl(config.videoDesktop));
     if (config.videoMobile) video.setAttribute('data-mobile', resolveMediaUrl(config.videoMobile));
 
-    // Poster (primer frame): se ve al instante mientras el video pesado carga.
-    const hasPoster = !!config.poster;
-    if (hasPoster) video.setAttribute('poster', resolveMediaUrl(config.poster));
+    // Posters por breakpoint: el de mobile cae al de desktop si no se define.
+    if (config.poster) video.setAttribute('data-poster-desktop', resolveMediaUrl(config.poster));
+    if (config.posterMobile) video.setAttribute('data-poster-mobile', resolveMediaUrl(config.posterMobile));
+    const hasPoster = !!(config.poster || config.posterMobile);
 
     // Fondo oscuro para evitar flash blanco. Con poster el video se muestra de
     // una (el navegador pinta el poster hasta que reproduce). Sin poster, fade-in.
@@ -282,6 +283,15 @@ const PAGE_BUILDER = (() => {
       const isMobile = window.innerWidth <= 768;
       const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');
       const nextSrc = resolveMediaUrl(src || '');
+
+      // Poster según breakpoint (mobile cae a desktop si no hay).
+      const posterDesktop = video.getAttribute('data-poster-desktop') || '';
+      const posterMobile = video.getAttribute('data-poster-mobile') || posterDesktop;
+      const poster = isMobile ? posterMobile : posterDesktop;
+      if (poster && video.getAttribute('poster') !== poster) {
+        video.setAttribute('poster', poster);
+      }
+
       if (video.src !== nextSrc) {
         video.src = nextSrc;
         video.load();
