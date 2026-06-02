@@ -4,28 +4,28 @@
     {
       "id": "marquee",
       "type": "marquee",
-      "order": -2,
+      "order": 1,
       "visible": true,
       "component": "design-system/components/sections/marquee.html"
     },
     {
       "id": "navbar",
       "type": "navbar",
-      "order": -1,
+      "order": 2,
       "visible": true,
       "component": "design-system/components/sections/navbar.html"
     },
     {
       "id": "hero",
       "type": "hero",
-      "order": 0,
+      "order": 3,
       "visible": true,
       "component": "design-system/components/sections/hero.html"
     },
     {
       "id": "featured-products",
       "type": "featured-products",
-      "order": 1,
+      "order": 4,
       "visible": true,
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
