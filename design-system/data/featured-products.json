@@ -387,7 +387,7 @@
     {
         "id": 552,
         "slug": "falda-conjunto-falda-bordo",
-        "sku": "",
+        "sku": "2402401BOR",
         "type": "variable",
         "status": "publish",
         "name": "Falda \"Conjunto falda\" bordó",
@@ -457,7 +457,7 @@
         "variations": [
             {
                 "id": 553,
-                "sku": "",
+                "sku": "2402401BORS",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=S&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -475,7 +475,7 @@
             },
             {
                 "id": 554,
-                "sku": "",
+                "sku": "2402401BORM",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=M&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -493,7 +493,7 @@
             },
             {
                 "id": 555,
-                "sku": "",
+                "sku": "2402401BORL",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=L&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -585,7 +585,7 @@
     {
         "id": 568,
         "slug": "falda-conjunto-falda-negro",
-        "sku": "",
+        "sku": "2402401NEG",
         "type": "variable",
         "status": "publish",
         "name": "Falda \"Conjunto falda\" negro",
@@ -655,7 +655,7 @@
         "variations": [
             {
                 "id": 569,
-                "sku": "",
+                "sku": "2402401NEGS",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=S&attribute_color=Negro",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -673,7 +673,7 @@
             },
             {
                 "id": 570,
-                "sku": "",
+                "sku": "2402401NEGM",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=M&attribute_color=Negro",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -691,7 +691,7 @@
             },
             {
                 "id": 571,
-                "sku": "",
+                "sku": "2402401NEGL",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=L&attribute_color=Negro",
                 "price": 1500,
                 "regularPrice": 1500,

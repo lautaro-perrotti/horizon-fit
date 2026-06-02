@@ -60,7 +60,7 @@ function hf_store_enqueue_assets() {
 add_action('wp_enqueue_scripts', 'hf_store_enqueue_assets');
 
 function hf_store_blocked_route_slugs() {
-    return apply_filters('hf_store_blocked_route_slugs', array('checkout', 'cart', 'diplomatura', 'curso'));
+    return apply_filters('hf_store_blocked_route_slugs', array('checkout', 'cart', 'diplomatura', 'curso', 'modulo/asesoramiento-de-imagen'));
 }
 
 function hf_store_is_blocked_public_url($url) {

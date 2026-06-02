@@ -15,6 +15,47 @@
         "regularPriceText": "$ 1.500,00",
         "salePriceText": "",
         "badge": "",
+        "description": "asdasdasd",
+        "shortDescription": "",
+        "descriptionTitle": "Descripción",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar del rev??s en agua fr??a para cuidar la red y la elasticidad.",
+            "bullets": [
+                "Lavar en bolsa de protecci??n si se usa lavarropas.",
+                "No usar lavandina ni secadora.",
+                "Secar extendida y a la sombra."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": [
+                "Talle",
+                "Busto",
+                "Cintura",
+                "Cadera"
+            ],
+            "rows": [
+                [
+                    "S",
+                    "84-90",
+                    "64-70",
+                    "90-96"
+                ],
+                [
+                    "M",
+                    "90-96",
+                    "70-76",
+                    "96-102"
+                ],
+                [
+                    "L",
+                    "96-104",
+                    "76-84",
+                    "102-110"
+                ]
+            ]
+        },
         "categories": [
             {
                 "id": 15,
@@ -194,6 +235,47 @@
         "regularPriceText": "$ 1.500,00",
         "salePriceText": "",
         "badge": "",
+        "description": "asdasdasd",
+        "shortDescription": "",
+        "descriptionTitle": "Descripción",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en fr??o y evitar fricci??n intensa para conservar la textura y el color.",
+            "bullets": [
+                "Lavar con colores similares.",
+                "No usar lavandina ni secadora.",
+                "Planchar del rev??s con temperatura baja."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": [
+                "Talle",
+                "Busto",
+                "Cintura",
+                "Cadera"
+            ],
+            "rows": [
+                [
+                    "S",
+                    "84-90",
+                    "64-70",
+                    "90-96"
+                ],
+                [
+                    "M",
+                    "90-96",
+                    "70-76",
+                    "96-102"
+                ],
+                [
+                    "L",
+                    "96-104",
+                    "76-84",
+                    "102-110"
+                ]
+            ]
+        },
         "categories": [
             {
                 "id": 15,
@@ -362,6 +444,47 @@
         "regularPriceText": "$ 1.500,00",
         "salePriceText": "",
         "badge": "",
+        "description": "asdasdasd",
+        "shortDescription": "",
+        "descriptionTitle": "Descripción",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar a mano o en ciclo delicado para que conserve ca??da, color y forma.",
+            "bullets": [
+                "No usar lavandina.",
+                "No dejar en remojo por tiempo prolongado.",
+                "Secar a la sombra y sin retorcer."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": [
+                "Talle",
+                "Busto",
+                "Cintura",
+                "Cadera"
+            ],
+            "rows": [
+                [
+                    "S",
+                    "84-90",
+                    "64-70",
+                    "90-96"
+                ],
+                [
+                    "M",
+                    "90-96",
+                    "70-76",
+                    "96-102"
+                ],
+                [
+                    "L",
+                    "96-104",
+                    "76-84",
+                    "102-110"
+                ]
+            ]
+        },
         "categories": [
             {
                 "id": 15,
@@ -541,6 +664,47 @@
         "regularPriceText": "$ 1.500,00",
         "salePriceText": "",
         "badge": "",
+        "description": "asdasdasd",
+        "shortDescription": "",
+        "descriptionTitle": "Descripción",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en fr??o con prendas oscuras para mantener el tono y el tejido.",
+            "bullets": [
+                "Lavar con colores similares.",
+                "No usar secadora.",
+                "Secar extendida y a la sombra."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": [
+                "Talle",
+                "Busto",
+                "Cintura",
+                "Cadera"
+            ],
+            "rows": [
+                [
+                    "S",
+                    "84-90",
+                    "64-70",
+                    "90-96"
+                ],
+                [
+                    "M",
+                    "90-96",
+                    "70-76",
+                    "96-102"
+                ],
+                [
+                    "L",
+                    "96-104",
+                    "76-84",
+                    "102-110"
+                ]
+            ]
+        },
         "categories": [
             {
                 "id": 15,
@@ -731,6 +895,47 @@
         "regularPriceText": "$ 1.500,00",
         "salePriceText": "",
         "badge": "",
+        "description": "asasdasd",
+        "shortDescription": "",
+        "descriptionTitle": "Descripción",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en fr??o para mantener el color vivo y la elasticidad del tejido.",
+            "bullets": [
+                "No usar lavandina.",
+                "Evitar exposici??n prolongada al sol mientras seca.",
+                "Planchar del rev??s a baja temperatura si hace falta."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": [
+                "Talle",
+                "Busto",
+                "Cintura",
+                "Cadera"
+            ],
+            "rows": [
+                [
+                    "S",
+                    "84-90",
+                    "64-70",
+                    "90-96"
+                ],
+                [
+                    "M",
+                    "90-96",
+                    "70-76",
+                    "96-102"
+                ],
+                [
+                    "L",
+                    "96-104",
+                    "76-84",
+                    "102-110"
+                ]
+            ]
+        },
         "categories": [
             {
                 "id": 15,

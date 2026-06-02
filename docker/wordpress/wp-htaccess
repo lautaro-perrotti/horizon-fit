@@ -9,7 +9,7 @@
   RewriteRule ^ - [L]
 
   # Horizon Fit: block temporary routes before WordPress routing
-  RewriteRule ^(cart|checkout|diplomatura|curso)(/.*)?$ - [F,L]
+  RewriteRule ^(cart|checkout|diplomatura|curso|modulo/asesoramiento-de-imagen)(/.*)?$ - [F,L]
 
   # Horizon Fit: Redirect ONLY root to wp-admin
   RewriteCond %{REQUEST_URI} ^/$

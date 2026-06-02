@@ -26,6 +26,14 @@ add_action('init', function() {
 });
 add_action('hf_regenerate_featured_products_cache_cron', 'hf_regenerate_featured_products_cache');
 
+add_action('rest_api_init', function() {
+  register_rest_route('wp/v2', '/pages/home/products', array(
+    'methods' => 'GET',
+    'permission_callback' => '__return_true',
+    'callback' => 'hf_featured_products_rest_response',
+  ));
+});
+
 register_deactivation_hook(dirname(dirname(__FILE__)) . '/horizon-fit-commerce.php', function() {
   wp_clear_scheduled_hook('hf_regenerate_featured_products_cache_cron');
 });
@@ -51,6 +59,68 @@ function hf_featured_products_format_price($price) {
   }
 
   return '$ ' . number_format((float) $price, 2, ',', '.');
+}
+
+function hf_featured_products_json_meta($raw_value, $default = array()) {
+  if (is_array($raw_value)) {
+    return $raw_value;
+  }
+
+  if (!is_string($raw_value) || trim($raw_value) === '') {
+    return $default;
+  }
+
+  $decoded = json_decode($raw_value, true);
+  if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+    return $decoded;
+  }
+
+  return $default;
+}
+
+function hf_featured_products_copy_data($product) {
+  $product_id = $product->get_id();
+  $content = (string) get_post_field('post_content', $product_id, 'raw');
+  $excerpt = (string) get_post_field('post_excerpt', $product_id, 'raw');
+  $care = hf_featured_products_json_meta(get_post_meta($product_id, '_hf_care_json', true), array());
+  $size_table = hf_featured_products_json_meta(get_post_meta($product_id, '_hf_size_table_json', true), array());
+
+  return array(
+    'description' => trim(wp_strip_all_tags(html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8'))),
+    'shortDescription' => trim(wp_strip_all_tags(html_entity_decode($excerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8'))),
+    'descriptionTitle' => 'Descripción',
+    'care' => array(
+      'title' => isset($care['title']) && $care['title'] !== '' ? $care['title'] : 'Lavado y cuidado',
+      'text' => isset($care['text']) && $care['text'] !== '' ? $care['text'] : '',
+      'bullets' => isset($care['bullets']) && is_array($care['bullets']) ? array_values(array_filter($care['bullets'])) : array(),
+    ),
+    'sizeTable' => array(
+      'title' => isset($size_table['title']) && $size_table['title'] !== '' ? $size_table['title'] : 'Tabla de talles',
+      'headers' => isset($size_table['headers']) && is_array($size_table['headers']) ? array_values(array_filter($size_table['headers'])) : array(),
+      'rows' => isset($size_table['rows']) && is_array($size_table['rows']) ? array_values(array_filter($size_table['rows'])) : array(),
+    ),
+  );
+}
+
+function hf_featured_products_rest_response() {
+  $cache_file = hf_featured_products_cache_path();
+  if (file_exists($cache_file)) {
+    $cached = json_decode((string) file_get_contents($cache_file), true);
+    if (is_array($cached)) {
+      return rest_ensure_response($cached);
+    }
+  }
+
+  hf_regenerate_featured_products_cache();
+
+  if (file_exists($cache_file)) {
+    $cached = json_decode((string) file_get_contents($cache_file), true);
+    if (is_array($cached)) {
+      return rest_ensure_response($cached);
+    }
+  }
+
+  return rest_ensure_response(array());
 }
 
 function hf_featured_products_get_terms($product_id, $taxonomy) {
@@ -263,6 +333,7 @@ function hf_featured_products_serialize_product($product) {
   $variations = hf_featured_products_get_variations($product);
   $attributes = hf_featured_products_get_attributes($product);
   $images = hf_featured_products_get_images($product);
+  $copy = hf_featured_products_copy_data($product);
 
   return [
     'id' => $product->get_id(),
@@ -282,6 +353,11 @@ function hf_featured_products_serialize_product($product) {
     'regularPriceText' => hf_featured_products_format_price($price_data['regularPrice']),
     'salePriceText' => hf_featured_products_format_price($price_data['salePrice']),
     'badge' => hf_featured_products_get_badge($product, $price_data),
+    'description' => $copy['description'],
+    'shortDescription' => $copy['shortDescription'],
+    'descriptionTitle' => $copy['descriptionTitle'],
+    'care' => $copy['care'],
+    'sizeTable' => $copy['sizeTable'],
     'categories' => hf_featured_products_get_terms($product->get_id(), 'product_cat'),
     'tags' => hf_featured_products_get_terms($product->get_id(), 'product_tag'),
     'collections' => hf_featured_products_get_terms($product->get_id(), 'hf_collection'),

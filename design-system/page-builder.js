@@ -29,7 +29,8 @@ const PAGE_BUILDER = (() => {
     return promise;
   }
 
-  const PRODUCT_DATA_SRC = '/design-system/data/featured-products.json';
+  const PRODUCT_DATA_SRC = 'http://localhost:8089/wp-json/wp/v2/pages/home/products';
+  const PRODUCT_DATA_FALLBACK_SRC = '/design-system/data/featured-products.json';
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
   const isProductRoute = () => {
@@ -353,6 +354,58 @@ const PAGE_BUILDER = (() => {
     return attr?.values?.map(value => value.name || value.slug).filter(Boolean) || [];
   };
 
+  const normalizeSku = (value) => `${value || ''}`.trim();
+
+  const skuPrefix = (value, length = 7) => {
+    const sku = normalizeSku(value);
+    return sku ? sku.slice(0, length) : '';
+  };
+
+  const productSkuPrefix = (product) => {
+    const skuCandidates = [
+      product?.sku,
+      ...(Array.isArray(product?.variations) ? product.variations.map(variation => variation?.sku).filter(Boolean) : []),
+    ];
+
+    for (const candidate of skuCandidates) {
+      const prefix = skuPrefix(candidate);
+      if (prefix) return prefix;
+    }
+
+    return '';
+  };
+
+  const productFamilyKey = (product) => {
+    const slug = `${product?.slug || ''}`.toLowerCase().trim();
+    if (!slug) return '';
+
+    const colorWords = ['blanco', 'negro', 'bordo', 'bordÃ³', 'bordeaux', 'azul', 'verde', 'gris', 'arena', 'nude', 'rojo', 'rosa', 'marron', 'marrón', 'lila', 'violeta'];
+    let family = slug;
+    colorWords.forEach(color => {
+      family = family.replace(new RegExp(`(^|[-_])${color}($|[-_])`, 'g'), '$1$2');
+    });
+
+    return family.replace(/[-_]{2,}/g, '-').replace(/[-_]+$/g, '').replace(/^[-_]+/g, '');
+  };
+
+  const sameColorFamily = (product, candidate) => {
+    if (!product || !candidate || product.slug === candidate.slug) return false;
+
+    const productPrefix = productSkuPrefix(product);
+    const candidatePrefix = productSkuPrefix(candidate);
+    if (productPrefix && candidatePrefix) {
+      return productPrefix === candidatePrefix;
+    }
+
+    const productFamily = productFamilyKey(product);
+    const candidateFamily = productFamilyKey(candidate);
+    return !!productFamily && productFamily === candidateFamily;
+  };
+
+  const getColorVariants = (product, products) => {
+    return (products || []).filter(candidate => sameColorFamily(product, candidate));
+  };
+
   const productMatchesSlug = (product, slug) => {
     if (!slug) return false;
     const permalinkSlug = `${product?.permalink || ''}`.replace(/\/$/, '').split('/').pop();
@@ -466,7 +519,7 @@ const PAGE_BUILDER = (() => {
 
   const renderProductPage = async (root) => {
     const [products, html] = await Promise.all([
-      fetchJson(PRODUCT_DATA_SRC),
+      fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
       fetchText(PRODUCT_DETAIL_COMPONENT)
     ]);
 
@@ -587,55 +640,45 @@ const PAGE_BUILDER = (() => {
     });
     if (!sizes.length && sizeLabel) sizeLabel.textContent = '-';
 
-    const colors = getAttributeValues(product, 'color');
+    const colorVariants = getColorVariants(product, products);
+    const colors = colorVariants.length > 1 ? colorVariants : [product];
     const colorsSlot = $('[data-product-colors]');
-    colors.forEach((color, idx) => {
+    colors.forEach((colorProduct, idx) => {
+      const colorName = colorProduct?.attributes?.find(item => `${item.label || item.name || ''}`.toLowerCase().includes('color'))?.values?.[0]?.name
+        || colorProduct?.attributes?.find(item => `${item.label || item.name || ''}`.toLowerCase().includes('color'))?.values?.[0]?.slug
+        || colorProduct?.name
+        || '';
       const btn = document.createElement('button');
       btn.className = 'hf-pdp-view__color';
       btn.type = 'button';
       btn.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
-      btn.setAttribute('aria-label', color);
-      if (images[idx]) {
+      btn.setAttribute('aria-label', colorName);
+      const colorImages = getProductImages(colorProduct);
+      if (colorImages[0]) {
         const img = document.createElement('img');
-        img.src = images[idx].url;
-        img.alt = color;
+        img.src = colorImages[0].url;
+        img.alt = colorName;
         btn.appendChild(img);
       } else {
-        btn.textContent = color;
+        btn.textContent = colorName;
       }
       btn.addEventListener('click', () => {
         $$('.hf-pdp-view__color', colorsSlot).forEach(item => item.setAttribute('aria-current', 'false'));
         btn.setAttribute('aria-current', 'true');
+        if (mainImage && colorImages[0]) {
+          mainMedia?.classList.add('is-changing');
+          mainImage.src = colorImages[0].url;
+          mainImage.alt = colorImages[0].alt || colorName || product.name || '';
+          window.setTimeout(() => mainMedia?.classList.remove('is-changing'), 180);
+        }
+        if (lookImage && colorImages[0]) {
+          lookImage.src = colorImages[0].url;
+          lookImage.alt = `${colorName || product.name || 'Producto'} look principal`;
+        }
       });
       colorsSlot?.appendChild(btn);
     });
     if (!colors.length) colorsSlot?.closest('.hf-pdp-view__color-row')?.setAttribute('hidden', '');
-
-    const related = products.filter(item => item.slug !== product.slug);
-    if (lookList) {
-      lookList.innerHTML = related.slice(0, 3).map(renderLookItem).join('');
-    }
-
-    const desktopList = $('[data-product-look-desktop-list]');
-    const desktopImage = $('[data-product-look-desktop-image]');
-    const desktopTag = $('[data-product-look-desktop-tag]');
-    if (desktopList) desktopList.innerHTML = related.slice(0, 4).map(renderLookItem).join('');
-    if (desktopImage) {
-      desktopImage.src = getProductImages(related[0] || product)[0]?.url || images[0]?.url || '';
-      desktopImage.alt = `${product.name || 'Producto'} look principal`;
-    }
-    if (desktopTag) desktopTag.textContent = product.name || '';
-
-    const setTrack = $('[data-product-set-mobile-track]');
-    if (setTrack) {
-      const setItems = related.length ? related : products.filter(Boolean);
-      const groups = [];
-      for (let i = 0; i < setItems.length; i += 3) {
-        const group = setItems.slice(i, i + 3);
-        if (group.length) groups.push(group);
-      }
-      setTrack.innerHTML = groups.slice(0, 8).map((group, index, list) => renderProductSetSlide(group, index, list.length)).join('');
-    }
 
     $$('.hf-pdp-view__tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -648,6 +691,35 @@ const PAGE_BUILDER = (() => {
     });
 
     root.appendChild(sectionEl);
+
+    window.setTimeout(() => {
+      const related = products.filter(item => item.slug !== product.slug);
+
+      if (lookList) {
+        lookList.innerHTML = related.slice(0, 3).map(renderLookItem).join('');
+      }
+
+      const desktopList = $('[data-product-look-desktop-list]');
+      const desktopImage = $('[data-product-look-desktop-image]');
+      const desktopTag = $('[data-product-look-desktop-tag]');
+      if (desktopList) desktopList.innerHTML = related.slice(0, 4).map(renderLookItem).join('');
+      if (desktopImage) {
+        desktopImage.src = getProductImages(related[0] || product)[0]?.url || images[0]?.url || '';
+        desktopImage.alt = `${product.name || 'Producto'} look principal`;
+      }
+      if (desktopTag) desktopTag.textContent = product.name || '';
+
+      const setTrack = $('[data-product-set-mobile-track]');
+      if (setTrack) {
+        const setItems = related.length ? related : products.filter(Boolean);
+        const groups = [];
+        for (let i = 0; i < setItems.length; i += 3) {
+          const group = setItems.slice(i, i + 3);
+          if (group.length) groups.push(group);
+        }
+        setTrack.innerHTML = groups.slice(0, 8).map((group, index, list) => renderProductSetSlide(group, index, list.length)).join('');
+      }
+    }, 0);
   };
 
   const initNavbarScroll = () => {
