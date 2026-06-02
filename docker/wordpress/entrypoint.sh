@@ -40,5 +40,10 @@ if [ -f /wp-config-sample.php ] && [ -f /var/www/html/wp-config.php ]; then
   fi
 fi
 
+# Habilitar módulos de Apache necesarios para CORS y rewrite (idempotente).
+# Sin mod_headers, los Header set del vhost se ignoran y el SPA (:8088) no
+# puede leer datos/imágenes de WordPress (:8089) por bloqueo CORS.
+a2enmod headers rewrite expires deflate >/dev/null 2>&1 || true
+
 # Run Apache
 exec apache2-foreground

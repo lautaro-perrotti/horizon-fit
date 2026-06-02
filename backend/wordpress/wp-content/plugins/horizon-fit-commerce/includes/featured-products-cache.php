@@ -48,9 +48,26 @@ if (defined('WP_CLI') && WP_CLI) {
 function hf_featured_products_cache_path() {
   $cache_dir = wp_upload_dir()['basedir'] . '/horizon-fit-cache';
   if (!is_dir($cache_dir)) {
-    @mkdir($cache_dir, 0755, true);
+    @mkdir($cache_dir, 0777, true);
   }
+  hf_featured_products_ensure_cors($cache_dir);
   return $cache_dir . '/featured-products.json';
+}
+
+// El SPA (puerto 8088) consume este JSON desde WordPress (8089): es cross-origin.
+// Garantizamos un .htaccess con CORS para que Apache sirva el archivo estático
+// al navegador sin que lo bloquee. Idempotente: solo escribe si falta o difiere.
+function hf_featured_products_ensure_cors($cache_dir) {
+  $htaccess = $cache_dir . '/.htaccess';
+  $rules = "<IfModule mod_headers.c>\n"
+    . "  Header set Access-Control-Allow-Origin \"*\"\n"
+    . "  Header set Access-Control-Allow-Methods \"GET, OPTIONS\"\n"
+    . "  Header set Cache-Control \"public, max-age=300\"\n"
+    . "</IfModule>\n";
+  if (!file_exists($htaccess) || file_get_contents($htaccess) !== $rules) {
+    @file_put_contents($htaccess, $rules);
+    @chmod($htaccess, 0666);
+  }
 }
 
 function hf_featured_products_format_price($price) {

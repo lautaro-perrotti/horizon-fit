@@ -1,0 +1,4 @@
+# Los scripts shell DEBEN tener line endings LF, aunque se editen en Windows.
+# Si git los convierte a CRLF, fallan en Linux con "bad interpreter".
+*.sh text eol=lf
+docker/wordpress/entrypoint.sh text eol=lf

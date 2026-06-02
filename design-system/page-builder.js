@@ -29,13 +29,21 @@ const PAGE_BUILDER = (() => {
     return promise;
   }
 
-  const PRODUCT_DATA_SRC = '/design-system/data/featured-products.json';
-  const PRODUCT_DATA_FALLBACK_SRC = '/featured-products.json';
-  const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
-
-  // WordPress: settings de secciones editables desde wp-admin (ej. video del hero).
-  const WP_BASE_URL = 'http://localhost:8089';
+  // WordPress se sirve en el MISMO host que el SPA pero en el puerto 8089.
+  // Derivamos la base dinámicamente del host actual: funciona en local
+  // (localhost:8088 -> localhost:8089) y en la VPS (IP:8088 -> IP:8089)
+  // sin hardcodear nada ni depender de archivos estáticos.
+  const WP_PORT = '8089';
+  const WP_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`;
   const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
+
+  // Productos: cache estática de WordPress como fuente primaria (instantánea,
+  // ~15ms, sin queries en runtime). Host dinámico, URLs correctas por entorno.
+  // CORS se resuelve activando mod_headers en Apache (config del contenedor).
+  // Fallback al REST solo si el archivo no estuviera disponible.
+  const PRODUCT_DATA_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products.json`;
+  const PRODUCT_DATA_FALLBACK_SRC = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/products`;
+  const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
@@ -117,7 +125,13 @@ const PAGE_BUILDER = (() => {
           return [s.id, html];
         })),
         Promise.all(sections.filter(s => s.data).map(async s => {
-          const data = await fetchJson(s.data);
+          // Los productos SIEMPRE salen de la cache de WordPress (host dinámico),
+          // nunca del JSON estático del repo. Fallback al endpoint REST.
+          const src = s.type === 'featured-products' ? PRODUCT_DATA_SRC : s.data;
+          const data = await fetchJson(src).catch(async () => {
+            if (s.type === 'featured-products') return fetchJson(PRODUCT_DATA_FALLBACK_SRC);
+            throw new Error(`No data for ${s.id}`);
+          });
           return [s.id, data];
         }))
       ]);
