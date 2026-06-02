@@ -1,5 +1,29 @@
 const PAGE_BUILDER = (() => {
+  const textCache = new Map();
+  const jsonCache = new Map();
+
+  async function fetchText(url) {
+    if (textCache.has(url)) return textCache.get(url);
+    const promise = fetch(url, { cache: 'force-cache' }).then(r => {
+      if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
+      return r.text();
+    });
+    textCache.set(url, promise);
+    return promise;
+  }
+
+  async function fetchJson(url) {
+    if (jsonCache.has(url)) return jsonCache.get(url);
+    const promise = fetch(url, { cache: 'force-cache' }).then(r => {
+      if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
+      return r.json();
+    });
+    jsonCache.set(url, promise);
+    return promise;
+  }
+
   const init = async () => {
+    const startedAt = performance.now();
     const root = document.getElementById('hfPageBuilderRoot');
     if (!root) return;
 
@@ -7,18 +31,38 @@ const PAGE_BUILDER = (() => {
     if (!pageSrc) return;
 
     try {
-      const pageConfigResp = await fetch(pageSrc);
-      const pageConfig = await pageConfigResp.json();
+      const t0 = performance.now();
+      const pageConfig = await fetchJson(pageSrc);
+      console.log(`[HF PB] fetch home.json: ${Math.round(performance.now() - t0)}ms`);
 
       if (!pageConfig.sections) return;
 
-      const sections = pageConfig.sections.sort((a, b) => (a.order || 0) - (b.order || 0));
+      let sections = pageConfig.sections
+        .filter(s => s.visible !== false)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
 
+      // Load all components and data in parallel
+      const t1 = performance.now();
+      const [componentEntries, dataEntries] = await Promise.all([
+        Promise.all(sections.map(async s => {
+          const html = await fetchText(s.component);
+          return [s.id, html];
+        })),
+        Promise.all(sections.filter(s => s.data).map(async s => {
+          const data = await fetchJson(s.data);
+          return [s.id, data];
+        }))
+      ]);
+      console.log(`[HF PB] fetch all components & data: ${Math.round(performance.now() - t1)}ms`);
+
+      const componentMap = new Map(componentEntries);
+      const dataMap = new Map(dataEntries);
+
+      // Render sections in order
+      const t2 = performance.now();
       for (const section of sections) {
-        if (section.visible === false) continue;
-
-        const componentResp = await fetch(section.component);
-        const componentHtml = await componentResp.text();
+        const componentHtml = componentMap.get(section.id);
+        if (!componentHtml) continue;
 
         const wrapper = document.createElement('div');
         wrapper.innerHTML = componentHtml;
@@ -29,26 +73,34 @@ const PAGE_BUILDER = (() => {
           if (titleEl) titleEl.textContent = section.config.title;
         }
 
+        root.appendChild(sectionEl);
+      }
+      console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
+
+      // Hydrate sections with data
+      const t3 = performance.now();
+      for (const section of sections) {
         if (section.type === 'featured-products' && section.data) {
-          await renderFeaturedProducts(sectionEl, section);
+          const data = dataMap.get(section.id);
+          const sectionEl = root.querySelector(`[data-grid-shell="${section.id.replace(/[^a-zA-Z0-9-]/g, '')}"]`)?.parentElement || root.lastElementChild;
+          if (data && sectionEl) await renderFeaturedProducts(sectionEl, section, data);
         }
 
         if (section.type === 'hero') {
-          setupHero(sectionEl);
+          const sectionEl = root.querySelector('.hf-video-hero') || root.lastElementChild;
+          if (sectionEl) setupHero(sectionEl);
         }
-
-        root.appendChild(sectionEl);
       }
+      console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
+      console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
+      document.documentElement.dataset.pageBuilderReady = 'true';
     } catch (e) {
       console.error('Page builder error:', e);
     }
   };
 
-  const renderFeaturedProducts = async (sectionEl, section) => {
+  const renderFeaturedProducts = async (sectionEl, section, products) => {
     try {
-      const productsResp = await fetch(section.data);
-      const products = await productsResp.json();
-
       const limit = Number(section.config?.limit || 0);
       const visibleProducts = limit > 0 ? products.slice(0, limit) : products;
 
