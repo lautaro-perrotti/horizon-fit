@@ -54,11 +54,10 @@
       return;
     }
 
-    const template = sizeWrap.querySelector('.hf-product-item__size');
     sizeWrap.innerHTML = '';
 
     sizes.forEach(size => {
-      const button = template ? template.cloneNode(false) : document.createElement('button');
+      const button = document.createElement('button');
       button.className = 'hf-product-item__size';
       button.type = 'button';
       button.setAttribute('aria-pressed', 'false');
@@ -108,12 +107,10 @@
       return;
     }
 
-    const template = grid.querySelector('.hf-product-item');
+    const template = document.querySelector('#hfProductItemTemplate');
     if (!template) {
       return;
     }
-
-    grid.innerHTML = '';
 
     const response = await fetch(PRODUCTS_JSON_URL, { cache: 'no-store' });
     if (!response.ok) {
@@ -125,9 +122,21 @@
       throw new Error('Featured products JSON is not an array');
     }
 
+    if (!products.length) {
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
     products.forEach(product => {
-      grid.appendChild(renderProduct(template, product));
+      const cardTemplate = template.content.querySelector('.hf-product-item');
+      if (cardTemplate) {
+        fragment.appendChild(renderProduct(cardTemplate, product));
+      }
     });
+
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
   }
 
   if (document.readyState === 'loading') {
