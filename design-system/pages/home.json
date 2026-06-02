@@ -20,11 +20,7 @@
       "type": "hero",
       "order": 3,
       "visible": true,
-      "component": "design-system/components/sections/hero.html",
-      "config": {
-        "videoDesktop": "assets/hero-video-desktop.mp4",
-        "videoMobile": "assets/hero-video-mobile.mp4"
-      }
+      "component": "design-system/components/sections/hero.html"
     },
     {
       "id": "featured-products",
