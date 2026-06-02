@@ -12,7 +12,7 @@
                 <h3><?php esc_html_e('Explorá', 'horizon-fit-store'); ?></h3>
                 <a href="<?php echo esc_url(get_post_type_archive_link('product')); ?>"><?php esc_html_e('Tienda', 'horizon-fit-store'); ?></a>
                 <a href="<?php echo esc_url(hf_store_get_offers_url()); ?>"><?php esc_html_e('Ofertas', 'horizon-fit-store'); ?></a>
-                <a href="<?php echo esc_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'); ?>"><?php esc_html_e('Carrito', 'horizon-fit-store'); ?></a>
+                <a href="<?php echo esc_url(hf_store_normalize_public_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#')); ?>"><?php esc_html_e('Carrito', 'horizon-fit-store'); ?></a>
             </div>
             <div>
                 <h3><?php esc_html_e('Seguinos', 'horizon-fit-store'); ?></h3>

@@ -176,7 +176,26 @@
                 "alt": "Calsa rejilla blanca",
                 "caption": ""
             }
-        ]
+        ],
+        "description": "Malla liviana de textura rejilla, con ajuste cómodo y respirable para sumar capas o usar como base.",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar del revés en agua fría para cuidar la red y la elasticidad.",
+            "bullets": [
+                "Lavar en bolsa de protección si se usa lavarropas.",
+                "No usar lavandina ni secadora.",
+                "Secar extendida y a la sombra."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": ["Talle", "Busto", "Cintura", "Cadera"],
+            "rows": [
+                ["S", "84-90", "64-70", "90-96"],
+                ["M", "90-96", "70-76", "96-102"],
+                ["L", "96-104", "76-84", "102-110"]
+            ]
+        }
     },
     {
         "id": 536,
@@ -344,7 +363,26 @@
                 "alt": "Top falda Bordó",
                 "caption": ""
             }
-        ]
+        ],
+        "description": "Top bordó con calce firme y suave, pensado para combinar con la falda y mantener el conjunto equilibrado.",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en frío y evitar fricción intensa para conservar la textura y el color.",
+            "bullets": [
+                "Lavar con colores similares.",
+                "No usar lavandina ni secadora.",
+                "Planchar del revés con temperatura baja."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": ["Talle", "Busto", "Cintura", "Cadera"],
+            "rows": [
+                ["S", "84-90", "64-70", "90-96"],
+                ["M", "90-96", "70-76", "96-102"],
+                ["L", "96-104", "76-84", "102-110"]
+            ]
+        }
     },
     {
         "id": 552,
@@ -523,7 +561,26 @@
                 "alt": "Falda \"Conjunto falda\" bordó",
                 "caption": ""
             }
-        ]
+        ],
+        "description": "Falda bordó de tiro medio con caída limpia y elasticidad para moverse cómoda en conjunto.",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar a mano o en ciclo delicado para que conserve caída, color y forma.",
+            "bullets": [
+                "No usar lavandina.",
+                "No dejar en remojo por tiempo prolongado.",
+                "Secar a la sombra y sin retorcer."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": ["Talle", "Busto", "Cintura", "Cadera"],
+            "rows": [
+                ["S", "84-90", "64-70", "90-96"],
+                ["M", "90-96", "70-76", "96-102"],
+                ["L", "96-104", "76-84", "102-110"]
+            ]
+        }
     },
     {
         "id": 568,
@@ -713,7 +770,26 @@
                 "alt": "Falda \"Conjunto falda\" negro",
                 "caption": ""
             }
-        ]
+        ],
+        "description": "Versión negra con la misma caída limpia y elasticidad, pensada para uso diario o looks más sobrios.",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en frío con prendas oscuras para mantener el tono y el tejido.",
+            "bullets": [
+                "Lavar con colores similares.",
+                "No usar secadora.",
+                "Secar extendida y a la sombra."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": ["Talle", "Busto", "Cintura", "Cadera"],
+            "rows": [
+                ["S", "84-90", "64-70", "90-96"],
+                ["M", "90-96", "70-76", "96-102"],
+                ["L", "96-104", "76-84", "102-110"]
+            ]
+        }
     },
     {
         "id": 560,
@@ -892,6 +968,25 @@
                 "alt": "Falda \"Conjunto falda\" azul",
                 "caption": ""
             }
-        ]
+        ],
+        "description": "Versión azul con textura suave y movimiento, para usar sola o como parte del conjunto.",
+        "care": {
+            "title": "Lavado y cuidado",
+            "text": "Lavar en frío para mantener el color vivo y la elasticidad del tejido.",
+            "bullets": [
+                "No usar lavandina.",
+                "Evitar exposición prolongada al sol mientras seca.",
+                "Planchar del revés a baja temperatura si hace falta."
+            ]
+        },
+        "sizeTable": {
+            "title": "Tabla de talles",
+            "headers": ["Talle", "Busto", "Cintura", "Cadera"],
+            "rows": [
+                ["S", "84-90", "64-70", "90-96"],
+                ["M", "90-96", "70-76", "96-102"],
+                ["L", "96-104", "76-84", "102-110"]
+            ]
+        }
     }
 ]

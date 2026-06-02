@@ -52,12 +52,104 @@ function hf_store_enqueue_assets() {
         'hf-storefront',
         'hfStorefront',
         array(
-            'cartUrl'     => function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/'),
-            'checkoutUrl' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/checkout/'),
+            'cartUrl'     => hf_store_normalize_public_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/')),
+            'checkoutUrl' => hf_store_normalize_public_url(function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : home_url('/checkout/')),
         )
     );
 }
 add_action('wp_enqueue_scripts', 'hf_store_enqueue_assets');
+
+function hf_store_blocked_route_slugs() {
+    return apply_filters('hf_store_blocked_route_slugs', array('checkout', 'cart', 'diplomatura', 'curso'));
+}
+
+function hf_store_is_blocked_public_url($url) {
+    $path = trim((string) parse_url((string) $url, PHP_URL_PATH), '/');
+    if ($path === '') {
+        return false;
+    }
+
+    foreach (hf_store_blocked_route_slugs() as $slug) {
+        $slug = trim((string) $slug, '/');
+        if ($slug === '') {
+            continue;
+        }
+
+        if ($path === $slug || 0 === strpos($path, $slug . '/')) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function hf_store_normalize_public_url($url) {
+    if (! hf_store_is_blocked_public_url($url)) {
+        return $url;
+    }
+
+    $fallback = get_post_type_archive_link('product');
+    return $fallback ? $fallback : home_url('/');
+}
+
+function hf_store_block_private_routes() {
+    if (is_admin()) {
+        return;
+    }
+
+    if (function_exists('wp_doing_ajax') && wp_doing_ajax()) {
+        return;
+    }
+
+    if (function_exists('wp_is_json_request') && wp_is_json_request()) {
+        return;
+    }
+
+    if (function_exists('is_cart') && is_cart()) {
+        wp_die(
+            esc_html__('Esta sección está temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('En mantenimiento', 'horizon-fit-store'),
+            array('response' => 503)
+        );
+    }
+
+    if (function_exists('is_checkout') && is_checkout()) {
+        wp_die(
+            esc_html__('Esta sección está temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('En mantenimiento', 'horizon-fit-store'),
+            array('response' => 503)
+        );
+    }
+
+    if (function_exists('is_page') && is_page(array('diplomatura', 'curso'))) {
+        wp_die(
+            esc_html__('Esta sección está temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('En mantenimiento', 'horizon-fit-store'),
+            array('response' => 503)
+        );
+    }
+
+    $request_path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    if ($request_path === '') {
+        return;
+    }
+
+    foreach (hf_store_blocked_route_slugs() as $slug) {
+        $slug = trim((string) $slug, '/');
+        if ($slug === '') {
+            continue;
+        }
+
+        if ($request_path === $slug || 0 === strpos($request_path, $slug . '/')) {
+            wp_die(
+                esc_html__('Esta sección está temporalmente deshabilitada.', 'horizon-fit-store'),
+                esc_html__('En mantenimiento', 'horizon-fit-store'),
+                array('response' => 503)
+            );
+        }
+    }
+}
+add_action('template_redirect', 'hf_store_block_private_routes', 1);
 
 function hf_store_register_sidebars() {
     register_sidebar(
@@ -286,7 +378,7 @@ function hf_store_get_primary_menu_links() {
         ),
         array(
             'label' => __('Carrito', 'horizon-fit-store'),
-            'url'   => function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#',
+            'url'   => hf_store_normalize_public_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'),
         ),
     );
 }

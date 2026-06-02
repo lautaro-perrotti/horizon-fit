@@ -8,6 +8,9 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
+  # Horizon Fit: block temporary routes before WordPress routing
+  RewriteRule ^(cart|checkout|diplomatura|curso)(/.*)?$ - [F,L]
+
   # Horizon Fit: Redirect ONLY root to wp-admin
   RewriteCond %{REQUEST_URI} ^/$
   RewriteRule ^$ /wp-admin/ [L,R=301]

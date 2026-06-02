@@ -32,6 +32,17 @@
       "config": {
         "title": "Productos destacados"
       }
+    },
+    {
+      "id": "featured-products-2",
+      "type": "featured-products",
+      "order": 5,
+      "visible": true,
+      "component": "design-system/components/sections/featured-products.html",
+      "data": "design-system/data/featured-products.json",
+      "config": {
+        "title": ""
+      }
     }
   ]
 }

@@ -4331,6 +4331,8 @@
         var prevBtn = shell.querySelector('[data-dir="-1"]');
         var nextBtn = shell.querySelector('[data-dir="1"]');
         if (!grid || !prevBtn || !nextBtn) return;
+        if (shell.dataset.carouselReady === 'true') return;
+        shell.dataset.carouselReady = 'true';
 
         function getStep() {
           var item = grid.querySelector('.hf-product-item');
@@ -4379,8 +4381,10 @@
       initCarousels();
     }
 
-    // También ejecutar con un pequeño delay para asegurar
+    // También ejecutar con delays
     setTimeout(initCarousels, 100);
+    setTimeout(initCarousels, 300);
+    setTimeout(initCarousels, 800);
   </script>
 </body>
 </html>

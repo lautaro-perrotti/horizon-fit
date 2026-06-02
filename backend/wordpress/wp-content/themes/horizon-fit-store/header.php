@@ -78,10 +78,10 @@
             <?php endif; ?>
         </div>
         <div class="hf-drawer__cart-actions">
-            <a class="hf-button hf-button--ghost" href="<?php echo esc_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#'); ?>">
+            <a class="hf-button hf-button--ghost" href="<?php echo esc_url(hf_store_normalize_public_url(function_exists('wc_get_cart_url') ? wc_get_cart_url() : '#')); ?>">
                 <?php esc_html_e('Ver carrito', 'horizon-fit-store'); ?>
             </a>
-            <a class="hf-button" href="<?php echo esc_url(function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : '#'); ?>">
+            <a class="hf-button" href="<?php echo esc_url(hf_store_normalize_public_url(function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : '#')); ?>">
                 <?php esc_html_e('Finalizar compra', 'horizon-fit-store'); ?>
             </a>
         </div>

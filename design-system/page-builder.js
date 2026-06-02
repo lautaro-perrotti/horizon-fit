@@ -82,6 +82,7 @@ const PAGE_BUILDER = (() => {
 
       // Render sections in order
       const t2 = performance.now();
+      const sectionElements = new Map();
       for (const section of sections) {
         const componentHtml = componentMap.get(section.id);
         if (!componentHtml) continue;
@@ -89,6 +90,7 @@ const PAGE_BUILDER = (() => {
         const wrapper = document.createElement('div');
         wrapper.innerHTML = componentHtml;
         const sectionEl = wrapper.firstElementChild;
+        sectionElements.set(section.id, sectionEl);
 
         // Handle optional title
         if (section.config?.title) {
@@ -126,12 +128,12 @@ const PAGE_BUILDER = (() => {
       for (const section of sections) {
         if (!productRoute && section.type === 'featured-products' && section.data) {
           const data = dataMap.get(section.id);
-          const sectionEl = root.querySelector(`[data-grid-shell="${section.id.replace(/[^a-zA-Z0-9-]/g, '')}"]`)?.parentElement || root.lastElementChild;
+          const sectionEl = sectionElements.get(section.id);
           if (data && sectionEl) await renderFeaturedProducts(sectionEl, section, data);
         }
 
         if (!productRoute && section.type === 'hero') {
-          const sectionEl = root.querySelector('.hf-video-hero') || root.lastElementChild;
+          const sectionEl = sectionElements.get(section.id);
           if (sectionEl) setupHero(sectionEl);
         }
       }
@@ -367,6 +369,56 @@ const PAGE_BUILDER = (() => {
     "'": '&#39;'
   })[char]);
 
+  const DEFAULT_CARE = {
+    title: 'Lavado y cuidado',
+    text: 'Lavar a mano o en ciclo delicado con agua fría. Usar jabón neutro y evitar suavizantes para conservar la elasticidad del tejido.',
+    bullets: [
+      'No usar lavandina.',
+      'No centrifugar en caliente.',
+      'Secar a la sombra y no planchar sobre estampas o avíos.'
+    ]
+  };
+
+  const DEFAULT_SIZE_TABLE = {
+    title: 'Tabla de talles',
+    headers: ['Talle', 'Busto', 'Cintura', 'Cadera'],
+    rows: [
+      ['S', '84-90', '64-70', '90-96'],
+      ['M', '90-96', '70-76', '96-102'],
+      ['L', '96-104', '76-84', '102-110']
+    ]
+  };
+
+  const normalizeCare = (product) => {
+    const care = product?.care || {};
+    return {
+      title: care.title || product?.careTitle || DEFAULT_CARE.title,
+      text: care.text || product?.careText || DEFAULT_CARE.text,
+      bullets: Array.isArray(care.bullets) && care.bullets.length
+        ? care.bullets
+        : Array.isArray(product?.careBullets) && product.careBullets.length
+          ? product.careBullets
+          : DEFAULT_CARE.bullets
+    };
+  };
+
+  const normalizeSizeTable = (product) => {
+    const sizeTable = product?.sizeTable || {};
+    return {
+      title: sizeTable.title || product?.sizeTableTitle || DEFAULT_SIZE_TABLE.title,
+      headers: Array.isArray(sizeTable.headers) && sizeTable.headers.length
+        ? sizeTable.headers
+        : Array.isArray(product?.sizeTableHeaders) && product.sizeTableHeaders.length
+          ? product.sizeTableHeaders
+          : DEFAULT_SIZE_TABLE.headers,
+      rows: Array.isArray(sizeTable.rows) && sizeTable.rows.length
+        ? sizeTable.rows
+        : Array.isArray(product?.sizeTableRows) && product.sizeTableRows.length
+          ? product.sizeTableRows
+          : DEFAULT_SIZE_TABLE.rows
+    };
+  };
+
   const renderLookItem = (item) => {
     const image = getProductImages(item)[0];
     return `
@@ -381,6 +433,13 @@ const PAGE_BUILDER = (() => {
             </div>
           </article>`;
   };
+
+  const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
+
+  const renderSizeTableRows = (rows) => rows.map(row => {
+    const cells = Array.isArray(row) ? row : [];
+    return `<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`;
+  }).join('');
 
   const renderProductSetSlide = (items, index, total) => {
     const heroProduct = items[0];
@@ -447,7 +506,27 @@ const PAGE_BUILDER = (() => {
     setText('[data-product-installments]', product.stockStatus === 'instock' ? 'Disponible' : 'Sin stock');
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
-    setText('[data-product-description]', product.description || product.shortDescription || 'Diseno, textura y comodidad en equilibrio. Este producto esta pensado para acompanar cada movimiento sin perder estilo ni confort.');
+    const descriptionTitle = $('[data-product-description-title]');
+    if (descriptionTitle) descriptionTitle.textContent = product.descriptionTitle || 'Descripción';
+    setText('[data-product-description]', product.description || product.shortDescription || 'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.');
+
+    const care = normalizeCare(product);
+    const careTitle = $('[data-product-care-title]');
+    const careText = $('[data-product-care-text]');
+    const careList = $('[data-product-care-list]');
+    if (careTitle) careTitle.textContent = care.title;
+    if (careText) careText.textContent = care.text;
+    if (careList) {
+      careList.innerHTML = care.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+    }
+
+    const sizeTable = normalizeSizeTable(product);
+    const sizeTitle = $('[data-product-size-title]');
+    const sizeTableHead = $('[data-product-size-table-head]');
+    const sizeTableBody = $('[data-product-size-table-body]');
+    if (sizeTitle) sizeTitle.textContent = sizeTable.title;
+    if (sizeTableHead) sizeTableHead.innerHTML = renderSizeTableHeader(sizeTable.headers);
+    if (sizeTableBody) sizeTableBody.innerHTML = renderSizeTableRows(sizeTable.rows);
 
     const category = product.categories?.map(item => item.name).filter(Boolean).join(' / ') || '';
     setText('[data-product-kicker]', category || 'Seamless collection');
