@@ -355,6 +355,52 @@ const PAGE_BUILDER = (() => {
       .some(value => value === slug);
   };
 
+  const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+
+  const renderLookItem = (item) => {
+    const image = getProductImages(item)[0];
+    return `
+          <article class="hf-pdp-look__item">
+            <a class="hf-pdp-look__thumb" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
+              <img src="${escapeHtml(image?.url || '')}" alt="">
+            </a>
+            <div class="hf-pdp-look__meta">
+              <h3 class="hf-pdp-look__name">${escapeHtml(item.name || '')}</h3>
+              <p class="hf-pdp-look__price">${escapeHtml(item.priceText || item.regularPriceText || '')}</p>
+              <a class="hf-pdp-look__button" href="${productUrl(item)}">Comprar</a>
+            </div>
+          </article>`;
+  };
+
+  const renderProductSetSlide = (items, index, total) => {
+    const heroProduct = items[0];
+    const heroImage = getProductImages(heroProduct)[0];
+    const title = heroProduct?.collections?.[0]?.name || `Conjunto ${index + 1}`;
+    const meta = heroProduct?.categories?.map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
+    return `
+          <div class="hf-carousel__slide">
+            <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
+              <div class="hf-pdp-look__panel">
+                <p class="hf-pdp-look__eyebrow">Conjunto ${index + 1} de ${total}</p>
+                <h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>
+                <div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">
+                  ${items.map(renderLookItem).join('')}
+                </div>
+              </div>
+              <div class="hf-pdp-look__visual">
+                <span class="hf-pdp-look__tag">${escapeHtml(meta)}</span>
+                <img class="hf-pdp-look__hero" src="${escapeHtml(heroImage?.url || '')}" alt="${escapeHtml(title)} look principal">
+              </div>
+            </section>
+          </div>`;
+  };
+
   const renderProductPage = async (root) => {
     const [products, html] = await Promise.all([
       fetchJson(PRODUCT_DATA_SRC),
@@ -482,22 +528,30 @@ const PAGE_BUILDER = (() => {
     });
     if (!colors.length) colorsSlot?.closest('.hf-pdp-view__color-row')?.setAttribute('hidden', '');
 
+    const related = products.filter(item => item.slug !== product.slug);
     if (lookList) {
-      const related = products.filter(item => item.slug !== product.slug).slice(0, 3);
-      lookList.innerHTML = related.map(item => {
-        const image = getProductImages(item)[0];
-        return `
-          <article class="hf-pdp-look__item">
-            <a class="hf-pdp-look__thumb" href="${productUrl(item)}" aria-label="Ver ${item.name || ''}">
-              <img src="${image?.url || ''}" alt="">
-            </a>
-            <div class="hf-pdp-look__meta">
-              <h3 class="hf-pdp-look__name">${item.name || ''}</h3>
-              <p class="hf-pdp-look__price">${item.priceText || item.regularPriceText || ''}</p>
-              <a class="hf-pdp-look__button" href="${productUrl(item)}">Comprar</a>
-            </div>
-          </article>`;
-      }).join('');
+      lookList.innerHTML = related.slice(0, 3).map(renderLookItem).join('');
+    }
+
+    const desktopList = $('[data-product-look-desktop-list]');
+    const desktopImage = $('[data-product-look-desktop-image]');
+    const desktopTag = $('[data-product-look-desktop-tag]');
+    if (desktopList) desktopList.innerHTML = related.slice(0, 4).map(renderLookItem).join('');
+    if (desktopImage) {
+      desktopImage.src = getProductImages(related[0] || product)[0]?.url || images[0]?.url || '';
+      desktopImage.alt = `${product.name || 'Producto'} look principal`;
+    }
+    if (desktopTag) desktopTag.textContent = product.name || '';
+
+    const setTrack = $('[data-product-set-mobile-track]');
+    if (setTrack) {
+      const setItems = related.length ? related : products.filter(Boolean);
+      const groups = [];
+      for (let i = 0; i < setItems.length; i += 3) {
+        const group = setItems.slice(i, i + 3);
+        if (group.length) groups.push(group);
+      }
+      setTrack.innerHTML = groups.slice(0, 8).map((group, index, list) => renderProductSetSlide(group, index, list.length)).join('');
     }
 
     $$('.hf-pdp-view__tab').forEach(tab => {
