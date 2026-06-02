@@ -78,6 +78,16 @@ const PAGE_BUILDER = (() => {
         }
 
         root.appendChild(sectionEl);
+
+        // For navbar: also insert drawers/overlay to body
+        if (section.type === 'navbar') {
+          let child = wrapper.firstElementChild;
+          while (child) {
+            const next = child.nextElementSibling;
+            document.body.appendChild(child);
+            child = next;
+          }
+        }
       }
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
@@ -96,6 +106,8 @@ const PAGE_BUILDER = (() => {
         }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
+      initNavbarAndMenuDrawer();
+      initNavbarScroll();
       console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
       document.documentElement.dataset.pageBuilderReady = 'true';
     } catch (e) {
@@ -174,26 +186,21 @@ const PAGE_BUILDER = (() => {
   };
 
   const initNavbarAndMenuDrawer = () => {
-    const $ = id => document.getElementById(id);
-    const $$ = sel => document.querySelectorAll(sel);
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
-    const overlay = $("#overlay") || (() => {
-      const o = document.createElement('div');
-      o.id = 'overlay';
-      o.className = 'overlay';
-      o.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(o);
-      return o;
-    })();
-
+    const overlay = $("#overlay");
     const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
     const menuDrawer = $("#menuDrawer");
+    const drawer = $("#drawer");
+    const searchDrawer = $("#searchDrawer");
+
+    if (!overlay || !menuDrawer || !drawer || !searchDrawer) return;
+
     let lastFocus = null;
 
-    if (menuBtn) {
-      menuBtn.setAttribute("aria-controls", "menuDrawer");
-      menuBtn.setAttribute("aria-expanded", "false");
-    }
+    menuBtn?.setAttribute("aria-controls", "menuDrawer");
+    menuBtn?.setAttribute("aria-expanded", "false");
 
     function openOverlay() {
       overlay.classList.add("is-on");
@@ -222,6 +229,37 @@ const PAGE_BUILDER = (() => {
       lastFocus?.focus?.();
     }
 
+    function openDrawer() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      drawer.classList.add("is-on");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeDrawer() {
+      drawer.classList.remove("is-on");
+      drawer.setAttribute("aria-hidden", "true");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
+    function openSearchDrawer() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      searchDrawer.classList.add("is-on");
+      searchDrawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => $("#searchInput")?.focus(), 50);
+    }
+    function closeSearchDrawer() {
+      searchDrawer.classList.remove("is-on");
+      searchDrawer.setAttribute("aria-hidden", "true");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
     menuBtn?.addEventListener("click", () => {
       const isOpen = menuDrawer?.getAttribute("aria-hidden") === "false";
       if (isOpen) {
@@ -231,11 +269,33 @@ const PAGE_BUILDER = (() => {
       }
     });
 
+    $("#cartBtn")?.addEventListener("click", openDrawer);
+    $("#openCartBtn")?.addEventListener("click", openDrawer);
+    $("#openCartBtn2")?.addEventListener("click", openDrawer);
+    $("#searchBtn")?.addEventListener("click", openSearchDrawer);
+    $("#searchBtnMobile")?.addEventListener("click", openSearchDrawer);
+
     $$("[data-menu-link]").forEach(link => {
       link.addEventListener("click", () => closeMenuDrawer());
     });
 
-    overlay.addEventListener("click", () => closeMenuDrawer());
+    $$("[data-close-menu-drawer]").forEach(b => b.addEventListener("click", closeMenuDrawer));
+    $$("[data-close-drawer]").forEach(b => b.addEventListener("click", closeDrawer));
+    $$("[data-close-search]").forEach(b => b.addEventListener("click", closeSearchDrawer));
+
+    overlay.addEventListener("click", () => {
+      if (menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
+      if (drawer.classList.contains("is-on")) closeDrawer();
+      if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
+        if (drawer.classList.contains("is-on")) closeDrawer();
+        if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+      }
+    });
   };
 
   const initNavbarScroll = () => {
@@ -260,9 +320,3 @@ if (document.readyState === 'loading') {
   PAGE_BUILDER.init();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    PAGE_BUILDER.initNavbarAndMenuDrawer?.();
-    PAGE_BUILDER.initNavbarScroll?.();
-  }, 50);
-});
