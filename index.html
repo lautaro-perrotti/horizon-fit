@@ -4324,5 +4324,63 @@
   <main id="hfPageBuilderRoot" data-page-src="/design-system/pages/home.json"></main>
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/page-builder.js?v=pdp-nav-marquee"></script>
+  <script>
+    function initCarousels() {
+      document.querySelectorAll('[data-grid-shell]').forEach(function (shell) {
+        var grid = shell.querySelector('.hf-product-grid--h-scroll');
+        var prevBtn = shell.querySelector('[data-dir="-1"]');
+        var nextBtn = shell.querySelector('[data-dir="1"]');
+        if (!grid || !prevBtn || !nextBtn) return;
+
+        function getStep() {
+          var item = grid.querySelector('.hf-product-item');
+          var gap = parseFloat(getComputedStyle(grid).gap) || 0;
+          return item ? (item.getBoundingClientRect().width + gap) : 300;
+        }
+
+        function updateControls() {
+          var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+          var canScroll = maxScroll > 2;
+          var atStart = grid.scrollLeft <= 2;
+          var atEnd = grid.scrollLeft >= (maxScroll - 2);
+
+          prevBtn.disabled = atStart;
+          nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
+        }
+
+        prevBtn.addEventListener('click', function () {
+          grid.scrollBy({ left: -getStep(), behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', function () {
+          grid.scrollBy({ left: getStep(), behavior: 'smooth' });
+        });
+
+        var rafId = null;
+        grid.addEventListener('scroll', function () {
+          if (rafId) return;
+          rafId = requestAnimationFrame(function () {
+            rafId = null;
+            updateControls();
+          });
+        });
+
+        window.addEventListener('resize', function () {
+          updateControls();
+        });
+        updateControls();
+      });
+    }
+
+    // Ejecutar cuando page-builder haya terminado de cargar los componentes
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCarousels);
+    } else {
+      initCarousels();
+    }
+
+    // También ejecutar con un pequeño delay para asegurar
+    setTimeout(initCarousels, 100);
+  </script>
 </body>
 </html>
