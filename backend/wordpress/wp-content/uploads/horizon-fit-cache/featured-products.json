@@ -7,13 +7,13 @@
         "status": "publish",
         "name": "Calsa rejilla blanca",
         "permalink": "http://localhost:8089/product/calsa-rejilla-blanca/",
-        "price": 0,
-        "regularPrice": 0,
-        "salePrice": 0,
-        "priceText": "$ 0,00",
+        "price": 1500,
+        "regularPrice": 1500,
+        "salePrice": null,
+        "priceText": "$ 1.500,00",
         "priceOriginal": "",
-        "regularPriceText": "$ 0,00",
-        "salePriceText": "$ 0,00",
+        "regularPriceText": "$ 1.500,00",
+        "salePriceText": "",
         "badge": "",
         "categories": [
             {
@@ -23,7 +23,13 @@
             }
         ],
         "tags": [],
-        "collections": [],
+        "collections": [
+            {
+                "id": 19,
+                "slug": "featured-row-1",
+                "name": "Featured Row 1"
+            }
+        ],
         "attributes": [
             {
                 "name": "Talle",
@@ -68,59 +74,59 @@
                 "id": 528,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/calsa-rejilla-blanca/?attribute_talle=S&attribute_color=Blanco",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "S",
                     "color": "Blanco"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 529,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/calsa-rejilla-blanca/?attribute_talle=M&attribute_color=Blanco",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "M",
                     "color": "Blanco"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 530,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/calsa-rejilla-blanca/?attribute_talle=L&attribute_color=Blanco",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "L",
                     "color": "Blanco"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": null,
+        "stockQuantity": 1,
         "isFeatured": false,
         "isOnSale": false,
         "images": [
@@ -180,13 +186,13 @@
         "status": "publish",
         "name": "Top falda Bordó",
         "permalink": "http://localhost:8089/product/top-falda-bordo/",
-        "price": 0,
-        "regularPrice": 0,
-        "salePrice": 0,
-        "priceText": "$ 0,00",
+        "price": 1500,
+        "regularPrice": 1500,
+        "salePrice": null,
+        "priceText": "$ 1.500,00",
         "priceOriginal": "",
-        "regularPriceText": "$ 0,00",
-        "salePriceText": "$ 0,00",
+        "regularPriceText": "$ 1.500,00",
+        "salePriceText": "",
         "badge": "",
         "categories": [
             {
@@ -196,7 +202,13 @@
             }
         ],
         "tags": [],
-        "collections": [],
+        "collections": [
+            {
+                "id": 19,
+                "slug": "featured-row-1",
+                "name": "Featured Row 1"
+            }
+        ],
         "attributes": [
             {
                 "name": "Talle",
@@ -241,59 +253,59 @@
                 "id": 537,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/top-falda-bordo/?attribute_talle=S&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "S",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 538,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/top-falda-bordo/?attribute_talle=M&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "M",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 539,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/top-falda-bordo/?attribute_talle=L&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "L",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": null,
+        "stockQuantity": 1,
         "isFeatured": false,
         "isOnSale": false,
         "images": [
@@ -342,13 +354,13 @@
         "status": "publish",
         "name": "Falda \"Conjunto falda\" bordó",
         "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/",
-        "price": 0,
-        "regularPrice": 0,
-        "salePrice": 0,
-        "priceText": "$ 0,00",
+        "price": 1500,
+        "regularPrice": 1500,
+        "salePrice": null,
+        "priceText": "$ 1.500,00",
         "priceOriginal": "",
-        "regularPriceText": "$ 0,00",
-        "salePriceText": "$ 0,00",
+        "regularPriceText": "$ 1.500,00",
+        "salePriceText": "",
         "badge": "",
         "categories": [
             {
@@ -358,7 +370,13 @@
             }
         ],
         "tags": [],
-        "collections": [],
+        "collections": [
+            {
+                "id": 19,
+                "slug": "featured-row-1",
+                "name": "Featured Row 1"
+            }
+        ],
         "attributes": [
             {
                 "name": "Talle",
@@ -403,59 +421,59 @@
                 "id": 553,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=S&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "S",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 554,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=M&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "M",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 555,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=L&attribute_color=Bordeaux",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "L",
                     "color": "Bordeaux"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": null,
+        "stockQuantity": 1,
         "isFeatured": false,
         "isOnSale": false,
         "images": [
@@ -515,13 +533,13 @@
         "status": "publish",
         "name": "Falda \"Conjunto falda\" negro",
         "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/",
-        "price": 0,
-        "regularPrice": 0,
-        "salePrice": 0,
-        "priceText": "$ 0,00",
+        "price": 1500,
+        "regularPrice": 1500,
+        "salePrice": null,
+        "priceText": "$ 1.500,00",
         "priceOriginal": "",
-        "regularPriceText": "$ 0,00",
-        "salePriceText": "$ 0,00",
+        "regularPriceText": "$ 1.500,00",
+        "salePriceText": "",
         "badge": "",
         "categories": [
             {
@@ -531,7 +549,13 @@
             }
         ],
         "tags": [],
-        "collections": [],
+        "collections": [
+            {
+                "id": 20,
+                "slug": "featured-row-2",
+                "name": "Featured Row 2"
+            }
+        ],
         "attributes": [
             {
                 "name": "Talle",
@@ -576,59 +600,59 @@
                 "id": 569,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=S&attribute_color=Negro",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "S",
                     "color": "Negro"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 570,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=M&attribute_color=Negro",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "M",
                     "color": "Negro"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 571,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/?attribute_talle=L&attribute_color=Negro",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "L",
                     "color": "Negro"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": null,
+        "stockQuantity": 1,
         "isFeatured": false,
         "isOnSale": false,
         "images": [
@@ -699,13 +723,13 @@
         "status": "publish",
         "name": "Falda \"Conjunto falda\" azul",
         "permalink": "http://localhost:8089/product/falda-conjunto-falda-azul/",
-        "price": 0,
-        "regularPrice": 0,
-        "salePrice": 0,
-        "priceText": "$ 0,00",
+        "price": 1500,
+        "regularPrice": 1500,
+        "salePrice": null,
+        "priceText": "$ 1.500,00",
         "priceOriginal": "",
-        "regularPriceText": "$ 0,00",
-        "salePriceText": "$ 0,00",
+        "regularPriceText": "$ 1.500,00",
+        "salePriceText": "",
         "badge": "",
         "categories": [
             {
@@ -715,7 +739,13 @@
             }
         ],
         "tags": [],
-        "collections": [],
+        "collections": [
+            {
+                "id": 20,
+                "slug": "featured-row-2",
+                "name": "Featured Row 2"
+            }
+        ],
         "attributes": [
             {
                 "name": "Talle",
@@ -760,59 +790,59 @@
                 "id": 561,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-azul/?attribute_talle=S&attribute_color=Azul",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "S",
                     "color": "Azul"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 562,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-azul/?attribute_talle=M&attribute_color=Azul",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "M",
                     "color": "Azul"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             },
             {
                 "id": 563,
                 "sku": "",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-azul/?attribute_talle=L&attribute_color=Azul",
-                "price": null,
-                "regularPrice": null,
+                "price": 1500,
+                "regularPrice": 1500,
                 "salePrice": null,
-                "priceText": "",
-                "regularPriceText": "",
+                "priceText": "$ 1.500,00",
+                "regularPriceText": "$ 1.500,00",
                 "salePriceText": "",
                 "attributes": {
                     "talle": "L",
                     "color": "Azul"
                 },
                 "stockStatus": "instock",
-                "stockQuantity": null,
+                "stockQuantity": 1,
                 "isOnSale": false
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": null,
+        "stockQuantity": 1,
         "isFeatured": false,
         "isOnSale": false,
         "images": [

@@ -187,24 +187,28 @@ function hf_featured_products_get_images($product) {
 }
 
 function hf_featured_products_get_price_data($product) {
-  $price = $product->get_price();
-  $regular_price = $product->get_regular_price();
-  $sale_price = $product->get_sale_price();
+  $price = get_post_meta($product->get_id(), '_price', true);
+  $regular_price = get_post_meta($product->get_id(), '_regular_price', true);
+  $sale_price = get_post_meta($product->get_id(), '_sale_price', true);
 
   if ($product->is_type('variable')) {
-    $variation_price = $product->get_variation_price('min', true);
-    $variation_regular_price = $product->get_variation_regular_price('max', true);
-    $variation_sale_price = $product->get_variation_sale_price('min', true);
+    $variations = $product->get_children();
+    if (!empty($variations)) {
+      $first_var_id = $variations[0];
+      $var_price = get_post_meta($first_var_id, '_price', true);
+      $var_regular = get_post_meta($first_var_id, '_regular_price', true);
+      $var_sale = get_post_meta($first_var_id, '_sale_price', true);
 
-    $price = $variation_price !== '' ? $variation_price : $price;
-    $regular_price = $variation_regular_price !== '' ? $variation_regular_price : $regular_price;
-    $sale_price = $variation_sale_price !== '' ? $variation_sale_price : $sale_price;
+      if (!empty($var_price)) $price = $var_price;
+      if (!empty($var_regular)) $regular_price = $var_regular;
+      if (!empty($var_sale)) $sale_price = $var_sale;
+    }
   }
 
   return [
-    'price' => $price !== '' ? (float) $price : null,
-    'regularPrice' => $regular_price !== '' ? (float) $regular_price : null,
-    'salePrice' => $sale_price !== '' ? (float) $sale_price : null,
+    'price' => !empty($price) ? (float) $price : null,
+    'regularPrice' => !empty($regular_price) ? (float) $regular_price : null,
+    'salePrice' => !empty($sale_price) ? (float) $sale_price : null,
   ];
 }
 
@@ -302,7 +306,7 @@ function hf_regenerate_featured_products_cache() {
 
   $query = [
     'status' => 'publish',
-    'limit' => 8,
+    'limit' => 50,
     'orderby' => 'date',
     'order' => 'DESC',
   ];
