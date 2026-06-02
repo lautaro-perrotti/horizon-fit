@@ -99,7 +99,11 @@ const PAGE_BUILDER = (() => {
           if (headEl) headEl.style.display = 'none';
         }
 
-        root.appendChild(sectionEl);
+        if (productRoute && (section.type === 'marquee' || section.type === 'navbar')) {
+          document.body.insertBefore(sectionEl, root);
+        } else {
+          root.appendChild(sectionEl);
+        }
 
         // For navbar: also insert drawers/overlay to body
         if (section.type === 'navbar') {
