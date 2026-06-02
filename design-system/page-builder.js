@@ -52,13 +52,18 @@ const PAGE_BUILDER = (() => {
     if (!pageSrc) return;
 
     try {
+      const productRoute = isProductRoute();
+      const productPageSourcesPromise = productRoute ? Promise.all([
+        fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
+        fetchText(PRODUCT_DETAIL_COMPONENT)
+      ]) : null;
+
       const t0 = performance.now();
       const pageConfig = await fetchJson(pageSrc);
       console.log(`[HF PB] fetch home.json: ${Math.round(performance.now() - t0)}ms`);
 
       if (!pageConfig.sections) return;
 
-      const productRoute = isProductRoute();
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
         .filter(s => !productRoute || s.type === 'marquee' || s.type === 'navbar')
@@ -119,8 +124,11 @@ const PAGE_BUILDER = (() => {
         }
       }
 
+      let productPageProducts = null;
+      let productPageTemplate = null;
       if (productRoute) {
-        await renderProductPage(root);
+        [productPageProducts, productPageTemplate] = await productPageSourcesPromise;
+        await renderProductPage(root, productPageProducts, productPageTemplate);
       }
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
@@ -517,11 +525,13 @@ const PAGE_BUILDER = (() => {
           </div>`;
   };
 
-  const renderProductPage = async (root) => {
-    const [products, html] = await Promise.all([
-      fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
-      fetchText(PRODUCT_DETAIL_COMPONENT)
-    ]);
+  const renderProductPage = async (root, products, html) => {
+    if (!products || !html) {
+      [products, html] = await Promise.all([
+        fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
+        fetchText(PRODUCT_DETAIL_COMPONENT)
+      ]);
+    }
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('slug') || params.get('product');
