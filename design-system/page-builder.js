@@ -262,6 +262,22 @@ const PAGE_BUILDER = (() => {
     if (config.videoDesktop) video.setAttribute('data-desktop', resolveMediaUrl(config.videoDesktop));
     if (config.videoMobile) video.setAttribute('data-mobile', resolveMediaUrl(config.videoMobile));
 
+    // Poster (primer frame): se ve al instante mientras el video pesado carga.
+    const hasPoster = !!config.poster;
+    if (hasPoster) video.setAttribute('poster', resolveMediaUrl(config.poster));
+
+    // Fondo oscuro para evitar flash blanco. Con poster el video se muestra de
+    // una (el navegador pinta el poster hasta que reproduce). Sin poster, fade-in.
+    video.style.backgroundColor = '#0b0b0f';
+    if (!hasPoster) {
+      video.style.opacity = '0';
+      video.style.transition = 'opacity .5s ease';
+      const reveal = () => { video.style.opacity = '1'; };
+      video.addEventListener('loadeddata', reveal, { once: true });
+      video.addEventListener('canplay', reveal, { once: true });
+      if (video.readyState >= 2) reveal();
+    }
+
     const setVideoSrc = () => {
       const isMobile = window.innerWidth <= 768;
       const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');

@@ -100,30 +100,30 @@ function hf_section_meta_box_callback($post) {
     $types = ['header', 'marquee', 'hero', 'conjuntos', 'categorias', 'trust', 'estilo', 'instagram', 'footer'];
 
     wp_nonce_field('hf_section_nonce', 'hf_section_nonce');
-    echo '<div style=\"padding: 10px;\">';
+    echo '<div style="padding: 10px;">';
     echo '<p><label><strong>Página:</strong></label><br>';
-    echo '<select name=\"hf_page_id\" style=\"width: 100%;\"><option value=\"\">-- Seleccionar --</option>';
+    echo '<select name="hf_page_id" style="width: 100%;"><option value="">-- Seleccionar --</option>';
     foreach ($pages as $page) {
         $sel = ($page->ID == $page_id) ? 'selected' : '';
-        echo '<option value=\"' . $page->ID . '\" ' . $sel . '>' . $page->post_title . '</option>';
+        echo '<option value="' . esc_attr($page->ID) . '" ' . $sel . '>' . esc_html($page->post_title) . '</option>';
     }
     echo '</select></p>';
 
     echo '<p><label><strong>Tipo de Sección:</strong></label><br>';
-    echo '<select name=\"hf_section_type\" style=\"width: 100%;\"><option value=\"\">-- Seleccionar --</option>';
+    echo '<select name="hf_section_type" style="width: 100%;"><option value="">-- Seleccionar --</option>';
     foreach ($types as $type) {
         $sel = ($type == $section_type) ? 'selected' : '';
-        echo '<option value=\"' . $type . '\" ' . $sel . '>' . ucfirst($type) . '</option>';
+        echo '<option value="' . esc_attr($type) . '" ' . $sel . '>' . esc_html(ucfirst($type)) . '</option>';
     }
     echo '</select></p>';
 
     echo '<p><label><strong>Orden:</strong></label><br>';
-    echo '<input type=\"number\" name=\"hf_section_order\" value=\"' . $section_order . '\" style=\"width: 100%;\"></p>';
+    echo '<input type="number" name="hf_section_order" value="' . esc_attr($section_order) . '" style="width: 100%;"></p>';
 
-    echo '<p><label><input type=\"checkbox\" name=\"hf_section_visible\" value=\"1\" ' . ($section_visible ? 'checked' : '') . '> <strong>Visible</strong></label></p>';
+    echo '<p><label><input type="checkbox" name="hf_section_visible" value="1" ' . ($section_visible ? 'checked' : '') . '> <strong>Visible</strong></label></p>';
 
     echo '<p><label><strong>Configuración (JSON):</strong></label><br>';
-    echo '<textarea name=\"hf_section_settings\" style=\"width: 100%; height: 150px;\">' . $section_settings . '</textarea></p>';
+    echo '<textarea name="hf_section_settings" style="width: 100%; height: 150px;">' . esc_textarea($section_settings) . '</textarea></p>';
     echo '</div>';
 }
 
@@ -139,12 +139,16 @@ function hf_save_section_meta($post_id) {
         return;
     }
 
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
     if (isset($_POST['hf_page_id'])) {
         update_post_meta($post_id, '_hf_page_id', intval($_POST['hf_page_id']));
     }
 
     if (isset($_POST['hf_section_type'])) {
-        update_post_meta($post_id, '_hf_section_type', sanitize_text_field($_POST['hf_section_type']));
+        update_post_meta($post_id, '_hf_section_type', sanitize_text_field(wp_unslash($_POST['hf_section_type'])));
     }
 
     if (isset($_POST['hf_section_order'])) {
@@ -158,7 +162,23 @@ function hf_save_section_meta($post_id) {
     }
 
     if (isset($_POST['hf_section_settings'])) {
-        update_post_meta($post_id, '_hf_section_settings', sanitize_textarea_field($_POST['hf_section_settings']));
+        // El valor es JSON: NO usar sanitize_textarea_field (rompe comillas/llaves).
+        // 1) wp_unslash quita el escapado que WP agrega a $_POST.
+        // 2) Validar que sea JSON parseable; si lo es, re-encodear canónico.
+        //    Si está vacío, guardar {}. Si es inválido, NO pisar el valor previo.
+        $raw = wp_unslash($_POST['hf_section_settings']);
+        $raw = is_string($raw) ? trim($raw) : '';
+
+        if ($raw === '') {
+            update_post_meta($post_id, '_hf_section_settings', '{}');
+        } else {
+            $decoded = json_decode($raw, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $clean = wp_json_encode($decoded, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                update_post_meta($post_id, '_hf_section_settings', $clean);
+            }
+            // JSON inválido: se deja el valor anterior intacto (no se corrompe).
+        }
     }
 }
 
