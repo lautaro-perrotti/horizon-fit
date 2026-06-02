@@ -1,0 +1,12 @@
+﻿diff --git a/index.html b/index.html
+index c8dcf3a..5d96b27 100644
+--- a/index.html
++++ b/index.html
+@@ -4342,7 +4342,6 @@
+   
+   <section class="section section--featured-products" style="background: var(--surface); padding-bottom: 0;">
+     <div class="container section__head">
+-      <p class="section__eyebrow">Favoritos</p>
+       <h2>Productos destacados</h2>
+     </div>
+ 

@@ -1,0 +1,20 @@
+﻿959402c Fix featured-products component: remove Favoritos, keep HTML-only, styles in index.html
+32739d8 Extract featured-products to separate component, remove hardcoded data from index.html
+a87c54a Update .gitignore: ignore wp-content/uploads and other generated files
+7b0ed59 update
+1634053 update
+c7bb4ae update
+445810d update
+456fd10 update
+493e9c7 update
+1a5569e Add Mercado Pago WooCommerce plugin
+749ae34 Add PayWay plugin ZIP
+2d28e73 Add PayWay WooCommerce gateway plugin
+136cd4b Merge branch 'main' of https://github.com/lautaro-perrotti/horizon-fit
+3305b58 Add database dump
+1c1fb4b Add product images from VPS
+0528fc1 Redirect root to wp-admin
+b7d36b4 Restore working marquee and hero loaders - fix broken cadf172 commit
+b6735bf Fix UTF-8 BOM in PHP files causing wp-admin white screen
+cadf172 Implement dynamic page sections system with API
+df62124 Remove WP_HOME/WP_SITEURL from WORDPRESS_CONFIG_EXTRA to use database values
