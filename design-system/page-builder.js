@@ -33,6 +33,10 @@ const PAGE_BUILDER = (() => {
           await renderFeaturedProducts(sectionEl, section);
         }
 
+        if (section.type === 'hero') {
+          setupHero(sectionEl);
+        }
+
         root.appendChild(sectionEl);
       }
     } catch (e) {
@@ -94,6 +98,23 @@ const PAGE_BUILDER = (() => {
     } catch (e) {
       console.error('Featured products error:', e);
     }
+  };
+
+  const setupHero = (sectionEl) => {
+    const video = sectionEl.querySelector('#heroVideo');
+    if (!video) return;
+
+    const setVideoSrc = () => {
+      const isMobile = window.innerWidth <= 768;
+      const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');
+      if (video.src !== src) {
+        video.src = src;
+        video.load();
+      }
+    };
+
+    setVideoSrc();
+    window.addEventListener('resize', setVideoSrc);
   };
 
   return { init };

@@ -2,6 +2,13 @@
   "slug": "home",
   "sections": [
     {
+      "id": "hero",
+      "type": "hero",
+      "order": 0,
+      "visible": true,
+      "component": "design-system/components/sections/hero.html"
+    },
+    {
       "id": "featured-products",
       "type": "featured-products",
       "order": 1,
