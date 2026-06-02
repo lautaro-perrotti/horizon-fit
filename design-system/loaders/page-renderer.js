@@ -82,12 +82,12 @@ const PAGE_RENDERER = (() => {
 
     await loadLoaderScript(type);
 
-    const loaderName = type.toUpperCase() + '_LOADER';
+    const loaderName = type.replace(/-/g, '_').toUpperCase() + '_LOADER';
     console.log('Looking for loader: ' + loaderName + ', exists: ' + (window[loaderName] ? 'YES' : 'NO'));
 
     if (window[loaderName] && window[loaderName].init) {
       console.log('Calling init for ' + type);
-      window[loaderName].init(sectionElement, section);
+      await window[loaderName].init(sectionElement, section);
     }
 
     return sectionElement;
