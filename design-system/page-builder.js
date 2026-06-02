@@ -2,9 +2,15 @@ const PAGE_BUILDER = (() => {
   const textCache = new Map();
   const jsonCache = new Map();
 
+  function rootUrl(url) {
+    if (/^(https?:)?\/\//.test(url) || url.startsWith('/')) return url;
+    return '/' + url.replace(/^\.?\//, '');
+  }
+
   async function fetchText(url) {
+    url = rootUrl(url);
     if (textCache.has(url)) return textCache.get(url);
-    const promise = fetch(url, { cache: 'force-cache' }).then(r => {
+    const promise = fetch(url, { cache: 'no-store' }).then(r => {
       if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
       return r.text();
     });
@@ -13,8 +19,9 @@ const PAGE_BUILDER = (() => {
   }
 
   async function fetchJson(url) {
+    url = rootUrl(url);
     if (jsonCache.has(url)) return jsonCache.get(url);
-    const promise = fetch(url, { cache: 'force-cache' }).then(r => {
+    const promise = fetch(url, { cache: 'no-store' }).then(r => {
       if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
       return r.json();
     });
@@ -22,8 +29,8 @@ const PAGE_BUILDER = (() => {
     return promise;
   }
 
-  const PRODUCT_DATA_SRC = 'design-system/data/featured-products.json';
-  const PRODUCT_DETAIL_COMPONENT = 'design-system/components/sections/product-detail.html';
+  const PRODUCT_DATA_SRC = '/design-system/data/featured-products.json';
+  const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
   const isProductRoute = () => {
     const params = new URLSearchParams(window.location.search);
@@ -32,7 +39,7 @@ const PAGE_BUILDER = (() => {
 
   const productUrl = (product) => {
     const slug = product?.slug || '';
-    return slug ? `index.html?view=product&slug=${encodeURIComponent(slug)}` : '#';
+    return slug ? `/producto/?slug=${encodeURIComponent(slug)}` : '#';
   };
 
   const init = async () => {
@@ -194,8 +201,9 @@ const PAGE_BUILDER = (() => {
     const setVideoSrc = () => {
       const isMobile = window.innerWidth <= 768;
       const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');
-      if (video.src !== src) {
-        video.src = src;
+      const nextSrc = rootUrl(src || '');
+      if (video.src !== nextSrc) {
+        video.src = nextSrc;
         video.load();
       }
     };
@@ -339,6 +347,14 @@ const PAGE_BUILDER = (() => {
     return attr?.values?.map(value => value.name || value.slug).filter(Boolean) || [];
   };
 
+  const productMatchesSlug = (product, slug) => {
+    if (!slug) return false;
+    const permalinkSlug = `${product?.permalink || ''}`.replace(/\/$/, '').split('/').pop();
+    return [product?.slug, product?.post_name, product?.handle, permalinkSlug]
+      .filter(Boolean)
+      .some(value => value === slug);
+  };
+
   const renderProductPage = async (root) => {
     const [products, html] = await Promise.all([
       fetchJson(PRODUCT_DATA_SRC),
@@ -347,7 +363,10 @@ const PAGE_BUILDER = (() => {
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('slug') || params.get('product');
-    const product = products.find(item => item.slug === slug) || products[0];
+    const product = products.find(item => productMatchesSlug(item, slug)) || products[0];
+    if (slug && product && !productMatchesSlug(product, slug)) {
+      console.warn(`[HF PB] Product slug not found: ${slug}. Rendering first product.`);
+    }
 
     const wrapper = document.createElement('div');
     wrapper.innerHTML = html;
@@ -365,17 +384,23 @@ const PAGE_BUILDER = (() => {
     const lookImage = $('[data-product-look-image]');
     const lookTag = $('[data-product-look-tag]');
     const lookList = $('[data-product-look-list]');
+    const setText = (sel, value) => {
+      const el = $(sel);
+      if (el) el.textContent = value || '';
+      return el;
+    };
 
     document.title = `${product.name || 'Producto'} | Horizon Fit`;
-    $('.hf-pdp-view__title').textContent = product.name || '';
-    $('.hf-pdp-view__price').textContent = product.priceText || product.regularPriceText || '';
-    $('.hf-pdp-view__compare').textContent = product.priceOriginal || '';
-    $('[data-product-installments]').textContent = product.stockStatus === 'instock' ? 'Disponible' : 'Sin stock';
-    $('[data-product-transfer]').hidden = true;
-    $('[data-product-description]').textContent = product.description || product.shortDescription || 'Diseno, textura y comodidad en equilibrio. Este producto esta pensado para acompanar cada movimiento sin perder estilo ni confort.';
+    setText('.hf-pdp-view__title', product.name || '');
+    setText('.hf-pdp-view__price', product.priceText || product.regularPriceText || '');
+    setText('.hf-pdp-view__compare', product.priceOriginal || '');
+    setText('[data-product-installments]', product.stockStatus === 'instock' ? 'Disponible' : 'Sin stock');
+    const transferEl = $('[data-product-transfer]');
+    if (transferEl) transferEl.hidden = true;
+    setText('[data-product-description]', product.description || product.shortDescription || 'Diseno, textura y comodidad en equilibrio. Este producto esta pensado para acompanar cada movimiento sin perder estilo ni confort.');
 
     const category = product.categories?.map(item => item.name).filter(Boolean).join(' / ') || '';
-    $('[data-product-kicker]').textContent = category || 'Seamless collection';
+    setText('[data-product-kicker]', category || 'Seamless collection');
     if (lookTag) lookTag.textContent = product.name || '';
 
     if (images[0] && mainImage) {
@@ -417,12 +442,11 @@ const PAGE_BUILDER = (() => {
     });
 
     const sizes = product.sizes?.length ? product.sizes : getAttributeValues(product, 'talle');
-    const sizesSlot = $('[data-product-sizes]');
+    const sizesSlot = $('.hf-pdp-view__sizes');
     const sizeLabel = $('[data-product-size-label]');
-    sizes.forEach((size, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'hf-pdp-view__size';
-      btn.type = 'button';
+    const sizeButtons = $$('.hf-pdp-view__size', sizesSlot || sectionEl);
+    sizeButtons.forEach((btn, idx) => {
+      const size = sizes[idx] || btn.textContent.trim();
       btn.textContent = size;
       btn.setAttribute('aria-pressed', idx === 0 ? 'true' : 'false');
       if (idx === 0 && sizeLabel) sizeLabel.textContent = size;
@@ -431,7 +455,6 @@ const PAGE_BUILDER = (() => {
         btn.setAttribute('aria-pressed', 'true');
         if (sizeLabel) sizeLabel.textContent = size;
       });
-      sizesSlot?.appendChild(btn);
     });
     if (!sizes.length && sizeLabel) sizeLabel.textContent = '-';
 
