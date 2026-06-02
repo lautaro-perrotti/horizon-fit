@@ -21,6 +21,9 @@ require_once HF_COMMERCE_DIR . 'includes/hero-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/page-sections.php';
 require_once HF_COMMERCE_DIR . 'includes/page-sections-api.php';
 require_once HF_COMMERCE_DIR . 'includes/featured-products-cache.php';
+require_once HF_COMMERCE_DIR . 'includes/page-builder.php';
+require_once HF_COMMERCE_DIR . 'includes/generator.php';
+require_once HF_COMMERCE_DIR . 'includes/admin-page.php';
 
 // Habilitar REST API pública para WooCommerce sin autenticación
 // Este filter intercepta la validación de permisos de WooCommerce

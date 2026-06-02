@@ -45,6 +45,7 @@ services:
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
       - horizon_fit_html:/var/www/html
+      - ./index.html:/var/www/html/index.html
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
@@ -62,7 +63,7 @@ services:
     ports:
       - "8088:80"
     volumes:
-      - ./index.html:/usr/local/apache2/htdocs/index.html:ro
+      - ./index.html:/usr/local/apache2/htdocs/index.html
       - ./design-system:/usr/local/apache2/htdocs/design-system
       - ./assets:/usr/local/apache2/htdocs/assets:ro
       - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro

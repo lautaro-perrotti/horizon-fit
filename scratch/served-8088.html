@@ -4201,6 +4201,48 @@
           max-width: calc(100vw - 40px);
         }
       }
+
+    /* FEATURED PRODUCTS GRID - Horizontal scroll */
+    .hf-product-grid--h-scroll {
+      display: flex;
+      gap: var(--s-4, 16px);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .hf-product-grid--h-scroll .hf-product-item {
+      flex: 0 0 calc(25% - 12px);
+      min-width: 220px;
+    }
+
+    @media (max-width: 1280px) {
+      .hf-product-grid--h-scroll .hf-product-item {
+        flex: 0 0 calc(33.333% - 12px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hf-product-grid--h-scroll .hf-product-item {
+        flex: 0 0 calc(50% - 8px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hf-product-grid--h-scroll .hf-product-item {
+        flex: 0 0 calc(85% - 4px);
+      }
+    }
+
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 </head>
 
@@ -4340,10 +4382,19 @@
 
   <!-- PRODUCT GRID ITEMS - Touche Sport Style -->
   
+  
   <section class="section section--featured-products" style="background: var(--surface); padding-bottom: 0;">
-    <div class="container section__head">
-      <p class="section__eyebrow">Favoritos</p>
-      <h2>Productos destacados</h2>
+    <div class="container">
+      <div class="hf-section-head"
+        style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding-top: 64px; margin-bottom: 32px;">
+        <div aria-hidden="true"></div>
+        <div class="hf-section-head__title" style="text-align:center;">
+          <h2 style="font-size:clamp(28px,4vw,44px);font-weight:400 !important;margin:0;letter-spacing:-0.02em;">
+            Productos
+            destacados</h2>
+        </div>
+        <div aria-hidden="true"></div>
+      </div>
     </div>
 
     <div class="hf-product-scroll-shell" data-grid-shell="productGrid1">
@@ -8208,42 +8259,4 @@
     })();
 
     const toasts = $("#toasts");
-    function toast({ title = "Listo", message = "", variant = "info", timeout = 3200 }) {
-      const t = document.createElement("div");
-      t.className = `toast toast--${variant}`;
-      t.innerHTML = `
-          <div class="toast__dot" aria-hidden="true"></div>
-          <div>
-            <b>${escapeHtml(title)}</b>
-            <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
-          </div>
-          <button class="toast__x" aria-label="Cerrar">&times;</button>
-        `;
-      const x = $(".toast__x", t);
-      x.addEventListener("click", () => t.remove());
-      toasts.appendChild(t);
-      setTimeout(() => { t.remove(); }, timeout);
-    }
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      }[s]));
-    }
-  </script>
-
-  <!-- API & Loaders -->
-  <script src="design-system/loaders/api-config.js"></script>
-  <script src="design-system/loaders/page-renderer.js"></script>
-  <script src="design-system/loaders/marquee-loader.js"></script>
-  <script src="design-system/loaders/hero-loader.js"></script>
-  <script src="design-system/components/marquee/marquee.js"></script>
-  <script src="design-system/components/carousel/carousel.js"></script>
-  <script src="design-system/components/video-hero/video-hero.js"></script>
-  <script src="design-system/components/lightbox/lightbox.js"></script>
-  <script src="design-system/components/banner/banner.js"></script>
-  <script src="design-system/components/info-banner/info-banner.js"></script>
-  <script src="design-system/components/trust-bar/trust-bar.js"></script>
-</body>
-
-</html>
+ 
