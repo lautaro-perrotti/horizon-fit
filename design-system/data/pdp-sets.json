@@ -1,0 +1,19 @@
+{
+  "sets": [
+    {
+      "name": "Set Motion",
+      "image": "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+      "url": "index.html?name=SET+MOTION&view=product"
+    },
+    {
+      "name": "Set Power",
+      "image": "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+      "url": "index.html?name=SET+POWER&view=product"
+    },
+    {
+      "name": "Set Urban",
+      "image": "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+      "url": "index.html?name=SET+URBAN&view=product"
+    }
+  ]
+}
