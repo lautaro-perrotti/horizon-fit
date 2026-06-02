@@ -22,6 +22,19 @@ const PAGE_BUILDER = (() => {
     return promise;
   }
 
+  const PRODUCT_DATA_SRC = 'design-system/data/featured-products.json';
+  const PRODUCT_DETAIL_COMPONENT = 'design-system/components/sections/product-detail.html';
+
+  const isProductRoute = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') === 'product' || window.location.pathname.replace(/\/+$/, '') === '/producto';
+  };
+
+  const productUrl = (product) => {
+    const slug = product?.slug || '';
+    return slug ? `index.html?view=product&slug=${encodeURIComponent(slug)}` : '#';
+  };
+
   const init = async () => {
     const startedAt = performance.now();
     const root = document.getElementById('hfPageBuilderRoot');
@@ -37,8 +50,10 @@ const PAGE_BUILDER = (() => {
 
       if (!pageConfig.sections) return;
 
+      const productRoute = isProductRoute();
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
+        .filter(s => !productRoute || s.type === 'marquee' || s.type === 'navbar')
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       // Load all components and data in parallel
@@ -89,18 +104,22 @@ const PAGE_BUILDER = (() => {
           }
         }
       }
+
+      if (productRoute) {
+        await renderProductPage(root);
+      }
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
       // Hydrate sections with data
       const t3 = performance.now();
       for (const section of sections) {
-        if (section.type === 'featured-products' && section.data) {
+        if (!productRoute && section.type === 'featured-products' && section.data) {
           const data = dataMap.get(section.id);
           const sectionEl = root.querySelector(`[data-grid-shell="${section.id.replace(/[^a-zA-Z0-9-]/g, '')}"]`)?.parentElement || root.lastElementChild;
           if (data && sectionEl) await renderFeaturedProducts(sectionEl, section, data);
         }
 
-        if (section.type === 'hero') {
+        if (!productRoute && section.type === 'hero') {
           const sectionEl = root.querySelector('.hf-video-hero') || root.lastElementChild;
           if (sectionEl) setupHero(sectionEl);
         }
@@ -130,7 +149,7 @@ const PAGE_BUILDER = (() => {
         const clone = template.content.cloneNode(true);
 
         const link = clone.querySelector('.hf-product-item__link');
-        if (link) link.href = product.permalink || '#';
+        if (link) link.href = productUrl(product);
 
         const title = clone.querySelector('.hf-product-item__title');
         if (title) title.textContent = product.name || '';
@@ -296,6 +315,179 @@ const PAGE_BUILDER = (() => {
         if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
       }
     });
+  };
+
+  const getProductImages = (product) => {
+    const images = product?.imageObjects || product?.images || [];
+    return images
+      .map((image) => {
+        if (typeof image === 'string') return { url: image, alt: product?.name || '' };
+        return {
+          url: image.large || image.url || image.medium || '',
+          fullUrl: image.url || image.large || image.medium || '',
+          alt: image.alt || product?.name || ''
+        };
+      })
+      .filter(image => image.url);
+  };
+
+  const getAttributeValues = (product, label) => {
+    const attr = product?.attributes?.find(item => {
+      const name = `${item.label || item.name || ''}`.toLowerCase();
+      return name.includes(label);
+    });
+    return attr?.values?.map(value => value.name || value.slug).filter(Boolean) || [];
+  };
+
+  const renderProductPage = async (root) => {
+    const [products, html] = await Promise.all([
+      fetchJson(PRODUCT_DATA_SRC),
+      fetchText(PRODUCT_DETAIL_COMPONENT)
+    ]);
+
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug') || params.get('product');
+    const product = products.find(item => item.slug === slug) || products[0];
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl || !product) return;
+
+    document.body.classList.add('hf-product-mode');
+    sectionEl.hidden = false;
+
+    const $ = (sel, base = sectionEl) => base.querySelector(sel);
+    const $$ = (sel, base = sectionEl) => Array.from(base.querySelectorAll(sel));
+    const images = getProductImages(product);
+    const mainImage = $('[data-product-main-image]');
+    const mainMedia = $('[data-product-main]');
+    const lookImage = $('[data-product-look-image]');
+    const lookTag = $('[data-product-look-tag]');
+    const lookList = $('[data-product-look-list]');
+
+    document.title = `${product.name || 'Producto'} | Horizon Fit`;
+    $('.hf-pdp-view__title').textContent = product.name || '';
+    $('.hf-pdp-view__price').textContent = product.priceText || product.regularPriceText || '';
+    $('.hf-pdp-view__compare').textContent = product.priceOriginal || '';
+    $('[data-product-installments]').textContent = product.stockStatus === 'instock' ? 'Disponible' : 'Sin stock';
+    $('[data-product-transfer]').hidden = true;
+    $('[data-product-description]').textContent = product.description || product.shortDescription || 'Diseno, textura y comodidad en equilibrio. Este producto esta pensado para acompanar cada movimiento sin perder estilo ni confort.';
+
+    const category = product.categories?.map(item => item.name).filter(Boolean).join(' / ') || '';
+    $('[data-product-kicker]').textContent = category || 'Seamless collection';
+    if (lookTag) lookTag.textContent = product.name || '';
+
+    if (images[0] && mainImage) {
+      mainImage.src = images[0].url;
+      mainImage.alt = images[0].alt || product.name || '';
+      if (lookImage) {
+        lookImage.src = images[0].url;
+        lookImage.alt = `${product.name || 'Producto'} look principal`;
+      }
+    }
+
+    const thumbs = $('[data-product-thumbs]');
+    images.forEach((image, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'hf-pdp-view__thumb';
+      btn.type = 'button';
+      btn.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
+      btn.setAttribute('aria-label', `Ver foto ${idx + 1}`);
+      btn.style.setProperty('--thumb-delay', `${idx * 70}ms`);
+      const img = document.createElement('img');
+      img.src = image.url;
+      img.alt = '';
+      btn.appendChild(img);
+      btn.addEventListener('click', () => {
+        if (mainImage) {
+          mainMedia?.classList.add('is-changing');
+          mainImage.src = image.url;
+          mainImage.alt = `${product.name || 'Producto'} foto ${idx + 1}`;
+          window.setTimeout(() => mainMedia?.classList.remove('is-changing'), 180);
+        }
+        if (lookImage) {
+          lookImage.src = image.url;
+          lookImage.alt = `${product.name || 'Producto'} look principal`;
+        }
+        $$('.hf-pdp-view__thumb').forEach(item => item.setAttribute('aria-current', 'false'));
+        btn.setAttribute('aria-current', 'true');
+      });
+      thumbs?.appendChild(btn);
+    });
+
+    const sizes = product.sizes?.length ? product.sizes : getAttributeValues(product, 'talle');
+    const sizesSlot = $('[data-product-sizes]');
+    const sizeLabel = $('[data-product-size-label]');
+    sizes.forEach((size, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'hf-pdp-view__size';
+      btn.type = 'button';
+      btn.textContent = size;
+      btn.setAttribute('aria-pressed', idx === 0 ? 'true' : 'false');
+      if (idx === 0 && sizeLabel) sizeLabel.textContent = size;
+      btn.addEventListener('click', () => {
+        $$('.hf-pdp-view__size', sizesSlot).forEach(item => item.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+        if (sizeLabel) sizeLabel.textContent = size;
+      });
+      sizesSlot?.appendChild(btn);
+    });
+    if (!sizes.length && sizeLabel) sizeLabel.textContent = '-';
+
+    const colors = getAttributeValues(product, 'color');
+    const colorsSlot = $('[data-product-colors]');
+    colors.forEach((color, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'hf-pdp-view__color';
+      btn.type = 'button';
+      btn.setAttribute('aria-current', idx === 0 ? 'true' : 'false');
+      btn.setAttribute('aria-label', color);
+      if (images[idx]) {
+        const img = document.createElement('img');
+        img.src = images[idx].url;
+        img.alt = color;
+        btn.appendChild(img);
+      } else {
+        btn.textContent = color;
+      }
+      btn.addEventListener('click', () => {
+        $$('.hf-pdp-view__color', colorsSlot).forEach(item => item.setAttribute('aria-current', 'false'));
+        btn.setAttribute('aria-current', 'true');
+      });
+      colorsSlot?.appendChild(btn);
+    });
+    if (!colors.length) colorsSlot?.closest('.hf-pdp-view__color-row')?.setAttribute('hidden', '');
+
+    if (lookList) {
+      const related = products.filter(item => item.slug !== product.slug).slice(0, 3);
+      lookList.innerHTML = related.map(item => {
+        const image = getProductImages(item)[0];
+        return `
+          <article class="hf-pdp-look__item">
+            <a class="hf-pdp-look__thumb" href="${productUrl(item)}" aria-label="Ver ${item.name || ''}">
+              <img src="${image?.url || ''}" alt="">
+            </a>
+            <div class="hf-pdp-look__meta">
+              <h3 class="hf-pdp-look__name">${item.name || ''}</h3>
+              <p class="hf-pdp-look__price">${item.priceText || item.regularPriceText || ''}</p>
+              <a class="hf-pdp-look__button" href="${productUrl(item)}">Comprar</a>
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    $$('.hf-pdp-view__tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const name = tab.getAttribute('data-product-tab');
+        $$('.hf-pdp-view__tab').forEach(item => item.setAttribute('aria-selected', item === tab ? 'true' : 'false'));
+        $$('.hf-pdp-view__panel').forEach(panel => {
+          panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === name);
+        });
+      });
+    });
+
+    root.appendChild(sectionEl);
   };
 
   const initNavbarScroll = () => {
