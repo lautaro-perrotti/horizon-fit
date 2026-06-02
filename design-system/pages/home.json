@@ -20,7 +20,11 @@
       "type": "hero",
       "order": 3,
       "visible": true,
-      "component": "design-system/components/sections/hero.html"
+      "component": "design-system/components/sections/hero.html",
+      "config": {
+        "videoDesktop": "assets/hero-video-desktop.mp4",
+        "videoMobile": "assets/hero-video-mobile.mp4"
+      }
     },
     {
       "id": "featured-products",
@@ -30,31 +34,33 @@
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
       "config": {
-        "title": "Productos destacados"
+        "title": "Productos destacados",
+        "collection": "featured-row-1"
       }
     },
     {
       "id": "featured-products-2",
       "type": "featured-products",
-      "order": 7,
+      "order": 5,
       "visible": true,
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
       "config": {
-        "title": ""
+        "title": "",
+        "collection": "featured-row-2"
       }
     },
     {
       "id": "featured-sets-desktop",
       "type": "featured-sets",
-      "order": 5,
+      "order": 6,
       "visible": true,
       "component": "design-system/components/sections/featured-sets-desktop.html"
     },
     {
       "id": "featured-sets-mobile",
       "type": "featured-sets",
-      "order": 6,
+      "order": 7,
       "visible": true,
       "component": "design-system/components/sections/featured-sets-mobile.html"
     }

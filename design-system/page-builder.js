@@ -33,6 +33,42 @@ const PAGE_BUILDER = (() => {
   const PRODUCT_DATA_FALLBACK_SRC = '/featured-products.json';
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
+  // WordPress: settings de secciones editables desde wp-admin (ej. video del hero).
+  const WP_BASE_URL = 'http://localhost:8089';
+  const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
+
+  // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
+  // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
+  const resolveMediaUrl = (url) => {
+    if (!url) return '';
+    if (/^https?:\/\//.test(url)) return url;
+    return rootUrl(url);
+  };
+
+  // Trae el mapa type -> settings desde WordPress. Si WP no responde, devuelve
+  // un Map vacío y el sitio sigue funcionando con la config de home.json.
+  const fetchWpSectionSettings = async () => {
+    const map = new Map();
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 2500);
+      const res = await fetch(WP_SECTIONS_URL, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!res.ok) return map;
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        for (const section of data) {
+          if (section?.type && section.settings && !Array.isArray(section.settings)) {
+            map.set(section.type, section.settings);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[HF PB] WordPress section settings unavailable, using local config:', e.message);
+    }
+    return map;
+  };
+
   const isProductRoute = () => {
     const params = new URLSearchParams(window.location.search);
     return params.get('view') === 'product' || window.location.pathname.replace(/\/+$/, '') === '/producto';
@@ -57,6 +93,10 @@ const PAGE_BUILDER = (() => {
         fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
         fetchText(PRODUCT_DETAIL_COMPONENT)
       ]) : null;
+
+      // Settings editables desde wp-admin (video del hero, etc). Se pide en
+      // paralelo; si WP no está disponible se usa la config de home.json.
+      const wpSettingsPromise = productRoute ? Promise.resolve(new Map()) : fetchWpSectionSettings();
 
       const t0 = performance.now();
       const pageConfig = await fetchJson(pageSrc);
@@ -134,6 +174,7 @@ const PAGE_BUILDER = (() => {
 
       // Hydrate sections with data
       const t3 = performance.now();
+      const wpSettings = await wpSettingsPromise;
       for (const section of sections) {
         if (!productRoute && section.type === 'featured-products' && section.data) {
           const data = dataMap.get(section.id);
@@ -143,7 +184,10 @@ const PAGE_BUILDER = (() => {
 
         if (!productRoute && section.type === 'hero') {
           const sectionEl = sectionElements.get(section.id);
-          if (sectionEl) setupHero(sectionEl);
+          // wp-admin manda: si la Sección hero tiene settings de video, ganan;
+          // si no, se usa la config local de home.json.
+          const heroConfig = { ...(section.config || {}), ...(wpSettings.get('hero') || {}) };
+          if (sectionEl) setupHero(sectionEl, heroConfig);
         }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
@@ -209,14 +253,19 @@ const PAGE_BUILDER = (() => {
     }
   };
 
-  const setupHero = (sectionEl) => {
+  const setupHero = (sectionEl, config = {}) => {
     const video = sectionEl.querySelector('#heroVideo');
     if (!video) return;
+
+    // Las URLs de los videos vienen de wp-admin (Sección hero) o de home.json.
+    // Si no están, se usan los atributos data-* del HTML como fallback.
+    if (config.videoDesktop) video.setAttribute('data-desktop', resolveMediaUrl(config.videoDesktop));
+    if (config.videoMobile) video.setAttribute('data-mobile', resolveMediaUrl(config.videoMobile));
 
     const setVideoSrc = () => {
       const isMobile = window.innerWidth <= 768;
       const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');
-      const nextSrc = rootUrl(src || '');
+      const nextSrc = resolveMediaUrl(src || '');
       if (video.src !== nextSrc) {
         video.src = nextSrc;
         video.load();

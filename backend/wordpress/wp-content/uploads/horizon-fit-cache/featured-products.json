@@ -431,7 +431,7 @@
     {
         "id": 552,
         "slug": "falda-conjunto-falda-bordo",
-        "sku": "",
+        "sku": "245",
         "type": "variable",
         "status": "publish",
         "name": "Falda \"Conjunto falda\" bordó",
@@ -542,7 +542,7 @@
         "variations": [
             {
                 "id": 553,
-                "sku": "",
+                "sku": "245",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=S&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -560,7 +560,7 @@
             },
             {
                 "id": 554,
-                "sku": "",
+                "sku": "245",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=M&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -578,7 +578,7 @@
             },
             {
                 "id": 555,
-                "sku": "",
+                "sku": "245",
                 "permalink": "http://localhost:8089/product/falda-conjunto-falda-bordo/?attribute_talle=L&attribute_color=Bordeaux",
                 "price": 1500,
                 "regularPrice": 1500,
@@ -596,26 +596,16 @@
             }
         ],
         "stockStatus": "instock",
-        "stockQuantity": 1,
+        "stockQuantity": null,
         "isFeatured": false,
         "isOnSale": false,
         "images": [
-            "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1.jpg",
             "http://localhost:8089/wp-content/uploads/2026/05/DSC02413.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1.jpg",
             "http://localhost:8089/wp-content/uploads/2026/05/DSC02415.jpg",
             "http://localhost:8089/wp-content/uploads/2026/05/DSC02417.jpg"
         ],
         "imageObjects": [
-            {
-                "id": 556,
-                "url": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1.jpg",
-                "width": 1365,
-                "height": 2048,
-                "large": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1-683x1024.jpg",
-                "medium": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1-768x1152.jpg",
-                "alt": "Falda \"Conjunto falda\" bordó",
-                "caption": ""
-            },
             {
                 "id": 557,
                 "url": "http://localhost:8089/wp-content/uploads/2026/05/DSC02413.jpg",
@@ -623,6 +613,16 @@
                 "height": 2048,
                 "large": "http://localhost:8089/wp-content/uploads/2026/05/DSC02413-683x1024.jpg",
                 "medium": "http://localhost:8089/wp-content/uploads/2026/05/DSC02413-768x1152.jpg",
+                "alt": "Falda \"Conjunto falda\" bordó",
+                "caption": ""
+            },
+            {
+                "id": 556,
+                "url": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1.jpg",
+                "width": 1365,
+                "height": 2048,
+                "large": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1-683x1024.jpg",
+                "medium": "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1-768x1152.jpg",
                 "alt": "Falda \"Conjunto falda\" bordó",
                 "caption": ""
             },

@@ -397,7 +397,21 @@ function hf_regenerate_featured_products_cache() {
 
   $cache_file = hf_featured_products_cache_path();
   $json = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-  file_put_contents($cache_file, $json, LOCK_EX);
+
+  // Escribir a un archivo temporal y renombrar (atomic write).
+  // Esto evita el "Permission denied" cuando el archivo destino pertenece a
+  // otro usuario: al recrearlo por rename, hereda permisos del directorio (777)
+  // y cualquier proceso (Apache www-data, WP-CLI, cron) puede regenerarlo.
+  $tmp_file = $cache_file . '.tmp.' . getmypid();
+  if (file_put_contents($tmp_file, $json, LOCK_EX) !== false) {
+    @chmod($tmp_file, 0666);
+    if (!@rename($tmp_file, $cache_file)) {
+      // Fallback: escribir directo si el rename falla.
+      file_put_contents($cache_file, $json, LOCK_EX);
+      @chmod($cache_file, 0666);
+      @unlink($tmp_file);
+    }
+  }
 }
 
 register_activation_hook(dirname(dirname(__FILE__)) . '/horizon-fit-commerce.php', function() {
