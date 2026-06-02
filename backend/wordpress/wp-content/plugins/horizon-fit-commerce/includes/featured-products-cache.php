@@ -14,11 +14,17 @@ add_action('deleted_post', function($post_id) {
   }
 }, 10);
 
-// Cron job: regenerar cada hora automáticamente
+// Cron job: regenerar cada hora automáticamente (solo verifica 1x por hora)
 add_action('init', function() {
+  if (get_transient('hf_cron_scheduled')) {
+    return;
+  }
+
   if (!wp_next_scheduled('hf_regenerate_featured_products_cache_cron')) {
     wp_schedule_event(time(), 'hourly', 'hf_regenerate_featured_products_cache_cron');
   }
+
+  set_transient('hf_cron_scheduled', 1, 3600);
 });
 add_action('hf_regenerate_featured_products_cache_cron', 'hf_regenerate_featured_products_cache');
 
@@ -63,7 +69,7 @@ function hf_regenerate_featured_products_cache() {
     $installment = $price > 0 ? $price / 6 : 0;
     $transfer = $price > 0 ? $price * 0.85 : 0;
 
-    // Get images
+    // Get images (máx 2)
     $image_id = $product->get_image_id();
     $images = [];
 
@@ -76,6 +82,7 @@ function hf_regenerate_featured_products_cache() {
 
     $gallery_ids = $product->get_gallery_image_ids();
     foreach ((array) $gallery_ids as $gid) {
+      if (count($images) >= 2) break;
       $img_url = wp_get_attachment_image_url($gid, 'large');
       if ($img_url) {
         $images[] = $img_url;

@@ -3,7 +3,7 @@
 (async function() {
   const API_BASE = window.location.hostname === 'localhost'
     ? 'http://localhost:8089'
-    : http://:8089;
+    : 'http://localhost:8089';
 
   // Detectar página slug del URL o usar 'home' por defecto
   let pageSlug = 'home';

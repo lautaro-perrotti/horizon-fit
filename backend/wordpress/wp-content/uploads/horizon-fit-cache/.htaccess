@@ -1,0 +1,6 @@
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "http://localhost:8088"
+  Header set Access-Control-Allow-Methods "GET, OPTIONS"
+  Header set Access-Control-Allow-Headers "Content-Type"
+  Header set Cache-Control "public, max-age=3600"
+</IfModule>

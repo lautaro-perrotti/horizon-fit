@@ -1,1 +1,106 @@
-[]
+[
+    {
+        "id": 560,
+        "name": "Falda \"Conjunto falda\" azul",
+        "permalink": "http://localhost:8089/?p=560&post_type=product",
+        "priceText": "$ 45,99",
+        "installmentsText": "6 cuotas de: $ 7,67",
+        "transferText": "$ 39,09 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02397-Editar-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02393-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02395-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 568,
+        "name": "Falda \"Conjunto falda\" negro",
+        "permalink": "http://localhost:8089/product/falda-conjunto-falda-negro/",
+        "priceText": "$ 45,99",
+        "installmentsText": "6 cuotas de: $ 7,67",
+        "transferText": "$ 39,09 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02447-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02447-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02435-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 552,
+        "name": "Falda \"Conjunto falda\" bord??",
+        "permalink": "http://localhost:8089/?p=552&post_type=product",
+        "priceText": "$ 45,99",
+        "installmentsText": "6 cuotas de: $ 7,67",
+        "transferText": "$ 39,09 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02403-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02407-1-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02413-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 114,
+        "name": "Top liso blanco",
+        "permalink": "http://localhost:8089/?p=114&post_type=product",
+        "priceText": "$ 79,99",
+        "installmentsText": "6 cuotas de: $ 13,33",
+        "transferText": "$ 67,99 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02750-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02750-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02752-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 87,
+        "name": "Top liso celeste",
+        "permalink": "http://localhost:8089/?p=87&post_type=product",
+        "priceText": "$ 79,99",
+        "installmentsText": "6 cuotas de: $ 13,33",
+        "transferText": "$ 67,99 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02447-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02193-Editar-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02199-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 93,
+        "name": "Top liso verde",
+        "permalink": "http://localhost:8089/?p=93&post_type=product",
+        "priceText": "$ 79,99",
+        "installmentsText": "6 cuotas de: $ 13,33",
+        "transferText": "$ 67,99 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02442-Editar-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02824-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02825-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 99,
+        "name": "Top liso azul",
+        "permalink": "http://localhost:8089/?p=99&post_type=product",
+        "priceText": "$ 79,99",
+        "installmentsText": "6 cuotas de: $ 13,33",
+        "transferText": "$ 67,99 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02437-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02686-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02690-683x1024.jpg"
+        ]
+    },
+    {
+        "id": 56,
+        "name": "Top liso negro",
+        "permalink": "http://localhost:8089/?p=56&post_type=product",
+        "priceText": "$ 79,99",
+        "installmentsText": "6 cuotas de: $ 13,33",
+        "transferText": "$ 67,99 con Transferencia",
+        "images": [
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02448-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02625-683x1024.jpg",
+            "http://localhost:8089/wp-content/uploads/2026/05/DSC02627-683x1024.jpg"
+        ]
+    }
+]
