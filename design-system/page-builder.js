@@ -137,6 +137,53 @@
 
     grid.innerHTML = '';
     grid.appendChild(fragment);
+
+    initProductScrollShell(grid.closest('[data-grid-shell]'));
+  }
+
+  function initProductScrollShell(shell) {
+    if (!shell) {
+      return;
+    }
+
+    const grid = shell.querySelector('.hf-product-grid--h-scroll');
+    const buttons = Array.from(shell.querySelectorAll('.hf-carousel__nav'));
+
+    if (!grid || !buttons.length) {
+      return;
+    }
+
+    function getStep() {
+      const firstCard = grid.querySelector('.hf-product-item');
+      if (!firstCard) {
+        return grid.clientWidth;
+      }
+
+      const styles = window.getComputedStyle(grid);
+      const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      return firstCard.getBoundingClientRect().width + gap;
+    }
+
+    function updateButtons() {
+      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth - 2);
+      buttons.forEach(button => {
+        const dir = Number(button.dataset.dir || 0);
+        button.disabled = dir < 0 ? grid.scrollLeft <= 2 : grid.scrollLeft >= maxScroll;
+      });
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        grid.scrollBy({
+          left: getStep() * Number(button.dataset.dir || 0),
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    grid.addEventListener('scroll', updateButtons, { passive: true });
+    window.addEventListener('resize', updateButtons);
+    updateButtons();
   }
 
   if (document.readyState === 'loading') {
