@@ -251,7 +251,7 @@ const PAGE_BUILDER = (() => {
     window.addEventListener('scroll', updateNavState, { passive: true });
   };
 
-  return { init };
+  return { init, initNavbarAndMenuDrawer, initNavbarScroll };
 })();
 
 if (document.readyState === 'loading') {
@@ -262,7 +262,7 @@ if (document.readyState === 'loading') {
 
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
-    initNavbarAndMenuDrawer?.();
-    initNavbarScroll?.();
+    PAGE_BUILDER.initNavbarAndMenuDrawer?.();
+    PAGE_BUILDER.initNavbarScroll?.();
   }, 50);
 });

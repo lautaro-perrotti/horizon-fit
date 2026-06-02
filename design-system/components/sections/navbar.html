@@ -100,8 +100,129 @@
       </div>
     </div>
   </header>
+  <aside class="drawer drawer--left" id="menuDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Navegaci&oacute;n principal">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <nav class="menu-drawer__nav" aria-label="Navegaci&oacute;n principal">
+          <a class="menu-drawer__link" href="#productGrid1" data-menu-link><strong>Productos destacados</strong></a>
+          <a class="menu-drawer__link" href="#fullSlider" data-menu-link><strong>Conjuntos destacados</strong></a>
+          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por
+              categor&iacute;a</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Tops</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Calzas</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Shorts</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Buzos</strong></a>
+          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the
+              wild</strong></a>
+          <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
+        </nav>
+        <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
+          <a href="#" aria-label="Instagram">
+            <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="Facebook">
+            <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="TikTok">
+            <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="Spotify">
+            <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify" style="width:32px;height:32px;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </aside>
 
-  <!-- ============================================
-        FULL SCREEN COMPONENTS (sin márgenes)
-        ============================================ -->
+  <!-- DRAWER (CART) -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Carrito">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="cartItem">
+          <img class="cartThumb"
+            src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1"
+            alt="Calza Range" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Calza Range — Negro</b>
+            <div class="small">Talle M · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 59.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
 
+        <div class="cartItem">
+          <img class="cartThumb"
+            src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1"
+            alt="Top Motion" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Top Motion — Arena</b>
+            <div class="small">Talle S · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 34.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
+          <div class="label">Código de descuento</div>
+          <div class="row" style="gap:10px;">
+            <input class="control" placeholder="HF-15" style="flex:1;" />
+            <button class="btn btn--secondary" id="applyCouponBtn">Aplicar</button>
+          </div>
+          <div class="hint" id="couponHint">Tip: probá HF-15</div>
+        </div>
+      </div>
+      <div class="drawer__ft">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <div class="small">Subtotal</div>
+            <div style="font-weight:950; font-size:18px;" id="cartSubtotal">$ 94.800</div>
+          </div>
+          <button class="btn btn--primary" id="goCheckoutBtn">Ir al checkout</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- SEARCH DRAWER -->
+  <aside class="drawer" id="searchDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Buscar">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="field">
+          <div class="row" style="gap:10px;">
+            <input class="control" id="searchInput" placeholder="Buscar productos..." style="flex:1;" autofocus />
+            <button class="btn btn--primary" id="searchSubmitBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="small" style="color:var(--muted);margin-bottom:12px;">Búsquedas populares</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
+          <button class="chip chip--clickable" data-search-term="tops">Tops</button>
+          <button class="chip chip--clickable" data-search-term="conjuntos">Conjuntos</button>
+          <button class="chip chip--clickable" data-search-term="campera">Campera</button>
+          <button class="chip chip--clickable" data-search-term="ofertas">Ofertas</button>
+        </div>
+        <div id="searchResults" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  </aside>
