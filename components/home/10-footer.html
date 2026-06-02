@@ -1,0 +1,831 @@
+    <footer class="footer">
+      <div class="footer__top">
+        <div>
+          <span class="badge badge--primary">Horizon Fit</span>
+          <h3 class="footer__brand-title">Más allá de tus horizontes</h3>
+          <p class="footer__brand-copy">
+            Activewear funcional para todos los dias. Nuevos drops, mejores telas y fits pensados para entrenar y vivir
+            en movimiento.
+          </p>
+          <div class="footer__newsletter">
+            <input class="control" type="email" placeholder="Tu email para promos y drops">
+            <button class="btn btn--primary">Suscribirme</button>
+          </div>
+          <div class="footer__trust">
+            <span class="chip">Envio 24/48h</span>
+            <span class="chip">6 cuotas sin interes</span>
+            <span class="chip">Cambios faciles</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer__col-title">Ayuda</h4>
+          <div class="footer__links">
+            <a href="#components">Envios y entregas</a>
+            <a href="#components">Cambios y devoluciones</a>
+            <a href="#components">Guia de talles</a>
+            <a href="#components">Medios de pago</a>
+          </div>
+        </div>
+
+        <div id="footerContact">
+          <h4 class="footer__col-title">Contacto</h4>
+          <div class="footer__links">
+            <span>WhatsApp: +54 9 11 0000 0000</span>
+            <span>hola@horizonfit.com</span>
+            <span>Lunes a viernes 9 a 18h</span>
+          </div>
+          <div class="menu-drawer__social" aria-label="Redes sociales"
+            style="justify-content: flex-start; margin-top: 16px;">
+            <a href="#" aria-label="Instagram">
+              <img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="Instagram">
+            </a>
+            <a href="#" aria-label="Facebook">
+              <img src="https://cdn.simpleicons.org/facebook/FFFFFF" alt="Facebook">
+            </a>
+            <a href="#" aria-label="TikTok">
+              <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok">
+            </a>
+            <a href="#" aria-label="Spotify">
+              <img src="https://cdn.simpleicons.org/spotify/FFFFFF" alt="Spotify">
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© Horizon Fit 2026. Todos los derechos reservados.</span>
+        <div class="footer__bottom-links">
+          <a href="#">Terminos</a>
+          <a href="#">Privacidad</a>
+          <a href="#">Defensa al consumidor</a>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <a class="whatsapp-float" href="https://wa.me/541154878253?text=Hola%20Horizon%20Fit" target="_blank"
+    rel="noopener noreferrer" aria-label="Escribinos por WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" aria-hidden="true">
+  </a>
+
+  <!-- OVERLAY / MODAL -->
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__dialog" tabindex="-1">
+      <div class="modal__hd">
+        <b id="modalTitle">Modal — Horizon Fit</b>
+        <button class="btn btn--ghost btn--sm" data-close-modal aria-label="Cerrar">×</button>
+      </div>
+      <div class="modal__bd">
+        <p class="p" style="margin-top:0;">
+          Este modal está listo para usar (overlay click + ESC + focus management básico).
+        </p>
+        <div class="divider"></div>
+        <div class="field">
+          <div class="label">Email para avisarte cuando vuelve el stock</div>
+          <input class="control" type="email" placeholder="tu@email.com" />
+          <div class="hint">Te avisamos apenas vuelva. Sin spam.</div>
+        </div>
+      </div>
+      <div class="modal__ft">
+        <button class="btn btn--secondary" data-close-modal>Cancelar</button>
+        <button class="btn btn--primary" id="modalConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU DRAWER -->
+  <aside class="drawer drawer--left" id="menuDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Navegaci&oacute;n principal">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <nav class="menu-drawer__nav" aria-label="Navegaci&oacute;n principal">
+          <a class="menu-drawer__link" href="#productGrid1" data-menu-link><strong>Productos destacados</strong></a>
+          <a class="menu-drawer__link" href="#fullSlider" data-menu-link><strong>Conjuntos destacados</strong></a>
+          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por
+              categor&iacute;a</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Tops</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Calzas</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Shorts</strong></a>
+          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Buzos</strong></a>
+          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the
+              wild</strong></a>
+          <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
+        </nav>
+        <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
+          <a href="#" aria-label="Instagram">
+            <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="Facebook">
+            <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="TikTok">
+            <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok" style="width:32px;height:32px;">
+          </a>
+          <a href="#" aria-label="Spotify">
+            <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify" style="width:32px;height:32px;">
+          </a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- DRAWER (CART) -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Carrito">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-drawer aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="cartItem">
+          <img class="cartThumb"
+            src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1"
+            alt="Calza Range" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Calza Range — Negro</b>
+            <div class="small">Talle M · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 59.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cartItem">
+          <img class="cartThumb"
+            src="https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1"
+            alt="Top Motion" style="object-fit:cover;">
+          <div class="cartMeta">
+            <b>Top Motion — Arena</b>
+            <div class="small">Talle S · Cant. 1</div>
+            <div class="cartRow">
+              <div class="small">$ 34.900</div>
+              <button class="btn btn--ghost btn--sm" data-remove-item>Eliminar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
+          <div class="label">Código de descuento</div>
+          <div class="row" style="gap:10px;">
+            <input class="control" placeholder="HF-15" style="flex:1;" />
+            <button class="btn btn--secondary" id="applyCouponBtn">Aplicar</button>
+          </div>
+          <div class="hint" id="couponHint">Tip: probá HF-15</div>
+        </div>
+      </div>
+      <div class="drawer__ft">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <div class="small">Subtotal</div>
+            <div style="font-weight:950; font-size:18px;" id="cartSubtotal">$ 94.800</div>
+          </div>
+          <button class="btn btn--primary" id="goCheckoutBtn">Ir al checkout</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- SEARCH DRAWER -->
+  <aside class="drawer" id="searchDrawer" aria-hidden="true">
+    <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Buscar">
+      <div class="drawer__hd">
+        <button class="btn btn--ghost btn--sm" data-close-search aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="drawer__bd">
+        <div class="field">
+          <div class="row" style="gap:10px;">
+            <input class="control" id="searchInput" placeholder="Buscar productos..." style="flex:1;" autofocus />
+            <button class="btn btn--primary" id="searchSubmitBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="small" style="color:var(--muted);margin-bottom:12px;">Búsquedas populares</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <button class="chip chip--clickable" data-search-term="calzas">Calzas</button>
+          <button class="chip chip--clickable" data-search-term="tops">Tops</button>
+          <button class="chip chip--clickable" data-search-term="conjuntos">Conjuntos</button>
+          <button class="chip chip--clickable" data-search-term="campera">Campera</button>
+          <button class="chip chip--clickable" data-search-term="ofertas">Ofertas</button>
+        </div>
+        <div id="searchResults" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOASTS -->
+  <div class="toasts" id="toasts" aria-live="polite" aria-relevant="additions"></div>
+
+  <!-- TOOLTIP -->
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <style>
+    /* Brand Font Overrides */
+    .hf-product-item__title,
+    .hf-set-desktop-slider__list li,
+    .hf-set-desktop-slider__info .small,
+    .hf-product-item__body .small,
+    .cartMeta b,
+    .cartMeta .small {
+      font-family: 'BlauerNue', sans-serif !important;
+    }
+
+    .menu-drawer__social img,
+    .footer__social img {
+      width: 42px !important;
+      height: 42px !important;
+    }
+  </style>
+
+  <script>
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    // Fixed nav + marquee
+    (function syncTopOffsets() {
+      const navEl = document.querySelector('.nav');
+      const marqueeEl = document.querySelector('#topMarquee');
+      if (!navEl) return;
+
+      function updateTopOffsetVars() {
+        const navH = navEl.offsetHeight || 0;
+        const marqueeH = marqueeEl ? marqueeEl.offsetHeight : 0;
+        document.documentElement.style.setProperty('--nav-h', navH + 'px');
+        document.documentElement.style.setProperty('--announce-h', marqueeH + 'px');
+      }
+
+      updateTopOffsetVars();
+      window.addEventListener('load', updateTopOffsetVars);
+      window.addEventListener('resize', updateTopOffsetVars);
+    })();
+
+    (function handleTransparentNav() {
+      const navEl = document.querySelector('.nav');
+      if (!navEl) return;
+
+      function updateNavState() {
+        navEl.classList.toggle('is-scrolled', window.scrollY > 36);
+      }
+
+      updateNavState();
+      window.addEventListener('load', updateNavState);
+      window.addEventListener('scroll', updateNavState, { passive: true });
+    })();
+
+    /* -----------------------------
+      Tooltip
+    ------------------------------*/
+    const tooltip = $("#tooltip");
+    let ttTarget = null;
+
+    function showTooltip(el) {
+      const txt = el.getAttribute("data-tooltip");
+      if (!txt) return;
+      tooltip.textContent = txt;
+      const r = el.getBoundingClientRect();
+      tooltip.style.left = Math.max(12, Math.min(window.innerWidth - 252, r.left)) + "px";
+      tooltip.style.top = (r.bottom + 10) + "px";
+      tooltip.classList.add("is-on");
+      ttTarget = el;
+    }
+    function hideTooltip() {
+      tooltip.classList.remove("is-on");
+      ttTarget = null;
+    }
+
+    document.addEventListener("mouseover", (e) => {
+      const el = e.target.closest?.("[data-tooltip]");
+      if (el && ttTarget !== el) showTooltip(el);
+    });
+    document.addEventListener("mouseout", (e) => {
+      const el = e.target.closest?.("[data-tooltip]");
+      const next = e.relatedTarget?.closest?.("[data-tooltip]");
+      if (el && next === el) return;
+      if (el && ttTarget === el) hideTooltip();
+    });
+    window.addEventListener("scroll", () => { if (ttTarget) hideTooltip(); }, { passive: true });
+
+    /* -----------------------------
+      Tabs
+    ------------------------------*/
+    $$("[data-tabs]").forEach(tabs => {
+      const btns = $$(".tab", tabs);
+      const panels = $$(".tabs__panel", tabs);
+
+      function activate(id) {
+        btns.forEach(b => {
+          const on = b.dataset.tab === id;
+          b.setAttribute("aria-selected", String(on));
+        });
+        panels.forEach(p => {
+          p.classList.toggle("is-active", p.id === id);
+        });
+      }
+
+      btns.forEach(b => {
+        b.addEventListener("click", () => activate(b.dataset.tab));
+      });
+    });
+
+    /* -----------------------------
+      Accordion
+    ------------------------------*/
+    $$("[data-accordion]").forEach(acc => {
+      $$(".acc__item", acc).forEach(item => {
+        const btn = $(".acc__btn", item);
+        btn.addEventListener("click", () => {
+          const expanded = item.getAttribute("aria-expanded") === "true";
+          item.setAttribute("aria-expanded", String(!expanded));
+        });
+      });
+    });
+
+    /* -----------------------------
+      Modal / Drawer helpers
+    ------------------------------*/
+    const overlay = $("#overlay");
+    const modal = $("#modal");
+    const menuBtn = $("#hamburgerBtn") || $("#menuBtn");
+    const menuDrawer = $("#menuDrawer");
+    const drawer = $("#drawer");
+    const searchDrawer = $("#searchDrawer");
+
+    let lastFocus = null;
+
+    menuBtn?.setAttribute("aria-controls", "menuDrawer");
+    menuBtn?.setAttribute("aria-expanded", "false");
+
+    function openOverlay() {
+      overlay.classList.add("is-on");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+    function closeOverlay() {
+      overlay.classList.remove("is-on");
+      overlay.setAttribute("aria-hidden", "true");
+    }
+
+    function openModal() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      modal.classList.add("is-on");
+      modal.setAttribute("aria-hidden", "false");
+      setTimeout(() => $(".modal__dialog", modal)?.focus(), 10);
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal() {
+      modal.classList.remove("is-on");
+      modal.setAttribute("aria-hidden", "true");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
+    function openMenuDrawer() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      menuDrawer?.classList.add("is-on");
+      menuDrawer?.setAttribute("aria-hidden", "false");
+      menuBtn?.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => menuDrawer?.querySelector(".menu-drawer__link")?.focus(), 20);
+    }
+    function closeMenuDrawer() {
+      menuDrawer?.classList.remove("is-on");
+      menuDrawer?.setAttribute("aria-hidden", "true");
+      menuBtn?.setAttribute("aria-expanded", "false");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
+    function openDrawer() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      drawer.classList.add("is-on");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+    function closeDrawer() {
+      drawer.classList.remove("is-on");
+      drawer.setAttribute("aria-hidden", "true");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
+    function openSearchDrawer() {
+      lastFocus = document.activeElement;
+      openOverlay();
+      searchDrawer.classList.add("is-on");
+      searchDrawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => $("#searchInput")?.focus(), 50);
+    }
+    function closeSearchDrawer() {
+      searchDrawer.classList.remove("is-on");
+      searchDrawer.setAttribute("aria-hidden", "true");
+      closeOverlay();
+      document.body.style.overflow = "";
+      lastFocus?.focus?.();
+    }
+
+    menuBtn?.addEventListener("click", () => {
+      const isOpen = menuDrawer?.getAttribute("aria-hidden") === "false";
+      if (isOpen) {
+        closeMenuDrawer();
+      } else {
+        openMenuDrawer();
+      }
+    });
+    $("#openModalBtn")?.addEventListener("click", openModal);
+    $("#openModalBtn2")?.addEventListener("click", openModal);
+    $("#cartBtn")?.addEventListener("click", openDrawer);
+    $("#searchBtn")?.addEventListener("click", openSearchDrawer);
+    $$("[data-menu-link]").forEach(link => {
+      link.addEventListener("click", () => closeMenuDrawer());
+    });
+
+    // Mobile logo alternating animation
+    (function () {
+      const isotipo = $("#brandIsotipo");
+      const logotipo = $("#brandLogotipo");
+      if (!isotipo || !logotipo) return;
+
+      const isMobile = () => window.innerWidth <= 768;
+      let interval = null;
+      let showingLogotipo = true;
+
+      function toggleLogo() {
+        if (!isMobile()) return;
+        showingLogotipo = !showingLogotipo;
+        if (showingLogotipo) {
+          isotipo.classList.remove("is-visible");
+          logotipo.classList.remove("is-hidden");
+        } else {
+          isotipo.classList.add("is-visible");
+          logotipo.classList.add("is-hidden");
+        }
+      }
+
+      function startAnimation() {
+        if (interval) clearInterval(interval);
+        if (isMobile()) {
+          isotipo.classList.remove("is-visible");
+          logotipo.classList.remove("is-hidden");
+          showingLogotipo = true;
+          interval = setInterval(toggleLogo, 3000);
+        }
+      }
+
+      window.addEventListener("resize", startAnimation);
+      startAnimation();
+    })();
+
+    // Style edit videos
+    (function initStyleEditVideos() {
+      const videos = $$("[data-style-video]");
+      if (!videos.length) return;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function prepare(video) {
+        if (video.dataset.prepared === "true") return;
+        video.dataset.prepared = "true";
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.load();
+      }
+
+      function play(video) {
+        if (prefersReducedMotion) return;
+        prepare(video);
+        video.play().catch(() => { });
+      }
+
+      function pause(video) { video.pause(); }
+
+      if (!("IntersectionObserver" in window)) {
+        videos.forEach(play);
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) play(entry.target);
+          else pause(entry.target);
+        });
+      }, { rootMargin: "220px 0px", threshold: 0.18 });
+
+      videos.forEach((video) => observer.observe(video));
+    })();
+
+    $$("[data-close-modal]").forEach(b => b.addEventListener("click", closeModal));
+    $$("[data-close-menu-drawer]").forEach(b => b.addEventListener("click", closeMenuDrawer));
+    $$("[data-close-drawer]").forEach(b => b.addEventListener("click", closeDrawer));
+    $$("[data-close-search]").forEach(b => b.addEventListener("click", closeSearchDrawer));
+
+    overlay.addEventListener("click", () => {
+      if (modal.classList.contains("is-on")) closeModal();
+      if (menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
+      if (drawer.classList.contains("is-on")) closeDrawer();
+      if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (modal.classList.contains("is-on")) closeModal();
+        if (menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
+        if (drawer.classList.contains("is-on")) closeDrawer();
+        if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
+      }
+    });
+
+    $$("[data-search-term]").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const term = chip.getAttribute("data-search-term");
+        const searchInput = $("#searchInput");
+        if (searchInput) {
+          searchInput.value = term;
+          searchInput.focus();
+        }
+      });
+    });
+
+    (function initDesktopSetSlider() {
+      const root = $("#conjuntos-desktop-slider");
+      if (!root) return;
+
+      const track = $("#setDesktopTrack", root);
+      const slides = $$(".hf-set-desktop-slider__slide", root);
+      const prevBtn = $("#setDesktopPrev", root);
+      const nextBtn = $("#setDesktopNext", root);
+      const dots = $$(".hf-set-desktop-slider__dot", root);
+      const infoTitle = $("#setDesktopInfoTitle", root);
+      const infoMeta = $("#setDesktopInfoMeta", root);
+      const infoList = $("#setDesktopInfoList", root);
+      const infoPrice = $("#setDesktopInfoPrice", root);
+      const infoCompare = $("#setDesktopInfoCompare", root);
+      const buyLink = $("#setDesktopBuyLink", root);
+      const detailLink = $("#setDesktopDetailLink", root);
+      const infoInstallments = $("#setDesktopInfoInstallments", root);
+      const infoTransfer = $("#setDesktopInfoTransfer", root);
+      if (!track || !slides.length || !dots.length) return;
+
+      let index = 0;
+      const total = slides.length;
+
+      function renderInfo() {
+        const slide = slides[index];
+        if (!slide) return;
+        if (infoTitle) infoTitle.textContent = slide.dataset.title || "";
+        if (infoMeta) infoMeta.textContent = slide.dataset.meta || "";
+        if (infoPrice) infoPrice.textContent = slide.dataset.price || "";
+        if (infoCompare) infoCompare.textContent = slide.dataset.compare || "";
+        if (buyLink) buyLink.href = slide.dataset.buyLink || "#";
+        if (detailLink) detailLink.href = slide.dataset.detailLink || "#";
+
+        if (infoInstallments || infoTransfer) {
+          const priceStr = slide.dataset.price || "$0";
+          const price = parseFloat(priceStr.replace(/[^0-9.]/g, "")) || 0;
+          if (infoInstallments) {
+            const instVal = Math.round(price / 6);
+            infoInstallments.innerHTML = `6 cuotas de: <span class="hf-product-item__installments-link">$${instVal.toLocaleString("es-AR")}</span>`;
+          }
+          if (infoTransfer) {
+            const transVal = Math.round(price * 0.85);
+            infoTransfer.innerHTML = `$${transVal.toLocaleString("es-AR")} <span class="hf-product-item__transfer-label">con Transferencia</span>`;
+          }
+        }
+        if (infoList) {
+          const items = (slide.dataset.items || "").split("|").filter(Boolean);
+          infoList.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+      }
+
+      function render() {
+        track.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach((dot, i) => {
+          const on = i === index;
+          dot.classList.toggle("is-active", on);
+          dot.setAttribute("aria-current", on ? "true" : "false");
+        });
+        renderInfo();
+      }
+
+      function goTo(i) {
+        index = (i + total) % total;
+        render();
+      }
+
+      if (prevBtn) prevBtn.addEventListener("click", () => goTo(index - 1));
+      if (nextBtn) nextBtn.addEventListener("click", () => goTo(index + 1));
+      dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+      render();
+    })();
+
+    (function initDesktopFeaturedSets() {
+      const root = $("#home-pdp-look");
+      if (!root) return;
+
+      const sourceLook = $(".hf-pdp-look", root);
+      if (!sourceLook) return;
+
+      const desktopSets = [
+        {
+          title: "Set Motion",
+          meta: "Top + calza / Compresion media",
+          image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Top Motion", price: "$34.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Motion", price: "$64.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Power",
+          meta: "Top + short / Liviano y elastico",
+          image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Sports Bra Energy", price: "$34.990 ARS", image: "https://images.pexels.com/photos/3757374/pexels-photo-3757374.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Shorts Training", price: "$39.990 ARS", image: "https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Tank Fitted", price: "$29.990 ARS", image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Urban",
+          meta: "Buzo + calza / Athleisure diario",
+          image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Hoodie Oversize", price: "$89.990 ARS", image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Compresion", price: "$64.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Buzo Zip", price: "$94.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Focus",
+          meta: "Top + biker / Bajo impacto",
+          image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Black High Top", price: "$54.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Black High Legging", price: "$64.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Biker Short", price: "$29.990 ARS", image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Energy",
+          meta: "Top + short / Entrenamiento funcional",
+          image: "https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Top Halter", price: "$25.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Short Running", price: "$39.990 ARS", image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Bra Deportivo", price: "$29.990 ARS", image: "https://images.pexels.com/photos/3757370/pexels-photo-3757370.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Yoga",
+          meta: "Studio suave / Soporte diario",
+          image: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Tank Top Flow", price: "$44.990 ARS", image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Calza Push Up", price: "$59.990 ARS", image: "https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Buzo Crop", price: "$69.990 ARS", image: "https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Studio",
+          meta: "Crop + jogger / Post entrenamiento",
+          image: "https://images.pexels.com/photos/3838389/pexels-photo-3838389.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Crop Top Arena", price: "$34.990 ARS", image: "https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Jogger Slim", price: "$84.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Oversize", price: "$44.990 ARS", image: "https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        },
+        {
+          title: "Set Training",
+          meta: "Set completo / Alto rendimiento",
+          image: "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1",
+          items: [
+            { name: "Set Entrenamiento", price: "$99.990 ARS", image: "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Jogger Classic", price: "$74.990 ARS", image: "https://images.pexels.com/photos/4056535/pexels-photo-4056535.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" },
+            { name: "Remera Crop", price: "$32.990 ARS", image: "https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" }
+          ]
+        }
+      ];
+
+      function buildSetItemUrl(item) {
+        const params = new URLSearchParams({
+          name: item.name,
+          price: item.price,
+          compare: "",
+          installments: "",
+          transfer: "",
+          images: item.image,
+          view: "product"
+        });
+        return "index.html?" + params.toString();
+      }
+
+      function renderSetItem(item) {
+        const href = buildSetItemUrl(item);
+        return '' +
+          '<article class="hf-pdp-look__item">' +
+          '<a class="hf-pdp-look__thumb" href="' + escapeHtml(href) + '" aria-label="Ver ' + escapeHtml(item.name) + '">' +
+          '<img src="' + escapeHtml(item.image) + '" alt="">' +
+          '</a>' +
+          '<div class="hf-pdp-look__meta">' +
+          '<h3 class="hf-pdp-look__name">' + escapeHtml(item.name) + '</h3>' +
+          '<p class="hf-pdp-look__price">' + escapeHtml(item.price) + '</p>' +
+          '<a class="hf-pdp-look__button" href="' + escapeHtml(href) + '">Comprar</a>' +
+          '</div>' +
+          '</article>';
+      }
+
+      function renderSetSlide(set, index) {
+        return '' +
+          '<div class="hf-carousel__slide">' +
+          '<section class="hf-pdp-look" aria-label="' + escapeHtml(set.title) + '">' +
+          '<div class="hf-pdp-look__panel">' +
+          '<p class="hf-pdp-look__eyebrow">Conjunto ' + (index + 1) + ' de ' + desktopSets.length + '</p>' +
+          '<h2 class="hf-pdp-look__title">' + escapeHtml(set.title) + '</h2>' +
+          '<div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">' +
+          set.items.map(renderSetItem).join('') +
+          '</div>' +
+          '</div>' +
+          '<div class="hf-pdp-look__visual">' +
+          '<span class="hf-pdp-look__tag">' + escapeHtml(set.meta) + '</span>' +
+          '<img class="hf-pdp-look__hero" src="' + escapeHtml(set.image) + '" alt="' + escapeHtml(set.title) + ' look principal">' +
+          '</div>' +
+          '</section>' +
+          '</div>';
+      }
+
+      const carousel = document.createElement("div");
+      carousel.className = "hf-carousel hf-pdp-look-carousel";
+      carousel.id = "desktopSetCarousel";
+      carousel.setAttribute("data-hf", "carousel");
+      carousel.setAttribute("data-hf-carousel", '{"loop":true,"seamlessLoop":true,"dots":false,"arrows":true,"draggable":true,"itemsToShow":1,"gap":0,"speed":300}');
+      carousel.setAttribute("aria-label", "Conjuntos destacados en desktop");
+      carousel.innerHTML =
+        '<div class="hf-carousel__viewport">' +
+        '<div class="hf-carousel__track">' +
+        desktopSets.map(renderSetSlide).join('') +
+        '</div>' +
+        '</div>';
+
+      sourceLook.replaceWith(carousel);
+    })();
+
+    const toasts = $("#toasts");
+    function toast({ title = "Listo", message = "", variant = "info", timeout = 3200 }) {
+      const t = document.createElement("div");
+      t.className = `toast toast--${variant}`;
+      t.innerHTML = `
+          <div class="toast__dot" aria-hidden="true"></div>
+          <div>
+            <b>${escapeHtml(title)}</b>
+            <div class="small" style="margin-top:4px;">${escapeHtml(message)}</div>
+          </div>
+          <button class="toast__x" aria-label="Cerrar">&times;</button>
+        `;
+      const x = $(".toast__x", t);
+      x.addEventListener("click", () => t.remove());
+      toasts.appendChild(t);
+      setTimeout(() => { t.remove(); }, timeout);
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[s]));
+    }
+  </script>
+
+  <!-- API & Loaders -->
+  <script src="design-system/loaders/api-config.js"></script>
+  <script src="design-system/loaders/page-renderer.js"></script>
+  <script src="design-system/loaders/marquee-loader.js"></script>
+  <script src="design-system/loaders/hero-loader.js"></script>
+  <script src="design-system/loaders/home-data-loader.js"></script>
+
+  <script src="design-system/api-loader.js"></script>
+  <script src="design-system/components/marquee/marquee.js"></script>
+  <script src="design-system/components/carousel/carousel.js"></script>
+  <script src="design-system/components/video-hero/video-hero.js"></script>
+  <script src="design-system/components/lightbox/lightbox.js"></script>
+  <script src="design-system/components/banner/banner.js"></script>
+  <script src="design-system/components/info-banner/info-banner.js"></script>
+  <script src="design-system/components/trust-bar/trust-bar.js"></script>
