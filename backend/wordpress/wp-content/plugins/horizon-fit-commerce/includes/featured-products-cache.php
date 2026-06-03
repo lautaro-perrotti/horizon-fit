@@ -488,7 +488,57 @@ function hf_regenerate_featured_products_cache() {
 
   // 3) Cache de "Conjuntos destacados" (slider de la home).
   hf_regenerate_featured_sets_cache();
+
+  // 4) Cache de "Compra por categoría" (grid de categorías de la home).
+  hf_regenerate_featured_categories_cache();
 }
+
+// Serializa una categoría de WooCommerce para el grid "Compra por categoría":
+// nombre, slug, copy, orden e imagen (la nativa de Woo: term thumbnail_id).
+function hf_serialize_category_card($term) {
+  $image_id = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
+  $image = $image_id ? hf_featured_products_get_image_object($image_id, $term->name) : null;
+
+  return [
+    'slug'  => $term->slug,
+    'name'  => $term->name,
+    'copy'  => (string) get_term_meta($term->term_id, 'hf_card_copy', true),
+    'order' => (int) get_term_meta($term->term_id, 'hf_home_order', true),
+    'link'  => '/coleccion/?cat=' . $term->slug,
+    'image' => $image,
+  ];
+}
+
+// Genera /uploads/horizon-fit-cache/featured-categories.json con las
+// categorías marcadas "Mostrar en home" (hf_featured_home=1), ordenadas por
+// hf_home_order. Administrable desde wp-admin (Productos → Categorías).
+function hf_regenerate_featured_categories_cache() {
+  $terms = get_terms([
+    'taxonomy'   => 'product_cat',
+    'hide_empty' => false,
+    'meta_query' => [[
+      'key'   => 'hf_featured_home',
+      'value' => '1',
+    ]],
+    'meta_key' => 'hf_home_order',
+    'orderby'  => 'meta_value_num',
+    'order'    => 'ASC',
+  ]);
+
+  $cards = [];
+  if (!is_wp_error($terms)) {
+    foreach ($terms as $term) {
+      $cards[] = hf_serialize_category_card($term);
+    }
+  }
+
+  $cache_file = dirname(hf_featured_products_cache_path()) . '/featured-categories.json';
+  hf_featured_products_write_cache($cache_file, $cards);
+}
+
+// Regenerar al editar/crear una categoría de producto.
+add_action('edited_product_cat', 'hf_regenerate_featured_categories_cache', 20);
+add_action('created_product_cat', 'hf_regenerate_featured_categories_cache', 20);
 
 // Serializa una colección como un "conjunto" para el slider de la home:
 // imagen principal de la colección + copy + sus productos.

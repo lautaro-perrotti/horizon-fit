@@ -54,6 +54,9 @@ const PAGE_BUILDER = (() => {
   // Cache de "Conjuntos destacados": colecciones marcadas "Mostrar en home".
   const FEATURED_SETS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-sets.json`;
 
+  // Cache de "Compra por categoría": categorías marcadas "Mostrar en home".
+  const FEATURED_CATEGORIES_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-categories.json`;
+
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
   const resolveMediaUrl = (url) => {
@@ -139,7 +142,7 @@ const PAGE_BUILDER = (() => {
           const html = await fetchText(s.component);
           return [s.id, html];
         })),
-        Promise.all(sections.filter(s => s.data || s.type === 'featured-sets').map(async s => {
+        Promise.all(sections.filter(s => s.data || s.type === 'featured-sets' || s.type === 'categorias').map(async s => {
           // featured-products: cada fila trae SU colección (config.collection),
           // administrada desde wp-admin (taxonomía hf_collection). Cache por
           // colección; fallback a la cache general y luego al REST.
@@ -154,6 +157,11 @@ const PAGE_BUILDER = (() => {
           // featured-sets: slider de conjuntos (colecciones "Mostrar en home").
           if (s.type === 'featured-sets') {
             const data = await fetchJson(FEATURED_SETS_SRC).catch(() => []);
+            return [s.id, data];
+          }
+          // categorias: grid "Compra por categoría" (categorías "Mostrar en home").
+          if (s.type === 'categorias') {
+            const data = await fetchJson(FEATURED_CATEGORIES_SRC).catch(() => []);
             return [s.id, data];
           }
           const data = await fetchJson(s.data);
@@ -234,6 +242,12 @@ const PAGE_BUILDER = (() => {
           const sectionEl = sectionElements.get(section.id);
           const variant = section.component.includes('mobile') ? 'mobile' : 'desktop';
           if (sectionEl) renderFeaturedSets(sectionEl, sets, variant);
+        }
+
+        if (!productRoute && section.type === 'categorias') {
+          const cats = dataMap.get(section.id) || [];
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) renderCategories(sectionEl, cats);
         }
 
         if (section.type === 'marquee') {
@@ -761,6 +775,38 @@ const PAGE_BUILDER = (() => {
 
   const safeParseCarouselConfig = (raw) => {
     try { return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
+  };
+
+  // Card de una categoría para el grid "Compra por categoría".
+  const renderCategoryCard = (cat) => {
+    const imageUrl = cat.image?.url || '';
+    const href = cat.link || '#';
+    return `
+        <a href="${escapeHtml(href)}" class="hf-category-card" aria-label="Ver ${escapeHtml(cat.name || '')}">
+          <img src="${escapeHtml(imageUrl)}" alt="Categoria ${escapeHtml(cat.name || '')}">
+          <div class="hf-category-card__overlay">
+            <div>
+              <h3 class="hf-category-card__title">${escapeHtml(cat.name || '')}</h3>
+              <span class="hf-category-card__cta">Quiero ver</span>
+            </div>
+            <span class="hf-category-card__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14"></path>
+                <path d="M13 6l6 6-6 6"></path>
+              </svg></span>
+          </div>
+        </a>`;
+  };
+
+  // Renderiza el grid "Compra por categoría" con las categorías de wp-admin.
+  // Si no hay categorías marcadas "Mostrar en home", oculta la sección.
+  const renderCategories = (sectionEl, cats) => {
+    const grid = sectionEl.querySelector('[data-categories-grid]');
+    if (!grid) return;
+    if (!Array.isArray(cats) || cats.length === 0) {
+      sectionEl.style.display = 'none';
+      return;
+    }
+    grid.innerHTML = cats.map(renderCategoryCard).join('');
   };
 
   const renderProductPage = async (root, products, html) => {

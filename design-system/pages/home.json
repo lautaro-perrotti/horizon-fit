@@ -65,6 +65,13 @@
       "order": 7,
       "visible": true,
       "component": "design-system/components/sections/featured-sets-mobile.html"
+    },
+    {
+      "id": "categorias",
+      "type": "categorias",
+      "order": 8,
+      "visible": true,
+      "component": "design-system/components/sections/categorias.html"
     }
   ]
 }
