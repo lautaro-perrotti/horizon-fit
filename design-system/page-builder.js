@@ -35,6 +35,8 @@ const PAGE_BUILDER = (() => {
   // sin hardcodear nada ni depender de archivos estáticos.
   const WP_PORT = '8089';
   const WP_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`;
+  // Cache estática de settings de secciones (rápida). Fallback al REST.
+  const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
   const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
 
   // Productos: cache estática de WordPress como fuente primaria (instantánea,
@@ -60,24 +62,30 @@ const PAGE_BUILDER = (() => {
     return rootUrl(url);
   };
 
-  // Trae el mapa type -> settings desde WordPress. Si WP no responde, devuelve
-  // un Map vacío y el sitio sigue funcionando con la config de home.json.
+  // Trae el mapa type -> settings de las secciones. Lee primero la cache
+  // estática (instantánea); si falta, cae al REST. Si nada responde, Map vacío
+  // y el sitio sigue con la config de home.json.
   const fetchWpSectionSettings = async () => {
     const map = new Map();
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 2500);
-      const res = await fetch(WP_SECTIONS_URL, { signal: controller.signal });
-      clearTimeout(timer);
-      if (!res.ok) return map;
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        for (const section of data) {
-          if (section?.type && section.settings && !Array.isArray(section.settings)) {
-            map.set(section.type, section.settings);
-          }
+    const buildMap = (data) => {
+      if (!Array.isArray(data)) return;
+      for (const section of data) {
+        if (section?.type && section.settings && !Array.isArray(section.settings)) {
+          map.set(section.type, section.settings);
         }
       }
+    };
+    try {
+      const data = await fetchJson(WP_SECTIONS_CACHE_URL);
+      buildMap(data);
+      return map;
+    } catch (e) { /* sin cache estática, probar REST */ }
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(WP_SECTIONS_URL, { signal: controller.signal });
+      clearTimeout(timer);
+      if (res.ok) buildMap(await res.json());
     } catch (e) {
       console.warn('[HF PB] WordPress section settings unavailable, using local config:', e.message);
     }
@@ -227,6 +235,14 @@ const PAGE_BUILDER = (() => {
           const variant = section.component.includes('mobile') ? 'mobile' : 'desktop';
           if (sectionEl) renderFeaturedSets(sectionEl, sets, variant);
         }
+
+        if (section.type === 'marquee') {
+          const sectionEl = sectionElements.get(section.id);
+          // Mensajes administrables desde wp-admin (Sección marquee). Si no hay,
+          // se conserva el texto del HTML.
+          const messages = wpSettings.get('marquee')?.messages;
+          if (sectionEl) setupMarquee(sectionEl, messages);
+        }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
       initNavbarAndMenuDrawer();
@@ -289,6 +305,19 @@ const PAGE_BUILDER = (() => {
     } catch (e) {
       console.error('Featured products error:', e);
     }
+  };
+
+  // Rellena el marquee con los mensajes administrados desde wp-admin.
+  // `messages` es un array de strings; si está vacío se conserva el HTML.
+  const setupMarquee = (sectionEl, messages) => {
+    if (!Array.isArray(messages) || messages.length === 0) return;
+    const content = sectionEl.querySelector('.hf-marquee__content');
+    if (!content) return;
+
+    content.innerHTML = messages.map(msg =>
+      `<span class="hf-marquee__item">${escapeHtml(msg)}</span>` +
+      `<span class="hf-marquee__separator" aria-hidden="true"></span>`
+    ).join('');
   };
 
   const setupHero = (sectionEl, config = {}) => {
