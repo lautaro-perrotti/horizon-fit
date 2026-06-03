@@ -51,11 +51,7 @@
   margin-inline: calc(var(--marquee-gap, 40px) / 2);
 }
 
-/* Pause on hover/focus */
-.hf-marquee:hover .hf-marquee__track,
-.hf-marquee:focus-within .hf-marquee__track {
-  animation-play-state: paused;
-}
+/* El marquee NO se pausa en hover/focus: el movimiento es continuo. */
 
 /* Keyframes */
 @keyframes marquee {
