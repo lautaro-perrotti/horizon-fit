@@ -23,6 +23,9 @@
       loop: false,
       autoplay: false,
       autoplayDelay: 5000,
+      // Tras una interacción (hover/touch/focus), cuánto esperar sin que se
+      // toque antes de reanudar el autoplay. 0 = reanuda inmediato.
+      resumeDelay: 0,
       pauseOnHover: true,
       pauseOnFocus: true,
       arrows: true,
@@ -49,6 +52,7 @@
     let isAnimating = false;
     let animationTimer = null;
     let autoplayTimer = null;
+    let resumeTimer = null;
     let isDragging = false;
     let isTouchDragging = false;
     let dragDirectionLocked = false;
@@ -288,7 +292,7 @@
       startScrollLeft = currentTranslate;
 
       // Pause autoplay while dragging
-      stopAutoplay();
+      pauseAutoplay();
     }
 
     function handleDragMove(e) {
@@ -341,10 +345,8 @@
         updatePosition(true);
       }
 
-      // Resume autoplay
-      if (config.autoplay) {
-        startAutoplay();
-      }
+      // Resume autoplay tras el delay de inactividad (no inmediato).
+      scheduleResume();
 
       isTouchDragging = false;
       dragDirectionLocked = false;
@@ -385,6 +387,7 @@
     function startAutoplay() {
       if (!config.autoplay || prefersReducedMotion) return;
 
+      clearResumeTimer();
       stopAutoplay();
       autoplayTimer = setInterval(() => {
         next();
@@ -398,19 +401,44 @@
       }
     }
 
+    function clearResumeTimer() {
+      if (resumeTimer) {
+        clearTimeout(resumeTimer);
+        resumeTimer = null;
+      }
+    }
+
+    // Reanuda el autoplay tras `resumeDelay` ms sin interacción. Cada llamada
+    // reinicia la cuenta, así un nuevo toque/hover posterga la reanudación.
+    function scheduleResume() {
+      if (!config.autoplay || prefersReducedMotion) return;
+      clearResumeTimer();
+      if (config.resumeDelay > 0) {
+        resumeTimer = setTimeout(startAutoplay, config.resumeDelay);
+      } else {
+        startAutoplay();
+      }
+    }
+
+    // Pausa el autoplay y cancela cualquier reanudación pendiente.
+    function pauseAutoplay() {
+      clearResumeTimer();
+      stopAutoplay();
+    }
+
     function setupAutoplay() {
       if (!config.autoplay) return;
 
       startAutoplay();
 
       if (config.pauseOnHover) {
-        el.addEventListener('mouseenter', stopAutoplay);
-        el.addEventListener('mouseleave', startAutoplay);
+        el.addEventListener('mouseenter', pauseAutoplay);
+        el.addEventListener('mouseleave', scheduleResume);
       }
 
       if (config.pauseOnFocus) {
-        el.addEventListener('focusin', stopAutoplay);
-        el.addEventListener('focusout', startAutoplay);
+        el.addEventListener('focusin', pauseAutoplay);
+        el.addEventListener('focusout', scheduleResume);
       }
     }
 
@@ -451,6 +479,7 @@
     // Destroy
     function destroy() {
       stopAutoplay();
+      clearResumeTimer();
       if (animationTimer) clearTimeout(animationTimer);
       clearLoopClones(activeLoopClones);
 

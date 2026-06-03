@@ -690,7 +690,8 @@ const PAGE_BUILDER = (() => {
 
     // Ajustar config del carousel según la cantidad de conjuntos:
     // - 1 solo: sin flechas, sin loop, sin autoplay (no tiene sentido).
-    // - 2 o más: autoplay infinito cada 10s con loop, que se pausa al hover/touch.
+    // - 2 o más: autoplay infinito cada 5s con loop. Se pausa al hover/touch/
+    //   focus y vuelve a arrancar tras 10s sin interacción.
     const carousel = track.closest('[data-hf="carousel"]');
     if (carousel) {
       const base = safeParseCarouselConfig(carousel.getAttribute('data-hf-carousel'));
@@ -701,7 +702,8 @@ const PAGE_BUILDER = (() => {
         loop: multiple,
         seamlessLoop: multiple,
         autoplay: multiple,
-        autoplayDelay: 10000,
+        autoplayDelay: 5000,
+        resumeDelay: 10000,
         pauseOnHover: true,
         pauseOnFocus: true
       };
