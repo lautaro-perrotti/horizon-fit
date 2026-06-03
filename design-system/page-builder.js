@@ -45,6 +45,10 @@ const PAGE_BUILDER = (() => {
   const PRODUCT_DATA_FALLBACK_SRC = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/products`;
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
+  // Cache de una colección concreta (featured-row-1, featured-row-2, ...).
+  const productCollectionSrc = (slug) =>
+    `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products-${slug}.json`;
+
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
   const resolveMediaUrl = (url) => {
@@ -125,13 +129,18 @@ const PAGE_BUILDER = (() => {
           return [s.id, html];
         })),
         Promise.all(sections.filter(s => s.data).map(async s => {
-          // Los productos SIEMPRE salen de la cache de WordPress (host dinámico),
-          // nunca del JSON estático del repo. Fallback al endpoint REST.
-          const src = s.type === 'featured-products' ? PRODUCT_DATA_SRC : s.data;
-          const data = await fetchJson(src).catch(async () => {
-            if (s.type === 'featured-products') return fetchJson(PRODUCT_DATA_FALLBACK_SRC);
-            throw new Error(`No data for ${s.id}`);
-          });
+          // featured-products: cada fila trae SU colección (config.collection),
+          // administrada desde wp-admin (taxonomía hf_collection). Cache por
+          // colección; fallback a la cache general y luego al REST.
+          if (s.type === 'featured-products') {
+            const collection = s.config?.collection;
+            const src = collection ? productCollectionSrc(collection) : PRODUCT_DATA_SRC;
+            const data = await fetchJson(src)
+              .catch(async () => fetchJson(PRODUCT_DATA_SRC))
+              .catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC));
+            return [s.id, data];
+          }
+          const data = await fetchJson(s.data);
           return [s.id, data];
         }))
       ]);

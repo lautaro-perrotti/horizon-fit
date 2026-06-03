@@ -13,6 +13,17 @@ add_action('deleted_post', function($post_id) {
   }
 }, 10);
 
+// Regenerar cuando cambia la asignación de un producto a una colección
+// (asignar/quitar de Featured Row 1/2 desde wp-admin) o cuando se edita la
+// taxonomía. Así la fila correspondiente se actualiza sola.
+add_action('set_object_terms', function($object_id, $terms, $tt_ids, $taxonomy) {
+  if ($taxonomy === 'hf_collection') {
+    hf_regenerate_featured_products_cache();
+  }
+}, 10, 4);
+add_action('edited_hf_collection', 'hf_regenerate_featured_products_cache', 10);
+add_action('created_hf_collection', 'hf_regenerate_featured_products_cache', 10);
+
 add_action('init', function() {
   if (get_transient('hf_cron_scheduled')) {
     return;
@@ -392,19 +403,43 @@ function hf_featured_products_serialize_product($product) {
   ];
 }
 
-function hf_regenerate_featured_products_cache() {
+// Escribe un array serializado a un archivo de cache de forma atómica.
+// (tmp + rename + chmod 666) para evitar "Permission denied" entre usuarios.
+function hf_featured_products_write_cache($cache_file, $result) {
+  $json = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+  $tmp_file = $cache_file . '.tmp.' . getmypid();
+  if (file_put_contents($tmp_file, $json, LOCK_EX) !== false) {
+    @chmod($tmp_file, 0666);
+    if (!@rename($tmp_file, $cache_file)) {
+      file_put_contents($cache_file, $json, LOCK_EX);
+      @chmod($cache_file, 0666);
+      @unlink($tmp_file);
+    }
+  }
+}
+
+// Cache de UNA colección concreta (slug de la taxonomía hf_collection).
+// Genera /uploads/horizon-fit-cache/featured-products-{slug}.json con los
+// productos de esa colección, en el orden del término. Así cada fila de la
+// home (featured-row-1, featured-row-2, ...) se administra desde wp-admin
+// asignando productos a su colección.
+function hf_regenerate_collection_cache($collection_slug) {
   if (!class_exists('WooCommerce')) {
     return;
   }
 
   $query = [
-    'status' => 'publish',
-    'limit' => 50,
-    'orderby' => 'date',
-    'order' => 'DESC',
+    'status'   => 'publish',
+    'limit'    => 50,
+    'orderby'  => 'date',
+    'order'    => 'DESC',
+    'tax_query' => [[
+      'taxonomy' => 'hf_collection',
+      'field'    => 'slug',
+      'terms'    => $collection_slug,
+    ]],
   ];
 
-  $query = apply_filters('hf_featured_products_cache_query', $query);
   $products = wc_get_products($query);
 
   $result = [];
@@ -412,21 +447,42 @@ function hf_regenerate_featured_products_cache() {
     $result[] = hf_featured_products_serialize_product($product);
   }
 
-  $cache_file = hf_featured_products_cache_path();
-  $json = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+  $dir = dirname(hf_featured_products_cache_path());
+  $cache_file = $dir . '/featured-products-' . sanitize_file_name($collection_slug) . '.json';
+  hf_featured_products_write_cache($cache_file, $result);
+}
 
-  // Escribir a un archivo temporal y renombrar (atomic write).
-  // Esto evita el "Permission denied" cuando el archivo destino pertenece a
-  // otro usuario: al recrearlo por rename, hereda permisos del directorio (777)
-  // y cualquier proceso (Apache www-data, WP-CLI, cron) puede regenerarlo.
-  $tmp_file = $cache_file . '.tmp.' . getmypid();
-  if (file_put_contents($tmp_file, $json, LOCK_EX) !== false) {
-    @chmod($tmp_file, 0666);
-    if (!@rename($tmp_file, $cache_file)) {
-      // Fallback: escribir directo si el rename falla.
-      file_put_contents($cache_file, $json, LOCK_EX);
-      @chmod($cache_file, 0666);
-      @unlink($tmp_file);
+function hf_regenerate_featured_products_cache() {
+  if (!class_exists('WooCommerce')) {
+    return;
+  }
+
+  // 1) Cache general (todos los productos) — fallback / compatibilidad.
+  $query = [
+    'status' => 'publish',
+    'limit' => 50,
+    'orderby' => 'date',
+    'order' => 'DESC',
+  ];
+  $query = apply_filters('hf_featured_products_cache_query', $query);
+  $products = wc_get_products($query);
+
+  $result = [];
+  foreach ($products as $product) {
+    $result[] = hf_featured_products_serialize_product($product);
+  }
+  hf_featured_products_write_cache(hf_featured_products_cache_path(), $result);
+
+  // 2) Una cache por cada colección existente (featured-row-1, featured-row-2, ...).
+  //    Así no hay que tocar código para sumar filas: basta crear la colección
+  //    en wp-admin y asignarle productos.
+  $collections = get_terms([
+    'taxonomy'   => 'hf_collection',
+    'hide_empty' => false,
+  ]);
+  if (!is_wp_error($collections)) {
+    foreach ($collections as $term) {
+      hf_regenerate_collection_cache($term->slug);
     }
   }
 }
