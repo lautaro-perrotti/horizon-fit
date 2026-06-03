@@ -308,16 +308,33 @@ const PAGE_BUILDER = (() => {
   };
 
   // Rellena el marquee con los mensajes administrados desde wp-admin.
-  // `messages` es un array de strings; si está vacío se conserva el HTML.
+  // El marquee NO tiene texto hardcodeado: si no hay mensajes, queda vacío.
   const setupMarquee = (sectionEl, messages) => {
-    if (!Array.isArray(messages) || messages.length === 0) return;
     const content = sectionEl.querySelector('.hf-marquee__content');
     if (!content) return;
+    if (!Array.isArray(messages) || messages.length === 0) {
+      content.innerHTML = '';
+      return;
+    }
+
+    // Si el motor ya clonó el contenido para el loop, destruir esa instancia
+    // (borra los clones) antes de reemplazar el contenido. Así evitamos clones
+    // con el texto viejo y un loop mal medido.
+    if (sectionEl._hfMarquee && typeof sectionEl._hfMarquee.destroy === 'function') {
+      sectionEl._hfMarquee.destroy();
+      sectionEl._hfMarquee = null;
+    }
 
     content.innerHTML = messages.map(msg =>
       `<span class="hf-marquee__item">${escapeHtml(msg)}</span>` +
       `<span class="hf-marquee__separator" aria-hidden="true"></span>`
     ).join('');
+
+    // Inicializar el motor desde cero: clona el contenido ya con los mensajes
+    // nuevos y arma el scroll infinito.
+    if (window.HFMarquee && typeof window.HFMarquee.init === 'function') {
+      sectionEl._hfMarquee = window.HFMarquee.init(sectionEl);
+    }
   };
 
   const setupHero = (sectionEl, config = {}) => {

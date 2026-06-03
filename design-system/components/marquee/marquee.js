@@ -118,6 +118,16 @@
       el,
       pause,
       play,
+      // Rehace el loop tras cambiar el contenido (ej. mensajes inyectados
+      // dinámicamente desde wp-admin). Quita los separadores finales sobrantes
+      // del nuevo contenido y vuelve a clonar para el scroll infinito.
+      rebuild: () => {
+        const last = content.lastElementChild;
+        if (last && last.classList.contains('hf-marquee__separator')) {
+          last.remove();
+        }
+        buildLoop();
+      },
       destroy: () => {
         destroy();
         window.removeEventListener('resize', resizeHandler);
