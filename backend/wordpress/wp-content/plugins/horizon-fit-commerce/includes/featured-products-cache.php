@@ -485,6 +485,79 @@ function hf_regenerate_featured_products_cache() {
       hf_regenerate_collection_cache($term->slug);
     }
   }
+
+  // 3) Cache de "Conjuntos destacados" (slider de la home).
+  hf_regenerate_featured_sets_cache();
+}
+
+// Serializa una colección como un "conjunto" para el slider de la home:
+// imagen principal de la colección + copy + sus productos.
+function hf_serialize_collection_set($term) {
+  $image_id = (int) get_term_meta($term->term_id, 'hf_image_id', true);
+  $image = $image_id ? hf_featured_products_get_image_object($image_id, $term->name) : null;
+
+  $products = wc_get_products([
+    'status'    => 'publish',
+    'limit'     => 50,
+    'orderby'   => 'date',
+    'order'     => 'DESC',
+    'tax_query' => [[
+      'taxonomy' => 'hf_collection',
+      'field'    => 'slug',
+      'terms'    => $term->slug,
+    ]],
+  ]);
+
+  $serialized = [];
+  foreach ($products as $product) {
+    $serialized[] = hf_featured_products_serialize_product($product);
+  }
+
+  // Fallback de imagen: si la colección no tiene imagen propia, usar la del
+  // primer producto del conjunto.
+  if (!$image && !empty($serialized) && !empty($serialized[0]['imageObjects'][0])) {
+    $image = $serialized[0]['imageObjects'][0];
+  }
+
+  return [
+    'slug'     => $term->slug,
+    'name'     => $term->name,
+    'copy'     => (string) get_term_meta($term->term_id, 'hf_card_copy', true),
+    'order'    => (int) get_term_meta($term->term_id, 'hf_home_order', true),
+    'image'    => $image,
+    'products' => $serialized,
+  ];
+}
+
+// Genera /uploads/horizon-fit-cache/featured-sets.json con las colecciones
+// marcadas "Mostrar en home" (hf_featured_home=1), ordenadas por hf_home_order.
+// El usuario administra esto desde wp-admin sin tocar código.
+function hf_regenerate_featured_sets_cache() {
+  if (!class_exists('WooCommerce')) {
+    return;
+  }
+
+  $terms = get_terms([
+    'taxonomy'   => 'hf_collection',
+    'hide_empty' => false,
+    'meta_query' => [[
+      'key'   => 'hf_featured_home',
+      'value' => '1',
+    ]],
+    'meta_key' => 'hf_home_order',
+    'orderby'  => 'meta_value_num',
+    'order'    => 'ASC',
+  ]);
+
+  $sets = [];
+  if (!is_wp_error($terms)) {
+    foreach ($terms as $term) {
+      $sets[] = hf_serialize_collection_set($term);
+    }
+  }
+
+  $cache_file = dirname(hf_featured_products_cache_path()) . '/featured-sets.json';
+  hf_featured_products_write_cache($cache_file, $sets);
 }
 
 register_activation_hook(dirname(dirname(__FILE__)) . '/horizon-fit-commerce.php', function() {

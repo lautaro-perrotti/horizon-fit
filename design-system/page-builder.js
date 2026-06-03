@@ -49,6 +49,9 @@ const PAGE_BUILDER = (() => {
   const productCollectionSrc = (slug) =>
     `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products-${slug}.json`;
 
+  // Cache de "Conjuntos destacados": colecciones marcadas "Mostrar en home".
+  const FEATURED_SETS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-sets.json`;
+
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
   const resolveMediaUrl = (url) => {
@@ -128,7 +131,7 @@ const PAGE_BUILDER = (() => {
           const html = await fetchText(s.component);
           return [s.id, html];
         })),
-        Promise.all(sections.filter(s => s.data).map(async s => {
+        Promise.all(sections.filter(s => s.data || s.type === 'featured-sets').map(async s => {
           // featured-products: cada fila trae SU colección (config.collection),
           // administrada desde wp-admin (taxonomía hf_collection). Cache por
           // colección; fallback a la cache general y luego al REST.
@@ -138,6 +141,11 @@ const PAGE_BUILDER = (() => {
             const data = await fetchJson(src)
               .catch(async () => fetchJson(PRODUCT_DATA_SRC))
               .catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC));
+            return [s.id, data];
+          }
+          // featured-sets: slider de conjuntos (colecciones "Mostrar en home").
+          if (s.type === 'featured-sets') {
+            const data = await fetchJson(FEATURED_SETS_SRC).catch(() => []);
             return [s.id, data];
           }
           const data = await fetchJson(s.data);
@@ -211,6 +219,13 @@ const PAGE_BUILDER = (() => {
           // si no, se usa la config local de home.json.
           const heroConfig = { ...(section.config || {}), ...(wpSettings.get('hero') || {}) };
           if (sectionEl) setupHero(sectionEl, heroConfig);
+        }
+
+        if (!productRoute && section.type === 'featured-sets') {
+          const sets = dataMap.get(section.id) || [];
+          const sectionEl = sectionElements.get(section.id);
+          const variant = section.component.includes('mobile') ? 'mobile' : 'desktop';
+          if (sectionEl) renderFeaturedSets(sectionEl, sets, variant);
         }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
@@ -600,11 +615,15 @@ const PAGE_BUILDER = (() => {
     return `<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`;
   }).join('');
 
-  const renderProductSetSlide = (items, index, total) => {
+  // `meta` (opcional) permite sobreescribir título/copy/imagen del conjunto
+  // (vienen de la colección en wp-admin). Si no se pasa, se infieren del
+  // primer producto (comportamiento usado por la PDP).
+  const renderProductSetSlide = (items, index, total, meta = null) => {
     const heroProduct = items[0];
     const heroImage = getProductImages(heroProduct)[0];
-    const title = heroProduct?.collections?.[0]?.name || `Conjunto ${index + 1}`;
-    const meta = heroProduct?.categories?.map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
+    const title = meta?.title || heroProduct?.collections?.[0]?.name || `Conjunto ${index + 1}`;
+    const tag = meta?.copy || heroProduct?.categories?.map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
+    const heroUrl = meta?.image || heroImage?.url || '';
     return `
           <div class="hf-carousel__slide">
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
@@ -616,11 +635,63 @@ const PAGE_BUILDER = (() => {
                 </div>
               </div>
               <div class="hf-pdp-look__visual">
-                <span class="hf-pdp-look__tag">${escapeHtml(meta)}</span>
-                <img class="hf-pdp-look__hero" src="${escapeHtml(heroImage?.url || '')}" alt="${escapeHtml(title)} look principal">
+                <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
+                <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
               </div>
             </section>
           </div>`;
+  };
+
+  // Card de un conjunto para la vista mobile (carousel de cards).
+  const renderSetMobileCard = (set) => {
+    const firstProduct = set.products?.[0];
+    const href = firstProduct ? productUrl(firstProduct) : '#';
+    const imageUrl = set.image?.url || getProductImages(firstProduct)[0]?.url || '';
+    return `
+            <div class="hf-carousel__slide">
+              <article class="hf-product-item">
+                <div class="productMedia" style="background:none;">
+                  <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || '')}">
+                </div>
+                <div class="hf-product-item__body">
+                  <a href="${href}" aria-label="Ver ${escapeHtml(set.name || 'conjunto')}" class="hf-product-item__link">
+                    <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
+                  </a>
+                  <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
+                </div>
+              </article>
+            </div>`;
+  };
+
+  // Renderiza el slider "Conjuntos destacados" en su variante (desktop/mobile).
+  // Vacía el track del carousel, inyecta los slides de cada conjunto y
+  // reinicializa el carousel. Si no hay conjuntos, oculta la sección.
+  const renderFeaturedSets = (sectionEl, sets, variant) => {
+    const track = sectionEl.querySelector('.hf-carousel__track');
+    if (!track) return;
+
+    if (!Array.isArray(sets) || sets.length === 0) {
+      sectionEl.style.display = 'none';
+      return;
+    }
+
+    const total = sets.length;
+    if (variant === 'mobile') {
+      track.innerHTML = sets.map(renderSetMobileCard).join('');
+    } else {
+      track.innerHTML = sets.map((set, i) =>
+        renderProductSetSlide(set.products || [], i, total, {
+          title: set.name,
+          copy: set.copy,
+          image: set.image?.url
+        })
+      ).join('');
+    }
+
+    // Reinicializar el carousel sobre los slides recién inyectados.
+    const carousel = track.closest('[data-hf="carousel"]');
+    if (carousel) carousel._hfCarousel = null;
+    if (typeof window.initDataCarousels === 'function') window.initDataCarousels();
   };
 
   const renderProductPage = async (root, products, html) => {

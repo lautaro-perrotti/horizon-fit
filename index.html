@@ -4342,6 +4342,9 @@
       });
       updateSetMobileCarouselNavTop();
     }
+    // Expuesta para que el page-builder reinicialice carousels tras inyectar
+    // slides dinámicos (ej. Conjuntos destacados).
+    window.initDataCarousels = initDataCarousels;
 
     function initCarousels() {
       document.querySelectorAll('[data-grid-shell]').forEach(function (shell) {
