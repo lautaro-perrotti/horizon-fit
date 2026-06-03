@@ -688,10 +688,31 @@ const PAGE_BUILDER = (() => {
       ).join('');
     }
 
-    // Reinicializar el carousel sobre los slides recién inyectados.
+    // Ajustar config del carousel según la cantidad de conjuntos:
+    // - 1 solo: sin flechas, sin loop, sin autoplay (no tiene sentido).
+    // - 2 o más: autoplay infinito cada 10s con loop, que se pausa al hover/touch.
     const carousel = track.closest('[data-hf="carousel"]');
-    if (carousel) carousel._hfCarousel = null;
+    if (carousel) {
+      const base = safeParseCarouselConfig(carousel.getAttribute('data-hf-carousel'));
+      const multiple = sets.length > 1;
+      const config = {
+        ...base,
+        arrows: multiple,
+        loop: multiple,
+        seamlessLoop: multiple,
+        autoplay: multiple,
+        autoplayDelay: 10000,
+        pauseOnHover: true,
+        pauseOnFocus: true
+      };
+      carousel.setAttribute('data-hf-carousel', JSON.stringify(config));
+      carousel._hfCarousel = null;
+    }
     if (typeof window.initDataCarousels === 'function') window.initDataCarousels();
+  };
+
+  const safeParseCarouselConfig = (raw) => {
+    try { return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
   };
 
   const renderProductPage = async (root, products, html) => {
