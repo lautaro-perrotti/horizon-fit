@@ -158,9 +158,8 @@ function hf_commerce_render_collection_settings_page() {
     if (!empty($_POST['hf_collection_settings_submit'])) {
         check_admin_referer('hf_collection_settings_action');
         $settings = [
-            'cols_desktop' => in_array((int) ($_POST['cols_desktop'] ?? 3), [3, 4], true) ? (int) $_POST['cols_desktop'] : 3,
+            'cols_desktop' => in_array((int) ($_POST['cols_desktop'] ?? 4), [3, 4], true) ? (int) $_POST['cols_desktop'] : 4,
             'cols_mobile'  => in_array((int) ($_POST['cols_mobile'] ?? 2), [1, 2], true) ? (int) $_POST['cols_mobile'] : 2,
-            'per_page'     => in_array((int) ($_POST['per_page'] ?? 12), [12, 24], true) ? (int) $_POST['per_page'] : 12,
         ];
         update_option('hf_collection_settings', $settings);
         if (function_exists('hf_regenerate_collection_settings_cache')) {
@@ -170,9 +169,8 @@ function hf_commerce_render_collection_settings_page() {
     }
 
     $opt = get_option('hf_collection_settings', []);
-    $cols_desktop = (int) ($opt['cols_desktop'] ?? 3);
+    $cols_desktop = (int) ($opt['cols_desktop'] ?? 4);
     $cols_mobile  = (int) ($opt['cols_mobile'] ?? 2);
-    $per_page     = (int) ($opt['per_page'] ?? 12);
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('Ajustes de las páginas de colección', 'horizon-fit-commerce'); ?></h1>
@@ -194,13 +192,6 @@ function hf_commerce_render_collection_settings_page() {
                     <td><select name="cols_mobile" id="cols_mobile">
                         <option value="1" <?php selected($cols_mobile, 1); ?>>1</option>
                         <option value="2" <?php selected($cols_mobile, 2); ?>>2</option>
-                    </select></td>
-                </tr>
-                <tr>
-                    <th scope="row"><label for="per_page"><?php esc_html_e('Productos por página', 'horizon-fit-commerce'); ?></label></th>
-                    <td><select name="per_page" id="per_page">
-                        <option value="12" <?php selected($per_page, 12); ?>>12</option>
-                        <option value="24" <?php selected($per_page, 24); ?>>24</option>
                     </select></td>
                 </tr>
             </table>

@@ -113,7 +113,7 @@ const PAGE_BUILDER = (() => {
     `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-${slug}.json`;
   const COLLECTION_SETTINGS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-settings.json`;
   const COLLECTION_COMPONENT = '/design-system/components/sections/collection.html';
-  const COLLECTION_DEFAULTS = { colsDesktop: 3, colsMobile: 2, perPage: 12 };
+  const COLLECTION_DEFAULTS = { colsDesktop: 4, colsMobile: 2 };
 
   const productUrl = (product) => {
     const slug = product?.slug || '';
@@ -896,9 +896,9 @@ const PAGE_BUILDER = (() => {
 
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
-  // Renderiza la página de colección: título centrado + grid de cards
-  // (mismas que featured-products) + paginación numérica. Columnas y
-  // productos/página vienen de la config global de wp-admin.
+  // Renderiza la página de colección: título centrado + grid de TODOS los
+  // productos de la categoría (sin paginación). Columnas configurables desde
+  // wp-admin.
   const renderCollectionPage = (root, cat, products, settings, html) => {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = html;
@@ -911,8 +911,7 @@ const PAGE_BUILDER = (() => {
 
     const cfg = {
       colsDesktop: settings?.colsDesktop || COLLECTION_DEFAULTS.colsDesktop,
-      colsMobile: settings?.colsMobile || COLLECTION_DEFAULTS.colsMobile,
-      perPage: settings?.perPage || COLLECTION_DEFAULTS.perPage
+      colsMobile: settings?.colsMobile || COLLECTION_DEFAULTS.colsMobile
     };
 
     const list = Array.isArray(products) ? products : [];
@@ -923,38 +922,13 @@ const PAGE_BUILDER = (() => {
     if (titleEl) titleEl.textContent = catName;
     document.title = `${catName} | Horizon Fit`;
 
-    // Paginación.
-    const params = new URLSearchParams(window.location.search);
-    const totalPages = Math.max(1, Math.ceil(list.length / cfg.perPage));
-    const page = Math.min(totalPages, Math.max(1, parseInt(params.get('page') || '1', 10) || 1));
-    const pageItems = list.slice((page - 1) * cfg.perPage, page * cfg.perPage);
-
-    // Grid: columnas configurables vía CSS vars.
+    // Grid: TODOS los productos, columnas configurables vía CSS vars.
     const grid = sectionEl.querySelector('[data-collection-grid]');
     const template = sectionEl.querySelector('[data-product-template]');
     if (grid && template) {
       grid.style.setProperty('--collection-cols-desktop', cfg.colsDesktop);
       grid.style.setProperty('--collection-cols-mobile', cfg.colsMobile);
-      pageItems.forEach(product => grid.appendChild(fillProductCard(template, product)));
-    }
-
-    // Controles de paginación: links reales (?cat=slug&view=collection&page=N).
-    const pag = sectionEl.querySelector('[data-collection-pagination]');
-    if (pag) {
-      if (totalPages <= 1) {
-        pag.style.display = 'none';
-      } else {
-        const href = (p) => `/coleccion/?cat=${encodeURIComponent(cat)}&view=collection&page=${p}`;
-        let html = '';
-        if (page > 1) html += `<a class="hf-collection-pagination__btn" href="${href(page - 1)}">Anterior</a>`;
-        for (let p = 1; p <= totalPages; p++) {
-          const active = p === page ? ' is-active' : '';
-          const aria = p === page ? ' aria-current="page"' : '';
-          html += `<a class="hf-collection-pagination__num${active}" href="${href(p)}"${aria}>${p}</a>`;
-        }
-        if (page < totalPages) html += `<a class="hf-collection-pagination__btn" href="${href(page + 1)}">Siguiente</a>`;
-        pag.innerHTML = html;
-      }
+      list.forEach(product => grid.appendChild(fillProductCard(template, product)));
     }
   };
 

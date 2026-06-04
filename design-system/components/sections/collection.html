@@ -1,12 +1,13 @@
 <section class="hf-collection-view" data-collection-view hidden role="main">
-  <header class="hf-collection-view__header">
-    <h1 class="hf-collection-view__title" data-collection-title></h1>
-    <p class="hf-collection-view__subtitle" data-collection-subtitle></p>
-  </header>
+  <div class="hf-section-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding-top: 64px; margin-bottom: 32px;">
+    <div aria-hidden="true"></div>
+    <div class="hf-section-head__title" style="text-align:center;">
+      <h2 data-collection-title style="font-size:clamp(28px,4vw,44px);font-weight:400 !important;margin:0;letter-spacing:-0.02em;"></h2>
+    </div>
+    <div aria-hidden="true"></div>
+  </div>
 
   <div class="hf-collection-view__grid" data-collection-grid></div>
-
-  <nav class="hf-collection-pagination" data-collection-pagination aria-label="Paginación"></nav>
 
   <template data-product-template>
     <article class="hf-product-item hf-product-item--slider">

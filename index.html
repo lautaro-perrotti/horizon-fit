@@ -2975,48 +2975,10 @@
         }
 
         .hf-collection-view__grid {
-          grid-template-columns: repeat(var(--collection-cols-desktop, 3), minmax(0, 1fr));
+          grid-template-columns: repeat(var(--collection-cols-desktop, 4), minmax(0, 1fr));
           column-gap: 2rem;
           row-gap: 3.5rem;
         }
-      }
-
-      /* Paginación de la página de colección */
-      .hf-collection-pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 3.5rem;
-      }
-
-      .hf-collection-pagination__num,
-      .hf-collection-pagination__btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-        height: 40px;
-        padding: 0 12px;
-        border: 1px solid var(--line, #ddd);
-        border-radius: 999px;
-        color: inherit;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background .2s, color .2s, border-color .2s;
-      }
-
-      .hf-collection-pagination__num:hover,
-      .hf-collection-pagination__btn:hover {
-        border-color: var(--hf-primary, #35006D);
-      }
-
-      .hf-collection-pagination__num.is-active {
-        background: var(--hf-primary, #35006D);
-        color: #fff;
-        border-color: var(--hf-primary, #35006D);
-        pointer-events: none;
       }
 
       body.hf-collection-mode> :not(.nav):not(.hf-collection-view):not(#topMarquee):not(main):not(.overlay):not(.modal):not(.drawer):not(.toasts):not(.tooltip) {
@@ -4350,7 +4312,7 @@
   <main id="hfPageBuilderRoot" data-page-src="/design-system/pages/home.json"></main>
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
-  <script src="/design-system/page-builder.js?v=coleccion-20260603"></script>
+  <script src="/design-system/page-builder.js?v=coleccion-sinpaginar-20260603"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

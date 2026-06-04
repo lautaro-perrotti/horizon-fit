@@ -534,18 +534,16 @@ function hf_regenerate_product_cat_cache($cat_slug) {
   hf_featured_products_write_cache($cache_file, $result);
 }
 
-// Settings globales de las páginas de colección (columnas + productos/página).
+// Settings globales de las páginas de colección (columnas del grid).
 // Editables desde wp-admin (página de ajustes). Se cachea para el frontend.
 function hf_regenerate_collection_settings_cache() {
   $opt = get_option('hf_collection_settings', []);
-  $cols_desktop = (int) ($opt['cols_desktop'] ?? 3);
+  $cols_desktop = (int) ($opt['cols_desktop'] ?? 4);
   $cols_mobile  = (int) ($opt['cols_mobile'] ?? 2);
-  $per_page     = (int) ($opt['per_page'] ?? 12);
 
   $settings = [
-    'colsDesktop' => in_array($cols_desktop, [3, 4], true) ? $cols_desktop : 3,
+    'colsDesktop' => in_array($cols_desktop, [3, 4], true) ? $cols_desktop : 4,
     'colsMobile'  => in_array($cols_mobile, [1, 2], true) ? $cols_mobile : 2,
-    'perPage'     => in_array($per_page, [12, 24], true) ? $per_page : 12,
   ];
 
   $cache_file = dirname(hf_featured_products_cache_path()) . '/collection-settings.json';
