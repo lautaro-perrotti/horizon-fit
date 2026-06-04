@@ -137,6 +137,77 @@ function hf_commerce_register_admin_pages() {
         'hf-commerce-pricing',
         'hf_commerce_render_pricing_page'
     );
+
+    add_submenu_page(
+        'woocommerce',
+        __('Horizon Fit | Ajustes de colección', 'horizon-fit-commerce'),
+        __('Ajustes colección', 'horizon-fit-commerce'),
+        'manage_woocommerce',
+        'hf-commerce-collection',
+        'hf_commerce_render_collection_settings_page'
+    );
+}
+
+// Página de ajustes globales de las colecciones (columnas + productos/página).
+function hf_commerce_render_collection_settings_page() {
+    if (!current_user_can('manage_woocommerce')) {
+        return;
+    }
+
+    $saved = false;
+    if (!empty($_POST['hf_collection_settings_submit'])) {
+        check_admin_referer('hf_collection_settings_action');
+        $settings = [
+            'cols_desktop' => in_array((int) ($_POST['cols_desktop'] ?? 3), [3, 4], true) ? (int) $_POST['cols_desktop'] : 3,
+            'cols_mobile'  => in_array((int) ($_POST['cols_mobile'] ?? 2), [1, 2], true) ? (int) $_POST['cols_mobile'] : 2,
+            'per_page'     => in_array((int) ($_POST['per_page'] ?? 12), [12, 24], true) ? (int) $_POST['per_page'] : 12,
+        ];
+        update_option('hf_collection_settings', $settings);
+        if (function_exists('hf_regenerate_collection_settings_cache')) {
+            hf_regenerate_collection_settings_cache();
+        }
+        $saved = true;
+    }
+
+    $opt = get_option('hf_collection_settings', []);
+    $cols_desktop = (int) ($opt['cols_desktop'] ?? 3);
+    $cols_mobile  = (int) ($opt['cols_mobile'] ?? 2);
+    $per_page     = (int) ($opt['per_page'] ?? 12);
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Ajustes de las páginas de colección', 'horizon-fit-commerce'); ?></h1>
+        <?php if ($saved) : ?>
+            <div class="notice notice-success"><p><?php esc_html_e('Ajustes guardados.', 'horizon-fit-commerce'); ?></p></div>
+        <?php endif; ?>
+        <form method="post">
+            <?php wp_nonce_field('hf_collection_settings_action'); ?>
+            <table class="form-table">
+                <tr>
+                    <th scope="row"><label for="cols_desktop"><?php esc_html_e('Columnas en desktop', 'horizon-fit-commerce'); ?></label></th>
+                    <td><select name="cols_desktop" id="cols_desktop">
+                        <option value="3" <?php selected($cols_desktop, 3); ?>>3</option>
+                        <option value="4" <?php selected($cols_desktop, 4); ?>>4</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="cols_mobile"><?php esc_html_e('Columnas en mobile', 'horizon-fit-commerce'); ?></label></th>
+                    <td><select name="cols_mobile" id="cols_mobile">
+                        <option value="1" <?php selected($cols_mobile, 1); ?>>1</option>
+                        <option value="2" <?php selected($cols_mobile, 2); ?>>2</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="per_page"><?php esc_html_e('Productos por página', 'horizon-fit-commerce'); ?></label></th>
+                    <td><select name="per_page" id="per_page">
+                        <option value="12" <?php selected($per_page, 12); ?>>12</option>
+                        <option value="24" <?php selected($per_page, 24); ?>>24</option>
+                    </select></td>
+                </tr>
+            </table>
+            <p class="submit"><button type="submit" name="hf_collection_settings_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar', 'horizon-fit-commerce'); ?></button></p>
+        </form>
+    </div>
+    <?php
 }
 
 function hf_commerce_render_category_term_fields($term = null) {

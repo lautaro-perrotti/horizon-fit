@@ -491,7 +491,90 @@ function hf_regenerate_featured_products_cache() {
 
   // 4) Cache de "Compra por categoría" (grid de categorías de la home).
   hf_regenerate_featured_categories_cache();
+
+  // 5) Cache por categoría (páginas de colección) + settings globales.
+  $product_cats = get_terms([
+    'taxonomy'   => 'product_cat',
+    'hide_empty' => false,
+  ]);
+  if (!is_wp_error($product_cats)) {
+    foreach ($product_cats as $cat) {
+      hf_regenerate_product_cat_cache($cat->slug);
+    }
+  }
+  hf_regenerate_collection_settings_cache();
 }
+
+// Cache de TODOS los productos publicados de una categoría (product_cat),
+// para la página de colección. limit=-1: la paginación es en el frontend.
+function hf_regenerate_product_cat_cache($cat_slug) {
+  if (!class_exists('WooCommerce')) {
+    return;
+  }
+
+  $products = wc_get_products([
+    'status'    => 'publish',
+    'limit'     => -1,
+    'orderby'   => 'date',
+    'order'     => 'DESC',
+    'tax_query' => [[
+      'taxonomy' => 'product_cat',
+      'field'    => 'slug',
+      'terms'    => $cat_slug,
+    ]],
+  ]);
+
+  $result = [];
+  foreach ($products as $product) {
+    $result[] = hf_featured_products_serialize_product($product);
+  }
+
+  $dir = dirname(hf_featured_products_cache_path());
+  $cache_file = $dir . '/collection-' . sanitize_file_name($cat_slug) . '.json';
+  hf_featured_products_write_cache($cache_file, $result);
+}
+
+// Settings globales de las páginas de colección (columnas + productos/página).
+// Editables desde wp-admin (página de ajustes). Se cachea para el frontend.
+function hf_regenerate_collection_settings_cache() {
+  $opt = get_option('hf_collection_settings', []);
+  $cols_desktop = (int) ($opt['cols_desktop'] ?? 3);
+  $cols_mobile  = (int) ($opt['cols_mobile'] ?? 2);
+  $per_page     = (int) ($opt['per_page'] ?? 12);
+
+  $settings = [
+    'colsDesktop' => in_array($cols_desktop, [3, 4], true) ? $cols_desktop : 3,
+    'colsMobile'  => in_array($cols_mobile, [1, 2], true) ? $cols_mobile : 2,
+    'perPage'     => in_array($per_page, [12, 24], true) ? $per_page : 12,
+  ];
+
+  $cache_file = dirname(hf_featured_products_cache_path()) . '/collection-settings.json';
+  hf_featured_products_write_cache($cache_file, $settings);
+}
+
+// Regenerar la cache de la categoría afectada al asignar/editar.
+add_action('set_object_terms', function ($object_id, $terms, $tt_ids, $taxonomy) {
+  if ($taxonomy === 'product_cat') {
+    $cats = get_the_terms($object_id, 'product_cat');
+    if ($cats && !is_wp_error($cats)) {
+      foreach ($cats as $cat) {
+        hf_regenerate_product_cat_cache($cat->slug);
+      }
+    }
+  }
+}, 20, 4);
+add_action('edited_product_cat', function ($term_id) {
+  $term = get_term($term_id, 'product_cat');
+  if ($term && !is_wp_error($term)) {
+    hf_regenerate_product_cat_cache($term->slug);
+  }
+}, 20);
+add_action('created_product_cat', function ($term_id) {
+  $term = get_term($term_id, 'product_cat');
+  if ($term && !is_wp_error($term)) {
+    hf_regenerate_product_cat_cache($term->slug);
+  }
+}, 20);
 
 // Serializa una categoría de WooCommerce para el grid "Compra por categoría":
 // nombre, slug, copy, orden e imagen (la nativa de Woo: term thumbnail_id).

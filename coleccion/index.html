@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Colección | Horizon Fit</title>
+  <script>
+    var target = '../index.html';
+    var query = window.location.search || '';
+    if (query) {
+      var params = new URLSearchParams(query);
+      params.set('view', 'collection');
+      target += '?' + params.toString();
+    }
+    window.location.replace(target);
+  </script>
+</head>
+<body>
+  <p>Redirigiendo a la colección...</p>
+</body>
+</html>

@@ -103,6 +103,18 @@ const PAGE_BUILDER = (() => {
     return params.get('view') === 'product' || window.location.pathname.replace(/\/+$/, '') === '/producto';
   };
 
+  const isCollectionRoute = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('view') === 'collection' || window.location.pathname.replace(/\/+$/, '') === '/coleccion';
+  };
+
+  // Fuentes de la página de colección.
+  const categoryCollectionSrc = (slug) =>
+    `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-${slug}.json`;
+  const COLLECTION_SETTINGS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-settings.json`;
+  const COLLECTION_COMPONENT = '/design-system/components/sections/collection.html';
+  const COLLECTION_DEFAULTS = { colsDesktop: 3, colsMobile: 2, perPage: 12 };
+
   const productUrl = (product) => {
     const slug = product?.slug || '';
     return slug ? `/producto/?slug=${encodeURIComponent(slug)}` : '#';
@@ -118,14 +130,24 @@ const PAGE_BUILDER = (() => {
 
     try {
       const productRoute = isProductRoute();
+      const collectionRoute = !productRoute && isCollectionRoute();
       const productPageSourcesPromise = productRoute ? Promise.all([
         fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
         fetchText(PRODUCT_DETAIL_COMPONENT)
       ]) : null;
 
+      // Página de colección: productos de la categoría + settings + componente.
+      const collectionParams = new URLSearchParams(window.location.search);
+      const collectionCat = collectionRoute ? (collectionParams.get('cat') || '') : '';
+      const collectionPageSourcesPromise = collectionRoute ? Promise.all([
+        fetchJson(categoryCollectionSrc(collectionCat)).catch(() => []),
+        fetchJson(COLLECTION_SETTINGS_SRC).catch(() => COLLECTION_DEFAULTS),
+        fetchText(COLLECTION_COMPONENT)
+      ]) : null;
+
       // Settings editables desde wp-admin (video del hero, etc). Se pide en
       // paralelo; si WP no está disponible se usa la config de home.json.
-      const wpSettingsPromise = productRoute ? Promise.resolve(new Map()) : fetchWpSectionSettings();
+      const wpSettingsPromise = (productRoute || collectionRoute) ? Promise.resolve(new Map()) : fetchWpSectionSettings();
 
       // Menú de la navbar (items + categorías), administrado desde wp-admin.
       // Se pide en paralelo; si falla, el menú queda vacío sin romper el resto.
@@ -139,7 +161,7 @@ const PAGE_BUILDER = (() => {
 
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
-        .filter(s => !productRoute || s.type === 'marquee' || s.type === 'navbar')
+        .filter(s => !(productRoute || collectionRoute) || s.type === 'marquee' || s.type === 'navbar')
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       // Load all components and data in parallel
@@ -201,7 +223,7 @@ const PAGE_BUILDER = (() => {
           if (headEl) headEl.style.display = 'none';
         }
 
-        if (productRoute && (section.type === 'marquee' || section.type === 'navbar')) {
+        if ((productRoute || collectionRoute) && (section.type === 'marquee' || section.type === 'navbar')) {
           document.body.insertBefore(sectionEl, root);
         } else {
           root.appendChild(sectionEl);
@@ -223,6 +245,11 @@ const PAGE_BUILDER = (() => {
       if (productRoute) {
         [productPageProducts, productPageTemplate] = await productPageSourcesPromise;
         await renderProductPage(root, productPageProducts, productPageTemplate);
+      }
+
+      if (collectionRoute) {
+        const [products, settings, html] = await collectionPageSourcesPromise;
+        renderCollectionPage(root, collectionCat, products, settings, html);
       }
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
@@ -280,6 +307,44 @@ const PAGE_BUILDER = (() => {
     }
   };
 
+  // Clona el template de card y lo rellena con los datos del producto.
+  // Reusado por featured-products (home) y la página de colección.
+  const fillProductCard = (template, product) => {
+    const clone = template.content.cloneNode(true);
+
+    const link = clone.querySelector('.hf-product-item__link');
+    if (link) link.href = productUrl(product);
+
+    const title = clone.querySelector('.hf-product-item__title');
+    if (title) title.textContent = product.name || '';
+
+    const price = clone.querySelector('.hf-product-item__price');
+    if (price) price.textContent = product.priceText || '';
+
+    const priceOrig = clone.querySelector('.hf-product-item__price-original');
+    if (priceOrig) priceOrig.textContent = product.priceOriginal || '';
+
+    const badge = clone.querySelector('.hf-product-item__badge');
+    if (badge) badge.textContent = product.badge || '';
+
+    const images = product.imageObjects || product.images || [];
+    const imgElements = clone.querySelectorAll('.hf-product-item__slide img');
+    imgElements.forEach((img, idx) => {
+      if (images[idx]) {
+        const imgUrl = typeof images[idx] === 'string' ? images[idx] : images[idx].url;
+        img.src = imgUrl;
+        img.alt = product.name || '';
+      }
+    });
+
+    const sizesEl = clone.querySelector('.hf-product-item__sizes');
+    if (sizesEl && product.sizes && product.sizes.length > 0) {
+      sizesEl.innerHTML = product.sizes.map(s => '<span>' + s + '</span>').join('');
+    }
+
+    return clone;
+  };
+
   const renderFeaturedProducts = async (sectionEl, section, products) => {
     try {
       const limit = Number(section.config?.limit || 0);
@@ -291,41 +356,7 @@ const PAGE_BUILDER = (() => {
       const template = sectionEl.querySelector('[data-product-template]');
       if (!template) return;
 
-      visibleProducts.forEach(product => {
-        const clone = template.content.cloneNode(true);
-
-        const link = clone.querySelector('.hf-product-item__link');
-        if (link) link.href = productUrl(product);
-
-        const title = clone.querySelector('.hf-product-item__title');
-        if (title) title.textContent = product.name || '';
-
-        const price = clone.querySelector('.hf-product-item__price');
-        if (price) price.textContent = product.priceText || '';
-
-        const priceOrig = clone.querySelector('.hf-product-item__price-original');
-        if (priceOrig) priceOrig.textContent = product.priceOriginal || '';
-
-        const badge = clone.querySelector('.hf-product-item__badge');
-        if (badge) badge.textContent = product.badge || '';
-
-        const images = product.imageObjects || product.images || [];
-        const imgElements = clone.querySelectorAll('.hf-product-item__slide img');
-        imgElements.forEach((img, idx) => {
-          if (images[idx]) {
-            const imgUrl = typeof images[idx] === 'string' ? images[idx] : images[idx].url;
-            img.src = imgUrl;
-            img.alt = product.name || '';
-          }
-        });
-
-        const sizesEl = clone.querySelector('.hf-product-item__sizes');
-        if (sizesEl && product.sizes && product.sizes.length > 0) {
-          sizesEl.innerHTML = product.sizes.map(s => '<span>' + s + '</span>').join('');
-        }
-
-        grid.appendChild(clone);
-      });
+      visibleProducts.forEach(product => grid.appendChild(fillProductCard(template, product)));
 
       console.log('Rendered ' + visibleProducts.length + ' featured products');
     } catch (e) {
@@ -861,6 +892,70 @@ const PAGE_BUILDER = (() => {
       return;
     }
     grid.innerHTML = cats.map(renderCategoryCard).join('');
+  };
+
+  const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+  // Renderiza la página de colección: título centrado + grid de cards
+  // (mismas que featured-products) + paginación numérica. Columnas y
+  // productos/página vienen de la config global de wp-admin.
+  const renderCollectionPage = (root, cat, products, settings, html) => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl) return;
+
+    document.body.classList.add('hf-collection-mode');
+    sectionEl.hidden = false;
+    root.appendChild(sectionEl);
+
+    const cfg = {
+      colsDesktop: settings?.colsDesktop || COLLECTION_DEFAULTS.colsDesktop,
+      colsMobile: settings?.colsMobile || COLLECTION_DEFAULTS.colsMobile,
+      perPage: settings?.perPage || COLLECTION_DEFAULTS.perPage
+    };
+
+    const list = Array.isArray(products) ? products : [];
+
+    // Título: nombre legible de la categoría (de los productos) o slug capitalizado.
+    const catName = list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' '));
+    const titleEl = sectionEl.querySelector('[data-collection-title]');
+    if (titleEl) titleEl.textContent = catName;
+    document.title = `${catName} | Horizon Fit`;
+
+    // Paginación.
+    const params = new URLSearchParams(window.location.search);
+    const totalPages = Math.max(1, Math.ceil(list.length / cfg.perPage));
+    const page = Math.min(totalPages, Math.max(1, parseInt(params.get('page') || '1', 10) || 1));
+    const pageItems = list.slice((page - 1) * cfg.perPage, page * cfg.perPage);
+
+    // Grid: columnas configurables vía CSS vars.
+    const grid = sectionEl.querySelector('[data-collection-grid]');
+    const template = sectionEl.querySelector('[data-product-template]');
+    if (grid && template) {
+      grid.style.setProperty('--collection-cols-desktop', cfg.colsDesktop);
+      grid.style.setProperty('--collection-cols-mobile', cfg.colsMobile);
+      pageItems.forEach(product => grid.appendChild(fillProductCard(template, product)));
+    }
+
+    // Controles de paginación: links reales (?cat=slug&view=collection&page=N).
+    const pag = sectionEl.querySelector('[data-collection-pagination]');
+    if (pag) {
+      if (totalPages <= 1) {
+        pag.style.display = 'none';
+      } else {
+        const href = (p) => `/coleccion/?cat=${encodeURIComponent(cat)}&view=collection&page=${p}`;
+        let html = '';
+        if (page > 1) html += `<a class="hf-collection-pagination__btn" href="${href(page - 1)}">Anterior</a>`;
+        for (let p = 1; p <= totalPages; p++) {
+          const active = p === page ? ' is-active' : '';
+          const aria = p === page ? ' aria-current="page"' : '';
+          html += `<a class="hf-collection-pagination__num${active}" href="${href(p)}"${aria}>${p}</a>`;
+        }
+        if (page < totalPages) html += `<a class="hf-collection-pagination__btn" href="${href(page + 1)}">Siguiente</a>`;
+        pag.innerHTML = html;
+      }
+    }
   };
 
   const renderProductPage = async (root, products, html) => {

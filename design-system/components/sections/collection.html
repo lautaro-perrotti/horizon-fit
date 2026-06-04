@@ -1,0 +1,42 @@
+<section class="hf-collection-view" data-collection-view hidden role="main">
+  <header class="hf-collection-view__header">
+    <h1 class="hf-collection-view__title" data-collection-title></h1>
+    <p class="hf-collection-view__subtitle" data-collection-subtitle></p>
+  </header>
+
+  <div class="hf-collection-view__grid" data-collection-grid></div>
+
+  <nav class="hf-collection-pagination" data-collection-pagination aria-label="Paginación"></nav>
+
+  <template data-product-template>
+    <article class="hf-product-item hf-product-item--slider">
+      <a class="hf-product-item__link" href="#">
+        <div class="hf-product-item__media">
+          <span class="hf-product-item__badge"></span>
+          <div class="hf-product-item__slider" data-slider>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+          </div>
+          <div class="hf-product-item__dots">
+            <button class="hf-product-item__dot is-active" data-slide="0" type="button"></button>
+            <button class="hf-product-item__dot" data-slide="1" type="button"></button>
+            <button class="hf-product-item__dot" data-slide="2" type="button"></button>
+          </div>
+        </div>
+        <div class="hf-product-item__body">
+          <div class="hf-product-item__sizes"></div>
+          <h3 class="hf-product-item__title"></h3>
+          <div class="hf-product-item__pricing">
+            <div class="hf-product-item__price-row">
+              <span class="hf-product-item__price"></span>
+              <span class="hf-product-item__price-original"></span>
+            </div>
+            <p class="hf-product-item__installments"></p>
+            <p class="hf-product-item__transfer"></p>
+          </div>
+        </div>
+      </a>
+    </article>
+  </template>
+</section>
