@@ -21,6 +21,7 @@ require_once HF_COMMERCE_DIR . 'includes/hero-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/page-sections.php';
 require_once HF_COMMERCE_DIR . 'includes/page-sections-api.php';
 require_once HF_COMMERCE_DIR . 'includes/featured-products-cache.php';
+require_once HF_COMMERCE_DIR . 'includes/menu-items.php';
 
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
@@ -143,6 +144,8 @@ function hf_commerce_render_category_term_fields($term = null) {
     $featured     = $term_id ? (string) get_term_meta($term_id, 'hf_featured_home', true) : '0';
     $home_order   = $term_id ? (string) get_term_meta($term_id, 'hf_home_order', true) : '';
     $card_copy    = $term_id ? (string) get_term_meta($term_id, 'hf_card_copy', true) : '';
+    $show_in_nav  = $term_id ? (string) get_term_meta($term_id, 'hf_show_in_nav', true) : '0';
+    $nav_order    = $term_id ? (string) get_term_meta($term_id, 'hf_nav_order', true) : '';
     $is_edit_form = $term instanceof WP_Term;
 
     if ($is_edit_form) :
@@ -159,6 +162,14 @@ function hf_commerce_render_category_term_fields($term = null) {
             <th scope="row"><label for="hf_card_copy"><?php esc_html_e('Copy corto', 'horizon-fit-commerce'); ?></label></th>
             <td><textarea name="hf_card_copy" id="hf_card_copy" rows="3"><?php echo esc_textarea($card_copy); ?></textarea></td>
         </tr>
+        <tr class="form-field">
+            <th scope="row"><label for="hf_show_in_nav"><?php esc_html_e('Mostrar en menú', 'horizon-fit-commerce'); ?></label></th>
+            <td><label><input type="checkbox" name="hf_show_in_nav" id="hf_show_in_nav" value="1" <?php checked($show_in_nav, '1'); ?>> <?php esc_html_e('Mostrar esta categoría en el menú de navegación', 'horizon-fit-commerce'); ?></label></td>
+        </tr>
+        <tr class="form-field">
+            <th scope="row"><label for="hf_nav_order"><?php esc_html_e('Orden menú', 'horizon-fit-commerce'); ?></label></th>
+            <td><input type="number" name="hf_nav_order" id="hf_nav_order" value="<?php echo esc_attr($nav_order); ?>"></td>
+        </tr>
         <?php
     else :
         ?>
@@ -173,6 +184,14 @@ function hf_commerce_render_category_term_fields($term = null) {
         <div class="form-field">
             <label for="hf_card_copy"><?php esc_html_e('Copy corto', 'horizon-fit-commerce'); ?></label>
             <textarea name="hf_card_copy" id="hf_card_copy" rows="3"></textarea>
+        </div>
+        <div class="form-field">
+            <label for="hf_show_in_nav"><?php esc_html_e('Mostrar en menú', 'horizon-fit-commerce'); ?></label>
+            <label><input type="checkbox" name="hf_show_in_nav" id="hf_show_in_nav" value="1"> <?php esc_html_e('Mostrar esta categoría en el menú de navegación', 'horizon-fit-commerce'); ?></label>
+        </div>
+        <div class="form-field">
+            <label for="hf_nav_order"><?php esc_html_e('Orden menú', 'horizon-fit-commerce'); ?></label>
+            <input type="number" name="hf_nav_order" id="hf_nav_order" value="">
         </div>
         <?php
     endif;
@@ -238,6 +257,13 @@ function hf_commerce_save_term_meta($term_id) {
     update_term_meta($term_id, 'hf_featured_home', isset($_POST['hf_featured_home']) ? '1' : '0');
     update_term_meta($term_id, 'hf_home_order', isset($_POST['hf_home_order']) ? absint($_POST['hf_home_order']) : 0);
     update_term_meta($term_id, 'hf_card_copy', isset($_POST['hf_card_copy']) ? sanitize_textarea_field(wp_unslash($_POST['hf_card_copy'])) : '');
+
+    // Menú de navegación (solo se renderizan en product_cat; en hf_collection
+    // estos campos no existen, así que $_POST no los trae y no se tocan).
+    if (isset($_POST['hf_show_in_nav']) || isset($_POST['hf_nav_order'])) {
+        update_term_meta($term_id, 'hf_show_in_nav', isset($_POST['hf_show_in_nav']) ? '1' : '0');
+        update_term_meta($term_id, 'hf_nav_order', isset($_POST['hf_nav_order']) ? absint($_POST['hf_nav_order']) : 0);
+    }
 
     if (isset($_POST['hf_image_id'])) {
         update_term_meta($term_id, 'hf_image_id', absint($_POST['hf_image_id']));

@@ -57,6 +57,9 @@ const PAGE_BUILDER = (() => {
   // Cache de "Compra por categoría": categorías marcadas "Mostrar en home".
   const FEATURED_CATEGORIES_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-categories.json`;
 
+  // Cache del menú de la navbar: items de menú + categorías "Mostrar en menú".
+  const MENU_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/menu.json`;
+
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
   const resolveMediaUrl = (url) => {
@@ -123,6 +126,10 @@ const PAGE_BUILDER = (() => {
       // Settings editables desde wp-admin (video del hero, etc). Se pide en
       // paralelo; si WP no está disponible se usa la config de home.json.
       const wpSettingsPromise = productRoute ? Promise.resolve(new Map()) : fetchWpSectionSettings();
+
+      // Menú de la navbar (items + categorías), administrado desde wp-admin.
+      // Se pide en paralelo; si falla, el menú queda vacío sin romper el resto.
+      const menuPromise = fetchJson(MENU_SRC).catch(() => []);
 
       const t0 = performance.now();
       const pageConfig = await fetchJson(pageSrc);
@@ -259,6 +266,11 @@ const PAGE_BUILDER = (() => {
         }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
+
+      // Rellenar el menú de la navbar ANTES de cablear los drawers, así
+      // initNavbarAndMenuDrawer toma los [data-menu-link] recién inyectados.
+      renderNavMenu(await menuPromise);
+
       initNavbarAndMenuDrawer();
       initNavbarScroll();
       console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
@@ -398,6 +410,48 @@ const PAGE_BUILDER = (() => {
 
     setVideoSrc();
     window.addEventListener('resize', setVideoSrc);
+  };
+
+  // Resuelve el href de un item de menú. Las anclas (#seccion) sólo resuelven
+  // en la home; si estamos en otra ruta, las prefijamos con index.html para
+  // volver a la home y hacer scroll (igual que los links originales).
+  const resolveMenuHref = (url) => {
+    if (!url) return '#';
+    if (url.startsWith('#')) {
+      const isHome = window.location.pathname === '/' ||
+        /\/index\.html$/.test(window.location.pathname);
+      return isHome ? url : `/index.html${url}`;
+    }
+    if (/^https?:\/\//.test(url)) return url;
+    return rootUrl(url);
+  };
+
+  // Rellena ambos menús de la navbar (desktop menu__grid y mobile
+  // menu-drawer__nav) con los items administrados desde wp-admin (menu.json).
+  const renderNavMenu = (items) => {
+    if (!Array.isArray(items)) items = [];
+
+    const desktopGrid = document.querySelector('[data-menu-grid]');
+    const mobileNav = document.querySelector('[data-menu-drawer-nav]');
+
+    // Desktop: insertar <a role="menuitem"> ANTES del botón "Abrir carrito".
+    if (desktopGrid) {
+      const cartBtn = desktopGrid.querySelector('#openCartBtn');
+      items.forEach(item => {
+        const a = document.createElement('a');
+        a.setAttribute('role', 'menuitem');
+        a.href = resolveMenuHref(item.url);
+        a.textContent = item.label || '';
+        desktopGrid.insertBefore(a, cartBtn || null);
+      });
+    }
+
+    // Mobile: <a class="menu-drawer__link" data-menu-link><strong>..</strong></a>
+    if (mobileNav) {
+      mobileNav.innerHTML = items.map(item =>
+        `<a class="menu-drawer__link" href="${escapeHtml(resolveMenuHref(item.url))}" data-menu-link><strong>${escapeHtml(item.label || '')}</strong></a>`
+      ).join('');
+    }
   };
 
   const initNavbarAndMenuDrawer = () => {

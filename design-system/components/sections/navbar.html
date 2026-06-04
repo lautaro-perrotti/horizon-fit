@@ -84,17 +84,8 @@
 
       <!-- Menu hamburguesa -->
       <div class="menu" role="menu" aria-hidden="true" id="menu" style="display:none;">
-        <div class="menu__grid">
-          <a role="menuitem" href="index.html?view=collection">Colección completa</a>
-          <a role="menuitem" href="#productGrid1">Productos destacados</a>
-          <a role="menuitem" href="#fullSlider">Conjuntos destacados</a>
-          <a role="menuitem" href="#homeCategories">Compra por categoría</a>
-          <a role="menuitem" href="#ecommerce">Tops</a>
-          <a role="menuitem" href="#ecommerce">Calzas</a>
-          <a role="menuitem" href="#ecommerce">Shorts</a>
-          <a role="menuitem" href="#ecommerce">Buzos</a>
-          <a role="menuitem" href="#homeSocialStrip">Horizon Fit in the wild</a>
-          <a role="menuitem" href="#footerContact">Contacto</a>
+        <div class="menu__grid" data-menu-grid>
+          <!-- Los links se inyectan dinámicamente desde wp-admin (menu.json) -->
           <button role="menuitem" id="openCartBtn">Abrir carrito</button>
         </div>
       </div>
@@ -107,18 +98,8 @@
         <button class="btn btn--ghost btn--sm" data-close-menu-drawer aria-label="Cerrar">&times;</button>
       </div>
       <div class="drawer__bd">
-        <nav class="menu-drawer__nav" aria-label="Navegaci&oacute;n principal">
-          <a class="menu-drawer__link" href="#productGrid1" data-menu-link><strong>Productos destacados</strong></a>
-          <a class="menu-drawer__link" href="#fullSlider" data-menu-link><strong>Conjuntos destacados</strong></a>
-          <a class="menu-drawer__link" href="#homeCategories" data-menu-link><strong>Compra por
-              categor&iacute;a</strong></a>
-          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Tops</strong></a>
-          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Calzas</strong></a>
-          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Shorts</strong></a>
-          <a class="menu-drawer__link" href="#ecommerce" data-menu-link><strong>Buzos</strong></a>
-          <a class="menu-drawer__link" href="#homeSocialStrip" data-menu-link><strong>Horizon Fit in the
-              wild</strong></a>
-          <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
+        <nav class="menu-drawer__nav" aria-label="Navegaci&oacute;n principal" data-menu-drawer-nav>
+          <!-- Los links se inyectan dinámicamente desde wp-admin (menu.json) -->
         </nav>
         <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
           <a href="#" aria-label="Instagram">
