@@ -161,7 +161,7 @@ const PAGE_BUILDER = (() => {
 
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
-        .filter(s => !(productRoute || collectionRoute) || s.type === 'marquee' || s.type === 'navbar')
+        .filter(s => !(productRoute || collectionRoute) || s.type === 'marquee' || s.type === 'navbar' || s.type === 'footer')
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       // Load all components and data in parallel
@@ -225,6 +225,10 @@ const PAGE_BUILDER = (() => {
 
         if ((productRoute || collectionRoute) && (section.type === 'marquee' || section.type === 'navbar')) {
           document.body.insertBefore(sectionEl, root);
+        } else if (section.type === 'footer') {
+          // El footer va SIEMPRE al final del body (después del contenido de la
+          // página, que en producto/colección se agrega luego del loop).
+          document.body.appendChild(sectionEl);
         } else {
           root.appendChild(sectionEl);
         }
@@ -290,6 +294,12 @@ const PAGE_BUILDER = (() => {
           // se conserva el texto del HTML.
           const messages = wpSettings.get('marquee')?.messages;
           if (sectionEl) setupMarquee(sectionEl, messages);
+        }
+
+        if (section.type === 'footer') {
+          // Footer administrable desde wp-admin. Aparece en todas las páginas.
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) setupFooter(sectionEl, wpSettings.get('footer'));
         }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
@@ -393,6 +403,51 @@ const PAGE_BUILDER = (() => {
     if (window.HFMarquee && typeof window.HFMarquee.init === 'function') {
       sectionEl._hfMarquee = window.HFMarquee.init(sectionEl);
     }
+  };
+
+  // Rellena el footer con los datos administrados desde wp-admin. Cada campo
+  // que falte conserva el texto/href del HTML (fallback). Todo opcional.
+  const setupFooter = (sectionEl, settings) => {
+    if (!settings || typeof settings !== 'object') return;
+
+    const setText = (sel, value) => {
+      if (value == null || value === '') return;
+      const el = sectionEl.querySelector(sel);
+      if (el) el.textContent = value;
+    };
+    const setAttr = (sel, attr, value) => {
+      if (value == null || value === '') return;
+      const el = sectionEl.querySelector(sel);
+      if (el) el.setAttribute(attr, value);
+    };
+
+    setText('[data-footer-badge]', settings.badge);
+    setText('[data-footer-title]', settings.title);
+    setText('[data-footer-copy]', settings.copy);
+    setAttr('[data-footer-news-placeholder]', 'placeholder', settings.newsPlaceholder);
+    setText('[data-footer-news-btn]', settings.newsBtn);
+
+    (settings.chips || []).forEach((chip, i) => setText(`[data-footer-chip="${i}"]`, chip));
+
+    setText('[data-footer-help-title]', settings.helpTitle);
+    (settings.helpLinks || []).forEach((link, i) => {
+      setText(`[data-footer-help-link="${i}"]`, link?.text);
+      setAttr(`[data-footer-help-link="${i}"]`, 'href', link?.url);
+    });
+
+    setText('[data-footer-contact-title]', settings.contactTitle);
+    (settings.contactLines || []).forEach((line, i) => setText(`[data-footer-contact="${i}"]`, line));
+
+    const social = settings.social || {};
+    ['instagram', 'facebook', 'tiktok', 'spotify'].forEach(net => {
+      setAttr(`[data-footer-social="${net}"]`, 'href', social[net]);
+    });
+
+    setText('[data-footer-copyright]', settings.copyright);
+    (settings.legalLinks || []).forEach((link, i) => {
+      setText(`[data-footer-legal-link="${i}"]`, link?.text);
+      setAttr(`[data-footer-legal-link="${i}"]`, 'href', link?.url);
+    });
   };
 
   const setupHero = (sectionEl, config = {}) => {
