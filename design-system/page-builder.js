@@ -301,6 +301,11 @@ const PAGE_BUILDER = (() => {
           const sectionEl = sectionElements.get(section.id);
           if (sectionEl) setupFooter(sectionEl, wpSettings.get('footer'));
         }
+
+        if (!productRoute && !collectionRoute && section.type === 'trust-bar') {
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) setupTrustBar(sectionEl, wpSettings.get('trust-bar'));
+        }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
 
@@ -448,6 +453,20 @@ const PAGE_BUILDER = (() => {
       setText(`[data-footer-legal-link="${i}"]`, link?.text);
       setAttr(`[data-footer-legal-link="${i}"]`, 'href', link?.url);
     });
+  };
+
+  // Rellena la barra de confianza (4 items: título + descripción cada uno) con
+  // los datos de wp-admin, y reinicializa el slider (dots + autoplay mobile).
+  const setupTrustBar = (sectionEl, settings) => {
+    if (settings && Array.isArray(settings.items)) {
+      settings.items.forEach((item, i) => {
+        const titleEl = sectionEl.querySelector(`[data-trust-title="${i}"]`);
+        const descEl = sectionEl.querySelector(`[data-trust-desc="${i}"]`);
+        if (titleEl && item?.title) titleEl.textContent = item.title;
+        if (descEl && item?.description) descEl.textContent = item.description;
+      });
+    }
+    if (typeof window.initTrustBar === 'function') window.initTrustBar();
   };
 
   const setupHero = (sectionEl, config = {}) => {

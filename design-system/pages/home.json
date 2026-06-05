@@ -74,9 +74,16 @@
       "component": "design-system/components/sections/categorias.html"
     },
     {
+      "id": "trust-bar",
+      "type": "trust-bar",
+      "order": 9,
+      "visible": true,
+      "component": "design-system/components/sections/trust-bar.html"
+    },
+    {
       "id": "footer",
       "type": "footer",
-      "order": 9,
+      "order": 10,
       "visible": true,
       "component": "design-system/components/sections/footer.html"
     }

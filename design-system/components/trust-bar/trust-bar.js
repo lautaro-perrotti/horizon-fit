@@ -117,4 +117,8 @@
   } else {
     initTrustBar();
   }
+
+  // Expuesta para que el page-builder la llame tras inyectar la sección
+  // (el componente se inserta de forma async, después del DOMContentLoaded).
+  window.initTrustBar = initTrustBar;
 })();
