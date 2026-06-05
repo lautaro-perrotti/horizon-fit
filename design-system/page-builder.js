@@ -300,6 +300,7 @@ const PAGE_BUILDER = (() => {
 
       initNavbarAndMenuDrawer();
       initNavbarScroll();
+      initBrandSwap();
       console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
       document.documentElement.dataset.pageBuilderReady = 'true';
     } catch (e) {
@@ -612,6 +613,12 @@ const PAGE_BUILDER = (() => {
       .filter(image => image.url);
   };
 
+  const DEFAULT_CATEGORY_SLUG = 'uncategorized';
+  const isDefaultCategory = (category) => `${category?.slug || ''}`.toLowerCase() === DEFAULT_CATEGORY_SLUG;
+  const getVisibleCategories = (categories) => Array.isArray(categories)
+    ? categories.filter(category => !isDefaultCategory(category))
+    : [];
+
   const getAttributeValues = (product, label) => {
     const attr = product?.attributes?.find(item => {
       const name = `${item.label || item.name || ''}`.toLowerCase();
@@ -753,6 +760,23 @@ const PAGE_BUILDER = (() => {
           </article>`;
   };
 
+  // Card del componente "Compralo con": imagen grande arriba, nombre + precio
+  // abajo, todo el bloque es link al producto.
+  const renderBuyWithCard = (item) => {
+    const image = getProductImages(item)[0];
+    const price = item.priceText || item.regularPriceText || '';
+    return `
+          <a class="hf-buy-with__card" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
+            <div class="hf-buy-with__media">
+              <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
+            </div>
+            <div class="hf-buy-with__body">
+              <h3 class="hf-buy-with__name">${escapeHtml(item.name || '')}</h3>
+              <p class="hf-buy-with__price">${escapeHtml(price)}</p>
+            </div>
+          </a>`;
+  };
+
   const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
 
   const renderSizeTableRows = (rows) => rows.map(row => {
@@ -767,7 +791,7 @@ const PAGE_BUILDER = (() => {
     const heroProduct = items[0];
     const heroImage = getProductImages(heroProduct)[0];
     const title = meta?.title || heroProduct?.collections?.[0]?.name || `Conjunto ${index + 1}`;
-    const tag = meta?.copy || heroProduct?.categories?.map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
+    const tag = meta?.copy || getVisibleCategories(heroProduct?.categories).map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
     const heroUrl = meta?.image || heroImage?.url || '';
     return `
           <div class="hf-carousel__slide">
@@ -887,11 +911,12 @@ const PAGE_BUILDER = (() => {
   const renderCategories = (sectionEl, cats) => {
     const grid = sectionEl.querySelector('[data-categories-grid]');
     if (!grid) return;
-    if (!Array.isArray(cats) || cats.length === 0) {
+    const visibleCats = getVisibleCategories(cats);
+    if (visibleCats.length === 0) {
       sectionEl.style.display = 'none';
       return;
     }
-    grid.innerHTML = cats.map(renderCategoryCard).join('');
+    grid.innerHTML = visibleCats.map(renderCategoryCard).join('');
   };
 
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
@@ -915,9 +940,12 @@ const PAGE_BUILDER = (() => {
     };
 
     const list = Array.isArray(products) ? products : [];
+    const normalizedCat = `${cat || ''}`.toLowerCase();
 
     // Título: nombre legible de la categoría (de los productos) o slug capitalizado.
-    const catName = list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' '));
+    const catName = normalizedCat === DEFAULT_CATEGORY_SLUG
+      ? 'Colección'
+      : list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' '));
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
     document.title = `${catName} | Horizon Fit`;
@@ -998,7 +1026,7 @@ const PAGE_BUILDER = (() => {
     if (sizeTableHead) sizeTableHead.innerHTML = renderSizeTableHeader(sizeTable.headers);
     if (sizeTableBody) sizeTableBody.innerHTML = renderSizeTableRows(sizeTable.rows);
 
-    const category = product.categories?.map(item => item.name).filter(Boolean).join(' / ') || '';
+    const category = getVisibleCategories(product.categories).map(item => item.name).filter(Boolean).join(' / ') || '';
     setText('[data-product-kicker]', category || 'Seamless collection');
     if (lookTag) lookTag.textContent = product.name || '';
 
@@ -1297,6 +1325,23 @@ const PAGE_BUILDER = (() => {
     window.setTimeout(() => {
       const related = products.filter(item => item.slug !== product.slug);
 
+      // "Compralo con": productos que comparten alguna colección (conjunto) con
+      // el producto actual. Si el producto no tiene conjunto, no se muestra.
+      const currentCollections = (product.collections || []).map(c => c.slug);
+      const buyWithItems = currentCollections.length
+        ? related.filter(item => (item.collections || []).some(c => currentCollections.includes(c.slug)))
+        : [];
+      const buyWithSection = $('[data-buy-with]');
+      const buyWithGrid = $('[data-buy-with-grid]');
+      if (buyWithSection && buyWithGrid) {
+        if (buyWithItems.length) {
+          buyWithGrid.innerHTML = buyWithItems.map(renderBuyWithCard).join('');
+          buyWithSection.hidden = false;
+        } else {
+          buyWithSection.hidden = true;
+        }
+      }
+
       if (lookList) {
         lookList.innerHTML = related.slice(0, 3).map(renderLookItem).join('');
       }
@@ -1335,6 +1380,44 @@ const PAGE_BUILDER = (() => {
     updateNavState();
     window.addEventListener('load', updateNavState);
     window.addEventListener('scroll', updateNavState, { passive: true });
+  };
+
+  // SOLO en mobile (<= 768px): alterna el logo del navbar entre el logotipo
+  // "HORIZON FIT" y el isotipo (el símbolo) cada ~3.5s. En desktop ambos se ven
+  // juntos por CSS, así que no se toca.
+  const initBrandSwap = () => {
+    const isotipo = document.getElementById('brandIsotipo');
+    const logotipo = document.getElementById('brandLogotipo');
+    if (!isotipo || !logotipo) return;
+
+    const mq = window.matchMedia('(max-width: 768px)');
+    let timer = null;
+    let showingIsotipo = false;
+
+    const swap = () => {
+      showingIsotipo = !showingIsotipo;
+      isotipo.classList.toggle('is-visible', showingIsotipo);
+      logotipo.classList.toggle('is-hidden', showingIsotipo);
+    };
+
+    const reset = () => {
+      showingIsotipo = false;
+      isotipo.classList.remove('is-visible');
+      logotipo.classList.remove('is-hidden');
+    };
+
+    const start = () => {
+      if (timer) return;
+      timer = setInterval(swap, 3500);
+    };
+    const stop = () => {
+      if (timer) { clearInterval(timer); timer = null; }
+      reset();
+    };
+
+    const apply = () => { mq.matches ? start() : stop(); };
+    apply();
+    mq.addEventListener('change', apply);
   };
 
   return { init, initNavbarAndMenuDrawer, initNavbarScroll };

@@ -128,6 +128,9 @@ function hf_regenerate_menu_cache() {
     ]);
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) {
+            if (function_exists('hf_featured_products_is_default_product_category') ? hf_featured_products_is_default_product_category($term) : strtolower((string) $term->slug) === 'uncategorized') {
+                continue;
+            }
             $entries[] = [
                 'label' => $term->name,
                 'url'   => '/coleccion/?cat=' . $term->slug,

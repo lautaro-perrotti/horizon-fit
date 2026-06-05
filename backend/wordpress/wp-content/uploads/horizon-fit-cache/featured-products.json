@@ -58,6 +58,11 @@
         },
         "categories": [
             {
+                "id": 21,
+                "slug": "tops",
+                "name": "Tops"
+            },
+            {
                 "id": 15,
                 "slug": "uncategorized",
                 "name": "Uncategorized"
@@ -278,6 +283,11 @@
         },
         "categories": [
             {
+                "id": 21,
+                "slug": "tops",
+                "name": "Tops"
+            },
+            {
                 "id": 15,
                 "slug": "uncategorized",
                 "name": "Uncategorized"
@@ -486,6 +496,11 @@
             ]
         },
         "categories": [
+            {
+                "id": 21,
+                "slug": "tops",
+                "name": "Tops"
+            },
             {
                 "id": 15,
                 "slug": "uncategorized",
@@ -706,6 +721,11 @@
             ]
         },
         "categories": [
+            {
+                "id": 21,
+                "slug": "tops",
+                "name": "Tops"
+            },
             {
                 "id": 15,
                 "slug": "uncategorized",
@@ -937,6 +957,11 @@
             ]
         },
         "categories": [
+            {
+                "id": 21,
+                "slug": "tops",
+                "name": "Tops"
+            },
             {
                 "id": 15,
                 "slug": "uncategorized",

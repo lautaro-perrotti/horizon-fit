@@ -106,6 +106,29 @@ function hf_featured_products_json_meta($raw_value, $default = array()) {
   return $default;
 }
 
+function hf_featured_products_is_default_product_category($term) {
+  $default_slug = 'uncategorized';
+  $term_slug = '';
+  $term_id = 0;
+
+  if (is_array($term)) {
+    $term_slug = isset($term['slug']) ? strtolower((string) $term['slug']) : '';
+    $term_id = isset($term['id']) ? (int) $term['id'] : 0;
+  } elseif (is_object($term)) {
+    $term_slug = isset($term->slug) ? strtolower((string) $term->slug) : '';
+    $term_id = isset($term->term_id) ? (int) $term->term_id : 0;
+  } else {
+    $term_slug = strtolower((string) $term);
+  }
+
+  if ($term_slug === $default_slug) {
+    return true;
+  }
+
+  $default_category_id = (int) get_option('default_product_cat', 0);
+  return $default_category_id > 0 && $term_id === $default_category_id;
+}
+
 function hf_featured_products_copy_data($product) {
   $product_id = $product->get_id();
   $content = (string) get_post_field('post_content', $product_id, 'raw');
@@ -156,6 +179,10 @@ function hf_featured_products_get_terms($product_id, $taxonomy) {
   if (!$terms || is_wp_error($terms)) {
     return [];
   }
+
+  $terms = array_filter($terms, function($term) use ($taxonomy) {
+    return $taxonomy !== 'product_cat' || !hf_featured_products_is_default_product_category($term);
+  });
 
   return array_values(array_map(function($term) {
     return [
@@ -499,6 +526,9 @@ function hf_regenerate_featured_products_cache() {
   ]);
   if (!is_wp_error($product_cats)) {
     foreach ($product_cats as $cat) {
+      if (hf_featured_products_is_default_product_category($cat)) {
+        continue;
+      }
       hf_regenerate_product_cat_cache($cat->slug);
     }
   }
@@ -509,6 +539,10 @@ function hf_regenerate_featured_products_cache() {
 // para la página de colección. limit=-1: la paginación es en el frontend.
 function hf_regenerate_product_cat_cache($cat_slug) {
   if (!class_exists('WooCommerce')) {
+    return;
+  }
+
+  if (hf_featured_products_is_default_product_category($cat_slug)) {
     return;
   }
 
@@ -577,6 +611,10 @@ add_action('created_product_cat', function ($term_id) {
 // Serializa una categoría de WooCommerce para el grid "Compra por categoría":
 // nombre, slug, copy, orden e imagen (la nativa de Woo: term thumbnail_id).
 function hf_serialize_category_card($term) {
+  if (hf_featured_products_is_default_product_category($term)) {
+    return null;
+  }
+
   $image_id = (int) get_term_meta($term->term_id, 'thumbnail_id', true);
   $image = $image_id ? hf_featured_products_get_image_object($image_id, $term->name) : null;
 
@@ -609,7 +647,10 @@ function hf_regenerate_featured_categories_cache() {
   $cards = [];
   if (!is_wp_error($terms)) {
     foreach ($terms as $term) {
-      $cards[] = hf_serialize_category_card($term);
+      $card = hf_serialize_category_card($term);
+      if ($card) {
+        $cards[] = $card;
+      }
     }
   }
 
