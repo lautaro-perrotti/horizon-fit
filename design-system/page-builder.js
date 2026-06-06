@@ -1399,18 +1399,31 @@ const PAGE_BUILDER = (() => {
     window.setTimeout(() => {
       const related = products.filter(item => item.slug !== product.slug);
 
-      // "Compralo con": productos que comparten alguna colección (conjunto) con
-      // el producto actual. Si el producto no tiene conjunto, no se muestra.
+      // "Compralo con":
+      //  1) productos RESTANTES del conjunto (colección) del producto actual.
+      //  2) si no tiene conjunto, productos de la misma categoría.
       const currentCollections = (product.collections || []).map(c => c.slug);
-      const buyWithItems = currentCollections.length
+      const currentCategories = (product.categories || [])
+        .map(c => c.slug)
+        .filter(slug => slug && slug !== 'uncategorized');
+
+      let buyWithItems = currentCollections.length
         ? related.filter(item => (item.collections || []).some(c => currentCollections.includes(c.slug)))
         : [];
+      if (!buyWithItems.length && currentCategories.length) {
+        buyWithItems = related.filter(item =>
+          (item.categories || []).some(c => currentCategories.includes(c.slug))
+        );
+      }
+
       const buyWithSection = $('[data-buy-with]');
       const buyWithGrid = $('[data-buy-with-grid]');
       if (buyWithSection && buyWithGrid) {
         if (buyWithItems.length) {
           buyWithGrid.innerHTML = buyWithItems.map(renderBuyWithCard).join('');
           buyWithSection.hidden = false;
+          // Cablear las flechas del slider sobre las cards recién inyectadas.
+          if (typeof window.initCarousels === 'function') window.initCarousels();
         } else {
           buyWithSection.hidden = true;
         }

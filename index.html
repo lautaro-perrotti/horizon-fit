@@ -2099,6 +2099,12 @@
         --hf-pdp-sep-w: 0.5px;
       }
 
+      /* Contención general: ningún bloque de la PDP debe superar el ancho de su
+         columna. Los carruseles internos (miniaturas, "Compralo con") usan su
+         propio overflow-x para el scroll. Evita desbordes a la derecha en
+         pantallas chicas (hasta 280px). */
+      .hf-pdp-view :where(div, section, p, h1, h2, ul, table) { min-width: 0; }
+
       @media (min-width: 1024px) {
         .hf-pdp-view {
           width: calc(100% - 128px);
@@ -2176,6 +2182,8 @@
         overflow-x: auto;
         padding-bottom: 4px;
         scrollbar-width: none;
+        min-width: 0;
+        max-width: 100%;
       }
 
       .hf-pdp-view__thumbs::-webkit-scrollbar {
@@ -2728,17 +2736,53 @@
         color: #111;
       }
 
-      .hf-buy-with__grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.9rem;
+      /* Slider del "Compralo con". El shell posiciona las flechas; el viewport
+         con overflow:hidden + min-width:0 CONTIENE el scroll para que nunca
+         expanda la columna de la PDP (eso rompía la foto principal en mobile). */
+      .hf-buy-with__shell {
+        position: relative;
+        min-width: 0;
+        max-width: 100%;
       }
 
+      .hf-buy-with__viewport {
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .hf-buy-with__grid {
+        display: flex;
+        gap: 0.6rem;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 4px;
+      }
+      .hf-buy-with__grid::-webkit-scrollbar { display: none; }
+
+      /* Cards de ancho fijo CHICO (no % del contenedor: eso las hacía gigantes
+         en columnas anchas). Siempre se ven varias chiquitas. */
       .hf-buy-with__card {
-        display: block;
+        flex: 0 0 128px;
+        scroll-snap-align: start;
         text-decoration: none;
         color: inherit;
       }
+
+      /* Flechas del slider, chicas, sobre la imagen. */
+      .hf-buy-with__shell .hf-carousel__nav {
+        position: absolute;
+        top: 38%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        z-index: 2;
+      }
+      .hf-buy-with__shell .hf-carousel__nav--prev { left: -6px; }
+      .hf-buy-with__shell .hf-carousel__nav--next { right: -6px; }
+      .hf-buy-with__shell .hf-carousel__nav svg { width: 15px; height: 15px; }
 
       .hf-buy-with__media {
         aspect-ratio: 4 / 5;
@@ -4490,6 +4534,9 @@
     setTimeout(initCarousels, 100);
     setTimeout(initCarousels, 300);
     setTimeout(initCarousels, 800);
+
+    // Exponer para re-cablear sliders inyectados async (ej. "Compralo con").
+    window.initCarousels = initCarousels;
   </script>
 </body>
 </html>

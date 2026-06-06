@@ -77,11 +77,22 @@
         </div>
       </div>
 
-      <!-- Compralo con: productos del mismo conjunto (en desktop queda en la
-           columna derecha, debajo de cuotas; en mobile, apilado) -->
+      <!-- Compralo con: slider horizontal con flechas (mismos botones que el
+           slider de productos). Cards de ancho fijo chico. El viewport con
+           overflow:hidden evita que el scroll expanda la columna de la PDP. -->
       <section class="hf-buy-with" data-buy-with hidden aria-label="Compralo con">
         <h2 class="hf-buy-with__title">Compralo con:</h2>
-        <div class="hf-buy-with__grid" data-buy-with-grid></div>
+        <div class="hf-buy-with__shell" data-grid-shell="buyWithGrid">
+          <div class="hf-buy-with__viewport">
+            <div class="hf-buy-with__grid hide-scrollbar" data-buy-with-grid></div>
+          </div>
+          <button class="hf-carousel__nav hf-carousel__nav--prev" type="button" data-dir="-1" aria-label="Anterior" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" /></svg>
+          </button>
+          <button class="hf-carousel__nav hf-carousel__nav--next" type="button" data-dir="1" aria-label="Siguiente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6" /></svg>
+          </button>
+        </div>
       </section>
     </section>
 
