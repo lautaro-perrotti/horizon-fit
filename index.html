@@ -2736,53 +2736,27 @@
         color: #111;
       }
 
-      /* Slider del "Compralo con". El shell posiciona las flechas; el viewport
-         con overflow:hidden + min-width:0 CONTIENE el scroll para que nunca
-         expanda la columna de la PDP (eso rompía la foto principal en mobile). */
+      /* "Compralo con": usa la MISMA estructura/botones que "Productos
+         destacados" (hf-product-scroll-shell + hf-product-grid--h-scroll).
+         min-width:0 contiene el scroll para que no expanda la columna PDP. */
       .hf-buy-with__shell {
-        position: relative;
         min-width: 0;
         max-width: 100%;
       }
 
-      .hf-buy-with__viewport {
-        min-width: 0;
-        max-width: 100%;
-        overflow: hidden;
-      }
-
-      .hf-buy-with__grid {
-        display: flex;
-        gap: 0.6rem;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding-bottom: 4px;
-      }
-      .hf-buy-with__grid::-webkit-scrollbar { display: none; }
-
-      /* Cards de ancho fijo CHICO (no % del contenedor: eso las hacía gigantes
-         en columnas anchas). Siempre se ven varias chiquitas. */
-      .hf-buy-with__card {
-        flex: 0 0 128px;
-        scroll-snap-align: start;
+      /* Cards. MOBILE: 2 visibles (como Productos destacados). */
+      .hf-buy-with__grid.hf-product-grid--h-scroll .hf-buy-with__card {
+        flex: 0 0 calc(50% - 0.3rem);
         text-decoration: none;
         color: inherit;
       }
 
-      /* Flechas del slider, chicas, sobre la imagen. */
-      .hf-buy-with__shell .hf-carousel__nav {
-        position: absolute;
-        top: 38%;
-        transform: translateY(-50%);
-        width: 30px;
-        height: 30px;
-        z-index: 2;
+      /* DESKTOP: 3 visibles en el espacio asignado de la columna derecha. */
+      @media (min-width: 1024px) {
+        .hf-buy-with__grid.hf-product-grid--h-scroll .hf-buy-with__card {
+          flex: 0 0 calc(33.333% - 0.4rem);
+        }
       }
-      .hf-buy-with__shell .hf-carousel__nav--prev { left: -6px; }
-      .hf-buy-with__shell .hf-carousel__nav--next { right: -6px; }
-      .hf-buy-with__shell .hf-carousel__nav svg { width: 15px; height: 15px; }
 
       .hf-buy-with__media {
         aspect-ratio: 4 / 5;
@@ -4434,7 +4408,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=trustbar-footer-20260604"></script>
+  <script src="/design-system/page-builder.js?v=buywith-slider-20260609b"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
