@@ -2743,6 +2743,22 @@
         max-width: 100%;
       }
 
+      /* El buy-with vive en una columna angosta, no es full-width como
+         Productos destacados: anulamos el padding-inline grande (56px) que
+         descolocaba las flechas, y dejamos un padding chico parejo. */
+      .hf-buy-with__shell.hf-product-scroll-shell > div,
+      .hf-buy-with__shell.hf-product-scroll-shell > div {
+        padding-inline: 28px !important;
+      }
+
+      /* Flechas: alinear al padding y centrar sobre la imagen (la card tiene
+         imagen + título/precio debajo; centramos en la imagen, no en el todo). */
+      .hf-buy-with__shell.hf-product-scroll-shell .hf-carousel__nav {
+        top: 38%;
+      }
+      .hf-buy-with__shell.hf-product-scroll-shell .hf-carousel__nav--prev { left: 0; }
+      .hf-buy-with__shell.hf-product-scroll-shell .hf-carousel__nav--next { right: 0; }
+
       /* Cards. MOBILE: 2 visibles (como Productos destacados). */
       .hf-buy-with__grid.hf-product-grid--h-scroll .hf-buy-with__card {
         flex: 0 0 calc(50% - 0.3rem);
@@ -4407,7 +4423,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=buywith-slider-20260609b"></script>
+  <script src="/design-system/page-builder.js?v=marquee-buywith-20260609c"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

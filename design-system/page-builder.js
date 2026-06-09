@@ -145,9 +145,11 @@ const PAGE_BUILDER = (() => {
         fetchText(COLLECTION_COMPONENT)
       ]) : null;
 
-      // Settings editables desde wp-admin (video del hero, etc). Se pide en
-      // paralelo; si WP no está disponible se usa la config de home.json.
-      const wpSettingsPromise = (productRoute || collectionRoute) ? Promise.resolve(new Map()) : fetchWpSectionSettings();
+      // Settings editables desde wp-admin (mensajes del marquee, footer, hero).
+      // Se piden SIEMPRE (también en producto/colección): el marquee y el footer
+      // son secciones comunes a todas las páginas y necesitan sus settings, sino
+      // quedan vacíos (el marquee no mostraba nada en la PDP).
+      const wpSettingsPromise = fetchWpSectionSettings();
 
       // Menú de la navbar (items + categorías), administrado desde wp-admin.
       // Se pide en paralelo; si falla, el menú queda vacío sin romper el resto.
