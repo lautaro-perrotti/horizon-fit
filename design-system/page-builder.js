@@ -308,6 +308,16 @@ const PAGE_BUILDER = (() => {
           const sectionEl = sectionElements.get(section.id);
           if (sectionEl) setupTrustBar(sectionEl, wpSettings.get('trust-bar'));
         }
+
+        if (!productRoute && !collectionRoute && section.type === 'style-edit') {
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) setupStyleEdit(sectionEl, wpSettings.get('style-edit'));
+        }
+
+        if (!productRoute && !collectionRoute && section.type === 'social-strip') {
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) setupSocialStrip(sectionEl, wpSettings.get('social-strip'));
+        }
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
 
@@ -469,6 +479,37 @@ const PAGE_BUILDER = (() => {
       });
     }
     if (typeof window.initTrustBar === 'function') window.initTrustBar();
+  };
+
+  // "Elegí tu estilo": cada tile (video + título + link) editable desde wp-admin.
+  const setupStyleEdit = (sectionEl, settings) => {
+    if (!settings || !Array.isArray(settings.tiles)) return;
+    settings.tiles.forEach((tile, i) => {
+      const titleEl = sectionEl.querySelector(`[data-style-title="${i}"]`);
+      const linkEl = sectionEl.querySelector(`[data-style-tile="${i}"]`);
+      const videoEl = sectionEl.querySelector(`[data-style-video="${i}"]`);
+      if (titleEl && tile?.title) titleEl.textContent = tile.title;
+      if (linkEl && tile?.link) linkEl.setAttribute('href', tile.link);
+      if (videoEl && tile?.video) {
+        const src = resolveMediaUrl(tile.video);
+        const source = videoEl.querySelector('source');
+        if (source) source.setAttribute('src', src); else videoEl.setAttribute('src', src);
+        videoEl.load();
+      }
+    });
+  };
+
+  // "#HorizonFit": cada post (imagen + usuario + link) editable desde wp-admin.
+  const setupSocialStrip = (sectionEl, settings) => {
+    if (!settings || !Array.isArray(settings.posts)) return;
+    settings.posts.forEach((post, i) => {
+      const imgEl = sectionEl.querySelector(`[data-social-img="${i}"]`);
+      const userEl = sectionEl.querySelector(`[data-social-user="${i}"]`);
+      const cardEl = sectionEl.querySelector(`[data-social-card="${i}"]`);
+      if (imgEl && post?.image) imgEl.setAttribute('src', resolveMediaUrl(post.image));
+      if (userEl && post?.user) userEl.textContent = post.user;
+      if (cardEl && post?.link) cardEl.setAttribute('href', post.link);
+    });
   };
 
   const setupHero = (sectionEl, config = {}) => {

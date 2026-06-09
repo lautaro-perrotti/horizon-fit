@@ -24,6 +24,8 @@ require_once HF_COMMERCE_DIR . 'includes/featured-products-cache.php';
 require_once HF_COMMERCE_DIR . 'includes/menu-items.php';
 require_once HF_COMMERCE_DIR . 'includes/footer-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/trust-settings.php';
+require_once HF_COMMERCE_DIR . 'includes/style-edit-settings.php';
+require_once HF_COMMERCE_DIR . 'includes/social-strip-settings.php';
 
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
@@ -117,7 +119,7 @@ function hf_commerce_admin_assets($hook) {
     if (($screen && in_array($screen->id, $taxonomy_screens, true)) || false !== strpos((string) $hook, 'hf-commerce')) {
         wp_enqueue_media();
         wp_enqueue_style('hf-commerce-admin', HF_COMMERCE_URL . 'assets/admin.css', array(), '1.0.0');
-        wp_enqueue_script('hf-commerce-admin', HF_COMMERCE_URL . 'assets/admin.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('hf-commerce-admin', HF_COMMERCE_URL . 'assets/admin.js', array('jquery'), '1.1.0', true);
     }
 }
 
@@ -165,6 +167,24 @@ function hf_commerce_register_admin_pages() {
         'manage_woocommerce',
         'hf-commerce-trust',
         'hf_commerce_render_trust_settings_page'
+    );
+
+    add_submenu_page(
+        'woocommerce',
+        __('Horizon Fit | Elegí tu estilo', 'horizon-fit-commerce'),
+        __('Elegí tu estilo', 'horizon-fit-commerce'),
+        'manage_woocommerce',
+        'hf-commerce-style-edit',
+        'hf_commerce_render_style_edit_settings_page'
+    );
+
+    add_submenu_page(
+        'woocommerce',
+        __('Horizon Fit | #HorizonFit', 'horizon-fit-commerce'),
+        __('#HorizonFit (redes)', 'horizon-fit-commerce'),
+        'manage_woocommerce',
+        'hf-commerce-social-strip',
+        'hf_commerce_render_social_strip_settings_page'
     );
 }
 
