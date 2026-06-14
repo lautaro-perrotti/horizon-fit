@@ -115,9 +115,99 @@ const PAGE_BUILDER = (() => {
   const COLLECTION_COMPONENT = '/design-system/components/sections/collection.html';
   const COLLECTION_DEFAULTS = { colsDesktop: 4, colsMobile: 2 };
 
+  const getCollectionSlugFromUrl = (url) => {
+    if (!url) return null;
+    try {
+      const parsed = new URL(url, window.location.origin);
+      const path = parsed.pathname.replace(/\/+$/, '');
+      const isCollectionPath = path === '/coleccion';
+      const isCollectionView = parsed.searchParams.get('view') === 'collection';
+      if (!isCollectionPath && !isCollectionView) return null;
+      return (parsed.searchParams.get('cat') || '').trim();
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const collectionHasProducts = async (slug) => {
+    if (!slug) return false;
+    try {
+      const products = await fetchJson(categoryCollectionSrc(slug));
+      return Array.isArray(products) && products.length > 0;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const filterValidCollectionLinks = async (items) => {
+    if (!Array.isArray(items)) return [];
+    const checked = await Promise.all(items.map(async item => {
+      const slug = getCollectionSlugFromUrl(item?.url || item?.link || '');
+      if (slug === null) return item;
+      return await collectionHasProducts(slug) ? item : null;
+    }));
+    return checked.filter(Boolean);
+  };
+
+  const redirectToHome = () => {
+    window.location.replace('/index.html');
+  };
+
   const productUrl = (product) => {
     const slug = product?.slug || '';
     return slug ? `/producto/?slug=${encodeURIComponent(slug)}` : '#';
+  };
+
+  const collectProducts = (source, map) => {
+    if (Array.isArray(source)) {
+      source.forEach(item => collectProducts(item, map));
+      return;
+    }
+
+    if (!source || typeof source !== 'object') return;
+
+    if (Array.isArray(source.products)) {
+      source.products.forEach(item => collectProducts(item, map));
+    }
+
+    if (source.id && source.slug && !map.has(source.slug)) {
+      map.set(source.slug, source);
+    }
+  };
+
+  const fetchProductCatalog = async (pageConfig = null) => {
+    const sources = new Set([
+      PRODUCT_DATA_SRC,
+      FEATURED_SETS_SRC
+    ]);
+
+    const configuredCollections = (pageConfig?.sections || [])
+      .filter(section => section?.type === 'featured-products' && section.config?.collection)
+      .map(section => section.config.collection);
+    configuredCollections.forEach(slug => sources.add(productCollectionSrc(slug)));
+
+    // Keep the PDP resilient even if home.json is stale or a row is renamed later.
+    ['featured-row-1', 'featured-row-2'].forEach(slug => sources.add(productCollectionSrc(slug)));
+
+    const featuredCategories = await fetchJson(FEATURED_CATEGORIES_SRC).catch(() => []);
+    if (Array.isArray(featuredCategories)) {
+      featuredCategories
+        .map(category => category?.slug)
+        .filter(Boolean)
+        .forEach(slug => sources.add(categoryCollectionSrc(slug)));
+    }
+
+    const productMap = new Map();
+    const datasets = await Promise.all(
+      Array.from(sources).map(src => fetchJson(src).catch(() => []))
+    );
+    datasets.forEach(dataset => collectProducts(dataset, productMap));
+
+    if (productMap.size === 0) {
+      collectProducts(await fetchJson(PRODUCT_DATA_FALLBACK_SRC).catch(() => []), productMap);
+    }
+
+    return Array.from(productMap.values());
   };
 
   const init = async () => {
@@ -131,16 +221,13 @@ const PAGE_BUILDER = (() => {
     try {
       const productRoute = isProductRoute();
       const collectionRoute = !productRoute && isCollectionRoute();
-      const productPageSourcesPromise = productRoute ? Promise.all([
-        fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
-        fetchText(PRODUCT_DETAIL_COMPONENT)
-      ]) : null;
+      const productPageTemplatePromise = productRoute ? fetchText(PRODUCT_DETAIL_COMPONENT) : null;
 
       // Página de colección: productos de la categoría + settings + componente.
       const collectionParams = new URLSearchParams(window.location.search);
       const collectionCat = collectionRoute ? (collectionParams.get('cat') || '') : '';
       const collectionPageSourcesPromise = collectionRoute ? Promise.all([
-        fetchJson(categoryCollectionSrc(collectionCat)).catch(() => []),
+        collectionCat ? fetchJson(categoryCollectionSrc(collectionCat)).catch(() => null) : Promise.resolve(null),
         fetchJson(COLLECTION_SETTINGS_SRC).catch(() => COLLECTION_DEFAULTS),
         fetchText(COLLECTION_COMPONENT)
       ]) : null;
@@ -249,7 +336,10 @@ const PAGE_BUILDER = (() => {
       let productPageProducts = null;
       let productPageTemplate = null;
       if (productRoute) {
-        [productPageProducts, productPageTemplate] = await productPageSourcesPromise;
+        [productPageProducts, productPageTemplate] = await Promise.all([
+          fetchProductCatalog(pageConfig),
+          productPageTemplatePromise
+        ]);
         await renderProductPage(root, productPageProducts, productPageTemplate);
       }
 
@@ -287,7 +377,7 @@ const PAGE_BUILDER = (() => {
         if (!productRoute && section.type === 'categorias') {
           const cats = dataMap.get(section.id) || [];
           const sectionEl = sectionElements.get(section.id);
-          if (sectionEl) renderCategories(sectionEl, cats);
+          if (sectionEl) await renderCategories(sectionEl, cats);
         }
 
         if (section.type === 'marquee') {
@@ -323,7 +413,7 @@ const PAGE_BUILDER = (() => {
 
       // Rellenar el menú de la navbar ANTES de cablear los drawers, así
       // initNavbarAndMenuDrawer toma los [data-menu-link] recién inyectados.
-      renderNavMenu(await menuPromise);
+      await renderNavMenu(await menuPromise);
 
       initNavbarAndMenuDrawer();
       initNavbarScroll();
@@ -577,8 +667,9 @@ const PAGE_BUILDER = (() => {
 
   // Rellena ambos menús de la navbar (desktop menu__grid y mobile
   // menu-drawer__nav) con los items administrados desde wp-admin (menu.json).
-  const renderNavMenu = (items) => {
+  const renderNavMenu = async (items) => {
     if (!Array.isArray(items)) items = [];
+    items = await filterValidCollectionLinks(items);
 
     const desktopGrid = document.querySelector('[data-menu-grid]');
     const mobileNav = document.querySelector('[data-menu-drawer-nav]');
@@ -1025,10 +1116,10 @@ const PAGE_BUILDER = (() => {
 
   // Renderiza el grid "Compra por categoría" con las categorías de wp-admin.
   // Si no hay categorías marcadas "Mostrar en home", oculta la sección.
-  const renderCategories = (sectionEl, cats) => {
+  const renderCategories = async (sectionEl, cats) => {
     const grid = sectionEl.querySelector('[data-categories-grid]');
     if (!grid) return;
-    const visibleCats = getVisibleCategories(cats);
+    const visibleCats = await filterValidCollectionLinks(getVisibleCategories(cats));
     if (visibleCats.length === 0) {
       sectionEl.style.display = 'none';
       return;
@@ -1042,6 +1133,15 @@ const PAGE_BUILDER = (() => {
   // productos de la categoría (sin paginación). Columnas configurables desde
   // wp-admin.
   const renderCollectionPage = (root, cat, products, settings, html) => {
+    const list = Array.isArray(products) ? products : [];
+    const normalizedCat = `${cat || ''}`.trim().toLowerCase();
+
+    if (!normalizedCat || list.length === 0) {
+      console.warn(`[HF PB] Collection not available: ${cat || '(missing cat)'}`);
+      redirectToHome();
+      return;
+    }
+
     const wrapper = document.createElement('div');
     wrapper.innerHTML = html;
     const sectionEl = wrapper.firstElementChild;
@@ -1055,9 +1155,6 @@ const PAGE_BUILDER = (() => {
       colsDesktop: settings?.colsDesktop || COLLECTION_DEFAULTS.colsDesktop,
       colsMobile: settings?.colsMobile || COLLECTION_DEFAULTS.colsMobile
     };
-
-    const list = Array.isArray(products) ? products : [];
-    const normalizedCat = `${cat || ''}`.toLowerCase();
 
     // Título: nombre legible de la categoría (de los productos) o slug capitalizado.
     const catName = normalizedCat === DEFAULT_CATEGORY_SLUG
@@ -1080,16 +1177,19 @@ const PAGE_BUILDER = (() => {
   const renderProductPage = async (root, products, html) => {
     if (!products || !html) {
       [products, html] = await Promise.all([
-        fetchJson(PRODUCT_DATA_SRC).catch(async () => fetchJson(PRODUCT_DATA_FALLBACK_SRC)),
+        fetchProductCatalog(),
         fetchText(PRODUCT_DETAIL_COMPONENT)
       ]);
     }
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('slug') || params.get('product');
-    const product = products.find(item => productMatchesSlug(item, slug)) || products[0];
-    if (slug && product && !productMatchesSlug(product, slug)) {
-      console.warn(`[HF PB] Product slug not found: ${slug}. Rendering first product.`);
+    const list = Array.isArray(products) ? products : [];
+    const product = slug ? list.find(item => productMatchesSlug(item, slug)) : list[0];
+    if (slug && !product) {
+      console.warn(`[HF PB] Product slug not found: ${slug}`);
+      redirectToHome();
+      return;
     }
 
     const wrapper = document.createElement('div');
