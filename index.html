@@ -187,6 +187,40 @@
       overflow-x: hidden;
     }
 
+    html:not([data-page-builder-ready]) #hfPageBuilderRoot,
+    html:not([data-page-builder-ready]) .footer {
+      visibility: hidden;
+    }
+
+    html:not([data-page-builder-ready]) body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2147483000;
+      background: var(--surface);
+    }
+
+    html:not([data-page-builder-ready]) body::after {
+      content: "";
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 2147483001;
+      width: 34px;
+      height: 34px;
+      margin: -17px 0 0 -17px;
+      border: 2px solid rgba(53, 0, 109, .16);
+      border-top-color: var(--hf-primary);
+      border-radius: 999px;
+      animation: hf-page-loading-spin .75s linear infinite;
+    }
+
+    @keyframes hf-page-loading-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     body {
       margin: 0;
       font-family: var(--font-sans);
@@ -4423,7 +4457,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=product-catalog-20260613"></script>
+  <script src="/design-system/page-builder.js?v=loading-order-20260614"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

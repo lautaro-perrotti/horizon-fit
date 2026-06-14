@@ -294,6 +294,7 @@ const PAGE_BUILDER = (() => {
       // Render sections in order
       const t2 = performance.now();
       const sectionElements = new Map();
+      let pendingFooterEl = null;
       for (const section of sections) {
         const componentHtml = componentMap.get(section.id);
         if (!componentHtml) continue;
@@ -317,7 +318,7 @@ const PAGE_BUILDER = (() => {
         } else if (section.type === 'footer') {
           // El footer va SIEMPRE al final del body (después del contenido de la
           // página, que en producto/colección se agrega luego del loop).
-          document.body.appendChild(sectionEl);
+          pendingFooterEl = sectionEl;
         } else {
           root.appendChild(sectionEl);
         }
@@ -346,6 +347,10 @@ const PAGE_BUILDER = (() => {
       if (collectionRoute) {
         const [products, settings, html] = await collectionPageSourcesPromise;
         renderCollectionPage(root, collectionCat, products, settings, html);
+      }
+
+      if (pendingFooterEl && !pendingFooterEl.isConnected) {
+        document.body.appendChild(pendingFooterEl);
       }
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
@@ -422,6 +427,7 @@ const PAGE_BUILDER = (() => {
       document.documentElement.dataset.pageBuilderReady = 'true';
     } catch (e) {
       console.error('Page builder error:', e);
+      document.documentElement.dataset.pageBuilderReady = 'error';
     }
   };
 
