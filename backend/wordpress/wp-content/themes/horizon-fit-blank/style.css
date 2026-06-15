@@ -2,7 +2,7 @@
 Theme Name: Horizon Fit Blank
 Theme URI: https://horizon-fit.local
 Description: Minimal theme - frontend served by index.html
-Version: 1.0.0
+Version: 1.0.1
 Author: Horizon Fit
 Text Domain: horizon-fit-blank
 Domain Path: /languages
@@ -16,4 +16,115 @@ html, body {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1d1a1f;
+}
+
+.hf-wp-header {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 0;
+}
+
+.hf-wp-brand {
+  color: #35006d;
+  font-weight: 900;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.hf-wp-main {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 0 64px;
+}
+
+.hf-wp-title {
+  margin: 0 0 24px;
+  color: #1d1a1f;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: .95;
+  text-transform: uppercase;
+}
+
+a {
+  color: #35006d;
+}
+
+.woocommerce,
+.woocommerce-page main,
+.woocommerce-page .site-main {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.woocommerce h1,
+.woocommerce h2,
+.woocommerce h3 {
+  color: #1d1a1f;
+  letter-spacing: 0;
+}
+
+.woocommerce form.checkout,
+.woocommerce-account .woocommerce {
+  background: #fff;
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select,
+.woocommerce .select2-container .select2-selection--single {
+  min-height: 46px;
+  border: 1px solid #ded8e8;
+  border-radius: 0;
+  background: #fff;
+  padding: 10px 12px;
+  color: #1d1a1f;
+}
+
+.woocommerce .button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce a.button {
+  border: 1px solid #35006d;
+  border-radius: 0;
+  background: #35006d;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 14px 22px;
+}
+
+.woocommerce .button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce a.button:hover {
+  background: #26004f;
+  color: #fff;
+}
+
+.woocommerce table.shop_table {
+  border: 1px solid #ded8e8;
+  border-radius: 0;
+}
+
+.woocommerce table.shop_table th,
+.woocommerce table.shop_table td {
+  border-top-color: #ded8e8;
+}
+
+.woocommerce-info,
+.woocommerce-message,
+.woocommerce-error {
+  border-top-color: #35006d;
+  background: #faf8ff;
+  color: #1d1a1f;
+}
+
+.wc-block-components-checkout-return-to-cart-button {
+  display: none !important;
 }

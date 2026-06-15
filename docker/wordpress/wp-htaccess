@@ -13,7 +13,7 @@
   RewriteRule ^ - [L]
 
   # Horizon Fit: block temporary routes before WordPress routing
-  RewriteRule ^(cart|checkout|diplomatura|curso|modulo/asesoramiento-de-imagen)(/.*)?$ - [F,L]
+  RewriteRule ^(cart|diplomatura|curso|modulo/asesoramiento-de-imagen)(/.*)?$ - [F,L]
 
   # REST API: /wp-json/* routes to index.php for WordPress to handle
   RewriteCond %{REQUEST_URI} ^/wp-json(/|$)

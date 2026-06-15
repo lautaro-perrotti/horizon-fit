@@ -71,8 +71,11 @@ function hf_featured_products_cache_path() {
 function hf_featured_products_ensure_cors($cache_dir) {
   $htaccess = $cache_dir . '/.htaccess';
   $rules = "<IfModule mod_headers.c>\n"
-    . "  Header set Access-Control-Allow-Origin \"*\"\n"
+    . "  SetEnvIfNoCase Origin \"^https?://(.+)$\" HF_ORIGIN=\$0\n"
+    . "  Header set Access-Control-Allow-Origin \"%{HF_ORIGIN}e\" env=HF_ORIGIN\n"
+    . "  Header set Vary \"Origin\"\n"
     . "  Header set Access-Control-Allow-Methods \"GET, OPTIONS\"\n"
+    . "  Header set Access-Control-Allow-Headers \"Content-Type, Authorization, Nonce, Cart-Token, X-WP-Nonce\"\n"
     . "  Header set Cache-Control \"public, max-age=300\"\n"
     . "</IfModule>\n";
   if (!file_exists($htaccess) || file_get_contents($htaccess) !== $rules) {

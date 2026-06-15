@@ -1372,6 +1372,179 @@
       border-top: 1px solid var(--border);
     }
 
+    .hf-cart-list {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .hf-cart-item {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hf-cart-item__media {
+      aspect-ratio: 3 / 4;
+      background: var(--surface-2);
+      overflow: hidden;
+      display: block;
+    }
+
+    .hf-cart-item__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hf-cart-item__body {
+      min-width: 0;
+      display: grid;
+      align-content: start;
+      gap: 7px;
+    }
+
+    .hf-cart-item__title {
+      color: var(--text);
+      font-weight: 850;
+      line-height: 1.25;
+      text-decoration: none;
+    }
+
+    .hf-cart-item__meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .hf-cart-item__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hf-cart-item__qty {
+      display: inline-grid;
+      grid-template-columns: 30px 34px 30px;
+      align-items: center;
+      border: 1px solid var(--border);
+      min-height: 32px;
+    }
+
+    .hf-cart-item__qty button {
+      width: 30px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      color: var(--hf-primary);
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .hf-cart-item__qty span {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .hf-cart-item__remove {
+      justify-self: start;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .hf-cart-coupons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hf-cart-coupons button {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .hf-cart-coupons span {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hf-search-state {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 10px 0;
+    }
+
+    .hf-search-results {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hf-search-result {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      text-decoration: none;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hf-search-result__media {
+      aspect-ratio: 1;
+      background: var(--surface-2);
+      overflow: hidden;
+      display: block;
+    }
+
+    .hf-search-result__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hf-search-result__body {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .hf-search-result__body strong,
+    .hf-search-result__body small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hf-search-result__body small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .hf-search-result__price {
+      color: var(--hf-primary);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
     .drawer--left .drawer__panel {
       left: 0;
       right: auto;
@@ -4457,7 +4630,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=loading-order-20260614"></script>
+  <script src="/design-system/page-builder.js?v=commerce-checkout-sync4-20260615"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

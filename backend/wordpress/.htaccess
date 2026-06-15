@@ -5,7 +5,7 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 
 # Horizon Fit: block temporary routes before WordPress boots
-RewriteRule ^(cart|checkout|diplomatura|curso)(/.*)?$ - [F,L]
+RewriteRule ^(cart|diplomatura|curso)(/.*)?$ - [F,L]
 
 # Horizon Fit: redirect root to wp-admin
 RewriteCond %{REQUEST_FILENAME} !-f

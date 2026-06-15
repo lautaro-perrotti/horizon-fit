@@ -34,16 +34,137 @@ add_action('save_post_product', 'hf_regenerate_featured_products_cache');
 // Este filter intercepta la validación de permisos de WooCommerce
 add_filter('rest_authentication_errors', '__return_true', 0);
 
-// Agregar headers CORS para permitir acceso desde frontend
-add_action('rest_api_init', function() {
-    add_filter('rest_pre_serve_request', function($served) {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
-        return $served;
-    });
-}, 15);
+add_filter('allowed_http_origin', function($allowed_origin, $origin) {
+    if (! $origin) {
+        return $allowed_origin;
+    }
 
+    $host = wp_parse_url($origin, PHP_URL_HOST);
+    $port = wp_parse_url($origin, PHP_URL_PORT);
+    if (in_array($host, array('localhost', '127.0.0.1'), true) && in_array((string) $port, array('8088', '8089'), true)) {
+        return $origin;
+    }
+
+    $server_host = isset($_SERVER['HTTP_HOST']) ? explode(':', sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])))[0] : '';
+    if ($server_host && $host === $server_host) {
+        return $origin;
+    }
+
+    return $allowed_origin;
+}, 10, 2);
+
+add_filter('rest_allowed_cors_headers', function($headers) {
+    return array_values(array_unique(array_merge($headers, array(
+        'Content-Type',
+        'Authorization',
+        'Nonce',
+        'Cart-Token',
+        'X-WP-Nonce',
+    ))));
+});
+
+add_filter('rest_exposed_cors_headers', function($headers) {
+    return array_values(array_unique(array_merge($headers, array(
+        'Nonce',
+        'Nonce-Timestamp',
+        'User-ID',
+        'Cart-Token',
+        'Cart-Hash',
+    ))));
+});
+
+add_action('rest_api_init', function() {
+    register_rest_route('hf/v1', '/checkout/sync', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'hf_commerce_sync_checkout_cart',
+        'permission_callback' => '__return_true',
+    ));
+});
+
+function hf_commerce_sync_checkout_cart(WP_REST_Request $request) {
+    if (! function_exists('WC')) {
+        return new WP_Error('hf_woocommerce_unavailable', __('WooCommerce is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
+    }
+
+    if (function_exists('wc_load_cart')) {
+        wc_load_cart();
+    }
+
+    if (! WC()->cart) {
+        return new WP_Error('hf_cart_unavailable', __('Cart is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
+    }
+
+    $items = $request->get_param('items');
+    if (! is_array($items) || empty($items)) {
+        return new WP_Error('hf_empty_cart', __('No cart items received.', 'horizon-fit-commerce'), array('status' => 400));
+    }
+
+    WC()->cart->empty_cart(true);
+
+    foreach ($items as $item) {
+        $item_id = isset($item['id']) ? absint($item['id']) : 0;
+        $quantity = isset($item['quantity']) ? wc_stock_amount($item['quantity']) : 1;
+        if (! $item_id || $quantity <= 0) {
+            continue;
+        }
+
+        $product = wc_get_product($item_id);
+        if (! $product) {
+            continue;
+        }
+
+        $product_id = $product->is_type('variation') ? $product->get_parent_id() : $item_id;
+        $variation_id = $product->is_type('variation') ? $item_id : 0;
+        $variation = array();
+
+        $raw_variation = isset($item['variation']) && is_array($item['variation']) ? $item['variation'] : array();
+        foreach ($raw_variation as $attribute) {
+            if (! is_array($attribute)) {
+                continue;
+            }
+            $name = isset($attribute['attribute']) ? sanitize_title(wp_unslash($attribute['attribute'])) : '';
+            $value = isset($attribute['value']) ? wc_clean(wp_unslash($attribute['value'])) : '';
+            if (! $name || '' === $value) {
+                continue;
+            }
+            $key = 0 === strpos($name, 'attribute_') ? $name : 'attribute_' . $name;
+            $variation[$key] = $value;
+        }
+
+        if (! $variation_id && $product->is_type('variable') && ! empty($variation)) {
+            $data_store = WC_Data_Store::load('product');
+            $variation_id = $data_store->find_matching_product_variation($product, $variation);
+        }
+
+        WC()->cart->add_to_cart($product_id, $quantity, $variation_id, $variation);
+    }
+
+    $coupons = $request->get_param('coupons');
+    if (is_array($coupons)) {
+        foreach ($coupons as $coupon_code) {
+            if (! is_scalar($coupon_code)) {
+                continue;
+            }
+            $coupon_code = wc_format_coupon_code(wc_clean(wp_unslash($coupon_code)));
+            if ($coupon_code) {
+                WC()->cart->apply_coupon($coupon_code);
+            }
+        }
+    }
+
+    WC()->cart->calculate_totals();
+    if (WC()->session && method_exists(WC()->session, 'set_customer_session_cookie')) {
+        WC()->session->set_customer_session_cookie(true);
+    }
+
+    return rest_ensure_response(array(
+        'checkoutUrl' => wc_get_checkout_url(),
+        'itemsCount'  => WC()->cart->get_cart_contents_count(),
+        'cartHash'    => WC()->cart->get_cart_hash(),
+    ));
+}
+
+// Agregar headers CORS para permitir acceso desde frontend
 // Crear usuario anónimo con capacidades de lectura para REST
 add_action('init', function() {
     if (defined('REST_REQUEST') && REST_REQUEST && !is_user_logged_in()) {
