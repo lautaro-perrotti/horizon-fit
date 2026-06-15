@@ -219,7 +219,7 @@ const PAGE_BUILDER = (() => {
       collectProducts(await fetchJson(PRODUCT_DATA_FALLBACK_SRC).catch(() => []), productMap);
     }
 
-    return Array.from(productMap.values());
+    return filterVisibleProducts(Array.from(productMap.values()));
   };
 
   const init = async () => {
@@ -455,6 +455,7 @@ const PAGE_BUILDER = (() => {
   const fillProductCard = (template, product, options = {}) => {
     const { showSizes = true } = options;
     const clone = template.content.cloneNode(true);
+    const availability = getVisibleProductAvailability(product);
 
     const link = clone.querySelector('.hf-product-item__link');
     if (link) link.href = productUrl(product);
@@ -463,13 +464,19 @@ const PAGE_BUILDER = (() => {
     if (title) title.textContent = product.name || '';
 
     const price = clone.querySelector('.hf-product-item__price');
-    if (price) price.textContent = product.priceText || '';
+    if (price) price.textContent = availability.priceText || '';
+
+    const priceRow = clone.querySelector('.hf-product-item__price-row');
+    if (priceRow) priceRow.hidden = !availability.priceText;
 
     const priceOrig = clone.querySelector('.hf-product-item__price-original');
-    if (priceOrig) priceOrig.textContent = product.priceOriginal || '';
+    if (priceOrig) {
+      priceOrig.textContent = availability.compareText || '';
+      priceOrig.hidden = !availability.compareText;
+    }
 
     const badge = clone.querySelector('.hf-product-item__badge');
-    if (badge) badge.textContent = product.badge || '';
+    if (badge) badge.textContent = availability.badge || '';
 
     const images = product.imageObjects || product.images || [];
     const imgElements = clone.querySelectorAll('.hf-product-item__slide img');
@@ -488,13 +495,20 @@ const PAGE_BUILDER = (() => {
       sizesEl.innerHTML = product.sizes.map(s => '<span>' + s + '</span>').join('');
     }
 
+    const installments = clone.querySelector('.hf-product-item__installments');
+    if (installments) installments.textContent = availability.canPurchase ? (product.installmentsText || '') : availability.label || '';
+
+    const transfer = clone.querySelector('.hf-product-item__transfer');
+    if (transfer) transfer.textContent = product.transferText || '';
+
     return clone;
   };
 
   const renderFeaturedProducts = async (sectionEl, section, products) => {
     try {
       const limit = Number(section.config?.limit || 0);
-      const visibleProducts = limit > 0 ? products.slice(0, limit) : products;
+      const sourceProducts = filterVisibleProducts(products);
+      const visibleProducts = limit > 0 ? sourceProducts.slice(0, limit) : sourceProducts;
 
       const grid = sectionEl.querySelector('[data-products-slot]') || sectionEl.querySelector('[data-products-grid]');
       if (!grid) return;
@@ -1058,12 +1072,153 @@ const PAGE_BUILDER = (() => {
     return textarea.value;
   };
 
+  const plainTextFromHtml = (value) => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = decodeEntities(value);
+    return wrapper.textContent || wrapper.innerText || '';
+  };
+
   const normalizeSearchText = (value) => decodeEntities(value)
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim();
+
+  const normalizeStatus = (value, fallback = 'publish') => {
+    const status = `${value ?? fallback}`.trim().toLowerCase();
+    return status || fallback;
+  };
+
+  const normalizeStockStatus = (value) => {
+    const status = `${value ?? ''}`.trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+    if (!status) return '';
+    if (['outofstock', 'soldout', 'agotado'].includes(status)) return 'outofstock';
+    if (['instock', 'available', 'disponible'].includes(status)) return 'instock';
+    if (['onbackorder', 'backorder'].includes(status)) return 'onbackorder';
+    return status;
+  };
+
+  const hasPositiveNumber = (value) => {
+    if (value === null || value === undefined || value === '') return false;
+    const num = Number(value);
+    return Number.isFinite(num) && num > 0;
+  };
+
+  const getProductStatus = (product) => normalizeStatus(product?.status || product?.post_status || product?.postStatus, 'publish');
+
+  const getProductStockStatus = (product) => normalizeStockStatus(
+    product?.stockStatus
+    || product?.stock_status
+    || product?.stockAvailability?.class
+    || product?.stock_availability?.class
+    || product?.stock_availability?.text
+  );
+
+  const getProductPriceValue = (product) => {
+    const candidates = [
+      product?.price,
+      product?.prices?.price,
+      product?.regularPrice,
+      product?.salePrice,
+      product?.price_amount,
+      product?.priceAmount
+    ];
+
+    for (const candidate of candidates) {
+      if (hasPositiveNumber(candidate)) return Number(candidate);
+    }
+
+    return null;
+  };
+
+  const getProductDisplayPriceText = (product) => {
+    const text = plainTextFromHtml(product?.priceText || product?.price_html || '').trim();
+    if (text) return text;
+    if (product?.prices && hasPositiveNumber(product?.prices?.price)) {
+      return formatStoreMoney(product.prices.price, product.prices);
+    }
+    return '';
+  };
+
+  const getProductCompareText = (product) => {
+    const text = plainTextFromHtml(product?.priceOriginal || product?.regularPriceText || '').trim();
+    if (text) return text;
+    if (product?.prices && hasPositiveNumber(product?.prices?.regular_price)) {
+      return formatStoreMoney(product.prices.regular_price, product.prices);
+    }
+    return '';
+  };
+
+  const getVisibleProductAvailability = (product) => {
+    if (!product || typeof product !== 'object') {
+      return {
+        status: 'draft',
+        stockStatus: '',
+        priceValue: null,
+        hasPrice: false,
+        priceText: '',
+        compareText: '',
+        isVisible: false,
+        canPurchase: false,
+        label: '',
+        badge: ''
+      };
+    }
+    const status = getProductStatus(product);
+    const stockStatus = getProductStockStatus(product);
+    const priceValue = getProductPriceValue(product);
+    const hasPrice = Number.isFinite(priceValue) && priceValue > 0;
+    const isVisible = status === 'publish';
+    const canPurchase = isVisible && hasPrice && stockStatus !== 'outofstock';
+    return {
+      status,
+      stockStatus,
+      priceValue,
+      hasPrice,
+      priceText: hasPrice ? getProductDisplayPriceText(product) : '',
+      compareText: hasPrice ? getProductCompareText(product) : '',
+      isVisible,
+      canPurchase,
+      label: !isVisible ? '' : stockStatus === 'outofstock' ? 'Agotado' : !hasPrice ? 'Sin precio' : 'Disponible',
+      badge: !isVisible ? '' : stockStatus === 'outofstock' ? 'Agotado' : !hasPrice ? 'Sin precio' : `${product?.badge || ''}`.trim()
+    };
+  };
+
+  const getSelectedProductAvailability = (product, variation = null) => {
+    if (!product || typeof product !== 'object') {
+      return {
+        status: 'draft',
+        stockStatus: '',
+        priceValue: null,
+        hasPrice: false,
+        priceText: '',
+        compareText: '',
+        canPurchase: false,
+        label: ''
+      };
+    }
+    const status = getProductStatus(product);
+    const stockStatus = getProductStockStatus(variation || product);
+    const priceValue = getProductPriceValue(variation || product);
+    const hasPrice = Number.isFinite(priceValue) && priceValue > 0;
+    const isVariableProduct = Array.isArray(product?.variations) && product.variations.length > 0;
+    const canPurchase = status === 'publish' && hasPrice && stockStatus !== 'outofstock' && (!isVariableProduct || Boolean(variation));
+    return {
+      status,
+      stockStatus,
+      priceValue,
+      hasPrice,
+      priceText: hasPrice ? `${variation?.priceText || variation?.price_html || product?.priceText || product?.price_html || ''}`.trim() : '',
+      compareText: hasPrice ? `${variation?.priceOriginal || variation?.regularPriceText || variation?.salePriceText || ''}`.trim() : '',
+      canPurchase,
+      label: status !== 'publish' ? '' : !Boolean(variation) && isVariableProduct ? 'Elegi una variante' : stockStatus === 'outofstock' ? 'Agotado' : !hasPrice ? 'Sin precio' : 'Disponible'
+    };
+  };
+
+  const filterVisibleProducts = (items) => Array.isArray(items)
+    ? items.filter(product => product && typeof product === 'object' && getVisibleProductAvailability(product).isVisible)
+    : [];
 
   const commerceState = {
     cart: null,
@@ -1306,19 +1461,37 @@ const PAGE_BUILDER = (() => {
     return Promise.race([sync, fallback]);
   };
 
-  const storeProductToSearchItem = (item) => ({
-    id: item?.id,
-    slug: item?.slug,
-    name: decodeEntities(item?.name || ''),
-    priceText: decodeEntities(item?.price_html || '') || formatStoreMoney(item?.prices?.price || 0, item?.prices || {}),
-    categories: item?.categories || [],
-    images: (item?.images || []).map(image => image?.thumbnail || image?.src).filter(Boolean),
-    imageObjects: (item?.images || []).map(image => ({
-      url: image?.thumbnail || image?.src || '',
-      large: image?.src || image?.thumbnail || '',
-      alt: image?.alt || item?.name || ''
-    }))
-  });
+  const storeProductToSearchItem = (item) => {
+    const priceValue = hasPositiveNumber(item?.prices?.price) ? Number(item.prices.price) : null;
+    const regularPriceValue = hasPositiveNumber(item?.prices?.regular_price) ? Number(item.prices.regular_price) : null;
+    const salePriceValue = hasPositiveNumber(item?.prices?.sale_price) ? Number(item.prices.sale_price) : null;
+    const priceText = plainTextFromHtml(item?.price_html || '') || (priceValue ? formatStoreMoney(priceValue, item?.prices || {}) : '');
+    const regularPriceText = regularPriceValue ? formatStoreMoney(regularPriceValue, item?.prices || {}) : '';
+    const salePriceText = salePriceValue ? formatStoreMoney(salePriceValue, item?.prices || {}) : '';
+    return {
+      id: item?.id,
+      slug: item?.slug,
+      name: decodeEntities(item?.name || ''),
+      status: item?.status || 'publish',
+      stockStatus: normalizeStockStatus(item?.stock_status || item?.stock_availability?.class || item?.stock_availability?.text),
+      price: priceValue,
+      regularPrice: regularPriceValue,
+      salePrice: salePriceValue,
+      priceText,
+      priceOriginal: regularPriceText && regularPriceText !== priceText ? regularPriceText : '',
+      regularPriceText,
+      salePriceText,
+      categories: item?.categories || [],
+      hasOptions: Boolean(item?.has_options),
+      isPurchasable: item?.is_purchasable !== false,
+      images: (item?.images || []).map(image => image?.thumbnail || image?.src).filter(Boolean),
+      imageObjects: (item?.images || []).map(image => ({
+        url: image?.thumbnail || image?.src || '',
+        large: image?.src || image?.thumbnail || '',
+        alt: image?.alt || item?.name || ''
+      }))
+    };
+  };
 
   const productSearchHaystack = (product) => normalizeSearchText([
     product?.name,
@@ -1351,9 +1524,15 @@ const PAGE_BUILDER = (() => {
       target.innerHTML = '<div class="hf-search-state">No encontramos productos para esa busqueda.</div>';
       return;
     }
+    const visibleResults = filterVisibleProducts(results);
+    if (!visibleResults.length) {
+      target.innerHTML = '<div class="hf-search-state">No encontramos productos para esa busqueda.</div>';
+      return;
+    }
     target.innerHTML = `
       <div class="hf-search-results">
-        ${results.map(product => {
+        ${visibleResults.map(product => {
+          const availability = getVisibleProductAvailability(product);
           const image = getProductImages(product)[0]?.url || '';
           const category = getVisibleCategories(product.categories).map(item => item.name).filter(Boolean)[0] || '';
           return `
@@ -1362,8 +1541,9 @@ const PAGE_BUILDER = (() => {
               <span class="hf-search-result__body">
                 <strong>${escapeHtml(decodeEntities(product.name || 'Producto'))}</strong>
                 ${category ? `<small>${escapeHtml(decodeEntities(category))}</small>` : ''}
+                ${!availability.canPurchase && availability.label ? `<small>${escapeHtml(decodeEntities(availability.label))}</small>` : ''}
               </span>
-              <span class="hf-search-result__price">${escapeHtml(decodeEntities(product.priceText || ''))}</span>
+              ${availability.priceText ? `<span class="hf-search-result__price">${escapeHtml(decodeEntities(availability.priceText))}</span>` : ''}
             </a>`;
         }).join('')}
       </div>`;
@@ -1719,7 +1899,7 @@ const PAGE_BUILDER = (() => {
   // productos de la categoría (sin paginación). Columnas configurables desde
   // wp-admin.
   const renderCollectionPage = (root, cat, products, settings, html) => {
-    const list = Array.isArray(products) ? products : [];
+    const list = filterVisibleProducts(products);
     const normalizedCat = `${cat || ''}`.trim().toLowerCase();
 
     if (!normalizedCat || list.length === 0) {
@@ -1770,7 +1950,7 @@ const PAGE_BUILDER = (() => {
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('slug') || params.get('product');
-    const list = Array.isArray(products) ? products : [];
+    const list = filterVisibleProducts(products);
     const product = slug ? list.find(item => productMatchesSlug(item, slug)) : list[0];
     if (slug && !product) {
       console.warn(`[HF PB] Product slug not found: ${slug}`);
@@ -1802,9 +1982,6 @@ const PAGE_BUILDER = (() => {
 
     document.title = `${product.name || 'Producto'} | Horizon Fit`;
     setText('.hf-pdp-view__title', product.name || '');
-    setText('.hf-pdp-view__price', product.priceText || product.regularPriceText || '');
-    setText('.hf-pdp-view__compare', product.priceOriginal || '');
-    setText('[data-product-installments]', product.stockStatus === 'instock' ? 'Disponible' : 'Sin stock');
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
     const descriptionTitle = $('[data-product-description-title]');
@@ -1875,25 +2052,123 @@ const PAGE_BUILDER = (() => {
     const sizesSlot = $('.hf-pdp-view__sizes');
     const sizeLabel = $('[data-product-size-label]');
     const sizeButtons = $$('.hf-pdp-view__size', sizesSlot || sectionEl);
-    let selectedSize = sizes[0] || '';
+    const currentColor = (() => {
+      const colorAttr = product?.attributes?.find(item => `${item.label || item.name || ''}`.toLowerCase().includes('color'));
+      const value = colorAttr?.values?.[0];
+      return value?.name || value?.slug || '';
+    })();
+    const variationSizeValue = (variation) => `${variation?.attributes?.talle || variation?.attributes?.size || ''}`.trim();
+    const getInitialSelectedVariation = () => {
+      if (!Array.isArray(product?.variations) || !product.variations.length) {
+        return null;
+      }
+      return product.variations.find(variation => getSelectedProductAvailability(product, variation).canPurchase)
+        || product.variations[0]
+        || null;
+    };
+    let selectedSize = variationSizeValue(getInitialSelectedVariation()) || sizes[0] || '';
+    if (sizes.length && !sizes.some(size => `${size}`.trim() === selectedSize)) {
+      selectedSize = sizes[0] || selectedSize;
+    }
+    const priceRow = $('.hf-pdp-view__price-row');
+    const pricingEl = $('.hf-pdp-view__pricing');
+    const availabilityEl = $('[data-product-installments]');
+    const actionsEl = $('.hf-pdp-view__actions');
+    const addToCartButton = $('[data-product-add-to-cart]') || $('.hf-pdp-view__button--primary');
+    const buyNowButton = $('[data-product-buy-now]');
+
+    const findVariationForSelection = () => {
+      if (!Array.isArray(product?.variations) || !product.variations.length) {
+        return null;
+      }
+
+      const normalizedSize = `${selectedSize || ''}`.trim();
+      const normalizedColor = `${currentColor || ''}`.trim();
+
+      return product.variations.find(variation => {
+        const attrs = variation?.attributes || {};
+        const sizeMatch = normalizedSize ? `${attrs.talle || attrs.size || ''}` === normalizedSize : true;
+        const colorMatch = normalizedColor ? `${attrs.color || ''}` === normalizedColor : true;
+        return sizeMatch && colorMatch;
+      }) || null;
+    };
+
+    const updatePurchaseState = (variation = null) => {
+      const state = getSelectedProductAvailability(product, variation);
+      setText('.hf-pdp-view__price', state.priceText || '');
+      setText('.hf-pdp-view__compare', state.compareText || '');
+      if (priceRow) priceRow.hidden = !state.priceText && !state.compareText;
+      if (pricingEl) pricingEl.dataset.stockStatus = state.stockStatus || '';
+      if (availabilityEl) availabilityEl.textContent = state.label || '';
+      if (actionsEl) actionsEl.hidden = !state.canPurchase;
+      [addToCartButton, buyNowButton].filter(Boolean).forEach(button => {
+        button.disabled = !state.canPurchase;
+        button.setAttribute('aria-disabled', state.canPurchase ? 'false' : 'true');
+      });
+      return state;
+    };
+
+    const buildStoreVariationPayload = (variation) => {
+      const attrs = variation?.attributes || {};
+      return Object.keys(attrs).map(key => ({
+        attribute: key,
+        value: attrs[key]
+      }));
+    };
+
+    const addSelectedProductToCart = async ({ goCheckout = false } = {}) => {
+      const variation = findVariationForSelection();
+      const state = updatePurchaseState(variation);
+      if (!state.canPurchase) {
+        renderCartDrawer(commerceState.cart, state.label || 'Este producto no se puede agregar.');
+        return;
+      }
+
+      const payload = {
+        id: Number(variation?.id || product.id),
+        quantity: 1
+      };
+      const variationPayload = buildStoreVariationPayload(variation);
+      if (variationPayload.length) payload.variation = variationPayload;
+
+      const buttons = [addToCartButton, buyNowButton].filter(Boolean);
+      buttons.forEach(button => button.setAttribute('disabled', ''));
+      try {
+        await mutateCart('/cart/add-item', payload, 'Producto agregado.');
+        if (goCheckout) {
+          const checkoutUrl = await syncCartForCheckout();
+          window.location.assign(checkoutUrl);
+          return;
+        }
+        if (!document.querySelector('#drawer')?.classList.contains('is-on')) {
+          document.querySelector('#cartBtn')?.click();
+        }
+      } catch (error) {
+        renderCartDrawer(commerceState.cart, error.message || 'No pudimos agregar el producto.');
+        console.warn('[HF PB] Add to cart failed:', error.message);
+      } finally {
+        buttons.forEach(button => button.removeAttribute('disabled'));
+      }
+    };
+
     sizeButtons.forEach((btn, idx) => {
       const size = sizes[idx] || btn.textContent.trim();
       btn.textContent = size;
-      btn.setAttribute('aria-pressed', idx === 0 ? 'true' : 'false');
-      if (idx === 0) {
-        selectedSize = size;
-        if (sizeLabel) sizeLabel.textContent = size;
+      btn.setAttribute('aria-pressed', size === selectedSize ? 'true' : 'false');
+      if (size === selectedSize && sizeLabel) {
+        sizeLabel.textContent = size;
       }
       btn.addEventListener('click', () => {
-        $$('.hf-pdp-view__size', sizesSlot).forEach(item => item.setAttribute('aria-pressed', 'false'));
+        $$('.hf-pdp-view__size', sizesSlot || sectionEl).forEach(item => item.setAttribute('aria-pressed', 'false'));
         btn.setAttribute('aria-pressed', 'true');
         selectedSize = size;
         if (sizeLabel) sizeLabel.textContent = size;
+        updatePurchaseState(findVariationForSelection());
       });
     });
     if (!sizes.length && sizeLabel) sizeLabel.textContent = '-';
 
-    const colorVariants = getColorVariants(product, products);
+    const colorVariants = getColorVariants(product, list);
     const colors = [product, ...colorVariants.filter(candidate => candidate.slug !== product.slug)];
     const colorsSlot = $('[data-product-colors]');
     colors.forEach((colorProduct, idx) => {
@@ -1928,78 +2203,14 @@ const PAGE_BUILDER = (() => {
     });
     if (!colors.length) colorsSlot?.closest('.hf-pdp-view__color-row')?.setAttribute('hidden', '');
 
-    const currentColor = (() => {
-      const colorAttr = product?.attributes?.find(item => `${item.label || item.name || ''}`.toLowerCase().includes('color'));
-      const value = colorAttr?.values?.[0];
-      return value?.name || value?.slug || '';
-    })();
+    updatePurchaseState(getInitialSelectedVariation());
 
-    const findVariationForSelection = () => {
-      if (!Array.isArray(product?.variations) || !product.variations.length) {
-        return null;
-      }
+    addToCartButton?.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await addSelectedProductToCart();
+    });
 
-      const normalizedSize = `${selectedSize || ''}`.trim();
-      const normalizedColor = `${currentColor || ''}`.trim();
-
-      const match = product.variations.find(variation => {
-        const attrs = variation?.attributes || {};
-        const sizeMatch = normalizedSize ? `${attrs.talle || attrs.size || ''}` === normalizedSize : true;
-        const colorMatch = normalizedColor ? `${attrs.color || ''}` === normalizedColor : true;
-        return sizeMatch && colorMatch;
-      });
-
-      return match || product.variations[0] || null;
-    };
-
-    const buildStoreVariationPayload = (variation) => {
-      const attrs = variation?.attributes || {};
-      return Object.keys(attrs).map(key => ({
-        attribute: key,
-        value: attrs[key]
-      }));
-    };
-
-    const addSelectedProductToCart = async ({ goCheckout = false } = {}) => {
-      const variation = findVariationForSelection();
-      const payload = {
-        id: Number(variation?.id || product.id),
-        quantity: 1
-      };
-      const variationPayload = buildStoreVariationPayload(variation);
-      if (variationPayload.length) payload.variation = variationPayload;
-
-      const buttons = [
-        $('[data-product-add-to-cart]'),
-        $('[data-product-buy-now]')
-      ].filter(Boolean);
-      buttons.forEach(button => button.setAttribute('disabled', ''));
-      try {
-        await mutateCart('/cart/add-item', payload, 'Producto agregado.');
-        if (goCheckout) {
-          const checkoutUrl = await syncCartForCheckout();
-          window.location.assign(checkoutUrl);
-          return;
-        }
-        if (!document.querySelector('#drawer')?.classList.contains('is-on')) {
-          document.querySelector('#cartBtn')?.click();
-        }
-      } catch (error) {
-        console.warn('[HF PB] Add to cart failed:', error.message);
-      } finally {
-        buttons.forEach(button => button.removeAttribute('disabled'));
-      }
-    };
-
-    const addToCartButton = $('[data-product-add-to-cart]') || $('.hf-pdp-view__button--primary');
-    if (addToCartButton) {
-      addToCartButton.addEventListener('click', async (event) => {
-        event.preventDefault();
-        await addSelectedProductToCart();
-      });
-    }
-
-    $('[data-product-buy-now]')?.addEventListener('click', async (event) => {
+    buyNowButton?.addEventListener('click', async (event) => {
       event.preventDefault();
       await addSelectedProductToCart({ goCheckout: true });
     });
@@ -2017,7 +2228,7 @@ const PAGE_BUILDER = (() => {
     root.appendChild(sectionEl);
 
     window.setTimeout(() => {
-      const related = products.filter(item => item.slug !== product.slug);
+      const related = list.filter(item => item.slug !== product.slug);
 
       // "Compralo con":
       //  1) productos RESTANTES del conjunto (colección) del producto actual.
@@ -2065,7 +2276,7 @@ const PAGE_BUILDER = (() => {
 
       const setTrack = $('[data-product-set-mobile-track]');
       if (setTrack) {
-        const setItems = related.length ? related : products.filter(Boolean);
+        const setItems = related.length ? related : list.filter(Boolean);
         const groups = [];
         for (let i = 0; i < setItems.length; i += 3) {
           const group = setItems.slice(i, i + 3);
