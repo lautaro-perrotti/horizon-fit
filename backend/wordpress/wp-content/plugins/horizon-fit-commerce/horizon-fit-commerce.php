@@ -130,7 +130,7 @@ function hf_commerce_get_account_session(WP_REST_Request $request) {
     $user = wp_get_current_user();
     $is_logged_in = is_user_logged_in();
     $frontend_origin = hf_commerce_frontend_origin_from_request();
-    $redirect_to = trailingslashit($frontend_origin) . 'my-account/';
+    $redirect_to = trailingslashit($frontend_origin) . 'mi-cuenta/';
 
     return rest_ensure_response(array(
         'loggedIn'    => $is_logged_in,

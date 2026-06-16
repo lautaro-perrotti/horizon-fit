@@ -38,7 +38,7 @@
   const WOO_STORE_API_BASE = `${WP_BASE_URL}/wp-json/wc/store/v1`;
   const HF_REST_BASE = `${WP_BASE_URL}/wp-json/hf/v1`;
   const STORE_CHECKOUT_URL = `${window.location.origin}/checkout/`;
-  const STORE_ACCOUNT_URL = `${window.location.origin}/my-account/`;
+  const STORE_ACCOUNT_URL = `${window.location.origin}/mi-cuenta/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
@@ -233,17 +233,17 @@
 
   const isUtilityRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '');
-    return ['/cart', '/checkout', '/my-account'].some(prefix => path === prefix || path.startsWith(`${prefix}/`));
+    return ['/cart', '/checkout', '/mi-cuenta', '/my-account'].some(prefix => path === prefix || path.startsWith(`${prefix}/`));
   };
 
   const isAccountRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '') || '/';
-    return path === '/my-account' || path.startsWith('/my-account/');
+    return path === '/mi-cuenta' || path.startsWith('/mi-cuenta/') || path === '/my-account' || path.startsWith('/my-account/');
   };
 
   const isLostPasswordRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '') || '/';
-    return path === '/my-account/lost-password' || path.startsWith('/my-account/lost-password/');
+    return path === '/mi-cuenta/lost-password' || path.startsWith('/mi-cuenta/lost-password/') || path === '/my-account/lost-password' || path.startsWith('/my-account/lost-password/');
   };
 
   const isCheckoutRoute = () => {
@@ -478,6 +478,14 @@
     if (!pageSrc) return;
 
     try {
+      const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+      if (currentPath === '/my-account' || currentPath.startsWith('/my-account/')) {
+        const targetPath = currentPath.replace(/^\/my-account/, '/mi-cuenta');
+        const normalizedTarget = targetPath.endsWith('/') ? targetPath : `${targetPath}/`;
+        window.location.replace(routeBaseUrl(normalizedTarget, window.location.search));
+        return;
+      }
+
       const productRoute = isProductRoute();
       const collectionRoute = !productRoute && isCollectionRoute();
       const lostPasswordRoute = !productRoute && !collectionRoute && isLostPasswordRoute();
@@ -502,7 +510,7 @@
         updateSeo({
           title: `Recuperar contraseña | ${SITE_NAME}`,
           description: 'Recuperá el acceso a tu cuenta de Horizon Fit desde 8088.',
-          canonical: routeBaseUrl('/my-account/lost-password/'),
+          canonical: routeBaseUrl('/mi-cuenta/lost-password/'),
           robots: 'noindex,nofollow',
           ogType: 'website',
           schema: []
@@ -511,7 +519,7 @@
         updateSeo({
           title: `Mi cuenta | ${SITE_NAME}`,
           description: 'Acceso a tu cuenta de Horizon Fit, con la navegación quedándose en la tienda.',
-          canonical: routeBaseUrl('/my-account/'),
+          canonical: routeBaseUrl('/mi-cuenta/'),
           robots: 'noindex,nofollow',
           ogType: 'website',
           schema: []
@@ -2442,8 +2450,8 @@
     root.appendChild(sectionEl);
 
     const loginUrl = `${WP_BASE_URL}/wp-login.php`;
-    const redirectUrl = routeBaseUrl('/my-account/');
-    const lostPasswordUrl = routeBaseUrl('/my-account/lost-password/');
+    const redirectUrl = routeBaseUrl('/mi-cuenta/');
+    const lostPasswordUrl = routeBaseUrl('/mi-cuenta/lost-password/');
 
     const form = sectionEl.querySelector('[data-account-login-shell]');
     if (form) form.setAttribute('action', loginUrl);
@@ -2733,7 +2741,7 @@
     const statusEl = sectionEl.querySelector('[data-lost-password-status]');
 
     if (loginLink) {
-      loginLink.setAttribute('href', routeBaseUrl('/my-account/'));
+      loginLink.setAttribute('href', routeBaseUrl('/mi-cuenta/'));
     }
 
     if (form) {
