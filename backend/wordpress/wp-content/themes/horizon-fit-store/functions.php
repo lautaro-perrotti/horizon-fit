@@ -70,7 +70,7 @@ function hf_store_home_seo_description() {
         return $site_description;
     }
 
-    return __('Activewear funcional, colecciones pensadas para combinar y una experiencia de compra clara, r√°pida y m√≥vil.', 'horizon-fit-store');
+    return __('Activewear funcional, colecciones pensadas para combinar y una experiencia de compra clara, r·pida y mÛvil.', 'horizon-fit-store');
 }
 
 function hf_store_trim_seo_text($text, $limit = 155) {
@@ -83,14 +83,14 @@ function hf_store_trim_seo_text($text, $limit = 155) {
         if (mb_strlen($text) <= $limit) {
             return $text;
         }
-        return rtrim(mb_substr($text, 0, $limit - 1)) . '‚Ä¶';
+        return rtrim(mb_substr($text, 0, $limit - 1)) . 'Ö';
     }
 
     if (strlen($text) <= $limit) {
         return $text;
     }
 
-    return rtrim(substr($text, 0, $limit - 1)) . '‚Ä¶';
+    return rtrim(substr($text, 0, $limit - 1)) . 'Ö';
 }
 
 function hf_store_is_noindex_route() {
@@ -102,11 +102,13 @@ function hf_store_is_noindex_route() {
 }
 
 function hf_store_get_site_icon_url() {
-    return home_url('/LOGOS/favicon-512.png?v=20260616');
-}
+    $brand_icon = home_url('/LOGOS/ISOTIPO.svg');
+    if ($brand_icon) {
+        return $brand_icon;
+    }
 
-function hf_store_get_site_icon_svg_url() {
-    return home_url('/LOGOS/ISOTIPO.svg?v=20260616');
+    $icon = function_exists('get_site_icon_url') ? get_site_icon_url(512) : '';
+    return $icon ? $icon : '';
 }
 
 function hf_store_get_default_social_image() {
@@ -162,7 +164,7 @@ function hf_store_get_seo_data() {
     if (hf_store_is_noindex_route()) {
         return array(
             'title'       => sprintf('%s | %s', $site_name, __('No index', 'horizon-fit-store')),
-            'description' => __('Ruta operativa del sitio, no destinada a indexaci√≥n.', 'horizon-fit-store'),
+            'description' => __('Ruta operativa del sitio, no destinada a indexaciÛn.', 'horizon-fit-store'),
             'canonical'   => home_url('/'),
             'robots'      => 'noindex,nofollow',
             'type'        => 'website',
@@ -208,7 +210,7 @@ function hf_store_get_seo_data() {
 
     if (function_exists('is_shop') && is_shop()) {
         $title = sprintf('%s | %s', __('Tienda', 'horizon-fit-store'), $site_name);
-        $description = __('Descubr√≠ prendas, sets y b√°sicos de Horizon Fit conectados al cat√°logo real de WooCommerce.', 'horizon-fit-store');
+        $description = __('DescubrÌ prendas, sets y b·sicos de Horizon Fit conectados al cat·logo real de WooCommerce.', 'horizon-fit-store');
         $canonical = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_post_type_archive_link('product');
         $breadcrumbs[] = array(
             'name' => __('Tienda', 'horizon-fit-store'),
@@ -218,7 +220,7 @@ function hf_store_get_seo_data() {
         $term = get_queried_object();
         if ($term instanceof WP_Term) {
             $title = sprintf('%s | %s', $term->name, $site_name);
-            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('Explor√° %s de Horizon Fit: prendas, combinaciones y piezas listas para vender el look.', 'horizon-fit-store'), $term->name), 160);
+            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('Explor· %s de Horizon Fit: prendas, combinaciones y piezas listas para vender el look.', 'horizon-fit-store'), $term->name), 160);
             $canonical = get_term_link($term);
             if (! is_wp_error($canonical)) {
                 $canonical = $canonical;
@@ -239,7 +241,7 @@ function hf_store_get_seo_data() {
         $term = get_queried_object();
         if ($term instanceof WP_Term) {
             $title = sprintf('%s | %s', $term->name, $site_name);
-            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('Colecci√≥n Horizon Fit: una selecci√≥n curada para comprar el look completo.', 'horizon-fit-store'), $term->name), 160);
+            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('ColecciÛn Horizon Fit: una selecciÛn curada para comprar el look completo.', 'horizon-fit-store'), $term->name), 160);
             $canonical = get_term_link($term);
             if (is_wp_error($canonical)) {
                 $canonical = home_url('/');
@@ -384,15 +386,15 @@ add_filter('wp_robots', 'hf_store_filter_wp_robots');
 function hf_store_output_seo_head() {
     $seo = hf_store_get_seo_data();
     $schema = array_values(array_filter((array) ($seo['schema'] ?? array())));
-    $icon_png = hf_store_get_site_icon_url();
-    $icon_svg = hf_store_get_site_icon_svg_url();
+    $icon = hf_store_get_site_icon_url();
     ?>
     <meta name="description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
     <link rel="canonical" href="<?php echo esc_url($seo['canonical'] ?? home_url('/')); ?>">
     <meta name="robots" content="<?php echo esc_attr($seo['robots'] ?? 'index,follow'); ?>">
-    <link rel="icon" href="<?php echo esc_url($icon_png); ?>" type="image/png" sizes="32x32">
-    <link rel="icon" href="<?php echo esc_url($icon_svg); ?>" type="image/svg+xml" sizes="any">
-    <link rel="apple-touch-icon" href="<?php echo esc_url($icon_png); ?>" sizes="180x180">
+    <?php if (! empty($icon)) : ?>
+        <link rel="icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
+        <link rel="shortcut icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
+    <?php endif; ?>
     <meta property="og:site_name" content="<?php echo esc_attr(hf_store_brand_name()); ?>">
     <meta property="og:title" content="<?php echo esc_attr($seo['title'] ?? hf_store_brand_name()); ?>">
     <meta property="og:description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
@@ -496,7 +498,7 @@ function hf_store_block_private_routes() {
 
     if (function_exists('is_cart') && is_cart()) {
         wp_die(
-            esc_html__('Esta secci√≥n est√° temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('Esta secciÛn est· temporalmente deshabilitada.', 'horizon-fit-store'),
             esc_html__('En mantenimiento', 'horizon-fit-store'),
             array('response' => 503)
         );
@@ -504,7 +506,7 @@ function hf_store_block_private_routes() {
 
     if (function_exists('is_checkout') && is_checkout()) {
         wp_die(
-            esc_html__('Esta secci√≥n est√° temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('Esta secciÛn est· temporalmente deshabilitada.', 'horizon-fit-store'),
             esc_html__('En mantenimiento', 'horizon-fit-store'),
             array('response' => 503)
         );
@@ -512,7 +514,7 @@ function hf_store_block_private_routes() {
 
     if (function_exists('is_page') && is_page(array('diplomatura', 'curso'))) {
         wp_die(
-            esc_html__('Esta secci√≥n est√° temporalmente deshabilitada.', 'horizon-fit-store'),
+            esc_html__('Esta secciÛn est· temporalmente deshabilitada.', 'horizon-fit-store'),
             esc_html__('En mantenimiento', 'horizon-fit-store'),
             array('response' => 503)
         );
@@ -531,7 +533,7 @@ function hf_store_block_private_routes() {
 
         if ($request_path === $slug || 0 === strpos($request_path, $slug . '/')) {
             wp_die(
-                esc_html__('Esta secci√≥n est√° temporalmente deshabilitada.', 'horizon-fit-store'),
+                esc_html__('Esta secciÛn est· temporalmente deshabilitada.', 'horizon-fit-store'),
                 esc_html__('En mantenimiento', 'horizon-fit-store'),
                 array('response' => 503)
             );
@@ -758,7 +760,7 @@ function hf_store_get_primary_menu_links() {
             'url'   => is_front_page() ? '#fullSlider' : get_post_type_archive_link('product'),
         ),
         array(
-            'label' => __('Compra por categor√≠a', 'horizon-fit-store'),
+            'label' => __('Compra por categorÌa', 'horizon-fit-store'),
             'url'   => is_front_page() ? '#homeCategories' : get_post_type_archive_link('product'),
         ),
         array(
@@ -806,7 +808,7 @@ function hf_store_excerpt_fallback($product) {
 
     $description = wp_strip_all_tags($product->get_description());
     if (! $description) {
-        return __('Entrenamiento, comodidad y dise√±o funcional para tu rutina diaria.', 'horizon-fit-store');
+        return __('Entrenamiento, comodidad y diseÒo funcional para tu rutina diaria.', 'horizon-fit-store');
     }
 
     return wp_trim_words($description, 32);
