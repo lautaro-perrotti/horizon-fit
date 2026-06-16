@@ -3,56 +3,47 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Tema minimalista - el frontend real está en index.html
-// Este tema solo maneja el panel de admin de WordPress
-
-add_theme_support('title-tag');
-add_theme_support('post-thumbnails');
-add_theme_support('woocommerce');
-add_theme_support('wc-product-gallery-lightbox');
-add_theme_support('wc-product-gallery-slider');
-add_theme_support('wc-product-gallery-zoom');
-
-function horizon_fit_blank_enqueue_assets() {
-    wp_enqueue_style(
-        'horizon-fit-blank',
-        get_template_directory_uri() . '/style.css',
-        array(),
-        '1.0.0'
-    );
-}
-add_action('wp_enqueue_scripts', 'horizon_fit_blank_enqueue_assets');
-
-function horizon_fit_blank_document_title($title) {
-    if (function_exists('is_account_page') && is_account_page()) {
-        return 'Mi cuenta | Horizon Fit';
+function horizon_fit_blank_is_internal_request() {
+    if (is_admin()) {
+        return true;
     }
 
-    if (function_exists('is_checkout') && is_checkout()) {
-        return 'Checkout | Horizon Fit';
+    if (function_exists('wp_doing_ajax') && wp_doing_ajax()) {
+        return true;
     }
 
-    if (function_exists('is_cart') && is_cart()) {
-        return 'Carrito | Horizon Fit';
+    if (defined('REST_REQUEST') && REST_REQUEST) {
+        return true;
     }
 
-    return $title;
-}
-add_filter('pre_get_document_title', 'horizon_fit_blank_document_title');
+    if (function_exists('wp_is_json_request') && wp_is_json_request()) {
+        return true;
+    }
 
-// Habilitar REST API pública para WooCommerce
-// Permitir GET requests a productos y taxonomías sin autenticación
-add_filter('woocommerce_rest_product_schema', function($schema) {
-    return $schema;
-});
+    if (defined('DOING_CRON') && DOING_CRON) {
+        return true;
+    }
 
-// Permitir acceso público a endpoints de lectura
-add_filter('rest_authentication_errors', function($result) {
-    if (!empty($result)) {
-        // Si ya hay error de autenticación, permitirlo en GET
-        if ('GET' === $_SERVER['REQUEST_METHOD']) {
+    $request_path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+    if ($request_path === '') {
+        return false;
+    }
+
+    foreach (array('wp-admin', 'wp-login.php') as $internal_path) {
+        if ($request_path === $internal_path || 0 === strpos($request_path, $internal_path . '/')) {
             return true;
         }
     }
-    return $result;
-});
+
+    return false;
+}
+
+function horizon_fit_blank_redirect_public_requests() {
+    if (horizon_fit_blank_is_internal_request()) {
+        return;
+    }
+
+    wp_safe_redirect(admin_url('/'), 302);
+    exit;
+}
+add_action('template_redirect', 'horizon_fit_blank_redirect_public_requests', 1);

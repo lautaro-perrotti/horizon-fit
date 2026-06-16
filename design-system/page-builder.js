@@ -37,8 +37,8 @@
   const WP_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`;
   const WOO_STORE_API_BASE = `${WP_BASE_URL}/wp-json/wc/store/v1`;
   const HF_REST_BASE = `${WP_BASE_URL}/wp-json/hf/v1`;
-  const WOO_CHECKOUT_URL = `${WP_BASE_URL}/checkout/`;
-  const WOO_ACCOUNT_URL = `${WP_BASE_URL}/my-account/`;
+  const STORE_CHECKOUT_URL = `${window.location.origin}/checkout/`;
+  const STORE_ACCOUNT_URL = `${window.location.origin}/my-account/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
@@ -51,6 +51,9 @@
   const PRODUCT_DATA_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products.json`;
   const PRODUCT_DATA_FALLBACK_SRC = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/products`;
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
+  const ACCOUNT_COMPONENT = '/design-system/components/sections/account.html';
+  const CHECKOUT_COMPONENT = '/design-system/components/sections/checkout.html';
+  const LOST_PASSWORD_COMPONENT = '/design-system/components/sections/lost-password.html';
 
   // Cache de una colecciÃ³n concreta (featured-row-1, featured-row-2, ...).
   const productCollectionSrc = (slug) =>
@@ -233,6 +236,21 @@
     return ['/cart', '/checkout', '/my-account'].some(prefix => path === prefix || path.startsWith(`${prefix}/`));
   };
 
+  const isAccountRoute = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return path === '/my-account' || path.startsWith('/my-account/');
+  };
+
+  const isLostPasswordRoute = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return path === '/my-account/lost-password' || path.startsWith('/my-account/lost-password/');
+  };
+
+  const isCheckoutRoute = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return path === '/checkout' || path.startsWith('/checkout/');
+  };
+
   // Trae el mapa type -> settings de las secciones. Lee primero la cache
   // estÃ¡tica (instantÃ¡nea); si falta, cae al REST. Si nada responde, Map vacÃ­o
   // y el sitio sigue con la config de home.json.
@@ -276,7 +294,8 @@
 
   const isGlobalSection = (section) => GLOBAL_SECTION_TYPES.has(section?.type);
 
-  const shouldRenderSection = (section, productRoute, collectionRoute) => {
+  const shouldRenderSection = (section, productRoute, collectionRoute, utilityRoute, accountLikeRoute) => {
+    if (utilityRoute || accountLikeRoute) return isGlobalSection(section);
     if (!productRoute && !collectionRoute) return true;
     return isGlobalSection(section);
   };
@@ -448,10 +467,43 @@
     try {
       const productRoute = isProductRoute();
       const collectionRoute = !productRoute && isCollectionRoute();
+      const lostPasswordRoute = !productRoute && !collectionRoute && isLostPasswordRoute();
+      const accountRoute = !productRoute && !collectionRoute && !lostPasswordRoute && isAccountRoute();
+      const checkoutRoute = !productRoute && !collectionRoute && isCheckoutRoute();
       const utilityRoute = isUtilityRoute();
       const productPageTemplatePromise = productRoute ? fetchText(PRODUCT_DETAIL_COMPONENT) : null;
+      const accountPageTemplatePromise = accountRoute ? fetchText(ACCOUNT_COMPONENT) : null;
+      const checkoutPageTemplatePromise = checkoutRoute ? fetchText(CHECKOUT_COMPONENT) : null;
+      const lostPasswordPageTemplatePromise = lostPasswordRoute ? fetchText(LOST_PASSWORD_COMPONENT) : null;
 
-      if (utilityRoute) {
+      if (checkoutRoute) {
+        updateSeo({
+          title: `Checkout | ${SITE_NAME}`,
+          description: 'Completa tus datos y pagá sin salir de Horizon Fit.',
+          canonical: routeBaseUrl('/checkout/'),
+          robots: 'noindex,nofollow',
+          ogType: 'website',
+          schema: []
+        });
+      } else if (lostPasswordRoute) {
+        updateSeo({
+          title: `Recuperar contraseña | ${SITE_NAME}`,
+          description: 'Recuperá el acceso a tu cuenta de Horizon Fit desde 8088.',
+          canonical: routeBaseUrl('/my-account/lost-password/'),
+          robots: 'noindex,nofollow',
+          ogType: 'website',
+          schema: []
+        });
+      } else if (accountRoute) {
+        updateSeo({
+          title: `Mi cuenta | ${SITE_NAME}`,
+          description: 'Acceso a tu cuenta de Horizon Fit, con la navegación quedándose en la tienda.',
+          canonical: routeBaseUrl('/my-account/'),
+          robots: 'noindex,nofollow',
+          ogType: 'website',
+          schema: []
+        });
+      } else if (utilityRoute) {
         updateSeo({
           title: `${SITE_NAME} | Acceso`,
           description: 'Ruta operativa del sitio, no destinada a indexación.',
@@ -500,7 +552,7 @@
 
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
-        .filter(section => shouldRenderSection(section, productRoute, collectionRoute))
+        .filter(section => shouldRenderSection(section, productRoute, collectionRoute, utilityRoute, accountRoute || checkoutRoute || lostPasswordRoute))
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       // Load all components and data in parallel
@@ -598,6 +650,14 @@
       if (collectionRoute) {
         const [products, settings, html] = await collectionPageSourcesPromise;
         renderCollectionPage(root, collectionCat, products, settings, html);
+      }
+
+      if (accountRoute) {
+        renderAccountPage(root, await accountPageTemplatePromise);
+      } else if (checkoutRoute) {
+        renderCheckoutPage(root, await checkoutPageTemplatePromise);
+      } else if (lostPasswordRoute) {
+        renderLostPasswordPage(root, await lostPasswordPageTemplatePromise);
       }
 
       tailSectionEls.forEach(sectionEl => {
@@ -1572,16 +1632,22 @@
   };
 
   const hfRestFetch = async (path, body, options = {}) => {
-    const response = await fetch(`${HF_REST_BASE}${path}`, {
-      method: 'POST',
+    const method = (options.method || 'POST').toUpperCase();
+    const requestInit = {
+      method,
       credentials: 'include',
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body || {})
-    });
+        ...(options.headers || {})
+      }
+    };
+    if (!['GET', 'HEAD'].includes(method)) {
+      requestInit.headers['Content-Type'] = requestInit.headers['Content-Type'] || 'application/json';
+      requestInit.body = JSON.stringify(body || {});
+    }
+
+    const response = await fetch(`${HF_REST_BASE}${path}`, requestInit);
     if (options.skipBody) {
       if (!response.ok) {
         throw new Error(`Horizon Fit API error ${response.status}`);
@@ -1768,18 +1834,10 @@
 
   const syncCartForCheckout = async () => {
     const items = cartItemsForCheckoutSync();
-    const coupons = cartCouponsForCheckoutSync();
     if (!items.length) {
       throw new Error('Agrega un producto para ir al checkout.');
     }
-    const sync = hfRestFetch('/checkout/sync', { items, coupons })
-      .then(() => new Promise(resolve => {
-        window.setTimeout(() => resolve(WOO_CHECKOUT_URL), 120);
-      }));
-    const fallback = new Promise(resolve => {
-      window.setTimeout(() => resolve(WOO_CHECKOUT_URL), 12000);
-    });
-    return Promise.race([sync, fallback]);
+    return STORE_CHECKOUT_URL;
   };
 
   const storeProductToSearchItem = (item) => {
@@ -1981,7 +2039,7 @@
 
     userButton?.addEventListener('click', (event) => {
       event.preventDefault();
-      window.location.assign(WOO_ACCOUNT_URL);
+      window.location.assign(STORE_ACCOUNT_URL);
     });
 
     const runSearch = async () => {
@@ -2343,6 +2401,339 @@
       grid.style.setProperty('--collection-cols-desktop', cfg.colsDesktop);
       grid.style.setProperty('--collection-cols-mobile', cfg.colsMobile);
       list.forEach(product => grid.appendChild(fillProductCard(template, product, { showSizes: false })));
+    }
+  };
+
+  const renderAccountPage = (root, html) => {
+    if (!html) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl) return;
+
+    document.body.classList.add('hf-account-mode');
+    sectionEl.hidden = false;
+    root.appendChild(sectionEl);
+
+    const loginUrl = `${WP_BASE_URL}/wp-login.php`;
+    const redirectUrl = routeBaseUrl('/my-account/');
+    const lostPasswordUrl = routeBaseUrl('/my-account/lost-password/');
+
+    const form = sectionEl.querySelector('[data-account-login-shell]');
+    if (form) form.setAttribute('action', loginUrl);
+
+    const redirectInput = sectionEl.querySelector('[name="redirect_to"]');
+    if (redirectInput) redirectInput.value = redirectUrl;
+
+    const forgotLink = sectionEl.querySelector('[data-account-forgot]');
+    if (forgotLink) forgotLink.setAttribute('href', lostPasswordUrl);
+
+    const shopLink = sectionEl.querySelector('[data-account-shop]');
+    if (shopLink) shopLink.setAttribute('href', routeBaseUrl('/'));
+
+    const loginShell = sectionEl.querySelector('[data-account-login-shell]');
+    const sessionShell = sectionEl.querySelector('[data-account-session-shell]');
+    const sessionName = sectionEl.querySelector('[data-account-session-name]');
+    const sessionEmail = sectionEl.querySelector('[data-account-session-email]');
+    const sessionStatus = sectionEl.querySelector('[data-account-session-status]');
+    const logoutLink = sectionEl.querySelector('[data-account-logout]');
+    const loginStatus = sectionEl.querySelector('[data-account-login-status]');
+
+    const showLoginState = (message = '') => {
+      document.body.classList.remove('hf-account-signed-in');
+      document.body.classList.add('hf-account-signed-out');
+      if (loginShell) loginShell.hidden = false;
+      if (sessionShell) sessionShell.hidden = true;
+      if (sessionStatus) sessionStatus.textContent = 'Sesión cerrada';
+      if (loginStatus) loginStatus.textContent = message;
+      if (logoutLink) logoutLink.setAttribute('href', '#');
+    };
+
+    const showSessionState = (data) => {
+      document.body.classList.add('hf-account-signed-in');
+      document.body.classList.remove('hf-account-signed-out');
+      if (loginShell) loginShell.hidden = true;
+      if (sessionShell) sessionShell.hidden = false;
+      if (sessionName) sessionName.textContent = data?.displayName || 'Cliente';
+      if (sessionEmail) sessionEmail.textContent = data?.email || '';
+      if (sessionStatus) sessionStatus.textContent = 'Sesión activa';
+      if (logoutLink && data?.logoutUrl) logoutLink.setAttribute('href', data.logoutUrl);
+      if (loginStatus) loginStatus.textContent = '';
+    };
+
+    hfRestFetch('/account/session', null, { method: 'GET' })
+      .then(data => {
+        if (data?.loggedIn) {
+          showSessionState(data);
+        } else {
+          showLoginState('No hay una sesión activa.');
+        }
+      })
+      .catch(error => {
+        console.warn('[HF PB] Account session unavailable:', error.message);
+        showLoginState('No pudimos verificar la sesión.');
+      });
+  };
+
+  const renderCheckoutPage = async (root, html) => {
+    if (!html) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl) return;
+
+    document.body.classList.add('hf-checkout-mode');
+    sectionEl.hidden = false;
+    root.appendChild(sectionEl);
+
+    const checkoutForm = sectionEl.querySelector('[data-checkout-form]');
+    const sessionName = sectionEl.querySelector('[data-checkout-session-name]');
+    const sessionEmail = sectionEl.querySelector('[data-checkout-session-email]');
+    const sessionStatus = sectionEl.querySelector('[data-checkout-session-status]');
+    const paymentList = sectionEl.querySelector('[data-checkout-payment-methods]');
+    const paymentHint = sectionEl.querySelector('[data-checkout-payment-hint]');
+    const orderList = sectionEl.querySelector('[data-checkout-order-items]');
+    const subtotalEl = sectionEl.querySelector('[data-checkout-subtotal]');
+    const totalEl = sectionEl.querySelector('[data-checkout-total]');
+    const shippingEl = sectionEl.querySelector('[data-checkout-shipping]');
+    const emptyState = sectionEl.querySelector('[data-checkout-empty]');
+    const submitBtn = sectionEl.querySelector('[data-checkout-submit]');
+    const statusEl = sectionEl.querySelector('[data-checkout-status]');
+    const sameAddressToggle = sectionEl.querySelector('[data-checkout-same-address]');
+    const billingSection = sectionEl.querySelector('[data-checkout-billing]');
+    const shippingSection = sectionEl.querySelector('[data-checkout-shipping-fields]');
+    const createAccountRow = sectionEl.querySelector('[data-checkout-create-account-row]');
+    const createAccountToggle = sectionEl.querySelector('[data-checkout-create-account]');
+    const passwordRow = sectionEl.querySelector('[data-checkout-password-row]');
+    const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
+    const fields = new Map();
+    sectionEl.querySelectorAll('[data-checkout-field]').forEach(input => {
+      const key = input.getAttribute('data-checkout-field');
+      if (key) fields.set(key, input);
+    });
+
+    const setFieldValues = (prefix, values = {}) => {
+      Object.entries(values || {}).forEach(([key, value]) => {
+        const input = fields.get(`${prefix}.${key}`);
+        if (input && value !== undefined && value !== null) {
+          input.value = `${value}`;
+        }
+      });
+    };
+
+    const collectFieldValues = (prefix) => {
+      const data = {};
+      fields.forEach((input, key) => {
+        if (!key.startsWith(`${prefix}.`)) return;
+        const fieldName = key.replace(`${prefix}.`, '');
+        data[fieldName] = input.value.trim();
+      });
+      return data;
+    };
+
+    const renderPaymentMethods = (methods = [], defaultId = '') => {
+      if (!paymentList) return;
+      if (!methods.length) {
+        paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay metodos de pago disponibles.</p>';
+        if (paymentHint) paymentHint.textContent = 'Revisamos esto desde WooCommerce.';
+        return;
+      }
+      paymentList.innerHTML = methods.map((method, index) => {
+        const checked = defaultId ? method.id === defaultId : index === 0;
+        return `
+          <label class="hf-checkout-view__payment">
+            <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''}>
+            <span>
+              <strong>${escapeHtml(method.title || method.id || 'Pago')}</strong>
+              ${method.description ? `<small>${escapeHtml(method.description)}</small>` : ''}
+            </span>
+          </label>
+        `;
+      }).join('');
+      const current = paymentList.querySelector('input[type="radio"]:checked');
+      if (paymentMethodInput && current) {
+        paymentMethodInput.value = current.value;
+      }
+      paymentList.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener('change', () => {
+          if (paymentMethodInput) paymentMethodInput.value = input.value;
+        });
+      });
+    };
+
+    const updateOrderSummary = (cart) => {
+      const items = Array.isArray(cart?.items) ? cart.items : [];
+      if (!orderList) return;
+      if (!items.length) {
+        orderList.innerHTML = '<p class="hf-checkout-view__empty-note">Tu carrito esta vacio.</p>';
+        if (emptyState) emptyState.hidden = false;
+        if (submitBtn) submitBtn.disabled = true;
+      } else {
+        orderList.innerHTML = items.map(item => {
+          const image = getCartItemImage(item);
+          return `
+            <div class="hf-checkout-view__order-item">
+              <div class="hf-checkout-view__order-media">${image ? `<img src="${escapeHtml(image)}" alt="">` : ''}</div>
+              <div class="hf-checkout-view__order-body">
+                <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))}</strong>
+                <span>${escapeHtml(getCartItemDetails(item) || `Cantidad: ${item.quantity || 1}`)}</span>
+              </div>
+              <strong class="hf-checkout-view__order-price">${escapeHtml(formatStoreMoney(item?.totals?.line_total || 0, getCartCurrency(cart)))}</strong>
+            </div>
+          `;
+        }).join('');
+        if (emptyState) emptyState.hidden = true;
+        if (submitBtn) submitBtn.disabled = false;
+      }
+      if (subtotalEl) subtotalEl.textContent = formatStoreMoney(cart?.totals?.total_items || 0, getCartCurrency(cart));
+      if (shippingEl) {
+        const shippingValue = cart?.totals?.total_shipping;
+        shippingEl.textContent = shippingValue === null || shippingValue === undefined ? 'Se calcula despues' : formatStoreMoney(shippingValue || 0, getCartCurrency(cart));
+      }
+      if (totalEl) totalEl.textContent = formatStoreMoney(cart?.totals?.total_price || 0, getCartCurrency(cart));
+    };
+
+    const refreshCheckout = async () => {
+      const [cart, options, session] = await Promise.all([
+        refreshCart(),
+        hfRestFetch('/checkout/options', null, { method: 'GET' }).catch(() => ({})),
+        hfRestFetch('/account/session', null, { method: 'GET' }).catch(() => ({}))
+      ]);
+
+      updateOrderSummary(cart);
+      renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '');
+      const syncAccountCreationUI = () => {
+        if (passwordRow) {
+          passwordRow.hidden = Boolean(session?.loggedIn) || !Boolean(createAccountToggle?.checked);
+        }
+      };
+      if (session?.loggedIn) {
+        if (sessionName) sessionName.textContent = session.displayName || 'Cliente';
+        if (sessionEmail) sessionEmail.textContent = session.email || '';
+        if (sessionStatus) sessionStatus.textContent = 'Sesion activa';
+        if (createAccountRow) createAccountRow.hidden = true;
+        if (passwordRow) passwordRow.hidden = true;
+      } else {
+        if (sessionStatus) sessionStatus.textContent = 'Sesion de invitado';
+        if (createAccountRow) createAccountRow.hidden = false;
+        if (createAccountToggle) {
+          createAccountToggle.checked = false;
+          createAccountToggle.addEventListener('change', syncAccountCreationUI);
+        }
+        syncAccountCreationUI();
+      }
+
+      const billing = cart?.billing_address || {};
+      const shipping = cart?.shipping_address || billing;
+      setFieldValues('billing', billing);
+      setFieldValues('shipping', shipping);
+      if (paymentMethodInput && options.defaultMethodId) {
+        paymentMethodInput.value = options.defaultMethodId;
+      }
+
+      if (sameAddressToggle) {
+        sameAddressToggle.checked = true;
+        const syncShippingVisibility = () => {
+          if (billingSection && shippingSection) {
+            shippingSection.hidden = sameAddressToggle.checked;
+          }
+        };
+        sameAddressToggle.addEventListener('change', syncShippingVisibility);
+        syncShippingVisibility();
+      }
+    };
+
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (statusEl) statusEl.textContent = 'Procesando pedido...';
+        if (submitBtn) submitBtn.disabled = true;
+
+        const billing_address = collectFieldValues('billing');
+        const shipping_address = sameAddressToggle?.checked ? billing_address : collectFieldValues('shipping');
+        const paymentMethod = paymentMethodInput?.value || paymentList?.querySelector('input[type="radio"]:checked')?.value || '';
+        const body = {
+          billing_address,
+          shipping_address,
+          payment_method: paymentMethod,
+          order_notes: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
+          create_account: Boolean(createAccountToggle?.checked)
+        };
+        const customerPassword = `${sectionEl.querySelector('[name="customer_password"]')?.value || ''}`.trim();
+        if (customerPassword) {
+          body.customer_password = customerPassword;
+        }
+
+        try {
+          const response = await storeApiFetch('/checkout', { method: 'POST', body });
+          const redirectUrl = response?.payment_result?.redirect_url || '';
+          if (redirectUrl) {
+            window.location.assign(redirectUrl);
+            return;
+          }
+          if (statusEl) {
+            statusEl.textContent = `Pedido ${response?.order_number || response?.order_id || ''} creado.`;
+          }
+          if (submitBtn) submitBtn.disabled = false;
+        } catch (error) {
+          if (statusEl) statusEl.textContent = error.message || 'No pudimos completar el checkout.';
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    }
+
+    await refreshCheckout();
+    if (statusEl && !statusEl.textContent) {
+      statusEl.textContent = 'Checkout listo.';
+    }
+  };
+
+  const renderLostPasswordPage = (root, html) => {
+    if (!html) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl) return;
+
+    document.body.classList.add('hf-account-mode');
+    sectionEl.hidden = false;
+    root.appendChild(sectionEl);
+
+    const form = sectionEl.querySelector('[data-lost-password-form]');
+    const loginLink = sectionEl.querySelector('[data-lost-password-login]');
+    const submitBtn = sectionEl.querySelector('[data-lost-password-submit]');
+    const statusEl = sectionEl.querySelector('[data-lost-password-status]');
+
+    if (loginLink) {
+      loginLink.setAttribute('href', routeBaseUrl('/my-account/'));
+    }
+
+    if (form) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const input = form.querySelector('[name="user_login"]');
+        const userLogin = `${input?.value || ''}`.trim();
+        if (!userLogin) {
+          if (statusEl) statusEl.textContent = 'Ingresá tu usuario o email.';
+          return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (statusEl) statusEl.textContent = 'Enviando enlace de recuperación...';
+
+        try {
+          const result = await hfRestFetch('/account/lost-password', { user_login: userLogin });
+          if (statusEl) statusEl.textContent = result?.message || 'Revisá tu casilla para continuar.';
+          form.reset();
+        } catch (error) {
+          if (statusEl) statusEl.textContent = error.message || 'No pudimos enviar el enlace.';
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
     }
   };
 

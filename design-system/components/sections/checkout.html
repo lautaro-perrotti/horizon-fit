@@ -1,0 +1,160 @@
+<section class="hf-checkout-view" data-checkout-page hidden role="main" aria-label="Checkout">
+  <div class="hf-checkout-view__shell">
+    <div class="hf-checkout-view__intro">
+      <p class="hf-checkout-view__kicker">Horizon Fit</p>
+      <h1 class="hf-checkout-view__title">Checkout</h1>
+    </div>
+
+    <div class="hf-checkout-view__grid">
+      <form class="hf-checkout-view__panel hf-checkout-view__form" data-checkout-form>
+        <div class="hf-checkout-view__section">
+          <div class="hf-checkout-view__section-head">
+            <span class="hf-checkout-view__section-kicker">Contacto</span>
+            <strong class="hf-checkout-view__section-title">Datos de facturacion</strong>
+          </div>
+          <div class="hf-checkout-view__fields">
+            <label class="hf-checkout-view__field">
+              <span>Nombre</span>
+              <input data-checkout-field="billing.first_name" type="text" name="billing_first_name" autocomplete="given-name">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Apellido</span>
+              <input data-checkout-field="billing.last_name" type="text" name="billing_last_name" autocomplete="family-name">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Email</span>
+              <input data-checkout-field="billing.email" type="email" name="billing_email" autocomplete="email" required>
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Telefono</span>
+              <input data-checkout-field="billing.phone" type="tel" name="billing_phone" autocomplete="tel">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Direccion</span>
+              <input data-checkout-field="billing.address_1" type="text" name="billing_address_1" autocomplete="address-line1">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Depto / piso</span>
+              <input data-checkout-field="billing.address_2" type="text" name="billing_address_2" autocomplete="address-line2">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Ciudad</span>
+              <input data-checkout-field="billing.city" type="text" name="billing_city" autocomplete="address-level2">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Provincia</span>
+              <input data-checkout-field="billing.state" type="text" name="billing_state" autocomplete="address-level1">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Codigo postal</span>
+              <input data-checkout-field="billing.postcode" type="text" name="billing_postcode" autocomplete="postal-code">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Pais</span>
+              <input data-checkout-field="billing.country" type="text" name="billing_country" autocomplete="country-name">
+            </label>
+          </div>
+        </div>
+
+        <div class="hf-checkout-view__section" data-checkout-billing>
+          <div class="hf-checkout-view__section-head">
+            <span class="hf-checkout-view__section-kicker">Envio</span>
+            <strong class="hf-checkout-view__section-title">Direccion de entrega</strong>
+          </div>
+          <label class="hf-checkout-view__toggle">
+            <input data-checkout-same-address type="checkbox" checked>
+            <span>Usar la misma direccion para facturacion</span>
+          </label>
+          <div class="hf-checkout-view__fields" data-checkout-shipping-fields>
+            <label class="hf-checkout-view__field">
+              <span>Nombre</span>
+              <input data-checkout-field="shipping.first_name" type="text" name="shipping_first_name" autocomplete="shipping given-name">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Apellido</span>
+              <input data-checkout-field="shipping.last_name" type="text" name="shipping_last_name" autocomplete="shipping family-name">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Direccion</span>
+              <input data-checkout-field="shipping.address_1" type="text" name="shipping_address_1" autocomplete="address-line1">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Depto / piso</span>
+              <input data-checkout-field="shipping.address_2" type="text" name="shipping_address_2" autocomplete="address-line2">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Ciudad</span>
+              <input data-checkout-field="shipping.city" type="text" name="shipping_city" autocomplete="address-level2">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Provincia</span>
+              <input data-checkout-field="shipping.state" type="text" name="shipping_state" autocomplete="address-level1">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Codigo postal</span>
+              <input data-checkout-field="shipping.postcode" type="text" name="shipping_postcode" autocomplete="postal-code">
+            </label>
+            <label class="hf-checkout-view__field">
+              <span>Pais</span>
+              <input data-checkout-field="shipping.country" type="text" name="shipping_country" autocomplete="country-name">
+            </label>
+          </div>
+        </div>
+
+        <div class="hf-checkout-view__section">
+          <div class="hf-checkout-view__section-head">
+            <span class="hf-checkout-view__section-kicker">Pago</span>
+            <strong class="hf-checkout-view__section-title">Metodo de pago</strong>
+          </div>
+          <input type="hidden" data-checkout-payment-method name="payment_method" value="">
+          <div class="hf-checkout-view__payments" data-checkout-payment-methods></div>
+          <p class="hf-checkout-view__hint" data-checkout-payment-hint>Elegimos el metodo disponible desde WooCommerce.</p>
+          <label class="hf-checkout-view__field hf-checkout-view__notes">
+            <span>Notas del pedido</span>
+            <textarea name="order_notes" rows="4" placeholder="Indicaciones para la entrega o el pago"></textarea>
+          </label>
+          <label class="hf-checkout-view__toggle hf-checkout-view__toggle--compact" data-checkout-create-account-row>
+            <input data-checkout-create-account type="checkbox" name="create_account" value="1">
+            <span>Crear una cuenta para futuras compras</span>
+          </label>
+          <label class="hf-checkout-view__field hf-checkout-view__password" data-checkout-password-row hidden>
+            <span>Contraseña para la cuenta</span>
+            <input name="customer_password" type="password" autocomplete="new-password" placeholder="Solo si queres crear cuenta">
+          </label>
+          <button class="btn btn--primary hf-checkout-view__submit" data-checkout-submit type="submit">Finalizar compra</button>
+          <p class="hf-checkout-view__status" data-checkout-status></p>
+        </div>
+      </form>
+
+      <aside class="hf-checkout-view__panel hf-checkout-view__summary">
+        <div class="hf-checkout-view__section-head">
+          <span class="hf-checkout-view__section-kicker">Resumen</span>
+          <strong class="hf-checkout-view__section-title">Tu pedido</strong>
+        </div>
+
+        <div class="hf-checkout-view__session">
+          <div>
+            <span class="hf-checkout-view__session-label">Sesion</span>
+            <strong data-checkout-session-status>Verificando...</strong>
+          </div>
+          <p class="hf-checkout-view__session-name" data-checkout-session-name>Cliente</p>
+          <p class="hf-checkout-view__session-email" data-checkout-session-email></p>
+        </div>
+
+        <div class="hf-checkout-view__items" data-checkout-order-items></div>
+        <p class="hf-checkout-view__empty" data-checkout-empty>Tu carrito esta vacio. Volve a la tienda para agregar productos.</p>
+
+        <div class="hf-checkout-view__totals">
+          <div><span>Subtotal</span><strong data-checkout-subtotal>$ 0,00</strong></div>
+          <div><span>Envio</span><strong data-checkout-shipping>Se calcula despues</strong></div>
+          <div class="hf-checkout-view__totals-final"><span>Total</span><strong data-checkout-total>$ 0,00</strong></div>
+        </div>
+
+        <div class="hf-checkout-view__summary-links">
+          <a class="btn btn--secondary" href="/">Seguir comprando</a>
+          <a class="hf-checkout-view__secondary-link" href="/my-account/">Mi cuenta</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

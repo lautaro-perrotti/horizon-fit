@@ -73,13 +73,132 @@ add_filter('rest_exposed_cors_headers', function($headers) {
     ))));
 });
 
+add_filter('rest_pre_serve_request', function($served, $result, $request, $server) {
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_ORIGIN'])) : '';
+    if ($origin) {
+        header('Access-Control-Allow-Credentials: true');
+        header('Vary: Origin');
+    }
+    return $served;
+}, 10, 4);
+
 add_action('rest_api_init', function() {
     register_rest_route('hf/v1', '/checkout/sync', array(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'hf_commerce_sync_checkout_cart',
         'permission_callback' => '__return_true',
     ));
+
+    register_rest_route('hf/v1', '/account/session', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'hf_commerce_get_account_session',
+        'permission_callback' => '__return_true',
+    ));
+
+    register_rest_route('hf/v1', '/checkout/options', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'hf_commerce_get_checkout_options',
+        'permission_callback' => '__return_true',
+    ));
+
+    register_rest_route('hf/v1', '/account/lost-password', array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => 'hf_commerce_request_password_reset',
+        'permission_callback' => '__return_true',
+    ));
 });
+
+function hf_commerce_frontend_origin_from_request() {
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? esc_url_raw(wp_unslash($_SERVER['HTTP_ORIGIN'])) : '';
+    if ($origin) {
+        return $origin;
+    }
+
+    $referer = isset($_SERVER['HTTP_REFERER']) ? esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER'])) : '';
+    if ($referer) {
+        $parsed = wp_parse_url($referer);
+        if (! empty($parsed['scheme']) && ! empty($parsed['host'])) {
+            $port = isset($parsed['port']) ? ':' . (int) $parsed['port'] : '';
+            return $parsed['scheme'] . '://' . $parsed['host'] . $port;
+        }
+    }
+
+    return home_url();
+}
+
+function hf_commerce_get_account_session(WP_REST_Request $request) {
+    $user = wp_get_current_user();
+    $is_logged_in = is_user_logged_in();
+    $frontend_origin = hf_commerce_frontend_origin_from_request();
+    $redirect_to = trailingslashit($frontend_origin) . 'my-account/';
+
+    return rest_ensure_response(array(
+        'loggedIn'    => $is_logged_in,
+        'userId'      => $is_logged_in ? (int) $user->ID : 0,
+        'userLogin'   => $is_logged_in ? (string) $user->user_login : '',
+        'displayName' => $is_logged_in ? (string) $user->display_name : '',
+        'email'       => $is_logged_in ? (string) $user->user_email : '',
+        'logoutUrl'   => $is_logged_in ? html_entity_decode(wp_logout_url($redirect_to), ENT_QUOTES, 'UTF-8') : '',
+        'loginUrl'    => trailingslashit(home_url('/')) . 'wp-login.php',
+        'redirectTo'  => $redirect_to,
+    ));
+}
+
+function hf_commerce_get_checkout_options(WP_REST_Request $request) {
+    if (! function_exists('WC')) {
+        return new WP_Error('hf_woocommerce_unavailable', __('WooCommerce is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
+    }
+
+    $frontend_origin = hf_commerce_frontend_origin_from_request();
+    $methods = array();
+    if (function_exists('WC') && WC()->payment_gateways()) {
+        foreach (WC()->payment_gateways()->get_available_payment_gateways() as $gateway) {
+            $methods[] = array(
+                'id'          => (string) $gateway->id,
+                'title'       => (string) $gateway->get_title(),
+                'description' => (string) $gateway->get_description(),
+            );
+        }
+    }
+
+    $user = wp_get_current_user();
+    return rest_ensure_response(array(
+        'loggedIn'         => is_user_logged_in(),
+        'displayName'      => is_user_logged_in() ? (string) $user->display_name : '',
+        'email'            => is_user_logged_in() ? (string) $user->user_email : '',
+        'paymentMethods'   => $methods,
+        'defaultMethodId'  => ! empty($methods[0]['id']) ? (string) $methods[0]['id'] : '',
+        'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
+    ));
+}
+
+function hf_commerce_request_password_reset(WP_REST_Request $request) {
+    if (! function_exists('retrieve_password')) {
+        return new WP_Error('hf_password_reset_unavailable', __('Password reset is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
+    }
+
+    $user_login = '';
+    $params = $request->get_json_params();
+    if (is_array($params) && isset($params['user_login'])) {
+        $user_login = sanitize_text_field(wp_unslash($params['user_login']));
+    } elseif ($request->get_param('user_login')) {
+        $user_login = sanitize_text_field(wp_unslash($request->get_param('user_login')));
+    }
+
+    if (! $user_login) {
+        return new WP_Error('hf_password_reset_missing', __('Ingresá tu usuario o email.', 'horizon-fit-commerce'), array('status' => 400));
+    }
+
+    $result = retrieve_password($user_login);
+    if (is_wp_error($result) && $result->has_errors()) {
+        $message = $result->get_error_message();
+        return new WP_Error('hf_password_reset_failed', wp_strip_all_tags($message), array('status' => 400));
+    }
+
+    return rest_ensure_response(array(
+        'message' => __('Si encontramos tu cuenta, te enviamos un email con los pasos para restablecer la contraseña.', 'horizon-fit-commerce'),
+    ));
+}
 
 function hf_commerce_sync_checkout_cart(WP_REST_Request $request) {
     if (! function_exists('WC')) {
@@ -157,8 +276,10 @@ function hf_commerce_sync_checkout_cart(WP_REST_Request $request) {
         WC()->session->set_customer_session_cookie(true);
     }
 
+    $frontend_origin = hf_commerce_frontend_origin_from_request();
+
     return rest_ensure_response(array(
-        'checkoutUrl' => wc_get_checkout_url(),
+        'checkoutUrl' => trailingslashit($frontend_origin) . 'checkout/',
         'itemsCount'  => WC()->cart->get_cart_contents_count(),
         'cartHash'    => WC()->cart->get_cart_hash(),
     ));

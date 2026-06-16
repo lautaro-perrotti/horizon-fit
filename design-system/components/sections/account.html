@@ -1,0 +1,58 @@
+<section class="hf-account-view" data-account-page hidden role="main" aria-label="Mi cuenta">
+  <div class="hf-account-view__shell">
+    <div class="hf-account-view__intro">
+      <p class="hf-account-view__kicker">Horizon Fit</p>
+      <h1 class="hf-account-view__title">Mi cuenta</h1>
+      <p class="hf-account-view__lead">
+        Ingresá para ver pedidos, direcciones y datos de cliente sin salir de 8088.
+      </p>
+    </div>
+
+    <div class="hf-account-view__grid">
+      <form class="hf-account-view__panel hf-account-view__login" data-account-login-shell method="post" action="#">
+        <div class="hf-account-view__panel-head">
+          <span class="hf-account-view__panel-kicker">Acceso</span>
+          <strong class="hf-account-view__panel-title">Ingresar</strong>
+        </div>
+
+        <label class="hf-account-view__field">
+          <span>Usuario o email</span>
+          <input type="text" name="log" autocomplete="username" required>
+        </label>
+
+        <label class="hf-account-view__field">
+          <span>Contraseña</span>
+          <input type="password" name="pwd" autocomplete="current-password" required>
+        </label>
+
+        <div class="hf-account-view__form-row">
+          <label class="hf-account-view__remember">
+            <input type="checkbox" name="rememberme" value="forever">
+            <span>Recordarme</span>
+          </label>
+          <a class="hf-account-view__forgot" data-account-forgot href="/my-account/lost-password/">Olvidé mi contraseña</a>
+        </div>
+
+        <input type="hidden" name="redirect_to" value="">
+
+        <button class="btn btn--primary hf-account-view__submit" type="submit">Ingresar</button>
+        <p class="hf-account-view__status" data-account-login-status></p>
+        <a class="hf-account-view__back" data-account-shop href="/">Volver a la tienda</a>
+      </form>
+
+      <aside class="hf-account-view__panel hf-account-view__session" data-account-session-shell hidden>
+        <div class="hf-account-view__panel-head">
+          <span class="hf-account-view__panel-kicker" data-account-session-status>Sesión activa</span>
+          <strong class="hf-account-view__panel-title" data-account-session-name>Cliente</strong>
+        </div>
+
+        <p class="hf-account-view__session-email" data-account-session-email></p>
+
+        <div class="hf-account-view__session-actions">
+          <a class="btn btn--primary" href="/checkout/" data-account-checkout>Ir al checkout</a>
+          <a class="hf-account-view__logout" data-account-logout href="#">Cerrar sesión</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
