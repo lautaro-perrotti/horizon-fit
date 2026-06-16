@@ -23,6 +23,23 @@ function horizon_fit_blank_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'horizon_fit_blank_enqueue_assets');
 
+function horizon_fit_blank_document_title($title) {
+    if (function_exists('is_account_page') && is_account_page()) {
+        return 'Mi cuenta | Horizon Fit';
+    }
+
+    if (function_exists('is_checkout') && is_checkout()) {
+        return 'Checkout | Horizon Fit';
+    }
+
+    if (function_exists('is_cart') && is_cart()) {
+        return 'Carrito | Horizon Fit';
+    }
+
+    return $title;
+}
+add_filter('pre_get_document_title', 'horizon_fit_blank_document_title');
+
 // Habilitar REST API pública para WooCommerce
 // Permitir GET requests a productos y taxonomías sin autenticación
 add_filter('woocommerce_rest_product_schema', function($schema) {
