@@ -102,13 +102,11 @@ function hf_store_is_noindex_route() {
 }
 
 function hf_store_get_site_icon_url() {
-    $brand_icon = home_url('/LOGOS/ISOTIPO.svg');
-    if ($brand_icon) {
-        return $brand_icon;
-    }
+    return home_url('/LOGOS/favicon-512.png?v=20260616');
+}
 
-    $icon = function_exists('get_site_icon_url') ? get_site_icon_url(512) : '';
-    return $icon ? $icon : '';
+function hf_store_get_site_icon_svg_url() {
+    return home_url('/LOGOS/ISOTIPO.svg?v=20260616');
 }
 
 function hf_store_get_default_social_image() {
@@ -386,15 +384,15 @@ add_filter('wp_robots', 'hf_store_filter_wp_robots');
 function hf_store_output_seo_head() {
     $seo = hf_store_get_seo_data();
     $schema = array_values(array_filter((array) ($seo['schema'] ?? array())));
-    $icon = hf_store_get_site_icon_url();
+    $icon_png = hf_store_get_site_icon_url();
+    $icon_svg = hf_store_get_site_icon_svg_url();
     ?>
     <meta name="description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
     <link rel="canonical" href="<?php echo esc_url($seo['canonical'] ?? home_url('/')); ?>">
     <meta name="robots" content="<?php echo esc_attr($seo['robots'] ?? 'index,follow'); ?>">
-    <?php if (! empty($icon)) : ?>
-        <link rel="icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
-        <link rel="shortcut icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
-    <?php endif; ?>
+    <link rel="icon" href="<?php echo esc_url($icon_png); ?>" type="image/png" sizes="32x32">
+    <link rel="icon" href="<?php echo esc_url($icon_svg); ?>" type="image/svg+xml" sizes="any">
+    <link rel="apple-touch-icon" href="<?php echo esc_url($icon_png); ?>" sizes="180x180">
     <meta property="og:site_name" content="<?php echo esc_attr(hf_store_brand_name()); ?>">
     <meta property="og:title" content="<?php echo esc_attr($seo['title'] ?? hf_store_brand_name()); ?>">
     <meta property="og:description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
