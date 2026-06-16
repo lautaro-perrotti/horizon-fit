@@ -5,6 +5,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    if (window.location.pathname === '/index.html') {
+      window.location.replace('/');
+    }
+  </script>
   <title>Horizon Fit — Design System (HTML/CSS/JS)</title>
   <meta name="color-scheme" content="light dark" />
 
@@ -5690,7 +5695,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h4>' +
+          '      <h2 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h2>' +
           '      <p class="hf-pdp-trust-text">Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000</p>' +
           '    </div>' +
           '  </div>' +
@@ -5704,7 +5709,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h4>' +
+          '      <h2 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h2>' +
           '      <p class="hf-pdp-trust-text">¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.</p>' +
           '    </div>' +
           '  </div>' +
@@ -5718,7 +5723,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">Información cuotas</h4>' +
+          '      <h2 class="hf-pdp-trust-title">Información cuotas</h2>' +
           '      <p class="hf-pdp-trust-text">Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a></p>' +
           '    </div>' +
           '  </div>' +
@@ -8616,11 +8621,13 @@
       font-family: 'BlauerNue', sans-serif !important;
     }
 
-    .menu-drawer__social img,
-    .footer__social img {
-      width: 42px !important;
-      height: 42px !important;
-    }
+      .menu-drawer__social img,
+      .footer__social img {
+        width: 32px !important;
+        height: 32px !important;
+        object-fit: contain;
+        display: block;
+      }
   </style>
 
   <script>

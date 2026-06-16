@@ -5699,7 +5699,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h4>' +
+          '      <h2 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h2>' +
           '      <p class="hf-pdp-trust-text">Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000</p>' +
           '    </div>' +
           '  </div>' +
@@ -5713,7 +5713,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h4>' +
+          '      <h2 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h2>' +
           '      <p class="hf-pdp-trust-text">¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.</p>' +
           '    </div>' +
           '  </div>' +
@@ -5727,7 +5727,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h4 class="hf-pdp-trust-title">Información cuotas</h4>' +
+          '      <h2 class="hf-pdp-trust-title">Información cuotas</h2>' +
           '      <p class="hf-pdp-trust-text">Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a></p>' +
           '    </div>' +
           '  </div>' +
@@ -5819,6 +5819,8 @@
 
         function slugifyText(value) {
           return String(value || '')
+            .replace(/\s*\(\s*(?:copia|copy)(?:\s*\d+)?\s*\)\s*$/i, '')
+            .replace(/(?:[._\-\s]*(?:copia|copy)(?:[._\-\s]*\d+)?)$/i, '')
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
@@ -5849,8 +5851,7 @@
             transfer: transferNode ? transferNode.textContent.trim() : '',
             images: productImages.join('|')
           });
-          params.set('view', 'product');
-          return '/producto/?' + params.toString();
+          return '/producto/' + encodeURIComponent(params.get('slug') || slugifyText(titleEl.textContent.trim())) + '/';
         }
 
         function renderLookComplete() {
@@ -6009,15 +6010,15 @@
               <div id="pdp-desktop-carousel" style="margin-top: 40px;">
                 <h2 style="font-size: 16px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 900; margin-bottom: 16px;">Conjuntos destacados</h2>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                  <a href="/producto/?name=SET+MOTION&slug=set-motion&view=product" style="text-decoration: none; color: inherit;">
+                  <a href="/producto/set-motion/" style="text-decoration: none; color: inherit;">
                     <img src="https://images.pexels.com/photos/414029/pexels-photo-414029.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px;">
                     <p style="font-size: 11px; margin-top: 8px; text-align: center; font-weight: bold;">Set Motion</p>
                   </a>
-                  <a href="/producto/?name=SET+POWER&slug=set-power&view=product" style="text-decoration: none; color: inherit;">
+                  <a href="/producto/set-power/" style="text-decoration: none; color: inherit;">
                     <img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px;">
                     <p style="font-size: 11px; margin-top: 8px; text-align: center; font-weight: bold;">Set Power</p>
                   </a>
-                  <a href="/producto/?name=SET+URBAN&slug=set-urban&view=product" style="text-decoration: none; color: inherit;">
+                  <a href="/producto/set-urban/" style="text-decoration: none; color: inherit;">
                     <img src="https://images.pexels.com/photos/3764011/pexels-photo-3764011.jpeg?auto=compress&cs=tinysrgb&w=1400&h=1800&dpr=1" style="width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px;">
                     <p style="font-size: 11px; margin-top: 8px; text-align: center; font-weight: bold;">Set Urban</p>
                   </a>
@@ -6163,8 +6164,7 @@
           transfer: transferEl ? transferEl.textContent.trim() : '',
           images: productImages.join('|')
         });
-        params.set('view', 'product');
-        var productUrl = '/producto/?' + params.toString();
+        var productUrl = '/producto/' + encodeURIComponent(params.get('slug') || slugifyText(titleEl.textContent.trim())) + '/';
         item.dataset.productUrl = productUrl;
         item.setAttribute('role', 'link');
         item.setAttribute('tabindex', '0');
@@ -6375,47 +6375,47 @@
         <h2 class="hf-pdp-look__title">El look completo</h2>
         <div class="hf-pdp-look__list" data-product-look-list="" tabindex="0" role="region" aria-label="Lista de productos del look completo">
           <article class="hf-pdp-look__item"><a class="hf-pdp-look__thumb"
-              href="/producto/?name=BLACK+HIGH+TOP&amp;slug=black-high-top&amp;price=%2454.990+ARS&amp;compare=%24109.990&amp;installments=6+cuotas+de%3A+%249.165&amp;transfer=%2446.742+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F3757376%2Fpexels-photo-3757376.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056723%2Fpexels-photo-4056723.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056535%2Fpexels-photo-4056535.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product"
+              href="/producto/black-high-top/"
               aria-label="Ver BLACK HIGH TOP"><img
                 src="https://images.pexels.com/photos/3757376/pexels-photo-3757376.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400&amp;h=1800&amp;dpr=1"
                 alt=""></a>
             <div class="hf-pdp-look__meta">
               <h3 class="hf-pdp-look__name">BLACK HIGH TOP</h3>
               <p class="hf-pdp-look__price">$54.990 ARS</p><a class="hf-pdp-look__button"
-                href="/producto/?name=BLACK+HIGH+TOP&amp;slug=black-high-top&amp;price=%2454.990+ARS&amp;compare=%24109.990&amp;installments=6+cuotas+de%3A+%249.165&amp;transfer=%2446.742+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F3757376%2Fpexels-photo-3757376.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056723%2Fpexels-photo-4056723.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056535%2Fpexels-photo-4056535.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product">Comprar</a>
+                href="/producto/black-high-top/">Comprar</a>
             </div>
           </article>
           <article class="hf-pdp-look__item"><a class="hf-pdp-look__thumb"
-              href="/producto/?name=BLACK+HIGH+LEGGING&amp;slug=black-high-legging&amp;price=%2464.990+ARS&amp;compare=%24129.990&amp;installments=6+cuotas+de%3A+%2410.832&amp;transfer=%2455.242+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056536%2Fpexels-photo-4056536.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056589%2Fpexels-photo-4056589.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F3838389%2Fpexels-photo-3838389.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product"
+              href="/producto/black-high-legging/"
               aria-label="Ver BLACK HIGH LEGGING"><img
                 src="https://images.pexels.com/photos/4056536/pexels-photo-4056536.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400&amp;h=1800&amp;dpr=1"
                 alt=""></a>
             <div class="hf-pdp-look__meta">
               <h3 class="hf-pdp-look__name">BLACK HIGH LEGGING</h3>
               <p class="hf-pdp-look__price">$64.990 ARS</p><a class="hf-pdp-look__button"
-                href="/producto/?name=BLACK+HIGH+LEGGING&amp;slug=black-high-legging&amp;price=%2464.990+ARS&amp;compare=%24129.990&amp;installments=6+cuotas+de%3A+%2410.832&amp;transfer=%2455.242+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056536%2Fpexels-photo-4056536.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F4056589%2Fpexels-photo-4056589.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F3838389%2Fpexels-photo-3838389.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product">Comprar</a>
+                href="/producto/black-high-legging/">Comprar</a>
             </div>
           </article>
           <article class="hf-pdp-look__item"><a class="hf-pdp-look__thumb"
-              href="/producto/?name=BLUE+HIGH+LEGGING&amp;slug=blue-high-legging&amp;price=%2464.990+ARS&amp;compare=%24129.990&amp;installments=6+cuotas+de%3A+%2410.832&amp;transfer=%2455.242+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F1552242%2Fpexels-photo-1552242.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F414029%2Fpexels-photo-414029.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F863988%2Fpexels-photo-863988.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product"
+              href="/producto/blue-high-legging/"
               aria-label="Ver BLUE HIGH LEGGING"><img
                 src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400&amp;h=1800&amp;dpr=1"
                 alt=""></a>
             <div class="hf-pdp-look__meta">
               <h3 class="hf-pdp-look__name">BLUE HIGH LEGGING</h3>
               <p class="hf-pdp-look__price">$64.990 ARS</p><a class="hf-pdp-look__button"
-                href="/producto/?name=BLUE+HIGH+LEGGING&amp;slug=blue-high-legging&amp;price=%2464.990+ARS&amp;compare=%24129.990&amp;installments=6+cuotas+de%3A+%2410.832&amp;transfer=%2455.242+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F1552242%2Fpexels-photo-1552242.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F414029%2Fpexels-photo-414029.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1%7Chttps%3A%2F%2Fimages.pexels.com%2Fphotos%2F863988%2Fpexels-photo-863988.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product">Comprar</a>
+                href="/producto/blue-high-legging/">Comprar</a>
             </div>
           </article>
           <article class="hf-pdp-look__item"><a class="hf-pdp-look__thumb"
-              href="/producto/?name=WHITE+TRAINERS&amp;slug=white-trainers&amp;price=%2474.990+ARS&amp;compare=%24149.990&amp;installments=6+cuotas+de%3A+%2412.498&amp;transfer=%2463.742+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F1456706%2Fpexels-photo-1456706.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product"
+              href="/producto/white-trainers/"
               aria-label="Ver WHITE TRAINERS"><img
                 src="https://images.pexels.com/photos/1456706/pexels-photo-1456706.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1400&amp;h=1800&amp;dpr=1"
                 alt=""></a>
             <div class="hf-pdp-look__meta">
               <h3 class="hf-pdp-look__name">WHITE TRAINERS</h3>
               <p class="hf-pdp-look__price">$74.990 ARS</p><a class="hf-pdp-look__button"
-                href="/producto/?name=WHITE+TRAINERS&amp;slug=white-trainers&amp;price=%2474.990+ARS&amp;compare=%24149.990&amp;installments=6+cuotas+de%3A+%2412.498&amp;transfer=%2463.742+con%0A++++++++++++++++++++Transferencia&amp;images=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F1456706%2Fpexels-photo-1456706.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D1400%26h%3D1800%26dpr%3D1&amp;view=product">Comprar</a>
+                href="/producto/white-trainers/">Comprar</a>
             </div>
           </article>
         </div>
@@ -6454,7 +6454,7 @@
                     <button class="hf-product-item__size" aria-pressed="false">M</button>
                     <button class="hf-product-item__size" aria-pressed="false">L</button>
                   </div>
-                  <a href="/producto/?name=SET+MOTION&slug=set-motion&price=%2489.900&compare=%24109.800&view=product"
+                  <a href="/producto/set-motion/"
                     aria-label="Ver detalle de Set Motion" class="hf-product-item__link">
                     <h3 class="hf-product-item__title">Set Motion</h3>
                   </a>
@@ -6491,7 +6491,7 @@
                     <button class="hf-product-item__size" aria-pressed="false">M</button>
                     <button class="hf-product-item__size" aria-pressed="false">L</button>
                   </div>
-                  <a href="/producto/?name=SET+POWER&slug=set-power&price=%2472.900&compare=%2489.800&view=product"
+                  <a href="/producto/set-power/"
                     aria-label="Ver detalle de Set Power" class="hf-product-item__link">
                     <h3 class="hf-product-item__title">Set Power</h3>
                   </a>
@@ -6528,7 +6528,7 @@
                     <button class="hf-product-item__size" aria-pressed="false">M</button>
                     <button class="hf-product-item__size" aria-pressed="false">L</button>
                   </div>
-                  <a href="/producto/?name=SET+URBAN&slug=set-urban&price=%24134.900&compare=%24154.800&view=product"
+                  <a href="/producto/set-urban/"
                     aria-label="Ver detalle de Set Urban" class="hf-product-item__link">
                     <h3 class="hf-product-item__title">Set Urban</h3>
                   </a>
@@ -6565,7 +6565,7 @@
                     <button class="hf-product-item__size" aria-pressed="false">M</button>
                     <button class="hf-product-item__size" aria-pressed="false">L</button>
                   </div>
-                  <a href="/producto/?name=SET+FOCUS&slug=set-focus&price=%2469.900&compare=%2484.800&view=product"
+                  <a href="/producto/set-focus/"
                     aria-label="Ver detalle de Set Focus" class="hf-product-item__link">
                     <h3 class="hf-product-item__title">Set Focus</h3>
                   </a>
@@ -6602,7 +6602,7 @@
                     <button class="hf-product-item__size" aria-pressed="false">M</button>
                     <button class="hf-product-item__size" aria-pressed="false">L</button>
                   </div>
-                  <a href="/producto/?name=SET+ENERGY&slug=set-energy&price=%2476.900&compare=%2492.800&view=product"
+                  <a href="/producto/set-energy/"
                     aria-label="Ver detalle de Set Energy" class="hf-product-item__link">
                     <h3 class="hf-product-item__title">Set Energy</h3>
                   </a>
@@ -8634,11 +8634,13 @@
       font-family: 'BlauerNue', sans-serif !important;
     }
 
-    .menu-drawer__social img,
-    .footer__social img {
-      width: 42px !important;
-      height: 42px !important;
-    }
+      .menu-drawer__social img,
+      .footer__social img {
+        width: 32px !important;
+        height: 32px !important;
+        object-fit: contain;
+        display: block;
+      }
   </style>
 
   <script>

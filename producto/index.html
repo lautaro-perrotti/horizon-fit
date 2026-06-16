@@ -5,16 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Producto | Horizon Fit</title>
   <script>
-    var target = '../index.html';
-    var query = window.location.search || '';
-    if (query) {
-      var params = new URLSearchParams(query);
-      params.set('view', 'product');
-      target += '?' + params.toString();
-    } else {
-      target += '#productGrid1';
-    }
-    window.location.replace(target);
+    (function () {
+      var params = new URLSearchParams(window.location.search || '');
+      var slug = params.get('slug') || params.get('product') || '';
+      if (slug) {
+        window.location.replace('/producto/' + encodeURIComponent(slug) + '/');
+        return;
+      }
+      window.location.replace('/coleccion/');
+    })();
   </script>
 </head>
 <body>

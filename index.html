@@ -6,6 +6,11 @@
   <meta charset="utf-8" />
   <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    if (window.location.pathname === '/index.html') {
+      window.location.replace('/');
+    }
+  </script>
   <title>Horizon Fit | Ropa deportiva y conjuntos</title>
   <link rel="icon" href="/LOGOS/ISOTIPO.svg" type="image/svg+xml" />
   <link rel="shortcut icon" href="/LOGOS/ISOTIPO.svg" type="image/svg+xml" />
@@ -4602,8 +4607,10 @@
 
       .menu-drawer__social img,
       .footer__social img {
-        width: 42px !important;
-        height: 42px !important;
+        width: 32px !important;
+        height: 32px !important;
+        object-fit: contain;
+        display: block;
       }
     </style>
 </head>

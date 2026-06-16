@@ -67,6 +67,8 @@ services:
       - "8088:80"
     volumes:
       - ./index.html:/usr/local/apache2/htdocs/index.html
+      - ./robots.txt:/usr/local/apache2/htdocs/robots.txt:ro
+      - ./sitemap.xml:/usr/local/apache2/htdocs/sitemap.xml:ro
       - ./design-system:/usr/local/apache2/htdocs/design-system
       - ./assets:/usr/local/apache2/htdocs/assets:ro
       - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro

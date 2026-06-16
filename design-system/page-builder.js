@@ -265,7 +265,8 @@
 
   const isProductRoute = () => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('view') === 'product' || window.location.pathname.replace(/\/+$/, '') === '/producto';
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return params.get('view') === 'product' || path === '/producto' || path.startsWith('/producto/');
   };
 
   const isCollectionRoute = () => {
@@ -338,7 +339,19 @@
     window.location.replace('/');
   };
 
-  const productUrl = (product) => {
+  const stripDuplicateSlugSuffix = (value) => String(value || '')
+    .replace(/\s*\(\s*(?:copia|copy)(?:\s*\d+)?\s*\)\s*$/i, '')
+    .replace(/(?:[._\-\s]*(?:copia|copy)(?:[._\-\s]*\d+)?)$/i, '')
+    .trim();
+
+  const slugifyText = (value) => stripDuplicateSlugSuffix(decodeEntities(value))
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  const getProductPermalinkSlug = (product) => {
     let permalinkSlug = '';
     try {
       const permalink = product?.permalink ? new URL(product.permalink, WP_BASE_URL) : null;
@@ -346,8 +359,30 @@
     } catch (error) {
       permalinkSlug = `${product?.permalink || ''}`.split('?')[0].replace(/\/$/, '').split('/').pop();
     }
-    const slug = product?.slug || permalinkSlug || '';
-    return slug ? `/producto/?slug=${encodeURIComponent(slug)}` : '#';
+    return permalinkSlug || '';
+  };
+
+  const normalizeProductSlug = (value) => slugifyText(value);
+
+  const getProductCanonicalSlug = (product) => {
+    const candidates = [
+      product?.slug,
+      getProductPermalinkSlug(product),
+      product?.post_name,
+      product?.handle,
+      product?.name
+    ];
+
+    for (const candidate of candidates) {
+      const slug = normalizeProductSlug(candidate);
+      if (slug) return slug;
+    }
+    return '';
+  };
+
+  const productUrl = (product) => {
+    const slug = getProductCanonicalSlug(product);
+    return slug ? `/producto/${encodeURIComponent(slug)}/` : '#';
   };
 
   const collectProducts = (source, map) => {
@@ -1071,7 +1106,7 @@
     if (url.startsWith('#')) {
       const isHome = window.location.pathname === '/' ||
         /\/index\.html$/.test(window.location.pathname);
-      return isHome ? url : `/index.html${url}`;
+      return isHome ? url : `/${url}`;
     }
     if (/^https?:\/\//.test(url)) return url;
     return rootUrl(url);
@@ -1304,11 +1339,12 @@
   };
 
   const productMatchesSlug = (product, slug) => {
-    if (!slug) return false;
-    const permalinkSlug = `${product?.permalink || ''}`.replace(/\/$/, '').split('/').pop();
-    return [product?.slug, product?.post_name, product?.handle, permalinkSlug]
+    const targetSlug = normalizeProductSlug(slug);
+    if (!targetSlug) return false;
+    return [product?.slug, product?.post_name, product?.handle, getProductPermalinkSlug(product), product?.name]
+      .map(normalizeProductSlug)
       .filter(Boolean)
-      .some(value => value === slug);
+      .some(value => value === targetSlug);
   };
 
   const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, char => ({
@@ -2319,12 +2355,23 @@
     }
 
     const params = new URLSearchParams(window.location.search);
-    const slug = params.get('slug') || params.get('product');
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    const pathSlug = path.startsWith('/producto/')
+      ? decodeURIComponent(path.split('/').filter(Boolean).pop() || '')
+      : '';
+    const slug = params.get('slug') || params.get('product') || pathSlug;
     const list = filterVisibleProducts(products);
     const product = slug ? list.find(item => productMatchesSlug(item, slug)) : list[0];
     if (slug && !product) {
       console.warn(`[HF PB] Product slug not found: ${slug}`);
       redirectToHome();
+      return;
+    }
+
+    const canonicalSlug = getProductCanonicalSlug(product);
+    const requestedSlug = normalizeProductSlug(slug);
+    if (canonicalSlug && requestedSlug && canonicalSlug !== requestedSlug) {
+      window.location.replace(`/producto/${encodeURIComponent(canonicalSlug)}/`);
       return;
     }
 
@@ -2388,7 +2435,10 @@
       }
     }
 
-    const canonical = routeBaseUrl('/producto/', slug ? `?slug=${encodeURIComponent(slug)}` : '');
+    const productSlug = canonicalSlug || requestedSlug;
+    const canonical = productSlug
+      ? routeBaseUrl(`/producto/${encodeURIComponent(productSlug)}/`)
+      : routeBaseUrl('/producto/');
     const productDescription = normalizeSeoDescription(
       plainTextFromHtml(product.description || product.shortDescription || product.excerpt || ''),
       HOME_SEO_DESCRIPTION
