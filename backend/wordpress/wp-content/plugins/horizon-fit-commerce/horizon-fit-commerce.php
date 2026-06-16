@@ -26,6 +26,7 @@ require_once HF_COMMERCE_DIR . 'includes/footer-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/trust-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/style-edit-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/social-strip-settings.php';
+require_once HF_COMMERCE_DIR . 'includes/admin-panel.php';
 
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
@@ -358,7 +359,7 @@ function hf_commerce_admin_assets($hook) {
     $screen = function_exists('get_current_screen') ? get_current_screen() : null;
     $taxonomy_screens = array('edit-product_cat', 'term-product_cat', 'edit-hf_collection', 'term-hf_collection');
 
-    if (($screen && in_array($screen->id, $taxonomy_screens, true)) || false !== strpos((string) $hook, 'hf-commerce')) {
+    if (($screen && in_array($screen->id, $taxonomy_screens, true)) || false !== strpos((string) $hook, 'hf-commerce') || false !== strpos((string) $hook, 'hf-panel')) {
         wp_enqueue_media();
         wp_enqueue_style('hf-commerce-admin', HF_COMMERCE_URL . 'assets/admin.css', array(), '1.0.0');
         wp_enqueue_script('hf-commerce-admin', HF_COMMERCE_URL . 'assets/admin.js', array('jquery'), '1.1.0', true);
@@ -366,68 +367,24 @@ function hf_commerce_admin_assets($hook) {
 }
 
 function hf_commerce_register_admin_pages() {
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Seeder', 'horizon-fit-commerce'),
+    // Panel único "Horizon Fit": una sola pantalla con pestañas que unifica toda
+    // la administración del frontend (secciones de la home, menú, categorías y
+    // conjuntos, precios). Reusa las funciones de render/guardado existentes.
+    add_menu_page(
+        __('Horizon Fit', 'horizon-fit-commerce'),
         __('Horizon Fit', 'horizon-fit-commerce'),
         'manage_woocommerce',
-        'hf-commerce-seed',
-        'hf_commerce_render_seed_page'
+        'hf-panel',
+        'hf_panel_render',
+        'dashicons-store',
+        56
     );
 
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Precios', 'horizon-fit-commerce'),
-        __('Precios', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-pricing',
-        'hf_commerce_render_pricing_page'
-    );
-
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Ajustes de colección', 'horizon-fit-commerce'),
-        __('Ajustes colección', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-collection',
-        'hf_commerce_render_collection_settings_page'
-    );
-
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Footer', 'horizon-fit-commerce'),
-        __('Footer', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-footer',
-        'hf_commerce_render_footer_settings_page'
-    );
-
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Barra de confianza', 'horizon-fit-commerce'),
-        __('Barra de confianza', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-trust',
-        'hf_commerce_render_trust_settings_page'
-    );
-
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | Elegí tu estilo', 'horizon-fit-commerce'),
-        __('Elegí tu estilo', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-style-edit',
-        'hf_commerce_render_style_edit_settings_page'
-    );
-
-    add_submenu_page(
-        'woocommerce',
-        __('Horizon Fit | #HorizonFit', 'horizon-fit-commerce'),
-        __('#HorizonFit (redes)', 'horizon-fit-commerce'),
-        'manage_woocommerce',
-        'hf-commerce-social-strip',
-        'hf_commerce_render_social_strip_settings_page'
-    );
+    // Los antiguos submenu de WooCommerce (Seeder, Precios, Ajustes colección,
+    // Footer, Barra de confianza, Elegí tu estilo, #HorizonFit) YA NO se
+    // registran: todo se administra desde el panel "Horizon Fit", que invoca
+    // directamente las mismas funciones de render. Las funciones siguen
+    // existiendo (no se borra nada), solo se quitan los enlaces duplicados.
 }
 
 // Página de ajustes globales de las colecciones (columnas + productos/página).

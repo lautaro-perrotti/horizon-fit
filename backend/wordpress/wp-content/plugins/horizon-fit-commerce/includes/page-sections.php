@@ -13,7 +13,9 @@ function hf_register_page_cpt() {
         'label' => 'Páginas',
         'public' => false,
         'show_ui' => true,
-        'show_in_menu' => true,
+        // Oculto del menú lateral: es estructura interna (la home). Todo se
+        // administra desde el panel "Horizon Fit".
+        'show_in_menu' => false,
         'show_in_rest' => true,
         'rest_base' => 'pages',
         'supports' => ['title', 'editor'],
@@ -27,7 +29,8 @@ function hf_register_section_cpt() {
         'label' => 'Secciones de Página',
         'public' => false,
         'show_ui' => true,
-        'show_in_menu' => 'edit.php?post_type=hf_page',
+        // Oculto del menú lateral: las secciones se editan desde el panel.
+        'show_in_menu' => false,
         'show_in_rest' => true,
         'rest_base' => 'page-sections',
         'supports' => ['title'],

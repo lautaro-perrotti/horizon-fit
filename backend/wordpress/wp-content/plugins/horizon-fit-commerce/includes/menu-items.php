@@ -16,7 +16,8 @@ function hf_register_menu_item_cpt() {
         'label'        => 'Items de menú',
         'public'       => false,
         'show_ui'      => true,
-        'show_in_menu' => 'edit.php?post_type=hf_page',
+        // Oculto del menú lateral: se administra desde el panel "Horizon Fit".
+        'show_in_menu' => false,
         'supports'     => ['title'],
         'menu_icon'    => 'dashicons-menu',
         'labels'       => [
