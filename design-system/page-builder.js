@@ -3092,6 +3092,37 @@
       });
     });
 
+    sectionEl.querySelector('[data-product-size-guide]')?.addEventListener('click', (event) => {
+      event.preventDefault?.();
+      const tab = sectionEl.querySelector('[data-product-tab="sizes"]');
+      tab?.click();
+      sectionEl.querySelector('.hf-pdp-view__details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    const buyWithSection = sectionEl.querySelector('[data-buy-with]');
+    const infoSection = sectionEl.querySelector('.hf-pdp-view__info');
+    const detailsSection = sectionEl.querySelector('.hf-pdp-view__details');
+    const buyWithMq = window.matchMedia('(max-width: 767px)');
+
+    const syncBuyWithPlacement = () => {
+      if (!buyWithSection || !infoSection || !detailsSection) return;
+      if (buyWithMq.matches) {
+        if (buyWithSection.parentElement !== sectionEl) {
+          detailsSection.insertAdjacentElement('afterend', buyWithSection);
+        }
+      } else if (buyWithSection.parentElement !== infoSection) {
+        infoSection.appendChild(buyWithSection);
+      }
+    };
+
+    syncBuyWithPlacement();
+    if (typeof buyWithMq.addEventListener === 'function') {
+      buyWithMq.addEventListener('change', syncBuyWithPlacement);
+    } else if (typeof buyWithMq.addListener === 'function') {
+      buyWithMq.addListener(syncBuyWithPlacement);
+    }
+    window.addEventListener('resize', syncBuyWithPlacement, { passive: true });
+
     root.appendChild(sectionEl);
 
     window.setTimeout(() => {

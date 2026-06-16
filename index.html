@@ -2541,6 +2541,16 @@
         text-underline-offset: 3px;
       }
 
+      .hf-pdp-view__option-head button {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: rgba(11, 11, 15, .72);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+      }
+
       .hf-pdp-view__color-row {
         display: flex;
         gap: 8px;
@@ -2932,14 +2942,14 @@
       /* ---- Compralo con (productos del conjunto) ---- */
       .hf-buy-with {
         margin-top: 0;
-        padding-top: 1.5rem;
-        border-top: 1px solid rgba(17, 17, 17, .1);
+        padding-top: 12px;
+        border-top: 0;
       }
 
       /* En desktop sí separa de la info de cuotas */
       @media (min-width: 1024px) {
         .hf-buy-with {
-          padding-top: 1.75rem;
+          padding-top: 12px;
         }
       }
 
@@ -3049,6 +3059,16 @@
       body.hf-product-mode {
         padding-top: calc(var(--nav-h) + var(--announce-h));
         background: var(--surface);
+      }
+
+      body.hf-product-mode,
+      body.hf-product-mode>main,
+      body.hf-product-mode .hf-pdp-view {
+        background: var(--surface);
+      }
+
+      body.hf-product-mode #hfPageBuilderRoot {
+        background: var(--surface) !important;
       }
 
       body.hf-product-mode .nav {
@@ -4642,7 +4662,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=commerce-checkout-sync4-20260615"></script>
+  <script src="/design-system/page-builder.js?v=commerce-checkout-sync4-20260617"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
