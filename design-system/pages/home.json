@@ -100,6 +100,17 @@
       "order": 12,
       "visible": true,
       "component": "design-system/components/sections/footer.html"
+    },
+    {
+      "id": "whatsapp-float",
+      "type": "whatsapp-float",
+      "order": 13,
+      "visible": true,
+      "component": "design-system/components/sections/whatsapp-float.html",
+      "config": {
+        "href": "https://wa.me/5491100000000",
+        "label": "Escribinos por WhatsApp"
+      }
     }
   ]
 }

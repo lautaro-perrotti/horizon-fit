@@ -1,4 +1,4 @@
-const PAGE_BUILDER = (() => {
+﻿const PAGE_BUILDER = (() => {
   const textCache = new Map();
   const jsonCache = new Map();
 
@@ -30,9 +30,9 @@ const PAGE_BUILDER = (() => {
   }
 
   // WordPress se sirve en el MISMO host que el SPA pero en el puerto 8089.
-  // Derivamos la base dinámicamente del host actual: funciona en local
+  // Derivamos la base dinÃ¡micamente del host actual: funciona en local
   // (localhost:8088 -> localhost:8089) y en la VPS (IP:8088 -> IP:8089)
-  // sin hardcodear nada ni depender de archivos estáticos.
+  // sin hardcodear nada ni depender de archivos estÃ¡ticos.
   const WP_PORT = '8089';
   const WP_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`;
   const WOO_STORE_API_BASE = `${WP_BASE_URL}/wp-json/wc/store/v1`;
@@ -40,30 +40,38 @@ const PAGE_BUILDER = (() => {
   const WOO_CHECKOUT_URL = `${WP_BASE_URL}/checkout/`;
   const WOO_ACCOUNT_URL = `${WP_BASE_URL}/my-account/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
-  // Cache estática de settings de secciones (rápida). Fallback al REST.
+  // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
   const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
 
-  // Productos: cache estática de WordPress como fuente primaria (instantánea,
-  // ~15ms, sin queries en runtime). Host dinámico, URLs correctas por entorno.
+  // Productos: cache estÃ¡tica de WordPress como fuente primaria (instantÃ¡nea,
+  // ~15ms, sin queries en runtime). Host dinÃ¡mico, URLs correctas por entorno.
   // CORS se resuelve activando mod_headers en Apache (config del contenedor).
   // Fallback al REST solo si el archivo no estuviera disponible.
   const PRODUCT_DATA_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products.json`;
   const PRODUCT_DATA_FALLBACK_SRC = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/products`;
   const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
 
-  // Cache de una colección concreta (featured-row-1, featured-row-2, ...).
+  // Cache de una colecciÃ³n concreta (featured-row-1, featured-row-2, ...).
   const productCollectionSrc = (slug) =>
     `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products-${slug}.json`;
 
   // Cache de "Conjuntos destacados": colecciones marcadas "Mostrar en home".
   const FEATURED_SETS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-sets.json`;
 
-  // Cache de "Compra por categoría": categorías marcadas "Mostrar en home".
+  // Cache de "Compra por categorÃ­a": categorÃ­as marcadas "Mostrar en home".
   const FEATURED_CATEGORIES_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-categories.json`;
 
-  // Cache del menú de la navbar: items de menú + categorías "Mostrar en menú".
+  // Cache del menÃº de la navbar: items de menÃº + categorÃ­as "Mostrar en menÃº".
   const MENU_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/menu.json`;
+  const GLOBAL_SECTION_TYPES = new Set(['marquee', 'navbar', 'footer', 'whatsapp-float']);
+  const SECTION_SLOT = {
+    BEFORE_ROOT: 'before-root',
+    ROOT: 'root',
+    AFTER_ROOT: 'after-root'
+  };
+  const WHATSAPP_DEFAULT_HREF = 'https://wa.me/5491100000000';
+  const WHATSAPP_DEFAULT_LABEL = 'Escribinos por WhatsApp';
 
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
   // relativas ("/assets/..", "assets/..") y las deja servibles desde el SPA.
@@ -73,8 +81,160 @@ const PAGE_BUILDER = (() => {
     return rootUrl(url);
   };
 
+  const SITE_NAME = 'Horizon Fit';
+  const HOME_SEO_TITLE = `${SITE_NAME} | Ropa deportiva y conjuntos`;
+  const HOME_SEO_DESCRIPTION = 'Activewear funcional, conjuntos pensados para combinar y una experiencia de compra clara, rápida y móvil.';
+  const DEFAULT_SOCIAL_IMAGE = resolveMediaUrl('assets/hero-poster-desktop.jpg');
+
+  const SEO_TAGS = {
+    description: 'hfMetaDescription',
+    robots: 'hfMetaRobots',
+    canonical: 'hfCanonicalLink',
+    ogSiteName: 'hfOgSiteName',
+    ogTitle: 'hfOgTitle',
+    ogDescription: 'hfOgDescription',
+    ogUrl: 'hfOgUrl',
+    ogType: 'hfOgType',
+    ogImage: 'hfOgImage',
+    twitterCard: 'hfTwitterCard',
+    twitterTitle: 'hfTwitterTitle',
+    twitterDescription: 'hfTwitterDescription',
+    twitterImage: 'hfTwitterImage',
+    jsonLd: 'hfSeoJsonLd'
+  };
+
+  const ensureHeadNode = (tagName, id, attrs = {}) => {
+    let node = document.getElementById(id);
+    if (!node) {
+      node = document.createElement(tagName);
+      node.id = id;
+      document.head.appendChild(node);
+    }
+    Object.entries(attrs).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === '') {
+        node.removeAttribute(key);
+      } else {
+        node.setAttribute(key, `${value}`);
+      }
+    });
+    return node;
+  };
+
+  const ensureSeoLink = (id, href) => ensureHeadNode('link', id, { rel: 'canonical', href });
+
+  const normalizeSeoDescription = (value, fallback = HOME_SEO_DESCRIPTION, maxLength = 160) => {
+    const text = `${value || ''}`.trim();
+    const source = text || fallback;
+    if (source.length <= maxLength) return source;
+    return `${source.slice(0, maxLength - 1).trimEnd()}…`;
+  };
+
+  const routeBaseUrl = (pathname, search = '') => {
+    const url = new URL(window.location.href);
+    url.pathname = pathname;
+    url.search = search;
+    url.hash = '';
+    return url.href;
+  };
+
+  const updateSeo = ({
+    title = HOME_SEO_TITLE,
+    description = HOME_SEO_DESCRIPTION,
+    canonical = routeBaseUrl('/'),
+    robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
+    ogType = 'website',
+    ogImage = DEFAULT_SOCIAL_IMAGE,
+    schema = []
+  } = {}) => {
+    document.title = title;
+    ensureHeadNode('meta', SEO_TAGS.description, { name: 'description', content: normalizeSeoDescription(description) });
+    ensureHeadNode('meta', SEO_TAGS.robots, { name: 'robots', content: robots });
+    ensureSeoLink(SEO_TAGS.canonical, canonical);
+    ensureHeadNode('meta', SEO_TAGS.ogSiteName, { property: 'og:site_name', content: SITE_NAME });
+    ensureHeadNode('meta', SEO_TAGS.ogTitle, { property: 'og:title', content: title });
+    ensureHeadNode('meta', SEO_TAGS.ogDescription, { property: 'og:description', content: normalizeSeoDescription(description) });
+    ensureHeadNode('meta', SEO_TAGS.ogUrl, { property: 'og:url', content: canonical });
+    ensureHeadNode('meta', SEO_TAGS.ogType, { property: 'og:type', content: ogType });
+    ensureHeadNode('meta', SEO_TAGS.twitterCard, { name: 'twitter:card', content: ogImage ? 'summary_large_image' : 'summary' });
+    ensureHeadNode('meta', SEO_TAGS.twitterTitle, { name: 'twitter:title', content: title });
+    ensureHeadNode('meta', SEO_TAGS.twitterDescription, { name: 'twitter:description', content: normalizeSeoDescription(description) });
+    if (ogImage) {
+      ensureHeadNode('meta', SEO_TAGS.ogImage, { property: 'og:image', content: ogImage });
+      ensureHeadNode('meta', SEO_TAGS.twitterImage, { name: 'twitter:image', content: ogImage });
+    }
+    const schemaNode = ensureHeadNode('script', SEO_TAGS.jsonLd, { type: 'application/ld+json' });
+    const graph = Array.isArray(schema) ? schema.filter(Boolean) : [];
+    if (graph.length) {
+      schemaNode.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+    } else {
+      schemaNode.textContent = '';
+    }
+  };
+
+  const organizationSchema = () => ({
+    '@type': 'Organization',
+    '@id': routeBaseUrl('/#organization'),
+    name: SITE_NAME,
+    url: routeBaseUrl('/')
+  });
+
+  const websiteSchema = (description = HOME_SEO_DESCRIPTION) => ({
+    '@type': 'WebSite',
+    '@id': routeBaseUrl('/#website'),
+    name: SITE_NAME,
+    url: routeBaseUrl('/'),
+    description: normalizeSeoDescription(description),
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: routeBaseUrl('/?s={search_term_string}'),
+      'query-input': 'required name=search_term_string'
+    }
+  });
+
+  const breadcrumbSchema = (items) => ({
+    '@type': 'BreadcrumbList',
+    itemListElement: (Array.isArray(items) ? items : []).map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url
+    }))
+  });
+
+  const productSchema = (product, canonical, imageUrl = '') => {
+    const availability = getVisibleProductAvailability(product);
+    const priceValue = getProductPriceValue(product);
+    const minorUnit = getProductPriceMinorUnit(product);
+    const canPurchase = Boolean(availability.canPurchase);
+    const offers = {
+      '@type': 'Offer',
+      url: canonical,
+      priceCurrency: product?.prices?.currency_code || product?.currency || 'ARS',
+      availability: canPurchase ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+    };
+    if (Number.isFinite(priceValue) && priceValue > 0) {
+      offers.price = `${priceValue / Math.pow(10, minorUnit)}`;
+    }
+    const schema = {
+      '@type': 'Product',
+      '@id': `${canonical}#product`,
+      name: product?.name || SITE_NAME,
+      description: normalizeSeoDescription(plainTextFromHtml(product?.shortDescription || product?.description || product?.excerpt || ''), HOME_SEO_DESCRIPTION),
+      offers
+    };
+    if (imageUrl) schema.image = [imageUrl];
+    if (product?.sku) schema.sku = `${product.sku}`;
+    schema.brand = { '@type': 'Brand', name: SITE_NAME };
+    return schema;
+  };
+
+  const isUtilityRoute = () => {
+    const path = window.location.pathname.replace(/\/+$/, '');
+    return ['/cart', '/checkout', '/my-account'].some(prefix => path === prefix || path.startsWith(`${prefix}/`));
+  };
+
   // Trae el mapa type -> settings de las secciones. Lee primero la cache
-  // estática (instantánea); si falta, cae al REST. Si nada responde, Map vacío
+  // estÃ¡tica (instantÃ¡nea); si falta, cae al REST. Si nada responde, Map vacÃ­o
   // y el sitio sigue con la config de home.json.
   const fetchWpSectionSettings = async () => {
     const map = new Map();
@@ -90,7 +250,7 @@ const PAGE_BUILDER = (() => {
       const data = await fetchJson(WP_SECTIONS_CACHE_URL);
       buildMap(data);
       return map;
-    } catch (e) { /* sin cache estática, probar REST */ }
+    } catch (e) { /* sin cache estÃ¡tica, probar REST */ }
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 4000);
@@ -113,7 +273,27 @@ const PAGE_BUILDER = (() => {
     return params.get('view') === 'collection' || window.location.pathname.replace(/\/+$/, '') === '/coleccion';
   };
 
-  // Fuentes de la página de colección.
+  const isGlobalSection = (section) => GLOBAL_SECTION_TYPES.has(section?.type);
+
+  const shouldRenderSection = (section, productRoute, collectionRoute) => {
+    if (!productRoute && !collectionRoute) return true;
+    return isGlobalSection(section);
+  };
+
+  const getSectionSlot = (section) => {
+    switch (section?.type) {
+      case 'marquee':
+      case 'navbar':
+        return SECTION_SLOT.BEFORE_ROOT;
+      case 'footer':
+      case 'whatsapp-float':
+        return SECTION_SLOT.AFTER_ROOT;
+      default:
+        return SECTION_SLOT.ROOT;
+    }
+  };
+
+  // Fuentes de la pÃ¡gina de colecciÃ³n.
   const categoryCollectionSrc = (slug) =>
     `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-${slug}.json`;
   const COLLECTION_SETTINGS_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/collection-settings.json`;
@@ -155,7 +335,7 @@ const PAGE_BUILDER = (() => {
   };
 
   const redirectToHome = () => {
-    window.location.replace('/index.html');
+    window.location.replace('/');
   };
 
   const productUrl = (product) => {
@@ -233,9 +413,32 @@ const PAGE_BUILDER = (() => {
     try {
       const productRoute = isProductRoute();
       const collectionRoute = !productRoute && isCollectionRoute();
+      const utilityRoute = isUtilityRoute();
       const productPageTemplatePromise = productRoute ? fetchText(PRODUCT_DETAIL_COMPONENT) : null;
 
-      // Página de colección: productos de la categoría + settings + componente.
+      if (utilityRoute) {
+        updateSeo({
+          title: `${SITE_NAME} | Acceso`,
+          description: 'Ruta operativa del sitio, no destinada a indexación.',
+          canonical: routeBaseUrl('/'),
+          robots: 'noindex,nofollow',
+          ogType: 'website',
+          schema: []
+        });
+      } else if (!productRoute && !collectionRoute) {
+        updateSeo({
+          title: HOME_SEO_TITLE,
+          description: HOME_SEO_DESCRIPTION,
+          canonical: routeBaseUrl('/'),
+          ogType: 'website',
+          schema: [
+            organizationSchema(),
+            websiteSchema(HOME_SEO_DESCRIPTION)
+          ]
+        });
+      }
+
+      // PÃ¡gina de colecciÃ³n: productos de la categorÃ­a + settings + componente.
       const collectionParams = new URLSearchParams(window.location.search);
       const collectionCat = collectionRoute ? (collectionParams.get('cat') || '') : '';
       const collectionPageSourcesPromise = collectionRoute ? Promise.all([
@@ -245,13 +448,13 @@ const PAGE_BUILDER = (() => {
       ]) : null;
 
       // Settings editables desde wp-admin (mensajes del marquee, footer, hero).
-      // Se piden SIEMPRE (también en producto/colección): el marquee y el footer
-      // son secciones comunes a todas las páginas y necesitan sus settings, sino
-      // quedan vacíos (el marquee no mostraba nada en la PDP).
+      // Se piden SIEMPRE (tambiÃ©n en producto/colecciÃ³n): el marquee y el footer
+      // son secciones comunes a todas las pÃ¡ginas y necesitan sus settings, sino
+      // quedan vacÃ­os (el marquee no mostraba nada en la PDP).
       const wpSettingsPromise = fetchWpSectionSettings();
 
-      // Menú de la navbar (items + categorías), administrado desde wp-admin.
-      // Se pide en paralelo; si falla, el menú queda vacío sin romper el resto.
+      // MenÃº de la navbar (items + categorÃ­as), administrado desde wp-admin.
+      // Se pide en paralelo; si falla, el menÃº queda vacÃ­o sin romper el resto.
       const menuPromise = fetchJson(MENU_SRC).catch(() => []);
 
       const t0 = performance.now();
@@ -262,7 +465,7 @@ const PAGE_BUILDER = (() => {
 
       let sections = pageConfig.sections
         .filter(s => s.visible !== false)
-        .filter(s => !(productRoute || collectionRoute) || s.type === 'marquee' || s.type === 'navbar' || s.type === 'footer')
+        .filter(section => shouldRenderSection(section, productRoute, collectionRoute))
         .sort((a, b) => (a.order || 0) - (b.order || 0));
 
       // Load all components and data in parallel
@@ -273,9 +476,9 @@ const PAGE_BUILDER = (() => {
           return [s.id, html];
         })),
         Promise.all(sections.filter(s => s.data || s.type === 'featured-sets' || s.type === 'categorias').map(async s => {
-          // featured-products: cada fila trae SU colección (config.collection),
-          // administrada desde wp-admin (taxonomía hf_collection). Cache por
-          // colección; fallback a la cache general y luego al REST.
+          // featured-products: cada fila trae SU colecciÃ³n (config.collection),
+          // administrada desde wp-admin (taxonomÃ­a hf_collection). Cache por
+          // colecciÃ³n; fallback a la cache general y luego al REST.
           if (s.type === 'featured-products') {
             const collection = s.config?.collection;
             const src = collection ? productCollectionSrc(collection) : PRODUCT_DATA_SRC;
@@ -289,7 +492,7 @@ const PAGE_BUILDER = (() => {
             const data = await fetchJson(FEATURED_SETS_SRC).catch(() => []);
             return [s.id, data];
           }
-          // categorias: grid "Compra por categoría" (categorías "Mostrar en home").
+          // categorias: grid "Compra por categorÃ­a" (categorÃ­as "Mostrar en home").
           if (s.type === 'categorias') {
             const data = await fetchJson(FEATURED_CATEGORIES_SRC).catch(() => []);
             return [s.id, data];
@@ -306,7 +509,7 @@ const PAGE_BUILDER = (() => {
       // Render sections in order
       const t2 = performance.now();
       const sectionElements = new Map();
-      let pendingFooterEl = null;
+      const tailSectionEls = [];
       for (const section of sections) {
         const componentHtml = componentMap.get(section.id);
         if (!componentHtml) continue;
@@ -325,12 +528,13 @@ const PAGE_BUILDER = (() => {
           if (headEl) headEl.style.display = 'none';
         }
 
-        if ((productRoute || collectionRoute) && (section.type === 'marquee' || section.type === 'navbar')) {
+        const slot = getSectionSlot(section);
+        if (slot === SECTION_SLOT.BEFORE_ROOT) {
           document.body.insertBefore(sectionEl, root);
-        } else if (section.type === 'footer') {
-          // El footer va SIEMPRE al final del body (después del contenido de la
-          // página, que en producto/colección se agrega luego del loop).
-          pendingFooterEl = sectionEl;
+        } else if (slot === SECTION_SLOT.AFTER_ROOT) {
+          // Footer y WhatsApp flotante comparten el mismo shell global y se
+          // montan al final del body, independientemente de la ruta.
+          tailSectionEls.push(sectionEl);
         } else {
           root.appendChild(sectionEl);
         }
@@ -361,14 +565,29 @@ const PAGE_BUILDER = (() => {
         renderCollectionPage(root, collectionCat, products, settings, html);
       }
 
-      if (pendingFooterEl && !pendingFooterEl.isConnected) {
-        document.body.appendChild(pendingFooterEl);
-      }
+      tailSectionEls.forEach(sectionEl => {
+        if (sectionEl && !sectionEl.isConnected) {
+          document.body.appendChild(sectionEl);
+        }
+      });
       console.log(`[HF PB] render HTML: ${Math.round(performance.now() - t2)}ms`);
 
       // Hydrate sections with data
       const t3 = performance.now();
       const wpSettings = await wpSettingsPromise;
+      if (!productRoute && !collectionRoute && !utilityRoute) {
+        const footerCopy = wpSettings.get('footer')?.copy || HOME_SEO_DESCRIPTION;
+        updateSeo({
+          title: HOME_SEO_TITLE,
+          description: footerCopy,
+          canonical: routeBaseUrl('/'),
+          ogType: 'website',
+          schema: [
+            organizationSchema(),
+            websiteSchema(footerCopy)
+          ]
+        });
+      }
       const localHeroSection = sections.find(section => section.type === 'hero');
       const heroConfigForVideoTiles = {
         ...(localHeroSection?.config || {}),
@@ -383,7 +602,7 @@ const PAGE_BUILDER = (() => {
 
         if (!productRoute && section.type === 'hero') {
           const sectionEl = sectionElements.get(section.id);
-          // wp-admin manda: si la Sección hero tiene settings de video, ganan;
+          // wp-admin manda: si la SecciÃ³n hero tiene settings de video, ganan;
           // si no, se usa la config local de home.json.
           if (sectionEl) setupHero(sectionEl, heroConfigForVideoTiles);
         }
@@ -403,16 +622,21 @@ const PAGE_BUILDER = (() => {
 
         if (section.type === 'marquee') {
           const sectionEl = sectionElements.get(section.id);
-          // Mensajes administrables desde wp-admin (Sección marquee). Si no hay,
+          // Mensajes administrables desde wp-admin (SecciÃ³n marquee). Si no hay,
           // se conserva el texto del HTML.
           const messages = wpSettings.get('marquee')?.messages;
           if (sectionEl) setupMarquee(sectionEl, messages);
         }
 
         if (section.type === 'footer') {
-          // Footer administrable desde wp-admin. Aparece en todas las páginas.
+          // Footer administrable desde wp-admin. Aparece en todas las pÃ¡ginas.
           const sectionEl = sectionElements.get(section.id);
           if (sectionEl) setupFooter(sectionEl, wpSettings.get('footer'));
+        }
+
+        if (section.type === 'whatsapp-float') {
+          const sectionEl = sectionElements.get(section.id);
+          if (sectionEl) setupWhatsAppFloat(sectionEl, wpSettings.get('whatsapp-float'), section.config);
         }
 
         if (!productRoute && !collectionRoute && section.type === 'trust-bar') {
@@ -432,8 +656,8 @@ const PAGE_BUILDER = (() => {
       }
       console.log(`[HF PB] hydrate sections: ${Math.round(performance.now() - t3)}ms`);
 
-      // Rellenar el menú de la navbar ANTES de cablear los drawers, así
-      // initNavbarAndMenuDrawer toma los [data-menu-link] recién inyectados.
+      // Rellenar el menÃº de la navbar ANTES de cablear los drawers, asÃ­
+      // initNavbarAndMenuDrawer toma los [data-menu-link] reciÃ©n inyectados.
       await renderNavMenu(await menuPromise);
 
       initNavbarAndMenuDrawer();
@@ -451,7 +675,7 @@ const PAGE_BUILDER = (() => {
   };
 
   // Clona el template de card y lo rellena con los datos del producto.
-  // Reusado por featured-products (home) y la página de colección.
+  // Reusado por featured-products (home) y la pÃ¡gina de colecciÃ³n.
   const fillProductCard = (template, product, options = {}) => {
     const { showSizes = true } = options;
     const clone = template.content.cloneNode(true);
@@ -525,7 +749,7 @@ const PAGE_BUILDER = (() => {
   };
 
   // Rellena el marquee con los mensajes administrados desde wp-admin.
-  // El marquee NO tiene texto hardcodeado: si no hay mensajes, queda vacío.
+  // El marquee NO tiene texto hardcodeado: si no hay mensajes, queda vacÃ­o.
   const setupMarquee = (sectionEl, messages) => {
     const content = sectionEl.querySelector('.hf-marquee__content');
     if (!content) return;
@@ -534,8 +758,8 @@ const PAGE_BUILDER = (() => {
       return;
     }
 
-    // Si el motor ya clonó el contenido para el loop, destruir esa instancia
-    // (borra los clones) antes de reemplazar el contenido. Así evitamos clones
+    // Si el motor ya clonÃ³ el contenido para el loop, destruir esa instancia
+    // (borra los clones) antes de reemplazar el contenido. AsÃ­ evitamos clones
     // con el texto viejo y un loop mal medido.
     if (sectionEl._hfMarquee && typeof sectionEl._hfMarquee.destroy === 'function') {
       sectionEl._hfMarquee.destroy();
@@ -599,7 +823,32 @@ const PAGE_BUILDER = (() => {
     });
   };
 
-  // Rellena la barra de confianza (4 items: título + descripción cada uno) con
+  const setupWhatsAppFloat = (sectionEl, settings = {}, fallback = {}) => {
+    if (!sectionEl) return;
+
+    const config = { ...(fallback || {}), ...(settings || {}) };
+    const href = `${config.href || ''}`.trim()
+      || (config.phone ? `https://wa.me/${`${config.phone}`.replace(/[^\d]/g, '')}` : '')
+      || WHATSAPP_DEFAULT_HREF;
+    const label = `${config.label || config.ariaLabel || ''}`.trim() || WHATSAPP_DEFAULT_LABEL;
+
+    const link = sectionEl.querySelector('.whatsapp-float') || sectionEl;
+    if (link) {
+      link.setAttribute('href', href);
+      link.setAttribute('aria-label', label);
+      link.setAttribute('title', label);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    }
+
+    const icon = sectionEl.querySelector('img');
+    if (icon) {
+      if (config.icon) icon.src = resolveMediaUrl(config.icon);
+      icon.alt = config.iconAlt || 'WhatsApp';
+    }
+  };
+
+  // Rellena la barra de confianza (4 items: tÃ­tulo + descripciÃ³n cada uno) con
   // los datos de wp-admin, y reinicializa el slider (dots + autoplay mobile).
   const setupTrustBar = (sectionEl, settings) => {
     if (settings && Array.isArray(settings.items)) {
@@ -613,7 +862,7 @@ const PAGE_BUILDER = (() => {
     if (typeof window.initTrustBar === 'function') window.initTrustBar();
   };
 
-  // "Elegí tu estilo": títulos y links editables desde wp-admin.
+  // "ElegÃ­ tu estilo": tÃ­tulos y links editables desde wp-admin.
   // Los videos espejan siempre el video activo del hero.
   const setupStyleEdit = (sectionEl, settings, heroConfig = {}) => {
     const desktopVideo = heroConfig.videoDesktop ? resolveMediaUrl(heroConfig.videoDesktop) : '';
@@ -769,8 +1018,8 @@ const PAGE_BUILDER = (() => {
     const video = sectionEl.querySelector('#heroVideo');
     if (!video) return;
 
-    // Las URLs de los videos vienen de wp-admin (Sección hero) o de home.json.
-    // Si no están, se usan los atributos data-* del HTML como fallback.
+    // Las URLs de los videos vienen de wp-admin (SecciÃ³n hero) o de home.json.
+    // Si no estÃ¡n, se usan los atributos data-* del HTML como fallback.
     if (config.videoDesktop) video.setAttribute('data-desktop', resolveMediaUrl(config.videoDesktop));
     if (config.videoMobile) video.setAttribute('data-mobile', resolveMediaUrl(config.videoMobile));
 
@@ -796,7 +1045,7 @@ const PAGE_BUILDER = (() => {
       const src = isMobile ? video.getAttribute('data-mobile') : video.getAttribute('data-desktop');
       const nextSrc = resolveMediaUrl(src || '');
 
-      // Poster según breakpoint (mobile cae a desktop si no hay).
+      // Poster segÃºn breakpoint (mobile cae a desktop si no hay).
       const posterDesktop = video.getAttribute('data-poster-desktop') || '';
       const posterMobile = video.getAttribute('data-poster-mobile') || posterDesktop;
       const poster = isMobile ? posterMobile : posterDesktop;
@@ -814,7 +1063,7 @@ const PAGE_BUILDER = (() => {
     window.addEventListener('resize', setVideoSrc);
   };
 
-  // Resuelve el href de un item de menú. Las anclas (#seccion) sólo resuelven
+  // Resuelve el href de un item de menÃº. Las anclas (#seccion) sÃ³lo resuelven
   // en la home; si estamos en otra ruta, las prefijamos con index.html para
   // volver a la home y hacer scroll (igual que los links originales).
   const resolveMenuHref = (url) => {
@@ -828,7 +1077,7 @@ const PAGE_BUILDER = (() => {
     return rootUrl(url);
   };
 
-  // Rellena ambos menús de la navbar (desktop menu__grid y mobile
+  // Rellena ambos menÃºs de la navbar (desktop menu__grid y mobile
   // menu-drawer__nav) con los items administrados desde wp-admin (menu.json).
   const renderNavMenu = async (items) => {
     if (!Array.isArray(items)) items = [];
@@ -837,7 +1086,7 @@ const PAGE_BUILDER = (() => {
     const desktopGrid = document.querySelector('[data-menu-grid]');
     const mobileNav = document.querySelector('[data-menu-drawer-nav]');
 
-    // Desktop: insertar <a role="menuitem"> ANTES del botón "Abrir carrito".
+    // Desktop: insertar <a role="menuitem"> ANTES del botÃ³n "Abrir carrito".
     if (desktopGrid) {
       const cartBtn = desktopGrid.querySelector('#openCartBtn');
       items.forEach(item => {
@@ -955,11 +1204,15 @@ const PAGE_BUILDER = (() => {
     $$("[data-close-drawer]").forEach(b => b.addEventListener("click", closeDrawer));
     $$("[data-close-search]").forEach(b => b.addEventListener("click", closeSearchDrawer));
 
-    overlay.addEventListener("click", () => {
+    const closeFromBackdrop = (event) => {
+      if (event.target !== event.currentTarget) return;
       if (menuDrawer?.classList.contains("is-on")) closeMenuDrawer();
       if (drawer.classList.contains("is-on")) closeDrawer();
       if (searchDrawer.classList.contains("is-on")) closeSearchDrawer();
-    });
+    };
+
+    overlay.addEventListener("click", closeFromBackdrop);
+    [menuDrawer, drawer, searchDrawer].forEach(layer => layer?.addEventListener("click", closeFromBackdrop));
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -1023,7 +1276,7 @@ const PAGE_BUILDER = (() => {
     const slug = `${product?.slug || ''}`.toLowerCase().trim();
     if (!slug) return '';
 
-    const colorWords = ['blanco', 'negro', 'bordo', 'bordÃ³', 'bordeaux', 'azul', 'verde', 'gris', 'arena', 'nude', 'rojo', 'rosa', 'marron', 'marrón', 'lila', 'violeta'];
+    const colorWords = ['blanco', 'negro', 'bordo', 'bordó', 'bordeaux', 'azul', 'verde', 'gris', 'arena', 'nude', 'rojo', 'rosa', 'marron', 'marrón', 'lila', 'violeta'];
     let family = slug;
     colorWords.forEach(color => {
       family = family.replace(new RegExp(`(^|[-_])${color}($|[-_])`, 'g'), '$1$2');
@@ -1132,6 +1385,12 @@ const PAGE_BUILDER = (() => {
     return null;
   };
 
+  const getProductPriceMinorUnit = (product) => {
+    const minorUnit = Number(product?.prices?.currency_minor_unit);
+    if (Number.isFinite(minorUnit) && minorUnit >= 0) return minorUnit;
+    return 2;
+  };
+
   const getProductDisplayPriceText = (product) => {
     const text = plainTextFromHtml(product?.priceText || product?.price_html || '').trim();
     if (text) return text;
@@ -1231,7 +1490,9 @@ const PAGE_BUILDER = (() => {
       }
     })(),
     busy: false,
-    productsPromise: null
+    productsPromise: null,
+    searchCatalogPromise: null,
+    searchIndexPromise: null
   };
 
   const rememberCartHeaders = (response) => {
@@ -1412,13 +1673,37 @@ const PAGE_BUILDER = (() => {
     return cart;
   };
 
-  const mutateCart = async (path, body, message = '') => {
+  const ensureCartSession = async () => {
+    if (commerceState.nonce && commerceState.cartToken) {
+      return commerceState.cart;
+    }
+
+    try {
+      return await refreshCart();
+    } catch (error) {
+      if (commerceState.cart) {
+        return commerceState.cart;
+      }
+      throw error;
+    }
+  };
+
+  const mutateCart = async (path, body, message = '', retry = true) => {
     setCartBusy(true);
     try {
       commerceState.cart = await storeApiFetch(path, { method: 'POST', body });
       renderCartDrawer(commerceState.cart, message);
       return commerceState.cart;
     } catch (error) {
+      if (retry && /nonce/i.test(error.message || '')) {
+        try {
+          await refreshCart();
+          return await mutateCart(path, body, message, false);
+        } catch (retryError) {
+          renderCartDrawer(commerceState.cart, retryError.message || 'No pudimos actualizar el carrito.');
+          throw retryError;
+        }
+      }
       renderCartDrawer(commerceState.cart, error.message || 'No pudimos actualizar el carrito.');
       throw error;
     } finally {
@@ -1489,11 +1774,19 @@ const PAGE_BUILDER = (() => {
         url: image?.thumbnail || image?.src || '',
         large: image?.src || image?.thumbnail || '',
         alt: image?.alt || item?.name || ''
-      }))
+      })),
+      searchText: normalizeSearchText([
+        item?.name,
+        item?.sku,
+        item?.slug,
+        ...(item?.categories || []).map(entry => entry?.name || entry?.slug),
+        ...(item?.collections || []).map(entry => entry?.name || entry?.slug),
+        ...(item?.tags || []).map(entry => entry?.name || entry?.slug)
+      ].filter(Boolean).join(' '))
     };
   };
 
-  const productSearchHaystack = (product) => normalizeSearchText([
+  const productSearchHaystack = (product) => product?.searchText || normalizeSearchText([
     product?.name,
     product?.sku,
     product?.slug,
@@ -1502,11 +1795,47 @@ const PAGE_BUILDER = (() => {
     ...(product?.tags || []).map(item => item.name || item.slug)
   ].filter(Boolean).join(' '));
 
-  const getSearchProducts = async (getProducts) => {
-    if (!commerceState.productsPromise) {
-      commerceState.productsPromise = Promise.resolve(getProducts()).catch(() => []);
+  const buildSearchIndex = (products) => (Array.isArray(products) ? products : [])
+    .reduce((index, product) => {
+      if (!product || typeof product !== 'object') return index;
+      if (!getVisibleProductAvailability(product).isVisible) return index;
+      index.push({
+        product,
+        searchText: productSearchHaystack(product)
+      });
+      return index;
+    }, []);
+
+  const getSearchCatalog = () => {
+    if (!commerceState.searchCatalogPromise) {
+      commerceState.searchCatalogPromise = Promise.resolve()
+        .then(() => fetchJson(PRODUCT_DATA_SRC))
+        .then(data => {
+          const productMap = new Map();
+          collectProducts(data, productMap);
+          return filterVisibleProducts(Array.from(productMap.values()));
+        })
+        .catch(() => []);
     }
-    return commerceState.productsPromise;
+    return commerceState.searchCatalogPromise;
+  };
+
+  const getSearchProducts = async (getProducts) => {
+    if (!commerceState.searchIndexPromise) {
+      commerceState.searchIndexPromise = getSearchCatalog()
+        .then(buildSearchIndex)
+        .then(index => {
+          if (index.length) return index;
+          if (!commerceState.productsPromise) {
+            commerceState.productsPromise = Promise.resolve(getProducts()).catch(() => []);
+          }
+          return commerceState.productsPromise
+            .then(buildSearchIndex)
+            .catch(() => []);
+        })
+        .catch(() => []);
+    }
+    return commerceState.searchIndexPromise;
   };
 
   const renderSearchResults = (results, query, isLoading = false) => {
@@ -1558,6 +1887,7 @@ const PAGE_BUILDER = (() => {
     const checkoutButton = document.querySelector('#goCheckoutBtn');
     const userButton = document.querySelector('#userBtn');
     let searchTimer = null;
+    let searchRunToken = 0;
 
     if (drawer) {
       drawer.addEventListener('click', async (event) => {
@@ -1619,31 +1949,51 @@ const PAGE_BUILDER = (() => {
     });
 
     const runSearch = async () => {
+      const runToken = ++searchRunToken;
       const query = `${searchInput?.value || ''}`.trim();
       const normalizedQuery = normalizeSearchText(query);
       if (!normalizedQuery) {
         renderSearchResults([], '');
         return;
       }
-      renderSearchResults([], query, true);
-      const products = await getSearchProducts(getProducts);
-      let results = (Array.isArray(products) ? products : [])
-        .filter(product => productSearchHaystack(product).includes(normalizedQuery))
-        .slice(0, 8);
-      if (!results.length && normalizedQuery.length >= 2) {
+      let loadingTimer = window.setTimeout(() => {
+        if (runToken === searchRunToken) {
+          renderSearchResults([], query, true);
+        }
+      }, 160);
+
+      const searchIndex = await getSearchProducts(getProducts);
+      window.clearTimeout(loadingTimer);
+      if (runToken !== searchRunToken) return;
+
+      let results = (Array.isArray(searchIndex) ? searchIndex : [])
+        .filter(entry => entry?.searchText && entry.searchText.includes(normalizedQuery))
+        .slice(0, 8)
+        .map(entry => entry.product);
+
+      if (!results.length && normalizedQuery.length >= 3) {
+        loadingTimer = window.setTimeout(() => {
+          if (runToken === searchRunToken) {
+            renderSearchResults([], query, true);
+          }
+        }, 160);
         try {
           const remote = await storeApiFetch(`/products?per_page=8&search=${encodeURIComponent(query)}`);
+          if (runToken !== searchRunToken) return;
           results = (Array.isArray(remote) ? remote : []).map(storeProductToSearchItem);
         } catch (error) {
           console.warn('[HF PB] Store search fallback failed:', error.message);
         }
       }
+
+      window.clearTimeout(loadingTimer);
+      if (runToken !== searchRunToken) return;
       renderSearchResults(results, query);
     };
 
     searchInput?.addEventListener('input', () => {
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(runSearch, 180);
+      searchTimer = setTimeout(runSearch, 120);
     });
     searchInput?.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -1662,6 +2012,9 @@ const PAGE_BUILDER = (() => {
       });
     });
 
+    getSearchProducts(getProducts).catch(error => {
+      console.warn('[HF PB] Search index unavailable:', error.message);
+    });
     renderSearchResults([], '');
     refreshCart().catch(error => {
       console.warn('[HF PB] Cart unavailable:', error.message);
@@ -1758,8 +2111,8 @@ const PAGE_BUILDER = (() => {
     return `<tr>${cells.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`;
   }).join('');
 
-  // `meta` (opcional) permite sobreescribir título/copy/imagen del conjunto
-  // (vienen de la colección en wp-admin). Si no se pasa, se infieren del
+  // `meta` (opcional) permite sobreescribir tÃ­tulo/copy/imagen del conjunto
+  // (vienen de la colecciÃ³n en wp-admin). Si no se pasa, se infieren del
   // primer producto (comportamiento usado por la PDP).
   const renderProductSetSlide = (items, index, total, meta = null) => {
     const heroProduct = items[0];
@@ -1807,8 +2160,8 @@ const PAGE_BUILDER = (() => {
   };
 
   // Renderiza el slider "Conjuntos destacados" en su variante (desktop/mobile).
-  // Vacía el track del carousel, inyecta los slides de cada conjunto y
-  // reinicializa el carousel. Si no hay conjuntos, oculta la sección.
+  // VacÃ­a el track del carousel, inyecta los slides de cada conjunto y
+  // reinicializa el carousel. Si no hay conjuntos, oculta la secciÃ³n.
   const renderFeaturedSets = (sectionEl, sets, variant) => {
     const track = sectionEl.querySelector('.hf-carousel__track');
     if (!track) return;
@@ -1831,10 +2184,10 @@ const PAGE_BUILDER = (() => {
       ).join('');
     }
 
-    // Ajustar config del carousel según la cantidad de conjuntos:
+    // Ajustar config del carousel segÃºn la cantidad de conjuntos:
     // - 1 solo: sin flechas, sin loop, sin autoplay (no tiene sentido).
-    // - 2 o más: autoplay infinito cada 5s con loop. Se pausa al hover/touch/
-    //   focus y vuelve a arrancar tras 10s sin interacción.
+    // - 2 o mÃ¡s: autoplay infinito cada 5s con loop. Se pausa al hover/touch/
+    //   focus y vuelve a arrancar tras 10s sin interacciÃ³n.
     const carousel = track.closest('[data-hf="carousel"]');
     if (carousel) {
       const base = safeParseCarouselConfig(carousel.getAttribute('data-hf-carousel'));
@@ -1860,7 +2213,7 @@ const PAGE_BUILDER = (() => {
     try { return raw ? JSON.parse(raw) : {}; } catch (e) { return {}; }
   };
 
-  // Card de una categoría para el grid "Compra por categoría".
+  // Card de una categorÃ­a para el grid "Compra por categorÃ­a".
   const renderCategoryCard = (cat) => {
     const imageUrl = cat.image?.url || '';
     const href = cat.link || '#';
@@ -1880,8 +2233,8 @@ const PAGE_BUILDER = (() => {
         </a>`;
   };
 
-  // Renderiza el grid "Compra por categoría" con las categorías de wp-admin.
-  // Si no hay categorías marcadas "Mostrar en home", oculta la sección.
+  // Renderiza el grid "Compra por categorÃ­a" con las categorÃ­as de wp-admin.
+  // Si no hay categorÃ­as marcadas "Mostrar en home", oculta la secciÃ³n.
   const renderCategories = async (sectionEl, cats) => {
     const grid = sectionEl.querySelector('[data-categories-grid]');
     if (!grid) return;
@@ -1895,8 +2248,8 @@ const PAGE_BUILDER = (() => {
 
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
-  // Renderiza la página de colección: título centrado + grid de TODOS los
-  // productos de la categoría (sin paginación). Columnas configurables desde
+  // Renderiza la pÃ¡gina de colecciÃ³n: tÃ­tulo centrado + grid de TODOS los
+  // productos de la categorÃ­a (sin paginaciÃ³n). Columnas configurables desde
   // wp-admin.
   const renderCollectionPage = (root, cat, products, settings, html) => {
     const list = filterVisibleProducts(products);
@@ -1922,15 +2275,32 @@ const PAGE_BUILDER = (() => {
       colsMobile: settings?.colsMobile || COLLECTION_DEFAULTS.colsMobile
     };
 
-    // Título: nombre legible de la categoría (de los productos) o slug capitalizado.
+    // TÃ­tulo: nombre legible de la categorÃ­a (de los productos) o slug capitalizado.
     const catName = normalizedCat === DEFAULT_CATEGORY_SLUG
       ? 'Colección'
       : list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' '));
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
-    document.title = `${catName} | Horizon Fit`;
+    const canonical = routeBaseUrl('/coleccion/', normalizedCat ? `?cat=${encodeURIComponent(normalizedCat)}` : '');
+    const description = normalizeSeoDescription(`Explorá ${catName} de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`);
+    updateSeo({
+      title: `${catName} | ${SITE_NAME}`,
+      description,
+      canonical,
+      ogType: 'website',
+      ogImage: getProductImages(list[0] || {})[0]?.url || DEFAULT_SOCIAL_IMAGE,
+      schema: [
+        organizationSchema(),
+        websiteSchema(description),
+        breadcrumbSchema([
+          { name: 'Inicio', url: routeBaseUrl('/') },
+          { name: 'Tienda', url: routeBaseUrl('/coleccion/') },
+          { name: catName, url: canonical }
+        ])
+      ]
+    });
 
-    // Grid: TODOS los productos, columnas configurables vía CSS vars.
+    // Grid: TODOS los productos, columnas configurables vÃ­a CSS vars.
     const grid = sectionEl.querySelector('[data-collection-grid]');
     const template = sectionEl.querySelector('[data-product-template]');
     if (grid && template) {
@@ -1980,7 +2350,6 @@ const PAGE_BUILDER = (() => {
       return el;
     };
 
-    document.title = `${product.name || 'Producto'} | Horizon Fit`;
     setText('.hf-pdp-view__title', product.name || '');
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
@@ -2018,6 +2387,30 @@ const PAGE_BUILDER = (() => {
         lookImage.alt = `${product.name || 'Producto'} look principal`;
       }
     }
+
+    const canonical = routeBaseUrl('/producto/', slug ? `?slug=${encodeURIComponent(slug)}` : '');
+    const productDescription = normalizeSeoDescription(
+      plainTextFromHtml(product.description || product.shortDescription || product.excerpt || ''),
+      HOME_SEO_DESCRIPTION
+    );
+    const productImage = images[0]?.url || DEFAULT_SOCIAL_IMAGE;
+    updateSeo({
+      title: `${product.name || 'Producto'} | ${SITE_NAME}`,
+      description: productDescription,
+      canonical,
+      ogType: 'product',
+      ogImage: productImage,
+      schema: [
+        organizationSchema(),
+        websiteSchema(productDescription),
+        breadcrumbSchema([
+          { name: 'Inicio', url: routeBaseUrl('/') },
+          { name: 'Tienda', url: routeBaseUrl('/coleccion/') },
+          { name: product.name || 'Producto', url: canonical }
+        ]),
+        productSchema(product, canonical, productImage)
+      ]
+    });
 
     const thumbs = $('[data-product-thumbs]');
     images.forEach((image, idx) => {
@@ -2231,8 +2624,8 @@ const PAGE_BUILDER = (() => {
       const related = list.filter(item => item.slug !== product.slug);
 
       // "Compralo con":
-      //  1) productos RESTANTES del conjunto (colección) del producto actual.
-      //  2) si no tiene conjunto, productos de la misma categoría.
+      //  1) productos RESTANTES del conjunto (colecciÃ³n) del producto actual.
+      //  2) si no tiene conjunto, productos de la misma categorÃ­a.
       const currentCollections = (product.collections || []).map(c => c.slug);
       const currentCategories = (product.categories || [])
         .map(c => c.slug)
@@ -2253,7 +2646,7 @@ const PAGE_BUILDER = (() => {
         if (buyWithItems.length) {
           buyWithGrid.innerHTML = buyWithItems.map(renderBuyWithCard).join('');
           buyWithSection.hidden = false;
-          // Cablear las flechas del slider sobre las cards recién inyectadas.
+          // Cablear las flechas del slider sobre las cards reciÃ©n inyectadas.
           if (typeof window.initCarousels === 'function') window.initCarousels();
         } else {
           buyWithSection.hidden = true;
@@ -2301,8 +2694,8 @@ const PAGE_BUILDER = (() => {
   };
 
   // SOLO en mobile (<= 768px): alterna el logo del navbar entre el logotipo
-  // "HORIZON FIT" y el isotipo (el símbolo) cada ~3.5s. En desktop ambos se ven
-  // juntos por CSS, así que no se toca.
+  // "HORIZON FIT" y el isotipo (el sÃ­mbolo) cada ~3.5s. En desktop ambos se ven
+  // juntos por CSS, asÃ­ que no se toca.
   const initBrandSwap = () => {
     const isotipo = document.getElementById('brandIsotipo');
     const logotipo = document.getElementById('brandLogotipo');
@@ -2349,4 +2742,3 @@ if (!window.__HF_PAGE_BUILDER_STARTED__) {
     PAGE_BUILDER.init();
   }
 }
-

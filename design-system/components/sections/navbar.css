@@ -238,3 +238,40 @@
       margin-top: var(--s-5);
     }
 
+    .whatsapp-float {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #25d366;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+      z-index: 260;
+      transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+    }
+
+    .whatsapp-float:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.26);
+    }
+
+    .whatsapp-float img {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .whatsapp-float {
+        right: 14px;
+        bottom: 14px;
+        width: 52px;
+        height: 52px;
+      }
+    }
+

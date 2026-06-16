@@ -59,6 +59,397 @@ function hf_store_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'hf_store_enqueue_assets');
 
+function hf_store_brand_name() {
+    $name = get_bloginfo('name');
+    return $name ? $name : 'Horizon Fit';
+}
+
+function hf_store_home_seo_description() {
+    $site_description = get_bloginfo('description');
+    if ($site_description) {
+        return $site_description;
+    }
+
+    return __('Activewear funcional, colecciones pensadas para combinar y una experiencia de compra clara, rápida y móvil.', 'horizon-fit-store');
+}
+
+function hf_store_trim_seo_text($text, $limit = 155) {
+    $text = trim(wp_strip_all_tags((string) $text));
+    if ($text === '') {
+        return '';
+    }
+
+    if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+        if (mb_strlen($text) <= $limit) {
+            return $text;
+        }
+        return rtrim(mb_substr($text, 0, $limit - 1)) . '…';
+    }
+
+    if (strlen($text) <= $limit) {
+        return $text;
+    }
+
+    return rtrim(substr($text, 0, $limit - 1)) . '…';
+}
+
+function hf_store_is_noindex_route() {
+    return (function_exists('is_cart') && is_cart())
+        || (function_exists('is_checkout') && is_checkout())
+        || (function_exists('is_account_page') && is_account_page())
+        || is_search()
+        || is_404();
+}
+
+function hf_store_get_site_icon_url() {
+    $brand_icon = home_url('/LOGOS/ISOTIPO.svg');
+    if ($brand_icon) {
+        return $brand_icon;
+    }
+
+    $icon = function_exists('get_site_icon_url') ? get_site_icon_url(512) : '';
+    return $icon ? $icon : '';
+}
+
+function hf_store_get_default_social_image() {
+    $image = hf_store_get_site_icon_url();
+    if ($image) {
+        return $image;
+    }
+
+    return '';
+}
+
+function hf_store_get_primary_entity() {
+    if (function_exists('is_product') && is_product()) {
+        $product = wc_get_product(get_queried_object_id());
+        if ($product instanceof WC_Product) {
+            return $product;
+        }
+    }
+
+    if (function_exists('is_product_category') && is_product_category()) {
+        $term = get_queried_object();
+        if ($term instanceof WP_Term) {
+            return $term;
+        }
+    }
+
+    if (function_exists('is_tax') && is_tax('hf_collection')) {
+        $term = get_queried_object();
+        if ($term instanceof WP_Term) {
+            return $term;
+        }
+    }
+
+    return null;
+}
+
+function hf_store_get_seo_data() {
+    $site_name = hf_store_brand_name();
+    $canonical = home_url('/');
+    $title = sprintf('%s | %s', $site_name, __('Ropa deportiva y conjuntos', 'horizon-fit-store'));
+    $description = hf_store_home_seo_description();
+    $robots = 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
+    $type = 'website';
+    $image = hf_store_get_default_social_image();
+    $schema = array();
+    $breadcrumbs = array(
+        array(
+            'name' => __('Inicio', 'horizon-fit-store'),
+            'url'  => home_url('/'),
+        ),
+    );
+
+    if (hf_store_is_noindex_route()) {
+        return array(
+            'title'       => sprintf('%s | %s', $site_name, __('No index', 'horizon-fit-store')),
+            'description' => __('Ruta operativa del sitio, no destinada a indexación.', 'horizon-fit-store'),
+            'canonical'   => home_url('/'),
+            'robots'      => 'noindex,nofollow',
+            'type'        => 'website',
+            'image'       => $image,
+            'schema'      => array(),
+        );
+    }
+
+    if (is_front_page() || is_home()) {
+        $footer_copy = '';
+        if (function_exists('get_field')) {
+            $footer_copy = (string) get_field('copy', 'option');
+        }
+        $description = hf_store_trim_seo_text($footer_copy ?: hf_store_home_seo_description(), 160);
+        $schema[] = array(
+            '@type' => 'Organization',
+            '@id'   => home_url('/#organization'),
+            'name'  => $site_name,
+            'url'   => home_url('/'),
+        );
+        $schema[] = array(
+            '@type'       => 'WebSite',
+            '@id'         => home_url('/#website'),
+            'url'         => home_url('/'),
+            'name'        => $site_name,
+            'description' => $description,
+            'potentialAction' => array(
+                '@type'       => 'SearchAction',
+                'target'      => home_url('/?s={search_term_string}'),
+                'query-input' => 'required name=search_term_string',
+            ),
+        );
+        return array(
+            'title'       => $title,
+            'description' => $description,
+            'canonical'   => home_url('/'),
+            'robots'      => $robots,
+            'type'        => $type,
+            'image'       => $image,
+            'schema'      => $schema,
+        );
+    }
+
+    if (function_exists('is_shop') && is_shop()) {
+        $title = sprintf('%s | %s', __('Tienda', 'horizon-fit-store'), $site_name);
+        $description = __('Descubrí prendas, sets y básicos de Horizon Fit conectados al catálogo real de WooCommerce.', 'horizon-fit-store');
+        $canonical = function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_post_type_archive_link('product');
+        $breadcrumbs[] = array(
+            'name' => __('Tienda', 'horizon-fit-store'),
+            'url'  => $canonical,
+        );
+    } elseif (function_exists('is_product_category') && is_product_category()) {
+        $term = get_queried_object();
+        if ($term instanceof WP_Term) {
+            $title = sprintf('%s | %s', $term->name, $site_name);
+            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('Explorá %s de Horizon Fit: prendas, combinaciones y piezas listas para vender el look.', 'horizon-fit-store'), $term->name), 160);
+            $canonical = get_term_link($term);
+            if (! is_wp_error($canonical)) {
+                $canonical = $canonical;
+            } else {
+                $canonical = home_url('/');
+            }
+            $breadcrumbs[] = array(
+                'name' => __('Tienda', 'horizon-fit-store'),
+                'url'  => function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_post_type_archive_link('product'),
+            );
+            $breadcrumbs[] = array(
+                'name' => $term->name,
+                'url'  => $canonical,
+            );
+            $image = hf_store_get_term_image_url($term, 'large') ?: $image;
+        }
+    } elseif (function_exists('is_tax') && is_tax('hf_collection')) {
+        $term = get_queried_object();
+        if ($term instanceof WP_Term) {
+            $title = sprintf('%s | %s', $term->name, $site_name);
+            $description = hf_store_trim_seo_text($term->description ?: sprintf(__('Colección Horizon Fit: una selección curada para comprar el look completo.', 'horizon-fit-store'), $term->name), 160);
+            $canonical = get_term_link($term);
+            if (is_wp_error($canonical)) {
+                $canonical = home_url('/');
+            }
+            $breadcrumbs[] = array(
+                'name' => __('Tienda', 'horizon-fit-store'),
+                'url'  => function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_post_type_archive_link('product'),
+            );
+            $breadcrumbs[] = array(
+                'name' => $term->name,
+                'url'  => $canonical,
+            );
+            $image = hf_store_get_term_image_url($term, 'large') ?: $image;
+        }
+    } elseif (function_exists('is_product') && is_product()) {
+        $product = wc_get_product(get_queried_object_id());
+        if ($product instanceof WC_Product) {
+            $title = sprintf('%s | %s', $product->get_name(), $site_name);
+            $description = hf_store_trim_seo_text(hf_store_excerpt_fallback($product), 160);
+            $canonical = $product->get_permalink();
+            $type = 'product';
+            $image_id = $product->get_image_id();
+            $image = $image_id ? (wp_get_attachment_image_url($image_id, 'full') ?: $image) : $image;
+            $breadcrumbs[] = array(
+                'name' => __('Tienda', 'horizon-fit-store'),
+                'url'  => function_exists('wc_get_page_permalink') ? wc_get_page_permalink('shop') : get_post_type_archive_link('product'),
+            );
+            $product_terms = wp_get_post_terms($product->get_id(), 'product_cat');
+            if (! is_wp_error($product_terms) && ! empty($product_terms)) {
+                $term = $product_terms[0];
+                if ($term instanceof WP_Term) {
+                    $breadcrumbs[] = array(
+                        'name' => $term->name,
+                        'url'  => get_term_link($term),
+                    );
+                }
+            }
+            $breadcrumbs[] = array(
+                'name' => $product->get_name(),
+                'url'  => $canonical,
+            );
+
+            $offers = array(
+                '@type'         => 'Offer',
+                'url'           => $canonical,
+                'priceCurrency' => get_woocommerce_currency(),
+                'availability'  => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            );
+            $price = $product->get_price();
+            if ($price !== '') {
+                $offers['price'] = (string) wc_format_decimal($price, wc_get_price_decimals());
+            }
+
+            $schema[] = array(
+                '@type'       => 'Product',
+                '@id'         => $canonical . '#product',
+                'name'        => $product->get_name(),
+                'description' => $description,
+                'image'       => $image ? array($image) : array(),
+                'sku'         => $product->get_sku(),
+                'brand'       => array(
+                    '@type' => 'Brand',
+                    'name'  => $site_name,
+                ),
+                'offers'      => $offers,
+            );
+        }
+    }
+
+    $schema[] = array(
+        '@type' => 'Organization',
+        '@id'   => home_url('/#organization'),
+        'name'  => $site_name,
+        'url'   => home_url('/'),
+    );
+    $schema[] = array(
+        '@type'       => 'WebSite',
+        '@id'         => home_url('/#website'),
+        'url'         => home_url('/'),
+        'name'        => $site_name,
+        'description' => $description,
+        'potentialAction' => array(
+            '@type'       => 'SearchAction',
+            'target'      => home_url('/?s={search_term_string}'),
+            'query-input' => 'required name=search_term_string',
+        ),
+    );
+
+    if (count($breadcrumbs) > 1) {
+        $item_list = array();
+        foreach ($breadcrumbs as $index => $item) {
+            $item_list[] = array(
+                '@type'    => 'ListItem',
+                'position' => $index + 1,
+                'name'     => $item['name'],
+                'item'     => $item['url'],
+            );
+        }
+        $schema[] = array(
+            '@type'           => 'BreadcrumbList',
+            'itemListElement' => $item_list,
+        );
+    }
+
+    return array(
+        'title'       => $title,
+        'description' => $description,
+        'canonical'   => $canonical,
+        'robots'      => $robots,
+        'type'        => $type,
+        'image'       => $image,
+        'schema'      => $schema,
+    );
+}
+
+function hf_store_get_seo_title() {
+    $seo = hf_store_get_seo_data();
+    return $seo['title'] ?? hf_store_brand_name();
+}
+
+function hf_store_filter_document_title($title) {
+    return hf_store_get_seo_title();
+}
+add_filter('pre_get_document_title', 'hf_store_filter_document_title');
+
+function hf_store_filter_wp_robots($robots) {
+    $seo = hf_store_get_seo_data();
+    if (! empty($seo['robots']) && 'noindex,nofollow' === $seo['robots']) {
+        return array(
+            'noindex'  => true,
+            'nofollow' => true,
+        );
+    }
+
+    $robots['max-image-preview'] = 'large';
+    $robots['max-snippet'] = '-1';
+    $robots['max-video-preview'] = '-1';
+    return $robots;
+}
+add_filter('wp_robots', 'hf_store_filter_wp_robots');
+
+function hf_store_output_seo_head() {
+    $seo = hf_store_get_seo_data();
+    $schema = array_values(array_filter((array) ($seo['schema'] ?? array())));
+    $icon = hf_store_get_site_icon_url();
+    ?>
+    <meta name="description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
+    <link rel="canonical" href="<?php echo esc_url($seo['canonical'] ?? home_url('/')); ?>">
+    <meta name="robots" content="<?php echo esc_attr($seo['robots'] ?? 'index,follow'); ?>">
+    <?php if (! empty($icon)) : ?>
+        <link rel="icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
+        <link rel="shortcut icon" href="<?php echo esc_url($icon); ?>" type="image/svg+xml">
+    <?php endif; ?>
+    <meta property="og:site_name" content="<?php echo esc_attr(hf_store_brand_name()); ?>">
+    <meta property="og:title" content="<?php echo esc_attr($seo['title'] ?? hf_store_brand_name()); ?>">
+    <meta property="og:description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
+    <meta property="og:url" content="<?php echo esc_url($seo['canonical'] ?? home_url('/')); ?>">
+    <meta property="og:type" content="<?php echo esc_attr($seo['type'] ?? 'website'); ?>">
+    <?php if (! empty($seo['image'])) : ?>
+        <meta property="og:image" content="<?php echo esc_url($seo['image']); ?>">
+        <meta name="twitter:image" content="<?php echo esc_url($seo['image']); ?>">
+    <?php endif; ?>
+    <meta name="twitter:card" content="<?php echo ! empty($seo['image']) ? 'summary_large_image' : 'summary'; ?>">
+    <meta name="twitter:title" content="<?php echo esc_attr($seo['title'] ?? hf_store_brand_name()); ?>">
+    <meta name="twitter:description" content="<?php echo esc_attr($seo['description'] ?? ''); ?>">
+    <?php if (! empty($schema)) : ?>
+        <script type="application/ld+json"><?php echo wp_json_encode(array('@context' => 'https://schema.org', '@graph' => $schema), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+    <?php endif; ?>
+    <?php
+}
+add_action('wp_head', 'hf_store_output_seo_head', 1);
+
+function hf_store_robots_txt($output, $public) {
+    $lines = array(
+        'User-agent: *',
+        'Disallow: /cart/',
+        'Disallow: /checkout/',
+        'Disallow: /my-account/',
+        'Disallow: /wp-admin/',
+        'Allow: /wp-admin/admin-ajax.php',
+        'Sitemap: ' . home_url('/wp-sitemap.xml'),
+    );
+
+    return implode("\n", $lines) . "\n";
+}
+add_filter('robots_txt', 'hf_store_robots_txt', 10, 2);
+
+function hf_store_sitemap_page_exclusions($args, $post_type) {
+    if ('page' !== $post_type) {
+        return $args;
+    }
+
+    $excluded_ids = array();
+    foreach (array('cart', 'checkout', 'my-account') as $slug) {
+        $page = get_page_by_path($slug);
+        if ($page instanceof WP_Post) {
+            $excluded_ids[] = $page->ID;
+        }
+    }
+
+    if (! empty($excluded_ids)) {
+        $args['post__not_in'] = array_values(array_unique(array_merge((array) ($args['post__not_in'] ?? array()), $excluded_ids)));
+    }
+
+    return $args;
+}
+add_filter('wp_sitemaps_posts_query_args', 'hf_store_sitemap_page_exclusions', 10, 2);
+
 function hf_store_blocked_route_slugs() {
     return apply_filters('hf_store_blocked_route_slugs', array('checkout', 'cart', 'diplomatura', 'curso', 'modulo/asesoramiento-de-imagen'));
 }
