@@ -289,7 +289,8 @@
 
   const isCollectionRoute = () => {
     const params = new URLSearchParams(window.location.search);
-    return params.get('view') === 'collection' || window.location.pathname.replace(/\/+$/, '') === '/coleccion';
+    const path = window.location.pathname.replace(/\/+$/, '');
+    return params.get('view') === 'collection' || path === '/coleccion' || path.startsWith('/coleccion/');
   };
 
   const isGlobalSection = (section) => GLOBAL_SECTION_TYPES.has(section?.type);
@@ -325,14 +326,26 @@
     try {
       const parsed = new URL(url, window.location.origin);
       const path = parsed.pathname.replace(/\/+$/, '');
-      const isCollectionPath = path === '/coleccion';
+      const pathMatch = path.match(/^\/coleccion\/([^/]+)$/);
+      const isCollectionPath = path === '/coleccion' || path.startsWith('/coleccion/');
       const isCollectionView = parsed.searchParams.get('view') === 'collection';
       if (!isCollectionPath && !isCollectionView) return null;
+      if (pathMatch && pathMatch[1]) {
+        return decodeURIComponent(pathMatch[1]).trim();
+      }
       return (parsed.searchParams.get('cat') || '').trim();
     } catch (e) {
       return null;
     }
   };
+
+  const buildCollectionUrl = (slug = '') => {
+    const cleanSlug = String(slug || '').trim();
+    if (!cleanSlug) return routeBaseUrl('/coleccion/');
+    return routeBaseUrl(`/coleccion/${encodeURIComponent(cleanSlug)}/`);
+  };
+
+  const getCollectionSlugFromLocation = () => getCollectionSlugFromUrl(window.location.href) || '';
 
   const collectionHasProducts = async (slug) => {
     if (!slug) return false;
@@ -527,9 +540,16 @@
 
       // PÃ¡gina de colecciÃ³n: productos de la categorÃ­a + settings + componente.
       const collectionParams = new URLSearchParams(window.location.search);
-      const collectionCat = collectionRoute ? (collectionParams.get('cat') || '') : '';
+      const collectionCat = collectionRoute ? getCollectionSlugFromLocation() : '';
+      const hasLegacyCollectionQuery = collectionRoute && collectionParams.has('cat');
+      if (collectionRoute && collectionCat && (hasLegacyCollectionQuery || window.location.pathname.replace(/\/+$/, '') === '/coleccion')) {
+        window.location.replace(buildCollectionUrl(collectionCat));
+        return;
+      }
       const collectionPageSourcesPromise = collectionRoute ? Promise.all([
-        collectionCat ? fetchJson(categoryCollectionSrc(collectionCat)).catch(() => null) : Promise.resolve(null),
+        collectionCat
+          ? fetchJson(categoryCollectionSrc(collectionCat)).catch(async () => fetchJson(PRODUCT_DATA_SRC).catch(() => null))
+          : fetchJson(PRODUCT_DATA_SRC).catch(() => null),
         fetchJson(COLLECTION_SETTINGS_SRC).catch(() => COLLECTION_DEFAULTS),
         fetchText(COLLECTION_COMPONENT)
       ]) : null;
@@ -2310,7 +2330,8 @@
   // Card de una categorÃ­a para el grid "Compra por categorÃ­a".
   const renderCategoryCard = (cat) => {
     const imageUrl = cat.image?.url || '';
-    const href = cat.link || '#';
+    const slug = getCollectionSlugFromUrl(cat.url || cat.link || '') || '';
+    const href = slug ? buildCollectionUrl(slug) : (cat.link || cat.url || '#');
     return `
         <a href="${escapeHtml(href)}" class="hf-category-card" aria-label="Ver ${escapeHtml(cat.name || '')}">
           <img src="${escapeHtml(imageUrl)}" alt="Categoria ${escapeHtml(cat.name || '')}">
@@ -2349,7 +2370,7 @@
     const list = filterVisibleProducts(products);
     const normalizedCat = `${cat || ''}`.trim().toLowerCase();
 
-    if (!normalizedCat || list.length === 0) {
+    if (normalizedCat && list.length === 0) {
       console.warn(`[HF PB] Collection not available: ${cat || '(missing cat)'}`);
       redirectToHome();
       return;
@@ -2370,19 +2391,23 @@
     };
 
     // TÃ­tulo: nombre legible de la categorÃ­a (de los productos) o slug capitalizado.
-    const catName = normalizedCat === DEFAULT_CATEGORY_SLUG
-      ? 'Colección'
-      : list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' '));
+    const catName = normalizedCat
+      ? (normalizedCat === DEFAULT_CATEGORY_SLUG
+        ? 'Colección'
+        : list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' ')))
+      : 'Colección';
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
-    const canonical = routeBaseUrl('/coleccion/', normalizedCat ? `?cat=${encodeURIComponent(normalizedCat)}` : '');
-    const description = normalizeSeoDescription(`Explorá ${catName} de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`);
+    const canonical = normalizedCat ? buildCollectionUrl(normalizedCat) : routeBaseUrl('/coleccion/');
+    const description = normalizedCat
+      ? normalizeSeoDescription(`Explorá ${catName} de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`)
+      : normalizeSeoDescription(`Explorá la colección de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`);
     updateSeo({
-      title: `${catName} | ${SITE_NAME}`,
+      title: normalizedCat ? `${catName} | ${SITE_NAME}` : `Colección | ${SITE_NAME}`,
       description,
       canonical,
       ogType: 'website',
-      ogImage: getProductImages(list[0] || {})[0]?.url || DEFAULT_SOCIAL_IMAGE,
+      ogImage: (list[0] && getProductImages(list[0])[0]?.url) || DEFAULT_SOCIAL_IMAGE,
       schema: [
         organizationSchema(),
         websiteSchema(description),

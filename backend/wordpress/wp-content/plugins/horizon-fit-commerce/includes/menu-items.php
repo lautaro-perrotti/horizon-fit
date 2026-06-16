@@ -133,7 +133,7 @@ function hf_regenerate_menu_cache() {
             }
             $entries[] = [
                 'label' => $term->name,
-                'url'   => '/coleccion/?cat=' . $term->slug,
+                'url'   => '/coleccion/' . $term->slug . '/',
                 'order' => (int) get_term_meta($term->term_id, 'hf_nav_order', true),
                 'type'  => 'category',
             ];

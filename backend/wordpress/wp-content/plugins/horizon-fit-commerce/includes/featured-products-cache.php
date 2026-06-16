@@ -626,7 +626,7 @@ function hf_serialize_category_card($term) {
     'name'  => $term->name,
     'copy'  => (string) get_term_meta($term->term_id, 'hf_card_copy', true),
     'order' => (int) get_term_meta($term->term_id, 'hf_home_order', true),
-    'link'  => '/coleccion/?cat=' . $term->slug,
+    'link'  => '/coleccion/' . $term->slug . '/',
     'image' => $image,
   ];
 }

@@ -126,7 +126,7 @@ function hf_commerce_render_style_edit_settings_page() {
                                 <span class="hf-style-video-preview-<?php echo $i; ?>" style="display:inline-block;vertical-align:middle;margin-left:8px;"><?php if ($vid) : ?><video src="<?php echo esc_url($vid); ?>" muted loop style="max-width:140px;border-radius:6px;"></video><?php endif; ?></span>
                             </p>
                             <p>
-                                <input type="text" name="style_link[]" value="<?php echo esc_attr($tile['link']); ?>" placeholder="Link (ej. /coleccion/?cat=basicos o #fullSlider)" style="width:100%;max-width:520px;">
+                                <input type="text" name="style_link[]" value="<?php echo esc_attr($tile['link']); ?>" placeholder="Link (ej. /coleccion/basicos/ o #fullSlider)" style="width:100%;max-width:520px;">
                             </p>
                         </td>
                     </tr>
