@@ -9121,17 +9121,7 @@
       ];
 
       function buildSetItemUrl(item) {
-        const params = new URLSearchParams({
-          name: item.name,
-          slug: slugifyText(item.name),
-          price: item.price,
-          compare: "",
-          installments: "",
-          transfer: "",
-          images: item.image,
-          view: "product"
-        });
-        return "/producto/?" + params.toString();
+        return "/producto/" + encodeURIComponent(slugifyText(item.name)) + "/";
       }
 
       function renderSetItem(item) {
