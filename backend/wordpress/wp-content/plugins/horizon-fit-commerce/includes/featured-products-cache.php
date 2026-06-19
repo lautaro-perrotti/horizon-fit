@@ -673,6 +673,11 @@ function hf_serialize_collection_set($term) {
   $image_id = (int) get_term_meta($term->term_id, 'hf_image_id', true);
   $image = $image_id ? hf_featured_products_get_image_object($image_id, $term->name) : null;
 
+  // Imagen mobile separada (los conjuntos usan apaisada en desktop y vertical
+  // en mobile). Si no hay mobile, el frontend cae a la desktop.
+  $image_mobile_id = (int) get_term_meta($term->term_id, 'hf_image_mobile_id', true);
+  $image_mobile = $image_mobile_id ? hf_featured_products_get_image_object($image_mobile_id, $term->name) : null;
+
   $products = wc_get_products([
     'status'    => 'publish',
     'limit'     => 50,
@@ -697,12 +702,13 @@ function hf_serialize_collection_set($term) {
   }
 
   return [
-    'slug'     => $term->slug,
-    'name'     => $term->name,
-    'copy'     => (string) get_term_meta($term->term_id, 'hf_card_copy', true),
-    'order'    => (int) get_term_meta($term->term_id, 'hf_home_order', true),
-    'image'    => $image,
-    'products' => $serialized,
+    'slug'        => $term->slug,
+    'name'        => $term->name,
+    'copy'        => (string) get_term_meta($term->term_id, 'hf_card_copy', true),
+    'order'       => (int) get_term_meta($term->term_id, 'hf_home_order', true),
+    'image'       => $image,
+    'imageMobile' => $image_mobile,
+    'products'    => $serialized,
   ];
 }
 

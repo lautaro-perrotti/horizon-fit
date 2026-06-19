@@ -456,6 +456,9 @@ function hf_panel_tab_catalogo() {
             if (isset($p['coll_image'][$tid]) && $p['coll_image'][$tid] !== '') {
                 update_term_meta($tid, 'hf_image_id', (int) $p['coll_image'][$tid]);
             }
+            if (isset($p['coll_image_mobile'][$tid]) && $p['coll_image_mobile'][$tid] !== '') {
+                update_term_meta($tid, 'hf_image_mobile_id', (int) $p['coll_image_mobile'][$tid]);
+            }
         }
 
         // Regenerar las caches que dependen de estos datos.
@@ -477,18 +480,31 @@ function hf_panel_tab_catalogo() {
         <?php wp_nonce_field('hf_catalogo_panel_action'); ?>
 
         <?php
-        // Helper de fila reutilizable para categorías y conjuntos.
-        $render_rows = function ($terms, $prefix, $image_meta) {
+        // Celda de imagen reutilizable (con preview + botón de la biblioteca).
+        $image_cell = function ($prefix, $field, $tid, $meta_key) {
+            $img_id  = (int) get_term_meta($tid, $meta_key, true);
+            $img_url = $img_id ? wp_get_attachment_image_url($img_id, 'thumbnail') : '';
+            $input_id = $prefix . '_' . $field . '_' . $tid;
+            $preview_cls = $prefix . '-' . $field . '-preview-' . $tid;
+            ?>
+            <input type="hidden" name="<?php echo esc_attr($prefix . '_' . $field); ?>[<?php echo esc_attr($tid); ?>]" id="<?php echo esc_attr($input_id); ?>" value="<?php echo esc_attr($img_id); ?>">
+            <span class="<?php echo esc_attr($preview_cls); ?>" style="display:inline-block;vertical-align:middle;margin-right:6px;"><?php if ($img_url) : ?><img src="<?php echo esc_url($img_url); ?>" alt="" style="max-width:48px;border-radius:4px;vertical-align:middle;"><?php endif; ?></span>
+            <button class="button button-small" type="button" data-hf-media-open data-hf-target="#<?php echo esc_attr($input_id); ?>" data-hf-preview=".<?php echo esc_attr($preview_cls); ?>"><?php esc_html_e('Imagen', 'horizon-fit-commerce'); ?></button>
+            <?php
+        };
+
+        // Helper de fila reutilizable. $image_mobile_meta opcional: si se pasa,
+        // agrega una segunda columna de imagen (para conjuntos: desktop + mobile).
+        $render_rows = function ($terms, $prefix, $image_meta, $image_mobile_meta = null) use ($image_cell) {
+            $cols = $image_mobile_meta ? 6 : 5;
             if (is_wp_error($terms) || empty($terms)) {
-                echo '<tr><td colspan="5">' . esc_html__('No hay elementos.', 'horizon-fit-commerce') . '</td></tr>';
+                echo '<tr><td colspan="' . (int) $cols . '">' . esc_html__('No hay elementos.', 'horizon-fit-commerce') . '</td></tr>';
                 return;
             }
             foreach ($terms as $t) {
                 $featured = get_term_meta($t->term_id, 'hf_featured_home', true) === '1';
                 $order    = (int) get_term_meta($t->term_id, 'hf_home_order', true);
                 $copy     = (string) get_term_meta($t->term_id, 'hf_card_copy', true);
-                $img_id   = (int) get_term_meta($t->term_id, $image_meta, true);
-                $img_url  = $img_id ? wp_get_attachment_image_url($img_id, 'thumbnail') : '';
                 $tid = $t->term_id;
                 ?>
                 <tr>
@@ -499,11 +515,10 @@ function hf_panel_tab_catalogo() {
                     <td style="text-align:center;"><input type="checkbox" name="<?php echo esc_attr($prefix); ?>_featured[<?php echo esc_attr($tid); ?>]" value="1" <?php checked($featured); ?>></td>
                     <td><input type="number" name="<?php echo esc_attr($prefix); ?>_order[<?php echo esc_attr($tid); ?>]" value="<?php echo esc_attr($order); ?>" style="width:70px;"></td>
                     <td><input type="text" name="<?php echo esc_attr($prefix); ?>_copy[<?php echo esc_attr($tid); ?>]" value="<?php echo esc_attr($copy); ?>" placeholder="<?php esc_attr_e('Descripción corta', 'horizon-fit-commerce'); ?>" style="width:100%;min-width:180px;"></td>
-                    <td>
-                        <input type="hidden" name="<?php echo esc_attr($prefix); ?>_image[<?php echo esc_attr($tid); ?>]" id="<?php echo esc_attr($prefix . '_image_' . $tid); ?>" value="<?php echo esc_attr($img_id); ?>">
-                        <span class="<?php echo esc_attr($prefix . '-img-preview-' . $tid); ?>" style="display:inline-block;vertical-align:middle;margin-right:6px;"><?php if ($img_url) : ?><img src="<?php echo esc_url($img_url); ?>" alt="" style="max-width:48px;border-radius:4px;vertical-align:middle;"><?php endif; ?></span>
-                        <button class="button button-small" type="button" data-hf-media-open data-hf-target="#<?php echo esc_attr($prefix . '_image_' . $tid); ?>" data-hf-preview=".<?php echo esc_attr($prefix . '-img-preview-' . $tid); ?>"><?php esc_html_e('Imagen', 'horizon-fit-commerce'); ?></button>
-                    </td>
+                    <td><?php $image_cell($prefix, 'image', $tid, $image_meta); ?></td>
+                    <?php if ($image_mobile_meta) : ?>
+                    <td><?php $image_cell($prefix, 'image_mobile', $tid, $image_mobile_meta); ?></td>
+                    <?php endif; ?>
                 </tr>
                 <?php
             }
@@ -523,15 +538,17 @@ function hf_panel_tab_catalogo() {
         </table>
 
         <h2 style="margin-top:28px;"><?php esc_html_e('Conjuntos', 'horizon-fit-commerce'); ?></h2>
-        <table class="widefat striped" style="max-width:1000px;">
+        <p class="description"><?php esc_html_e('Los conjuntos usan una imagen apaisada en desktop y una vertical en mobile. Cargá cada una.', 'horizon-fit-commerce'); ?></p>
+        <table class="widefat striped" style="max-width:1100px;">
             <thead><tr>
                 <th><?php esc_html_e('Conjunto', 'horizon-fit-commerce'); ?></th>
                 <th style="width:110px;"><?php esc_html_e('En home', 'horizon-fit-commerce'); ?></th>
                 <th style="width:80px;"><?php esc_html_e('Orden', 'horizon-fit-commerce'); ?></th>
                 <th><?php esc_html_e('Descripción', 'horizon-fit-commerce'); ?></th>
-                <th style="width:160px;"><?php esc_html_e('Imagen', 'horizon-fit-commerce'); ?></th>
+                <th style="width:160px;"><?php esc_html_e('Imagen desktop', 'horizon-fit-commerce'); ?></th>
+                <th style="width:160px;"><?php esc_html_e('Imagen mobile', 'horizon-fit-commerce'); ?></th>
             </tr></thead>
-            <tbody><?php $render_rows($colls, 'coll', 'hf_image_id'); ?></tbody>
+            <tbody><?php $render_rows($colls, 'coll', 'hf_image_id', 'hf_image_mobile_id'); ?></tbody>
         </table>
 
         <p class="submit"><button type="submit" name="hf_catalogo_panel_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar', 'horizon-fit-commerce'); ?></button></p>

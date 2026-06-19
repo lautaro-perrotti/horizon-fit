@@ -2273,10 +2273,12 @@
   };
 
   // Card de un conjunto para la vista mobile (carousel de cards).
+  // Usa la imagen mobile (vertical); si no hay, cae a la desktop o a la del
+  // primer producto.
   const renderSetMobileCard = (set) => {
     const firstProduct = set.products?.[0];
     const href = buildCollectionUrl(set.slug);
-    const imageUrl = set.image?.url || getProductImages(firstProduct)[0]?.url || '';
+    const imageUrl = set.imageMobile?.url || set.image?.url || getProductImages(firstProduct)[0]?.url || '';
     return `
             <div class="hf-carousel__slide">
               <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
