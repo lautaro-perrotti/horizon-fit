@@ -48,8 +48,8 @@
     height: 10px;
     border: 0;
     border-radius: 999px;
-    background: rgba(53, 0, 109, 0.35);
-    background: color-mix(in srgb, var(--hf-primary) 35%, transparent);
+    background: rgba(53, 0, 109, 0.55);
+    background: color-mix(in srgb, var(--hf-primary) 55%, transparent);
     padding: 0;
     opacity: 1;
     cursor: pointer;
