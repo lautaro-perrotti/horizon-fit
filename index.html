@@ -2324,6 +2324,11 @@
 
       @media (min-width: 1024px) {
         .hf-pdp-view {
+          display: grid;
+          grid-template-columns: minmax(0, 36rem) 1fr;
+          grid-template-rows: auto auto;
+          column-gap: 2rem;
+          row-gap: 0;
           width: calc(100% - 128px);
           max-width: 1200px;
           margin: 0 auto;
@@ -2333,8 +2338,11 @@
         }
 
         .hf-pdp-view__layout {
+          grid-column: 1 / -1;
+          grid-row: 1;
           grid-template-columns: minmax(0, 36rem) 1fr;
           column-gap: 2rem;
+          min-height: var(--hf-pdp-top-band, 44rem);
         }
 
         .hf-pdp-view__media {
@@ -2351,8 +2359,16 @@
           grid-column: 1;
           grid-row: 2;
           height: 28rem;
+          margin-top: 42px;
           display: grid;
           grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .hf-buy-with {
+          grid-column: 2;
+          grid-row: 2;
+          margin-top: 42px;
+          align-self: start;
         }
       }
 
@@ -4662,7 +4678,7 @@
   <script src="/design-system/components/marquee/marquee.js"></script>
   <script src="/design-system/components/carousel/carousel.js"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js"></script>
-  <script src="/design-system/page-builder.js?v=commerce-checkout-sync4-20260617"></script>
+  <script src="/design-system/page-builder.js?v=commerce-checkout-sync12-20260617"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

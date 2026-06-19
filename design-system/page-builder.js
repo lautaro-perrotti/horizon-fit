@@ -3100,19 +3100,23 @@
     });
 
     const buyWithSection = sectionEl.querySelector('[data-buy-with]');
-    const infoSection = sectionEl.querySelector('.hf-pdp-view__info');
     const detailsSection = sectionEl.querySelector('.hf-pdp-view__details');
+    const layoutSection = sectionEl.querySelector('.hf-pdp-view__layout');
     const buyWithMq = window.matchMedia('(max-width: 767px)');
+    const topBandDesktopMq = window.matchMedia('(min-width: 1024px)');
 
     const syncBuyWithPlacement = () => {
-      if (!buyWithSection || !infoSection || !detailsSection) return;
-      if (buyWithMq.matches) {
-        if (buyWithSection.parentElement !== sectionEl) {
-          detailsSection.insertAdjacentElement('afterend', buyWithSection);
-        }
-      } else if (buyWithSection.parentElement !== infoSection) {
-        infoSection.appendChild(buyWithSection);
+      if (!buyWithSection || !detailsSection) return;
+      if (buyWithSection.parentElement !== sectionEl || buyWithSection.previousElementSibling !== detailsSection) {
+        detailsSection.insertAdjacentElement('afterend', buyWithSection);
       }
+    };
+
+    const syncPdpTopBand = () => {
+      if (!layoutSection || !topBandDesktopMq.matches) return;
+      const minBand = 44 * parseFloat(getComputedStyle(document.documentElement).fontSize || '16');
+      const measured = Math.ceil(layoutSection.getBoundingClientRect().height || 0);
+      sectionEl.style.setProperty('--hf-pdp-top-band', `${Math.max(measured, minBand)}px`);
     };
 
     syncBuyWithPlacement();
@@ -3121,9 +3125,17 @@
     } else if (typeof buyWithMq.addListener === 'function') {
       buyWithMq.addListener(syncBuyWithPlacement);
     }
+    if (typeof topBandDesktopMq.addEventListener === 'function') {
+      topBandDesktopMq.addEventListener('change', syncPdpTopBand);
+    } else if (typeof topBandDesktopMq.addListener === 'function') {
+      topBandDesktopMq.addListener(syncPdpTopBand);
+    }
+    window.addEventListener('load', syncPdpTopBand);
     window.addEventListener('resize', syncBuyWithPlacement, { passive: true });
+    window.addEventListener('resize', syncPdpTopBand, { passive: true });
 
     root.appendChild(sectionEl);
+    window.requestAnimationFrame(syncPdpTopBand);
 
     window.setTimeout(() => {
       const related = list.filter(item => item.slug !== product.slug);
