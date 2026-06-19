@@ -7,11 +7,18 @@
 
   function initTrustBar() {
     const bars = document.querySelectorAll('.trust-bar');
+    const mobileSliderMq = window.matchMedia(
+      '(max-width: 900px), (pointer: coarse) and (max-width: 1024px)'
+    );
 
     bars.forEach(bar => {
+      if (bar.dataset.trustBarInitialized === 'true') return;
+
       const track = bar.querySelector('.trust-bar__track');
       const items = bar.querySelectorAll('.trust-item');
       if (!track || items.length === 0) return;
+
+      bar.dataset.trustBarInitialized = 'true';
 
       const viewport = bar.querySelector('.trust-bar__viewport');
       const dotsWrap = document.createElement('div');
@@ -39,7 +46,7 @@
       const delay = 4000; // 4 seconds per slide
 
       function updateSlider() {
-        if (window.innerWidth <= 640) {
+        if (mobileSliderMq.matches) {
           track.style.transform = `translateX(-${currentIndex * 100}%)`;
           dotsWrap.classList.add('is-visible');
           dots.forEach((dot, index) => {
@@ -72,7 +79,7 @@
 
       // Initialize autoplay only on mobile
       const handleResize = () => {
-        if (window.innerWidth <= 640) {
+        if (mobileSliderMq.matches) {
           startAutoPlay();
           updateSlider();
         } else {
@@ -81,7 +88,11 @@
         }
       };
 
-      window.addEventListener('resize', handleResize);
+      if (typeof mobileSliderMq.addEventListener === 'function') {
+        mobileSliderMq.addEventListener('change', handleResize);
+      } else if (typeof mobileSliderMq.addListener === 'function') {
+        mobileSliderMq.addListener(handleResize);
+      }
       handleResize(); // Initial check
 
       // Swipe support (basic)

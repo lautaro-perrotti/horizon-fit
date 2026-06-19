@@ -36,15 +36,22 @@
     align-items: center;
     gap: 8px;
     margin-top: 28px;
+    position: relative;
+    z-index: 1;
 }
 
 .trust-bar__dot {
-    width: 8px;
-    height: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
     border: 0;
     border-radius: 999px;
+    background: rgba(53, 0, 109, 0.35);
     background: color-mix(in srgb, var(--hf-primary) 35%, transparent);
     padding: 0;
+    opacity: 1;
     cursor: pointer;
     transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
 }
@@ -117,7 +124,8 @@
     .trust-bar { padding: 56px var(--page-gutter, 24px) 104px; }
 }
 
-@media (max-width: 640px) {
+/* Incluye telefonos en landscape y dispositivos touch con viewport amplio. */
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1024px) {
     .trust-bar { padding: 48px var(--page-gutter, 16px) 104px; }
 
     .trust-item {
