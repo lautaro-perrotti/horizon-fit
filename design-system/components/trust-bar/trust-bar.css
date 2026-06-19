@@ -124,8 +124,8 @@
     .trust-bar { padding: 56px var(--page-gutter, 24px) 104px; }
 }
 
-/* Incluye telefonos en landscape y dispositivos touch con viewport amplio. */
-@media (max-width: 900px), (pointer: coarse) and (max-width: 1024px) {
+/* Slider compacto para cualquier viewport de hasta 1024px. */
+@media (max-width: 1024px) {
     .trust-bar { padding: 48px var(--page-gutter, 16px) 104px; }
 
     .trust-item {

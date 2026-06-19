@@ -7,9 +7,7 @@
 
   function initTrustBar() {
     const bars = document.querySelectorAll('.trust-bar');
-    const mobileSliderMq = window.matchMedia(
-      '(max-width: 900px), (pointer: coarse) and (max-width: 1024px)'
-    );
+    const mobileSliderMq = window.matchMedia('(max-width: 1024px)');
 
     bars.forEach(bar => {
       if (bar.dataset.trustBarInitialized === 'true') return;
