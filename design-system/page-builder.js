@@ -556,7 +556,9 @@
       }
       const collectionPageSourcesPromise = collectionRoute ? Promise.all([
         collectionCat
-          ? fetchJson(categoryCollectionSrc(collectionCat)).catch(async () => fetchJson(PRODUCT_DATA_SRC).catch(() => null))
+          ? fetchJson(categoryCollectionSrc(collectionCat))
+            .catch(async () => fetchJson(productCollectionSrc(collectionCat)))
+            .catch(() => null)
           : fetchJson(PRODUCT_DATA_SRC).catch(() => null),
         fetchJson(COLLECTION_SETTINGS_SRC).catch(() => COLLECTION_DEFAULTS),
         fetchText(COLLECTION_COMPONENT)
@@ -2242,20 +2244,30 @@
     const title = meta?.title || heroProduct?.collections?.[0]?.name || `Conjunto ${index + 1}`;
     const tag = meta?.copy || getVisibleCategories(heroProduct?.categories).map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
     const heroUrl = meta?.image || heroImage?.url || '';
+    const collectionUrl = meta?.slug ? buildCollectionUrl(meta.slug) : '';
+    const titleMarkup = collectionUrl
+      ? `<a href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}"><h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2></a>`
+      : `<h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>`;
+    const visualMarkup = collectionUrl
+      ? `<a class="hf-pdp-look__visual" href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}">
+          <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
+          <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
+        </a>`
+      : `<div class="hf-pdp-look__visual">
+          <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
+          <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
+        </div>`;
     return `
           <div class="hf-carousel__slide">
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
               <div class="hf-pdp-look__panel">
                 <p class="hf-pdp-look__eyebrow">Conjunto ${index + 1} de ${total}</p>
-                <h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>
+                ${titleMarkup}
                 <div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">
                   ${items.map(renderLookItem).join('')}
                 </div>
               </div>
-              <div class="hf-pdp-look__visual">
-                <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
-                <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
-              </div>
+              ${visualMarkup}
             </section>
           </div>`;
   };
@@ -2263,21 +2275,19 @@
   // Card de un conjunto para la vista mobile (carousel de cards).
   const renderSetMobileCard = (set) => {
     const firstProduct = set.products?.[0];
-    const href = firstProduct ? productUrl(firstProduct) : '#';
+    const href = buildCollectionUrl(set.slug);
     const imageUrl = set.image?.url || getProductImages(firstProduct)[0]?.url || '';
     return `
             <div class="hf-carousel__slide">
-              <article class="hf-product-item">
+              <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
                 <div class="productMedia" style="background:none;">
                   <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || '')}">
                 </div>
                 <div class="hf-product-item__body">
-                  <a href="${href}" aria-label="Ver ${escapeHtml(set.name || 'conjunto')}" class="hf-product-item__link">
-                    <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
-                  </a>
+                  <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
                   <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
                 </div>
-              </article>
+              </a>
             </div>`;
   };
 
@@ -2299,6 +2309,7 @@
     } else {
       track.innerHTML = sets.map((set, i) =>
         renderProductSetSlide(set.products || [], i, total, {
+          slug: set.slug,
           title: set.name,
           copy: set.copy,
           image: set.image?.url
@@ -2402,7 +2413,9 @@
     const catName = normalizedCat
       ? (normalizedCat === DEFAULT_CATEGORY_SLUG
         ? 'Colección'
-        : list[0]?.categories?.find(c => c.slug === cat)?.name || capitalize(cat.replace(/-/g, ' ')))
+        : list[0]?.categories?.find(c => c.slug === cat)?.name
+          || list[0]?.collections?.find(c => c.slug === cat)?.name
+          || capitalize(cat.replace(/-/g, ' ')))
       : 'Colección';
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
