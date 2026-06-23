@@ -348,6 +348,8 @@ function hf_featured_products_get_variations($product) {
   }
 
   $variations = [];
+  $parent_installments_text = (string) get_post_meta($product->get_id(), '_hf_installments_text', true);
+  $parent_transfer_text = (string) get_post_meta($product->get_id(), '_hf_transfer_text', true);
 
   foreach ($product->get_children() as $variation_id) {
     $variation = wc_get_product($variation_id);
@@ -356,6 +358,9 @@ function hf_featured_products_get_variations($product) {
     }
 
     $price_data = hf_featured_products_get_price_data($variation);
+    $variation_installments_text = (string) get_post_meta($variation->get_id(), '_hf_installments_text', true);
+    $variation_transfer_text = (string) get_post_meta($variation->get_id(), '_hf_transfer_text', true);
+
     $variations[] = [
       'id' => $variation->get_id(),
       'sku' => $variation->get_sku(),
@@ -366,8 +371,8 @@ function hf_featured_products_get_variations($product) {
       'priceText' => hf_featured_products_format_price($price_data['price']),
       'regularPriceText' => hf_featured_products_format_price($price_data['regularPrice']),
       'salePriceText' => hf_featured_products_format_price($price_data['salePrice']),
-      'installmentsText' => (string) get_post_meta($variation->get_id(), '_hf_installments_text', true),
-      'transferText' => (string) get_post_meta($variation->get_id(), '_hf_transfer_text', true),
+      'installmentsText' => $variation_installments_text !== '' ? $variation_installments_text : $parent_installments_text,
+      'transferText' => $variation_transfer_text !== '' ? $variation_transfer_text : $parent_transfer_text,
       'attributes' => $variation->get_attributes(),
       'stockStatus' => $variation->get_stock_status(),
       'stockQuantity' => $variation->get_stock_quantity(),
