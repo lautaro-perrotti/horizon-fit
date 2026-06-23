@@ -896,10 +896,10 @@
     }
 
     const installments = clone.querySelector('.hf-product-item__installments');
-    if (installments) installments.textContent = availability.canPurchase ? (product.installmentsText || '') : availability.label || '';
+    if (installments) installments.textContent = availability.canPurchase ? (availability.installmentsText || '') : availability.label || '';
 
     const transfer = clone.querySelector('.hf-product-item__transfer');
-    if (transfer) transfer.textContent = product.transferText || '';
+    if (transfer) transfer.textContent = availability.canPurchase ? (availability.transferText || '') : '';
 
     return clone;
   };
@@ -1597,6 +1597,14 @@
     return '';
   };
 
+  const getProductInstallmentsText = (product) => {
+    return `${product?.installmentsText || ''}`.trim();
+  };
+
+  const getProductTransferText = (product) => {
+    return `${product?.transferText || ''}`.trim();
+  };
+
   const getVisibleProductAvailability = (product) => {
     if (!product || typeof product !== 'object') {
       return {
@@ -1606,6 +1614,8 @@
         hasPrice: false,
         priceText: '',
         compareText: '',
+        installmentsText: '',
+        transferText: '',
         isVisible: false,
         canPurchase: false,
         label: '',
@@ -1625,6 +1635,8 @@
       hasPrice,
       priceText: hasPrice ? getProductDisplayPriceText(product) : '',
       compareText: hasPrice ? getProductCompareText(product) : '',
+      installmentsText: hasPrice ? getProductInstallmentsText(product) : '',
+      transferText: hasPrice ? getProductTransferText(product) : '',
       isVisible,
       canPurchase,
       label: !isVisible ? '' : stockStatus === 'outofstock' ? 'Agotado' : !hasPrice ? 'Sin precio' : 'Disponible',
@@ -1641,6 +1653,8 @@
         hasPrice: false,
         priceText: '',
         compareText: '',
+        installmentsText: '',
+        transferText: '',
         canPurchase: false,
         label: ''
       };
@@ -1651,13 +1665,18 @@
     const hasPrice = Number.isFinite(priceValue) && priceValue > 0;
     const isVariableProduct = Array.isArray(product?.variations) && product.variations.length > 0;
     const canPurchase = status === 'publish' && hasPrice && stockStatus !== 'outofstock' && (!isVariableProduct || Boolean(variation));
+    const pricedProduct = variation || product;
+    const selectedPriceText = `${variation?.priceText || variation?.price_html || product?.priceText || product?.price_html || ''}`.trim()
+      || getProductDisplayPriceText(pricedProduct);
     return {
       status,
       stockStatus,
       priceValue,
       hasPrice,
-      priceText: hasPrice ? `${variation?.priceText || variation?.price_html || product?.priceText || product?.price_html || ''}`.trim() : '',
+      priceText: hasPrice ? selectedPriceText : '',
       compareText: hasPrice ? `${variation?.priceOriginal || variation?.regularPriceText || variation?.salePriceText || ''}`.trim() : '',
+      installmentsText: hasPrice ? getProductInstallmentsText(pricedProduct) : '',
+      transferText: hasPrice ? getProductTransferText(pricedProduct) : '',
       canPurchase,
       label: status !== 'publish' ? '' : !Boolean(variation) && isVariableProduct ? 'Elegi una variante' : stockStatus === 'outofstock' ? 'Agotado' : !hasPrice ? 'Sin precio' : 'Disponible'
     };
@@ -3064,7 +3083,11 @@
       setText('.hf-pdp-view__compare', state.compareText || '');
       if (priceRow) priceRow.hidden = !state.priceText && !state.compareText;
       if (pricingEl) pricingEl.dataset.stockStatus = state.stockStatus || '';
-      if (availabilityEl) availabilityEl.textContent = state.label || '';
+      if (availabilityEl) availabilityEl.textContent = state.canPurchase ? (state.installmentsText || '') : state.label || '';
+      if (transferEl) {
+        transferEl.textContent = state.canPurchase ? (state.transferText || '') : '';
+        transferEl.hidden = !state.canPurchase || !state.transferText;
+      }
       if (actionsEl) actionsEl.hidden = !state.canPurchase;
       [addToCartButton, buyNowButton].filter(Boolean).forEach(button => {
         button.disabled = !state.canPurchase;
