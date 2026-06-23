@@ -54,6 +54,7 @@
   const ACCOUNT_COMPONENT = '/design-system/components/sections/account.html';
   const CHECKOUT_COMPONENT = '/design-system/components/sections/checkout.html';
   const LOST_PASSWORD_COMPONENT = '/design-system/components/sections/lost-password.html';
+  const INFO_PAGE_COMPONENT = '/design-system/components/sections/info-page.html';
 
   // Cache de una colecciÃ³n concreta (featured-row-1, featured-row-2, ...).
   const productCollectionSrc = (slug) =>
@@ -88,6 +89,30 @@
   const HOME_SEO_TITLE = `${SITE_NAME} | Ropa deportiva y conjuntos`;
   const HOME_SEO_DESCRIPTION = 'Activewear funcional, conjuntos pensados para combinar y una experiencia de compra clara, rápida y móvil.';
   const DEFAULT_SOCIAL_IMAGE = resolveMediaUrl('assets/hero-poster-desktop.jpg');
+  const INFO_PAGES = {
+    '/envios-y-entregas': {
+      title: 'Envíos y entregas',
+      description: 'Información de envíos y entregas de Horizon Fit.'
+    },
+    '/cambios-y-devoluciones': {
+      title: 'Cambios y devoluciones',
+      description: 'Información de cambios y devoluciones de Horizon Fit.'
+    },
+    '/guia-de-talles': {
+      title: 'Guía de talles',
+      description: 'Guía de talles de Horizon Fit.'
+    },
+    '/medios-de-pago': {
+      title: 'Medios de pago',
+      description: 'Información de medios de pago de Horizon Fit.'
+    }
+  };
+  const FOOTER_HELP_DEFAULT_LINKS = [
+    { text: 'Envíos y entregas', url: '/envios-y-entregas/' },
+    { text: 'Cambios y devoluciones', url: '/cambios-y-devoluciones/' },
+    { text: 'Guía de talles', url: '/guia-de-talles/' },
+    { text: 'Medios de pago', url: '/medios-de-pago/' }
+  ];
 
   const SEO_TAGS = {
     description: 'hfMetaDescription',
@@ -234,6 +259,11 @@
   const isUtilityRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '');
     return ['/cart', '/checkout', '/mi-cuenta', '/my-account'].some(prefix => path === prefix || path.startsWith(`${prefix}/`));
+  };
+
+  const getInfoPageForRoute = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return INFO_PAGES[path] ? { ...INFO_PAGES[path], path } : null;
   };
 
   const isAccountRoute = () => {
@@ -491,11 +521,15 @@
       const lostPasswordRoute = !productRoute && !collectionRoute && isLostPasswordRoute();
       const accountRoute = !productRoute && !collectionRoute && !lostPasswordRoute && isAccountRoute();
       const checkoutRoute = !productRoute && !collectionRoute && isCheckoutRoute();
-      const utilityRoute = isUtilityRoute();
+      const infoPage = !productRoute && !collectionRoute && !accountRoute && !checkoutRoute && !lostPasswordRoute
+        ? getInfoPageForRoute()
+        : null;
+      const utilityRoute = isUtilityRoute() || Boolean(infoPage);
       const productPageTemplatePromise = productRoute ? fetchText(PRODUCT_DETAIL_COMPONENT) : null;
       const accountPageTemplatePromise = accountRoute ? fetchText(ACCOUNT_COMPONENT) : null;
       const checkoutPageTemplatePromise = checkoutRoute ? fetchText(CHECKOUT_COMPONENT) : null;
       const lostPasswordPageTemplatePromise = lostPasswordRoute ? fetchText(LOST_PASSWORD_COMPONENT) : null;
+      const infoPageTemplatePromise = infoPage ? fetchText(INFO_PAGE_COMPONENT) : null;
 
       if (checkoutRoute) {
         updateSeo({
@@ -523,6 +557,21 @@
           robots: 'noindex,nofollow',
           ogType: 'website',
           schema: []
+        });
+      } else if (infoPage) {
+        updateSeo({
+          title: `${infoPage.title} | ${SITE_NAME}`,
+          description: infoPage.description,
+          canonical: routeBaseUrl(`${infoPage.path}/`),
+          ogType: 'website',
+          schema: [
+            organizationSchema(),
+            websiteSchema(infoPage.description),
+            breadcrumbSchema([
+              { name: 'Inicio', url: routeBaseUrl('/') },
+              { name: infoPage.title, url: routeBaseUrl(`${infoPage.path}/`) }
+            ])
+          ]
         });
       } else if (utilityRoute) {
         updateSeo({
@@ -688,6 +737,8 @@
         renderCheckoutPage(root, await checkoutPageTemplatePromise);
       } else if (lostPasswordRoute) {
         renderLostPasswordPage(root, await lostPasswordPageTemplatePromise);
+      } else if (infoPage) {
+        renderInfoPage(root, infoPage, await infoPageTemplatePromise);
       }
 
       tailSectionEls.forEach(sectionEl => {
@@ -928,9 +979,20 @@
     (settings.chips || []).forEach((chip, i) => setText(`[data-footer-chip="${i}"]`, chip));
 
     setText('[data-footer-help-title]', settings.helpTitle);
-    (settings.helpLinks || []).forEach((link, i) => {
-      setText(`[data-footer-help-link="${i}"]`, link?.text);
-      setAttr(`[data-footer-help-link="${i}"]`, 'href', link?.url);
+    const helpLinks = FOOTER_HELP_DEFAULT_LINKS.map((fallback, i) => {
+      const saved = settings.helpLinks?.[i] || {};
+      const savedUrl = `${saved.url || ''}`.trim();
+      const url = savedUrl && savedUrl !== '#' && savedUrl !== '#components'
+        ? savedUrl
+        : fallback.url;
+      return {
+        text: saved.text || fallback.text,
+        url
+      };
+    });
+    helpLinks.forEach((link, i) => {
+      setText(`[data-footer-help-link="${i}"]`, link.text);
+      setAttr(`[data-footer-help-link="${i}"]`, 'href', link.url);
     });
 
     setText('[data-footer-contact-title]', settings.contactTitle);
@@ -2383,6 +2445,27 @@
   };
 
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+  const renderInfoPage = (root, page, html) => {
+    if (!page || !html) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const sectionEl = wrapper.firstElementChild;
+    if (!sectionEl) return;
+
+    sectionEl.hidden = false;
+    root.appendChild(sectionEl);
+
+    const titleEl = sectionEl.querySelector('[data-info-title]');
+    if (titleEl) titleEl.textContent = page.title || '';
+
+    const kickerEl = sectionEl.querySelector('[data-info-kicker]');
+    if (kickerEl) kickerEl.textContent = 'Ayuda';
+
+    const contentEl = sectionEl.querySelector('[data-info-content]');
+    if (contentEl && page.content) contentEl.innerHTML = page.content;
+  };
 
   // Renderiza la pÃ¡gina de colecciÃ³n: tÃ­tulo centrado + grid de TODOS los
   // productos de la categorÃ­a (sin paginaciÃ³n). Columnas configurables desde
