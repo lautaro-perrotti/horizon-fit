@@ -2352,7 +2352,7 @@
 
         .hf-pdp-view__info {
           grid-column: 2;
-          grid-row: 1 / span 2;
+          grid-row: 1;
         }
 
         .hf-pdp-view__details {
@@ -2965,7 +2965,8 @@
       /* En desktop sí separa de la info de cuotas */
       @media (min-width: 1024px) {
         .hf-buy-with {
-          padding-top: 12px;
+          margin-top: 42px;
+          padding-top: 0;
         }
       }
 
@@ -2984,6 +2985,7 @@
       .hf-buy-with__shell {
         min-width: 0;
         max-width: 100%;
+        padding-inline: 28px;
       }
 
       /* El buy-with vive en una columna angosta, no es full-width como
@@ -2991,7 +2993,8 @@
          descolocaba las flechas, y dejamos un padding chico parejo. */
       .hf-buy-with__shell.hf-product-scroll-shell > div,
       .hf-buy-with__shell.hf-product-scroll-shell > div {
-        padding-inline: 28px !important;
+        padding-inline: 0 !important;
+        overflow: hidden;
       }
 
       /* Flechas: alinear al padding y centrar sobre la imagen (la card tiene
@@ -3009,10 +3012,14 @@
         color: inherit;
       }
 
-      /* DESKTOP: 3 visibles en el espacio asignado de la columna derecha. */
-      @media (min-width: 1024px) {
+      /* Desktop/tablet horizontal: 3 visibles exactos sin cortar la tercera. */
+      @media (min-width: 768px) {
+        .hf-buy-with__grid.hf-product-grid--h-scroll {
+          gap: 16px;
+        }
+
         .hf-buy-with__grid.hf-product-grid--h-scroll .hf-buy-with__card {
-          flex: 0 0 calc(33.333% - 0.4rem);
+          flex: 0 0 calc((100% - 32px) / 3);
         }
       }
 
@@ -3049,11 +3056,42 @@
         color: #111;
       }
 
+      @media (min-width: 1024px) {
+        .hf-buy-with__name {
+          font-size: 13px;
+          line-height: 1.15;
+          letter-spacing: .025em;
+        }
+      }
+
       .hf-buy-with__price {
         margin: 0;
         font-size: 12px;
         color: var(--hf-primary, #35006D);
         font-weight: 700;
+      }
+
+      @media (max-width: 767px) {
+        .hf-buy-with__shell {
+          padding-inline: 0;
+        }
+
+        .hf-buy-with__grid.hf-product-grid--h-scroll {
+          gap: 12px;
+        }
+
+        .hf-buy-with__grid.hf-product-grid--h-scroll .hf-buy-with__card {
+          flex: 0 0 calc(50% - 6px);
+        }
+
+        .hf-buy-with__media {
+          aspect-ratio: 3 / 4;
+        }
+
+        .hf-buy-with__name,
+        .hf-buy-with__price {
+          font-size: 13px;
+        }
       }
 
       body.hf-product-mode> :not(.nav):not(.hf-pdp-view):not(#topMarquee):not(main):not(.footer):not(.overlay):not(.modal):not(.drawer):not(.toasts):not(.tooltip) {
@@ -3128,7 +3166,7 @@
 
         .hf-pdp-view__info {
           grid-column: 2;
-          grid-row: 1 / span 2;
+          grid-row: 1;
           position: static;
           top: auto;
           align-self: start;
@@ -4714,10 +4752,27 @@
         if (shell.dataset.carouselReady === 'true') return;
         shell.dataset.carouselReady = 'true';
 
-        function getStep() {
-          var item = grid.querySelector('.hf-product-item');
+        function getItems() {
+          return Array.prototype.slice.call(grid.querySelectorAll('.hf-product-item, .hf-buy-with__card'));
+        }
+
+        function getMetrics() {
+          var items = getItems();
+          var item = items[0];
           var gap = parseFloat(getComputedStyle(grid).gap) || 0;
-          return item ? (item.getBoundingClientRect().width + gap) : 300;
+          var itemWidth = item ? item.getBoundingClientRect().width : 300;
+          var unit = itemWidth + gap;
+          var visible = unit > 0 ? Math.max(1, Math.round((grid.clientWidth + gap) / unit)) : 1;
+          return { items: items, gap: gap, itemWidth: itemWidth, unit: unit, visible: visible };
+        }
+
+        function getAlignedScroll(dir) {
+          var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+          var metrics = getMetrics();
+          var step = metrics.unit;
+          var currentPage = step > 0 ? Math.round(grid.scrollLeft / step) : 0;
+          var target = (currentPage + dir) * step;
+          return Math.max(0, Math.min(maxScroll, target));
         }
 
         function updateControls() {
@@ -4731,11 +4786,11 @@
         }
 
         prevBtn.addEventListener('click', function () {
-          grid.scrollBy({ left: -getStep(), behavior: 'smooth' });
+          grid.scrollTo({ left: getAlignedScroll(-1), behavior: 'smooth' });
         });
 
         nextBtn.addEventListener('click', function () {
-          grid.scrollBy({ left: getStep(), behavior: 'smooth' });
+          grid.scrollTo({ left: getAlignedScroll(1), behavior: 'smooth' });
         });
 
         var rafId = null;

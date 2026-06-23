@@ -3204,8 +3204,8 @@
     const topBandDesktopMq = window.matchMedia('(min-width: 1024px)');
 
     const syncBuyWithPlacement = () => {
-      if (!buyWithSection || !detailsSection) return;
-      if (buyWithSection.parentElement !== sectionEl || buyWithSection.previousElementSibling !== detailsSection) {
+      if (!buyWithSection || !detailsSection || !layoutSection) return;
+      if (buyWithSection.parentElement !== layoutSection || buyWithSection.previousElementSibling !== detailsSection) {
         detailsSection.insertAdjacentElement('afterend', buyWithSection);
       }
     };
