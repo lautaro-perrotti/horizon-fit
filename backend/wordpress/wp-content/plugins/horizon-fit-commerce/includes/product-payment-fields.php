@@ -1,9 +1,9 @@
 <?php
 /**
- * Product payment copy fields.
+ * Product payment rule fields.
  *
- * Adds Horizon Fit payment text fields directly inside WooCommerce product data
- * so admins do not need to use WordPress "Custom Fields" manually.
+ * Adds Horizon Fit payment rule fields directly inside WooCommerce product data.
+ * The storefront calculates payment copy from the real product/variation price.
  */
 
 if (!defined('ABSPATH')) {
@@ -20,21 +20,32 @@ function hf_product_payment_fields_render() {
     echo '<div class="options_group show_if_simple show_if_variable">';
 
     woocommerce_wp_text_input([
-        'id'          => '_hf_installments_text',
-        'label'       => __('Texto de cuotas', 'horizon-fit-commerce'),
-        'placeholder' => '$7.498 en 6 cuotas sin interés',
+        'id'                => '_hf_installments_count',
+        'type'              => 'number',
+        'label'             => __('Cantidad de cuotas sin interés', 'horizon-fit-commerce'),
+        'placeholder'       => '6',
+        'custom_attributes' => [
+            'min'  => '1',
+            'step' => '1',
+        ],
         'desc_tip'    => true,
-        'description' => __('Se muestra en la card y en la página de producto. Cargar en el producto padre.', 'horizon-fit-commerce'),
-        'value'       => get_post_meta($post->ID, '_hf_installments_text', true),
+        'description' => __('Ej: 6. El monto se calcula automáticamente usando el precio de cada producto o variación.', 'horizon-fit-commerce'),
+        'value'       => get_post_meta($post->ID, '_hf_installments_count', true),
     ]);
 
     woocommerce_wp_text_input([
-        'id'          => '_hf_transfer_text',
-        'label'       => __('Texto transferencia', 'horizon-fit-commerce'),
-        'placeholder' => '$38.242 con Transferencia',
+        'id'                => '_hf_transfer_discount_percent',
+        'type'              => 'number',
+        'label'             => __('Descuento transferencia (%)', 'horizon-fit-commerce'),
+        'placeholder'       => '15',
+        'custom_attributes' => [
+            'min'  => '0',
+            'max'  => '100',
+            'step' => '0.01',
+        ],
         'desc_tip'    => true,
-        'description' => __('Se muestra debajo del precio. Las variaciones lo heredan del producto padre.', 'horizon-fit-commerce'),
-        'value'       => get_post_meta($post->ID, '_hf_transfer_text', true),
+        'description' => __('Ej: 15. El precio con transferencia se calcula automáticamente según el precio de cada variación.', 'horizon-fit-commerce'),
+        'value'       => get_post_meta($post->ID, '_hf_transfer_discount_percent', true),
     ]);
 
     echo '</div>';
@@ -46,14 +57,15 @@ function hf_product_payment_fields_save($product) {
         return;
     }
 
-    $fields = [
-        '_hf_installments_text',
-        '_hf_transfer_text',
-    ];
+    $installments_count = isset($_POST['_hf_installments_count'])
+        ? absint(wp_unslash($_POST['_hf_installments_count']))
+        : 0;
 
-    foreach ($fields as $field) {
-        $value = isset($_POST[$field]) ? sanitize_text_field(wp_unslash($_POST[$field])) : '';
-        $product->update_meta_data($field, $value);
-    }
+    $transfer_discount_percent = isset($_POST['_hf_transfer_discount_percent'])
+        ? wc_format_decimal(wp_unslash($_POST['_hf_transfer_discount_percent']))
+        : '';
+
+    $product->update_meta_data('_hf_installments_count', $installments_count > 0 ? (string) $installments_count : '');
+    $product->update_meta_data('_hf_transfer_discount_percent', $transfer_discount_percent !== '' ? (string) $transfer_discount_percent : '');
 }
 add_action('woocommerce_admin_process_product_object', 'hf_product_payment_fields_save', 20);

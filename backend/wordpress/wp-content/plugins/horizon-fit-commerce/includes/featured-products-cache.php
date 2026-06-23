@@ -94,6 +94,60 @@ function hf_featured_products_format_price($price) {
   return '$ ' . number_format((float) $price, 2, ',', '.');
 }
 
+function hf_featured_products_format_payment_amount($amount) {
+  if ($amount === '' || $amount === null || !is_numeric($amount)) {
+    return '';
+  }
+
+  return '$' . number_format((float) round((float) $amount), 0, ',', '.');
+}
+
+function hf_featured_products_get_inherited_meta($product_id, $parent_id, $key) {
+  $value = (string) get_post_meta($product_id, $key, true);
+  if ($value !== '' || !$parent_id) {
+    return $value;
+  }
+
+  return (string) get_post_meta($parent_id, $key, true);
+}
+
+function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $key) {
+  $value = hf_featured_products_get_inherited_meta($product_id, $parent_id, $key);
+  $value = str_replace(',', '.', trim((string) $value));
+
+  return is_numeric($value) ? (float) $value : null;
+}
+
+function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
+  $installments_count = hf_featured_products_get_payment_number_meta($product_id, $parent_id, '_hf_installments_count');
+
+  if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
+    $installment_amount = (float) $price / $installments_count;
+    $installments_label = (int) $installments_count === 1 ? 'cuota' : 'cuotas';
+
+    return hf_featured_products_format_payment_amount($installment_amount)
+      . ' en '
+      . (int) $installments_count
+      . ' '
+      . $installments_label
+      . ' sin interés';
+  }
+
+  return '';
+}
+
+function hf_featured_products_get_transfer_text($price, $product_id, $parent_id = 0) {
+  $transfer_discount_percent = hf_featured_products_get_payment_number_meta($product_id, $parent_id, '_hf_transfer_discount_percent');
+
+  if ($transfer_discount_percent !== null && $transfer_discount_percent > 0 && is_numeric($price) && (float) $price > 0) {
+    $transfer_price = (float) $price * (1 - ($transfer_discount_percent / 100));
+
+    return hf_featured_products_format_payment_amount($transfer_price) . ' con Transferencia';
+  }
+
+  return '';
+}
+
 function hf_featured_products_json_meta($raw_value, $default = array()) {
   if (is_array($raw_value)) {
     return $raw_value;
@@ -348,8 +402,6 @@ function hf_featured_products_get_variations($product) {
   }
 
   $variations = [];
-  $parent_installments_text = (string) get_post_meta($product->get_id(), '_hf_installments_text', true);
-  $parent_transfer_text = (string) get_post_meta($product->get_id(), '_hf_transfer_text', true);
 
   foreach ($product->get_children() as $variation_id) {
     $variation = wc_get_product($variation_id);
@@ -358,9 +410,6 @@ function hf_featured_products_get_variations($product) {
     }
 
     $price_data = hf_featured_products_get_price_data($variation);
-    $variation_installments_text = (string) get_post_meta($variation->get_id(), '_hf_installments_text', true);
-    $variation_transfer_text = (string) get_post_meta($variation->get_id(), '_hf_transfer_text', true);
-
     $variations[] = [
       'id' => $variation->get_id(),
       'sku' => $variation->get_sku(),
@@ -371,8 +420,8 @@ function hf_featured_products_get_variations($product) {
       'priceText' => hf_featured_products_format_price($price_data['price']),
       'regularPriceText' => hf_featured_products_format_price($price_data['regularPrice']),
       'salePriceText' => hf_featured_products_format_price($price_data['salePrice']),
-      'installmentsText' => $variation_installments_text !== '' ? $variation_installments_text : $parent_installments_text,
-      'transferText' => $variation_transfer_text !== '' ? $variation_transfer_text : $parent_transfer_text,
+      'installmentsText' => hf_featured_products_get_installments_text($price_data['price'], $variation->get_id(), $product->get_id()),
+      'transferText' => hf_featured_products_get_transfer_text($price_data['price'], $variation->get_id(), $product->get_id()),
       'attributes' => $variation->get_attributes(),
       'stockStatus' => $variation->get_stock_status(),
       'stockQuantity' => $variation->get_stock_quantity(),
@@ -419,8 +468,8 @@ function hf_featured_products_serialize_product($product) {
       : '',
     'regularPriceText' => hf_featured_products_format_price($price_data['regularPrice']),
     'salePriceText' => hf_featured_products_format_price($price_data['salePrice']),
-    'installmentsText' => (string) get_post_meta($product->get_id(), '_hf_installments_text', true),
-    'transferText' => (string) get_post_meta($product->get_id(), '_hf_transfer_text', true),
+    'installmentsText' => hf_featured_products_get_installments_text($price_data['price'], $product->get_id()),
+    'transferText' => hf_featured_products_get_transfer_text($price_data['price'], $product->get_id()),
     'badge' => hf_featured_products_get_badge($product, $price_data),
     'description' => $copy['description'],
     'shortDescription' => $copy['shortDescription'],
