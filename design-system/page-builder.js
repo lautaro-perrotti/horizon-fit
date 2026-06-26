@@ -3145,8 +3145,10 @@
     const updatePurchaseState = (variation = null) => {
       const state = getSelectedProductAvailability(product, variation);
       setText('.hf-pdp-view__price', state.priceText || '');
-      setText('.hf-pdp-view__compare', state.compareText || '');
-      if (priceRow) priceRow.hidden = !state.priceText && !state.compareText;
+      setText('.hf-pdp-view__compare', '');
+      const compareEl = $('.hf-pdp-view__compare');
+      if (compareEl) compareEl.hidden = true;
+      if (priceRow) priceRow.hidden = !state.priceText;
       if (pricingEl) pricingEl.dataset.stockStatus = state.stockStatus || '';
       if (availabilityEl) availabilityEl.textContent = state.canPurchase ? (state.installmentsText || '') : state.label || '';
       if (transferEl) {

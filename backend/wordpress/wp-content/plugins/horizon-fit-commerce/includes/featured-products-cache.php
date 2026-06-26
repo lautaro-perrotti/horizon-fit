@@ -107,7 +107,7 @@ function hf_featured_products_default_installments_count() {
 }
 
 function hf_featured_products_default_transfer_discount_percent() {
-  return 15;
+  return 10;
 }
 
 function hf_featured_products_get_inherited_meta($product_id, $parent_id, $key) {
