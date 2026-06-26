@@ -28,7 +28,7 @@ function hf_footer_defaults() {
         ],
         'contactTitle'    => 'Contacto',
         'contactLines'    => ['WhatsApp: +54 9 11 0000 0000', 'hola@horizonfit.com', 'Lunes a viernes 9 a 18h'],
-        'social'          => ['instagram' => '#', 'facebook' => '#', 'tiktok' => '#', 'spotify' => '#'],
+        'social'          => ['instagram' => '#', 'tiktok' => '#', 'facebook' => '#', 'spotify' => '#'],
         'copyright'       => '© Horizon Fit 2026. Todos los derechos reservados.',
         'legalLinks'      => [
             ['text' => 'Terminos', 'url' => '#'],
@@ -102,8 +102,8 @@ function hf_commerce_render_footer_settings_page() {
             'contactLines'    => $contactLines,
             'social'          => [
                 'instagram' => esc_url_raw($p['social_instagram'] ?? '#'),
-                'facebook'  => esc_url_raw($p['social_facebook'] ?? '#'),
                 'tiktok'    => esc_url_raw($p['social_tiktok'] ?? '#'),
+                'facebook'  => esc_url_raw($p['social_facebook'] ?? '#'),
                 'spotify'   => esc_url_raw($p['social_spotify'] ?? '#'),
             ],
             'copyright'       => $clean($p['copyright'] ?? ''),
@@ -179,8 +179,8 @@ function hf_commerce_render_footer_settings_page() {
             <table class="form-table">
                 <?php
                 $field('social_instagram', $s['social']['instagram'] ?? '#', 'Instagram');
-                $field('social_facebook', $s['social']['facebook'] ?? '#', 'Facebook');
                 $field('social_tiktok', $s['social']['tiktok'] ?? '#', 'TikTok');
+                $field('social_facebook', $s['social']['facebook'] ?? '#', 'Facebook');
                 $field('social_spotify', $s['social']['spotify'] ?? '#', 'Spotify');
                 ?>
             </table>

@@ -1042,7 +1042,7 @@
     (settings.contactLines || []).forEach((line, i) => setText(`[data-footer-contact="${i}"]`, line));
 
     const social = { ...SOCIAL_DEFAULT_LINKS, ...(settings.social || {}) };
-    ['instagram', 'facebook', 'tiktok', 'spotify'].forEach(net => {
+    ['instagram', 'tiktok', 'facebook', 'spotify'].forEach(net => {
       setAttr(`[data-footer-social="${net}"]`, 'href', social[net]);
     });
 
@@ -1192,8 +1192,8 @@
 
   const SOCIAL_DEFAULT_LINKS = {
     instagram: 'https://www.instagram.com/',
-    facebook: 'https://www.facebook.com/',
     tiktok: 'https://www.tiktok.com/',
+    facebook: 'https://www.facebook.com/',
     spotify: 'https://www.spotify.com/'
   };
 
@@ -1237,7 +1237,7 @@
 
     const socialLinks = { ...SOCIAL_DEFAULT_LINKS, ...(cfg.social || cfg.links || {}) };
     const socialLabels = cfg.socialLabels || {};
-    ['instagram', 'facebook', 'tiktok', 'spotify'].forEach(net => {
+    ['instagram', 'tiktok', 'facebook', 'spotify'].forEach(net => {
       setAttr(`[data-social-link="${net}"]`, 'href', socialLinks[net]);
       setAttr(`[data-social-link="${net}"]`, 'aria-label', socialLabels[net]);
       setAttr(`[data-social-icon-alt="${net}"]`, 'alt', socialLabels[net]);
