@@ -2346,10 +2346,32 @@
           </article>`;
   };
 
-  // Card del componente "Compralo con": misma card/relleno que home.
+  // Card del componente "Compralo con": usa la estructura simple de
+  // "Conjuntos destacados" (imagen + titulo), sin precio/talles/cuotas.
   const renderBuyWithCard = (item) => {
-    return renderProductCardHtml(item);
+    const image = getProductImages(item)[0];
+    return `
+          <a class="hf-product-item" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
+            <div class="productMedia" style="background:none;">
+              <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
+            </div>
+            <div class="hf-product-item__body">
+              <h3 class="hf-product-item__title">${escapeHtml(item.name || '')}</h3>
+              <p class="small" style="margin-bottom: 8px;"></p>
+              ${renderProductCardDivider()}
+            </div>
+          </a>`;
   };
+
+  const renderProductCardDivider = () => `
+              <div class="hf-product-item__pricing hf-product-item__pricing--divider-only" aria-hidden="true">
+                <div class="hf-product-item__price-row" hidden>
+                  <span class="hf-product-item__price"></span>
+                  <span class="hf-product-item__price-original" hidden></span>
+                </div>
+                <p class="hf-product-item__installments" hidden></p>
+                <p class="hf-product-item__transfer" hidden></p>
+              </div>`;
 
   const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
 
@@ -2411,6 +2433,7 @@
                 <div class="hf-product-item__body">
                   <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
                   <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
+                  ${renderProductCardDivider()}
                 </div>
               </a>
             </div>`;
