@@ -2292,58 +2292,21 @@
           </article>`;
   };
 
-  const renderProductItemSlides = (item) => {
-    const images = getProductImages(item).slice(0, 3);
-    const safeName = escapeHtml(item.name || 'producto');
-    const fallback = images[0]?.url || '';
-    const slides = Array.from({ length: 3 }, (_, index) => {
-      const image = images[index] || images[0] || { url: fallback };
-      return `<div class="hf-product-item__slide"><img src="${escapeHtml(image?.url || '')}" alt="${safeName}"></div>`;
-    }).join('');
-    const dots = Array.from({ length: 3 }, (_, index) => (
-      `<button class="hf-product-item__dot${index === 0 ? ' is-active' : ''}" data-slide="${index}" type="button"></button>`
-    )).join('');
-
-    return { slides, dots };
-  };
-
-  // "Cómpralo con" reutiliza la misma estructura de card que la home
-  // (.hf-product-item), para mantener estilos, proporciones y lógica de
-  // precio/cuotas/transferencia alineadas con Productos destacados.
+  // Card del componente "Compralo con": imagen grande arriba, nombre + precio
+  // abajo, todo el bloque es link al producto.
   const renderBuyWithCard = (item) => {
-    const availability = getVisibleProductAvailability(item);
-    const { slides, dots } = renderProductItemSlides(item);
-    const sizes = Array.isArray(item.sizes) && item.sizes.length
-      ? `<div class="hf-product-item__sizes">${item.sizes.map(size => `<span>${escapeHtml(size)}</span>`).join('')}</div>`
-      : '';
-    const compare = availability.compareText
-      ? `<span class="hf-product-item__price-original">${escapeHtml(availability.compareText)}</span>`
-      : '<span class="hf-product-item__price-original" hidden></span>';
-    const installments = availability.canPurchase ? (availability.installmentsText || '') : (availability.label || '');
-    const transfer = availability.canPurchase ? (availability.transferText || '') : '';
-
+    const image = getProductImages(item)[0];
+    const price = item.priceText || item.regularPriceText || '';
     return `
-          <article class="hf-product-item hf-product-item--slider hf-buy-with__item">
-            <a class="hf-product-item__link" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
-              <div class="hf-product-item__media">
-                <span class="hf-product-item__badge">${escapeHtml(availability.badge || '')}</span>
-                <div class="hf-product-item__slider" data-slider>${slides}</div>
-                <div class="hf-product-item__dots">${dots}</div>
-              </div>
-              <div class="hf-product-item__body">
-                ${sizes}
-                <h3 class="hf-product-item__title">${escapeHtml(item.name || '')}</h3>
-                <div class="hf-product-item__pricing">
-                  <div class="hf-product-item__price-row"${availability.priceText ? '' : ' hidden'}>
-                    <span class="hf-product-item__price">${escapeHtml(availability.priceText || '')}</span>
-                    ${compare}
-                  </div>
-                  <p class="hf-product-item__installments">${escapeHtml(installments)}</p>
-                  <p class="hf-product-item__transfer">${escapeHtml(transfer)}</p>
-                </div>
-              </div>
-            </a>
-          </article>`;
+          <a class="hf-buy-with__card" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
+            <div class="hf-buy-with__media">
+              <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
+            </div>
+            <div class="hf-buy-with__body">
+              <h3 class="hf-buy-with__name">${escapeHtml(item.name || '')}</h3>
+              <p class="hf-buy-with__price">${escapeHtml(price)}</p>
+            </div>
+          </a>`;
   };
 
   const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');

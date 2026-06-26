@@ -25,11 +25,11 @@ function hf_product_payment_fields_render() {
         'label'             => __('Cantidad de cuotas sin interés', 'horizon-fit-commerce'),
         'placeholder'       => '6',
         'custom_attributes' => [
-            'min'  => '0',
+            'min'  => '1',
             'step' => '1',
         ],
         'desc_tip'    => true,
-        'description' => __('Vacío usa el default 6. Poné 0 para no mostrar cuotas en este producto. El monto se calcula con el precio de cada variación.', 'horizon-fit-commerce'),
+        'description' => __('Ej: 6. El monto se calcula automáticamente usando el precio de cada producto o variación.', 'horizon-fit-commerce'),
         'value'       => get_post_meta($post->ID, '_hf_installments_count', true),
     ]);
 
@@ -44,7 +44,7 @@ function hf_product_payment_fields_render() {
             'step' => '0.01',
         ],
         'desc_tip'    => true,
-        'description' => __('Vacío usa el default 15%. Poné 0 para no mostrar transferencia en este producto. Se calcula con el precio de cada variación.', 'horizon-fit-commerce'),
+        'description' => __('Ej: 15. El precio con transferencia se calcula automáticamente según el precio de cada variación.', 'horizon-fit-commerce'),
         'value'       => get_post_meta($post->ID, '_hf_transfer_discount_percent', true),
     ]);
 
@@ -57,16 +57,15 @@ function hf_product_payment_fields_save($product) {
         return;
     }
 
-    $installments_raw = isset($_POST['_hf_installments_count'])
-        ? trim((string) wp_unslash($_POST['_hf_installments_count']))
-        : '';
-    $installments_count = $installments_raw !== '' ? (string) absint($installments_raw) : '';
+    $installments_count = isset($_POST['_hf_installments_count'])
+        ? absint(wp_unslash($_POST['_hf_installments_count']))
+        : 0;
 
     $transfer_discount_percent = isset($_POST['_hf_transfer_discount_percent'])
         ? wc_format_decimal(wp_unslash($_POST['_hf_transfer_discount_percent']))
         : '';
 
-    $product->update_meta_data('_hf_installments_count', $installments_count);
+    $product->update_meta_data('_hf_installments_count', $installments_count > 0 ? (string) $installments_count : '');
     $product->update_meta_data('_hf_transfer_discount_percent', $transfer_discount_percent !== '' ? (string) $transfer_discount_percent : '');
 }
 add_action('woocommerce_admin_process_product_object', 'hf_product_payment_fields_save', 20);

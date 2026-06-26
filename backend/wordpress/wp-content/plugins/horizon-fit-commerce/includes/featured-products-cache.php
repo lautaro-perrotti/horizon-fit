@@ -102,14 +102,6 @@ function hf_featured_products_format_payment_amount($amount) {
   return '$' . number_format((float) round((float) $amount), 0, ',', '.');
 }
 
-function hf_featured_products_default_installments_count() {
-  return 6;
-}
-
-function hf_featured_products_default_transfer_discount_percent() {
-  return 15;
-}
-
 function hf_featured_products_get_inherited_meta($product_id, $parent_id, $key) {
   $value = (string) get_post_meta($product_id, $key, true);
   if ($value !== '' || !$parent_id) {
@@ -119,24 +111,15 @@ function hf_featured_products_get_inherited_meta($product_id, $parent_id, $key) 
   return (string) get_post_meta($parent_id, $key, true);
 }
 
-function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $key, $default = null) {
+function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $key) {
   $value = hf_featured_products_get_inherited_meta($product_id, $parent_id, $key);
   $value = str_replace(',', '.', trim((string) $value));
 
-  if ($value === '') {
-    return $default;
-  }
-
-  return is_numeric($value) ? (float) $value : $default;
+  return is_numeric($value) ? (float) $value : null;
 }
 
 function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
-  $installments_count = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_installments_count',
-    hf_featured_products_default_installments_count()
-  );
+  $installments_count = hf_featured_products_get_payment_number_meta($product_id, $parent_id, '_hf_installments_count');
 
   if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
     $installment_amount = (float) $price / $installments_count;
@@ -154,12 +137,7 @@ function hf_featured_products_get_installments_text($price, $product_id, $parent
 }
 
 function hf_featured_products_get_transfer_text($price, $product_id, $parent_id = 0) {
-  $transfer_discount_percent = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_transfer_discount_percent',
-    hf_featured_products_default_transfer_discount_percent()
-  );
+  $transfer_discount_percent = hf_featured_products_get_payment_number_meta($product_id, $parent_id, '_hf_transfer_discount_percent');
 
   if ($transfer_discount_percent !== null && $transfer_discount_percent > 0 && is_numeric($price) && (float) $price > 0) {
     $transfer_price = (float) $price * (1 - ($transfer_discount_percent / 100));
@@ -400,18 +378,14 @@ function hf_featured_products_get_price_data($product) {
   if ($product->is_type('variable')) {
     $variations = $product->get_children();
     if (!empty($variations)) {
-      foreach ($variations as $variation_id) {
-        $var_price = get_post_meta($variation_id, '_price', true);
-        $var_regular = get_post_meta($variation_id, '_regular_price', true);
-        $var_sale = get_post_meta($variation_id, '_sale_price', true);
+      $first_var_id = $variations[0];
+      $var_price = get_post_meta($first_var_id, '_price', true);
+      $var_regular = get_post_meta($first_var_id, '_regular_price', true);
+      $var_sale = get_post_meta($first_var_id, '_sale_price', true);
 
-        if (!empty($var_price)) {
-          $price = $var_price;
-          $regular_price = !empty($var_regular) ? $var_regular : $var_price;
-          $sale_price = $var_sale;
-          break;
-        }
-      }
+      if (!empty($var_price)) $price = $var_price;
+      if (!empty($var_regular)) $regular_price = $var_regular;
+      if (!empty($var_sale)) $sale_price = $var_sale;
     }
   }
 
