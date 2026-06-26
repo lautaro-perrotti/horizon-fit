@@ -850,8 +850,51 @@
     }
   };
 
+  const PRODUCT_CARD_TEMPLATE_HTML = `
+    <article class="hf-product-item hf-product-item--slider">
+      <a class="hf-product-item__link" href="#">
+        <div class="hf-product-item__media">
+          <span class="hf-product-item__badge"></span>
+          <div class="hf-product-item__slider" data-slider>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+            <div class="hf-product-item__slide"><img src="" alt=""></div>
+          </div>
+          <div class="hf-product-item__dots">
+            <button class="hf-product-item__dot is-active" data-slide="0" type="button"></button>
+            <button class="hf-product-item__dot" data-slide="1" type="button"></button>
+            <button class="hf-product-item__dot" data-slide="2" type="button"></button>
+          </div>
+        </div>
+        <div class="hf-product-item__body">
+          <div class="hf-product-item__sizes"></div>
+          <h3 class="hf-product-item__title"></h3>
+          <div class="hf-product-item__pricing">
+            <div class="hf-product-item__price-row">
+              <span class="hf-product-item__price"></span>
+              <span class="hf-product-item__price-original"></span>
+            </div>
+            <p class="hf-product-item__installments"></p>
+            <p class="hf-product-item__transfer"></p>
+          </div>
+        </div>
+      </a>
+    </article>`;
+
+  const createProductCardTemplate = () => {
+    const template = document.createElement('template');
+    template.innerHTML = PRODUCT_CARD_TEMPLATE_HTML;
+    return template;
+  };
+
+  const renderProductCardHtml = (product, options = {}) => {
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(fillProductCard(createProductCardTemplate(), product, options));
+    return wrapper.innerHTML;
+  };
+
   // Clona el template de card y lo rellena con los datos del producto.
-  // Reusado por featured-products (home) y la pÃ¡gina de colecciÃ³n.
+  // Reusado por featured-products, colecciones y "Compralo con".
   const fillProductCard = (template, product, options = {}) => {
     const { showSizes = true } = options;
     const clone = template.content.cloneNode(true);
@@ -1440,9 +1483,20 @@
 
   const normalizeSku = (value) => `${value || ''}`.trim();
 
-  const skuPrefix = (value, length = 7) => {
-    const sku = normalizeSku(value);
-    return sku ? sku.slice(0, length) : '';
+  // Clave de "familia" para agrupar las variantes de color de un mismo modelo.
+  // Soporta DOS formatos de SKU:
+  //  - Nuevo estructurado "NNN-TIPO-COLOR-TALLE" (ej. 001-TOP-BLA-S): la familia
+  //    es "NNN-TIPO" (número de modelo + tipo), así TODOS los colores del mismo
+  //    modelo quedan juntos sin importar la longitud del tipo.
+  //  - Anterior (SKU sin esa estructura): los primeros 7 caracteres, como antes.
+  const skuFamilyKey = (value) => {
+    const sku = normalizeSku(value).toUpperCase();
+    if (!sku) return '';
+    const segments = sku.split('-').filter(Boolean);
+    if (segments.length >= 3 && /^\d+$/.test(segments[0])) {
+      return `${segments[0]}-${segments[1]}`;
+    }
+    return sku.slice(0, 7);
   };
 
   const productSkuPrefix = (product) => {
@@ -1452,8 +1506,8 @@
     ];
 
     for (const candidate of skuCandidates) {
-      const prefix = skuPrefix(candidate);
-      if (prefix) return prefix;
+      const key = skuFamilyKey(candidate);
+      if (key) return key;
     }
 
     return '';
@@ -1463,7 +1517,7 @@
     const slug = `${product?.slug || ''}`.toLowerCase().trim();
     if (!slug) return '';
 
-    const colorWords = ['blanco', 'negro', 'bordo', 'bordó', 'bordeaux', 'azul', 'verde', 'gris', 'arena', 'nude', 'rojo', 'rosa', 'marron', 'marrón', 'lila', 'violeta'];
+    const colorWords = ['blanco', 'negro', 'bordo', 'bordó', 'bordeaux', 'azul', 'celeste', 'verde', 'gris', 'arena', 'nude', 'rojo', 'rosa', 'fucsia', 'naranja', 'amarillo', 'mostaza', 'beige', 'crema', 'camel', 'turquesa', 'marron', 'marrón', 'lila', 'violeta'];
     let family = slug;
     colorWords.forEach(color => {
       family = family.replace(new RegExp(`(^|[-_])${color}($|[-_])`, 'g'), '$1$2');
@@ -2292,21 +2346,9 @@
           </article>`;
   };
 
-  // Card del componente "Compralo con": imagen grande arriba, nombre + precio
-  // abajo, todo el bloque es link al producto.
+  // Card del componente "Compralo con": misma card/relleno que home.
   const renderBuyWithCard = (item) => {
-    const image = getProductImages(item)[0];
-    const price = item.priceText || item.regularPriceText || '';
-    return `
-          <a class="hf-buy-with__card" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
-            <div class="hf-buy-with__media">
-              <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
-            </div>
-            <div class="hf-buy-with__body">
-              <h3 class="hf-buy-with__name">${escapeHtml(item.name || '')}</h3>
-              <p class="hf-buy-with__price">${escapeHtml(price)}</p>
-            </div>
-          </a>`;
+    return renderProductCardHtml(item);
   };
 
   const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
