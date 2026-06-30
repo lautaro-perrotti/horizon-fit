@@ -27,6 +27,7 @@ require_once HF_COMMERCE_DIR . 'includes/footer-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/trust-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/style-edit-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/social-strip-settings.php';
+require_once HF_COMMERCE_DIR . 'includes/info-pages-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/admin-panel.php';
 
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto

@@ -669,23 +669,86 @@ function hf_store_get_collection_products($term_id, $limit = 8, $exclude = array
     return array_values(array_filter(array_map('wc_get_product', $ids)));
 }
 
-function hf_store_get_related_products_for_look($product_id, $limit = 3) {
+function hf_store_parse_product_sku($sku) {
+    $sku = strtoupper(trim((string) $sku));
+    if ($sku === '') {
+        return null;
+    }
+
+    $parts = preg_split('/[-_]+/', $sku);
+    $parts = array_values(array_filter(array_map('trim', $parts)));
+    if (count($parts) < 2) {
+        return null;
+    }
+
+    return array(
+        'set'   => $parts[0],
+        'type'  => $parts[1],
+        'color' => $parts[2] ?? '',
+    );
+}
+
+function hf_store_get_product_group_sku($product) {
+    if (! $product instanceof WC_Product) {
+        return '';
+    }
+
+    $sku = $product->get_sku();
+    if ($sku !== '') {
+        return $sku;
+    }
+
+    if ($product instanceof WC_Product_Variable) {
+        foreach ($product->get_children() as $variation_id) {
+            $variation = wc_get_product($variation_id);
+            if ($variation instanceof WC_Product && $variation->get_sku() !== '') {
+                return $variation->get_sku();
+            }
+        }
+    }
+
+    return '';
+}
+
+function hf_store_push_unique_product(&$products, $product, $limit) {
+    if (! $product instanceof WC_Product || count($products) >= $limit) {
+        return;
+    }
+
+    $product_id = $product->get_id();
+    foreach ($products as $existing) {
+        if ($existing instanceof WC_Product && $existing->get_id() === $product_id) {
+            return;
+        }
+    }
+
+    $products[] = $product;
+}
+
+function hf_store_get_related_products_fallback($product_id, $limit = 3, $exclude = array()) {
+    $exclude = array_values(array_unique(array_map('intval', array_merge(array($product_id), $exclude))));
+    $query_base = array(
+        'post_type'      => 'product',
+        'post_status'    => 'publish',
+        'post__not_in'   => $exclude,
+        'posts_per_page' => $limit,
+        'fields'         => 'ids',
+    );
+
     $collection_ids = wp_get_post_terms($product_id, 'hf_collection', array('fields' => 'ids'));
     if (! empty($collection_ids) && ! is_wp_error($collection_ids)) {
         $products = get_posts(
-            array(
-                'post_type'      => 'product',
-                'post_status'    => 'publish',
-                'post__not_in'   => array($product_id),
-                'posts_per_page' => $limit,
-                'fields'         => 'ids',
-                'tax_query' => array(
-                    array(
-                        'taxonomy' => 'hf_collection',
-                        'terms'    => $collection_ids,
-                        'field'    => 'term_id',
+            array_merge(
+                $query_base,
+                array(
+                    'tax_query' => array(
+                        array(
+                            'taxonomy' => 'hf_collection',
+                            'terms'    => $collection_ids,
+                            'field'    => 'term_id',
+                        ),
                     ),
-                ),
+                )
             )
         );
         if (! empty($products)) {
@@ -694,26 +757,89 @@ function hf_store_get_related_products_for_look($product_id, $limit = 3) {
     }
 
     $category_ids = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'ids'));
+    $category_ids = is_wp_error($category_ids) ? array() : array_map('intval', array_filter((array) $category_ids));
+    if (empty($category_ids)) {
+        return array();
+    }
+
     $products = get_posts(
-        array(
-            'post_type'      => 'product',
-            'post_status'    => 'publish',
-            'post__not_in'   => array($product_id),
-            'posts_per_page' => $limit,
-            'fields'         => 'ids',
-            'tax_query'      => array(
-                array(
-                    'taxonomy' => 'product_cat',
-                    'terms'    => array_map('intval', array_filter($category_ids)),
-                    'field'    => 'term_id',
+        array_merge(
+            $query_base,
+            array(
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => 'product_cat',
+                        'terms'    => $category_ids,
+                        'field'    => 'term_id',
+                    ),
                 ),
-            ),
+            )
         )
     );
 
     return array_values(array_filter(array_map('wc_get_product', $products)));
 }
 
+function hf_store_get_related_products_for_look($product_id, $limit = 3) {
+    $product = wc_get_product($product_id);
+    $current_sku = hf_store_get_product_group_sku($product);
+    $current_parts = hf_store_parse_product_sku($current_sku);
+    $related = array();
+
+    if ($current_parts) {
+        $candidates = wc_get_products(
+            array(
+                'status'  => 'publish',
+                'limit'   => -1,
+                'exclude' => array($product_id),
+                'orderby' => array(
+                    'menu_order' => 'ASC',
+                    'title'      => 'ASC',
+                ),
+            )
+        );
+
+        foreach ($candidates as $candidate) {
+            $parts = hf_store_parse_product_sku(hf_store_get_product_group_sku($candidate));
+            if (! $parts) {
+                continue;
+            }
+
+            $same_set = $parts['set'] === $current_parts['set'];
+            $same_color = $current_parts['color'] === '' || $parts['color'] === $current_parts['color'];
+            if ($same_set && $same_color) {
+                hf_store_push_unique_product($related, $candidate, $limit);
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            $parts = hf_store_parse_product_sku(hf_store_get_product_group_sku($candidate));
+            if (! $parts) {
+                continue;
+            }
+
+            $same_type = $parts['type'] === $current_parts['type'];
+            $other_color = $current_parts['color'] === '' || $parts['color'] !== $current_parts['color'];
+            if ($same_type && $other_color) {
+                hf_store_push_unique_product($related, $candidate, $limit);
+            }
+        }
+    }
+
+    if (count($related) < $limit) {
+        $exclude = array_map(
+            function ($related_product) {
+                return $related_product instanceof WC_Product ? $related_product->get_id() : 0;
+            },
+            $related
+        );
+        foreach (hf_store_get_related_products_fallback($product_id, $limit - count($related), $exclude) as $fallback_product) {
+            hf_store_push_unique_product($related, $fallback_product, $limit);
+        }
+    }
+
+    return $related;
+}
 function hf_store_get_default_variation_payload($product) {
     if (! $product instanceof WC_Product_Variable) {
         return null;

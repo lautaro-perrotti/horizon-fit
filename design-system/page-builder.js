@@ -68,6 +68,9 @@
 
   // Cache del menÃº de la navbar: items de menÃº + categorÃ­as "Mostrar en menÃº".
   const MENU_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/menu.json`;
+  // Páginas del footer (Envíos, Cambios, etc.): título + contenido HTML editable
+  // desde el panel. El page-builder lo lee para rellenar el cuerpo de cada página.
+  const INFO_PAGES_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/info-pages.json`;
   const GLOBAL_SECTION_TYPES = new Set(['marquee', 'navbar', 'footer', 'whatsapp-float']);
   const SECTION_SLOT = {
     BEFORE_ROOT: 'before-root',
@@ -105,6 +108,18 @@
     '/medios-de-pago': {
       title: 'Medios de pago',
       description: 'Información de medios de pago de Horizon Fit.'
+    },
+    '/terminos': {
+      title: 'Términos y condiciones',
+      description: 'Términos y condiciones de Horizon Fit.'
+    },
+    '/privacidad': {
+      title: 'Política de privacidad',
+      description: 'Política de privacidad de Horizon Fit.'
+    },
+    '/defensa-al-consumidor': {
+      title: 'Defensa al consumidor',
+      description: 'Información de defensa al consumidor de Horizon Fit.'
     }
   };
   const FOOTER_HELP_DEFAULT_LINKS = [
@@ -530,6 +545,8 @@
       const checkoutPageTemplatePromise = checkoutRoute ? fetchText(CHECKOUT_COMPONENT) : null;
       const lostPasswordPageTemplatePromise = lostPasswordRoute ? fetchText(LOST_PASSWORD_COMPONENT) : null;
       const infoPageTemplatePromise = infoPage ? fetchText(INFO_PAGE_COMPONENT) : null;
+      // Contenido editable de las páginas del footer (título + HTML).
+      const infoPagesDataPromise = infoPage ? fetchJson(INFO_PAGES_SRC).catch(() => null) : null;
 
       if (checkoutRoute) {
         updateSeo({
@@ -738,6 +755,13 @@
       } else if (lostPasswordRoute) {
         renderLostPasswordPage(root, await lostPasswordPageTemplatePromise);
       } else if (infoPage) {
+        // Mergear el contenido editable (título + HTML) cargado desde el admin.
+        const infoData = await infoPagesDataPromise;
+        const saved = infoData && infoData[infoPage.path];
+        if (saved) {
+          if (saved.title) infoPage.title = saved.title;
+          if (saved.content) infoPage.content = saved.content;
+        }
         renderInfoPage(root, infoPage, await infoPageTemplatePromise);
       }
 
@@ -1484,19 +1508,21 @@
   const normalizeSku = (value) => `${value || ''}`.trim();
 
   // Clave de "familia" para agrupar las variantes de color de un mismo modelo.
-  // Soporta DOS formatos de SKU:
-  //  - Nuevo estructurado "NNN-TIPO-COLOR-TALLE" (ej. 001-TOP-BLA-S): la familia
-  //    es "NNN-TIPO" (número de modelo + tipo), así TODOS los colores del mismo
-  //    modelo quedan juntos sin importar la longitud del tipo.
-  //  - Anterior (SKU sin esa estructura): los primeros 7 caracteres, como antes.
+  // Soporta los formatos de SKU estructurado, con o sin espacios alrededor de
+  // los guiones (ej. "001-TOP-BLA-S" o "001 - CAL - NEG"): la familia es
+  // "NNN-TIPO" (número de modelo + tipo), así TODOS los colores del mismo modelo
+  // quedan juntos sin importar la longitud del tipo ni si hay talle.
+  // Si el SKU no tiene esa estructura, cae a los primeros 7 caracteres (formato
+  // anterior).
   const skuFamilyKey = (value) => {
     const sku = normalizeSku(value).toUpperCase();
     if (!sku) return '';
-    const segments = sku.split('-').filter(Boolean);
+    // Trim de cada segmento para tolerar "001 - CAL - NEG".
+    const segments = sku.split('-').map(s => s.trim()).filter(Boolean);
     if (segments.length >= 3 && /^\d+$/.test(segments[0])) {
       return `${segments[0]}-${segments[1]}`;
     }
-    return sku.slice(0, 7);
+    return sku.replace(/\s+/g, '').slice(0, 7);
   };
 
   const productSkuPrefix = (product) => {
@@ -1511,6 +1537,77 @@
     }
 
     return '';
+  };
+
+  const skuParts = (value) => {
+    const sku = normalizeSku(value).toUpperCase();
+    if (!sku) return null;
+    const segments = sku.split('-').map(s => s.trim()).filter(Boolean);
+    if (segments.length < 2 || !/^\d+$/.test(segments[0])) return null;
+    return {
+      set: segments[0],
+      type: segments[1],
+      color: segments[2] || ''
+    };
+  };
+
+  const productSkuParts = (product) => {
+    const skuCandidates = [
+      product?.sku,
+      ...(Array.isArray(product?.variations) ? product.variations.map(variation => variation?.sku).filter(Boolean) : []),
+    ];
+
+    for (const candidate of skuCandidates) {
+      const parts = skuParts(candidate);
+      if (parts) return parts;
+    }
+
+    return null;
+  };
+
+  const pushUniqueProduct = (target, item) => {
+    if (!item || target.some(existing => existing?.slug === item.slug)) return;
+    target.push(item);
+  };
+
+  const getBuyWithProducts = (product, products) => {
+    const related = (products || []).filter(item => item?.slug !== product?.slug);
+    const currentParts = productSkuParts(product);
+    const selected = [];
+
+    if (currentParts) {
+      related.forEach(item => {
+        const parts = productSkuParts(item);
+        if (!parts) return;
+        const sameSet = parts.set === currentParts.set;
+        const sameColor = !currentParts.color || parts.color === currentParts.color;
+        if (sameSet && sameColor) pushUniqueProduct(selected, item);
+      });
+
+      related.forEach(item => {
+        const parts = productSkuParts(item);
+        if (!parts) return;
+        const sameType = parts.type === currentParts.type;
+        const otherColor = !currentParts.color || parts.color !== currentParts.color;
+        if (sameType && otherColor) pushUniqueProduct(selected, item);
+      });
+
+      if (selected.length) return selected;
+    }
+
+    const currentCollections = (product?.collections || []).map(c => c.slug);
+    const currentCategories = (product?.categories || [])
+      .map(c => c.slug)
+      .filter(slug => slug && slug !== 'uncategorized');
+
+    const collectionItems = currentCollections.length
+      ? related.filter(item => (item.collections || []).some(c => currentCollections.includes(c.slug)))
+      : [];
+    if (collectionItems.length) return collectionItems;
+
+    return currentCategories.length
+      ? related.filter(item => (item.categories || []).some(c => currentCategories.includes(c.slug)))
+      : [];
   };
 
   const productFamilyKey = (product) => {
@@ -3328,22 +3425,7 @@
     window.setTimeout(() => {
       const related = list.filter(item => item.slug !== product.slug);
 
-      // "Compralo con":
-      //  1) productos RESTANTES del conjunto (colecciÃ³n) del producto actual.
-      //  2) si no tiene conjunto, productos de la misma categorÃ­a.
-      const currentCollections = (product.collections || []).map(c => c.slug);
-      const currentCategories = (product.categories || [])
-        .map(c => c.slug)
-        .filter(slug => slug && slug !== 'uncategorized');
-
-      let buyWithItems = currentCollections.length
-        ? related.filter(item => (item.collections || []).some(c => currentCollections.includes(c.slug)))
-        : [];
-      if (!buyWithItems.length && currentCategories.length) {
-        buyWithItems = related.filter(item =>
-          (item.categories || []).some(c => currentCategories.includes(c.slug))
-        );
-      }
+      const buyWithItems = getBuyWithProducts(product, list);
 
       const buyWithSection = $('[data-buy-with]');
       const buyWithGrid = $('[data-buy-with-grid]');

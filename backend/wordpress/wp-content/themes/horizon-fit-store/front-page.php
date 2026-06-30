@@ -5860,16 +5860,105 @@
           return '/producto/' + encodeURIComponent(params.get('slug') || slugifyText(titleEl.textContent.trim())) + '/';
         }
 
+        function getCardTitle(item) {
+          var itemTitle = item ? item.querySelector('.hf-product-item__title') : null;
+          return itemTitle ? itemTitle.textContent.trim() : '';
+        }
+
+        function normalizeMerchText(value) {
+          return String(value || '')
+            .toUpperCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^A-Z0-9]+/g, ' ')
+            .trim();
+        }
+
+        function inferMerchGroup(value) {
+          var normalized = normalizeMerchText(value);
+          var words = normalized ? normalized.split(/\s+/) : [];
+          var colors = {
+            BLACK: 'NEG', NEGRO: 'NEG', NEGRA: 'NEG',
+            BLUE: 'AZU', AZUL: 'AZU', CELESTE: 'CEL',
+            WHITE: 'BLA', BLANCO: 'BLA', BLANCA: 'BLA',
+            GREEN: 'VER', VERDE: 'VER',
+            RED: 'ROJ', ROJO: 'ROJ', ROJA: 'ROJ',
+            PINK: 'ROS', ROSA: 'ROS',
+            GREY: 'GRI', GRAY: 'GRI', GRIS: 'GRI',
+            BEIGE: 'BEI', ARENA: 'ARE', CAMEL: 'CAM',
+            BROWN: 'MAR', MARRON: 'MAR',
+            PURPLE: 'VIO', VIOLETA: 'VIO', LILA: 'LIL'
+          };
+          var types = {
+            TOP: 'TOP', HALTER: 'TOP', BRA: 'TOP',
+            CALZA: 'CAL', LEGGING: 'CAL',
+            SHORT: 'SHO', SHORTS: 'SHO', BIKER: 'SHO',
+            REMERA: 'REM', TANK: 'REM',
+            HOODIE: 'BUZ', BUZO: 'BUZ',
+            JOGGER: 'JOG', SET: 'SET', CONJUNTO: 'SET'
+          };
+          var color = '';
+          var type = '';
+
+          words.forEach(function (word) {
+            if (!color && colors[word]) color = colors[word];
+            if (types[word]) type = types[word];
+          });
+
+          var family = words.filter(function (word) {
+            return !colors[word] && !types[word];
+          }).join(' ');
+
+          return {
+            name: normalized,
+            color: color,
+            type: type,
+            family: family
+          };
+        }
+
+        function appendUniqueCard(target, item, limit) {
+          if (!item || target.length >= limit || target.indexOf(item) !== -1) return;
+          target.push(item);
+        }
+
+        function getBuyWithCards(limit) {
+          var current = inferMerchGroup(productName);
+          var cards = Array.prototype.filter.call(document.querySelectorAll('.hf-product-item--slider'), function (item) {
+            var title = getCardTitle(item);
+            return title && title !== productName;
+          });
+          var selected = [];
+
+          cards.forEach(function (item) {
+            var itemGroup = inferMerchGroup(getCardTitle(item));
+            var sameColor = current.color && itemGroup.color === current.color;
+            var sameFamily = current.family && itemGroup.family === current.family;
+            var differentType = current.type && itemGroup.type && itemGroup.type !== current.type;
+            if (sameColor && (sameFamily || !current.family) && differentType) {
+              appendUniqueCard(selected, item, limit);
+            }
+          });
+
+          cards.forEach(function (item) {
+            var itemGroup = inferMerchGroup(getCardTitle(item));
+            var sameType = current.type && itemGroup.type === current.type;
+            var otherColor = !current.color || !itemGroup.color || itemGroup.color !== current.color;
+            if (sameType && otherColor) {
+              appendUniqueCard(selected, item, limit);
+            }
+          });
+
+          cards.forEach(function (item) {
+            appendUniqueCard(selected, item, limit);
+          });
+
+          return selected.slice(0, limit);
+        }
+
         function renderLookComplete() {
           if (!lookList) return;
-          var relatedCards = Array.prototype.filter.call(document.querySelectorAll('.hf-product-item--slider'), function (item) {
-            var itemTitle = item.querySelector('.hf-product-item__title');
-            return itemTitle && itemTitle.textContent.trim() !== productName;
-          }).slice(0, 3);
-
-          if (!relatedCards.length) {
-            relatedCards = Array.prototype.slice.call(document.querySelectorAll('.hf-product-item--slider'), 0, 3);
-          }
+          var relatedCards = getBuyWithCards(3);
 
           lookList.innerHTML = relatedCards.map(function (item) {
             var itemTitle = item.querySelector('.hf-product-item__title');
@@ -5889,7 +5978,6 @@
               '</article>';
           }).join('');
         }
-
         title.textContent = productName;
         priceEl.textContent = price;
         compareEl.textContent = compare;

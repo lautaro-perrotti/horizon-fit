@@ -35,6 +35,7 @@ function hf_panel_render() {
         'inicio'   => __('Inicio de la tienda', 'horizon-fit-commerce'),
         'menu'     => __('Menú de navegación', 'horizon-fit-commerce'),
         'catalogo' => __('Categorías y conjuntos', 'horizon-fit-commerce'),
+        'paginas'  => __('Páginas del footer', 'horizon-fit-commerce'),
         'precios'  => __('Productos y precios', 'horizon-fit-commerce'),
     ];
     $current = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'inicio';
@@ -61,6 +62,9 @@ function hf_panel_render() {
                     break;
                 case 'catalogo':
                     hf_panel_tab_catalogo();
+                    break;
+                case 'paginas':
+                    hf_panel_tab_paginas();
                     break;
                 case 'precios':
                     hf_panel_tab_precios();
@@ -153,6 +157,88 @@ function hf_panel_tab_precios() {
                 echo '<p>' . esc_html__('Módulo no disponible.', 'horizon-fit-commerce') . '</p>';
             }
             ?>
+        </div>
+    </div>
+    <?php
+}
+
+// ---- Pestaña: Páginas del footer (contenido HTML editable con editor visual) ----
+// Las páginas (Envíos, Cambios, Guía de talles, etc.) son una lista fija. Cada
+// una se edita con el editor visual de WordPress (wp_editor). Se guarda en la
+// option hf_info_pages y se regenera info-pages.json, que lee el page-builder.
+function hf_panel_tab_paginas() {
+    if (!function_exists('hf_info_pages_defaults')) {
+        echo '<p>' . esc_html__('Módulo de páginas no disponible.', 'horizon-fit-commerce') . '</p>';
+        return;
+    }
+    $pages = hf_info_pages_defaults();
+
+    // Guardado (procesa la página enviada).
+    $saved = false;
+    if (!empty($_POST['hf_paginas_submit'])) {
+        check_admin_referer('hf_paginas_action');
+        $slug = sanitize_key($_POST['hf_paginas_slug'] ?? '');
+        if (isset($pages[$slug])) {
+            $eid     = 'hf_ip_' . str_replace('-', '_', $slug);
+            $title   = sanitize_text_field(wp_unslash($_POST['hf_paginas_title'] ?? ''));
+            $content = wp_kses_post(wp_unslash($_POST[$eid] ?? ''));
+            $opt = get_option('hf_info_pages', []);
+            $opt = is_array($opt) ? $opt : [];
+            $opt[$slug] = ['title' => $title, 'content' => $content];
+            update_option('hf_info_pages', $opt);
+            if (function_exists('hf_regenerate_info_pages_cache')) {
+                hf_regenerate_info_pages_cache();
+            }
+            $saved = true;
+        }
+    }
+
+    // Página activa (sub-navegación por ?sec=).
+    $current = isset($_GET['sec']) ? sanitize_key($_GET['sec']) : '';
+    if (!isset($pages[$current])) {
+        $current = array_key_first($pages);
+    }
+    $all  = hf_info_pages_get();
+    $data = $all[$current];
+    $eid  = 'hf_ip_' . str_replace('-', '_', $current);
+    ?>
+    <?php if ($saved) : ?>
+        <div class="notice notice-success"><p><?php esc_html_e('Página guardada.', 'horizon-fit-commerce'); ?></p></div>
+    <?php endif; ?>
+    <p class="description"><?php esc_html_e('Estas son las páginas que enlaza el footer. Elegí una de la izquierda y editá su contenido con el editor visual.', 'horizon-fit-commerce'); ?></p>
+
+    <div class="hf-panel-sub" style="display:flex; gap:24px; align-items:flex-start;">
+        <ul class="hf-panel-subnav" style="flex:0 0 220px; margin:0; padding:0; list-style:none; border:1px solid #dcdcde; border-radius:6px; overflow:hidden;">
+            <?php foreach ($pages as $slug => $def) :
+                $active = ($slug === $current);
+                $style = 'display:block; padding:10px 14px; text-decoration:none; border-bottom:1px solid #f0f0f1;'
+                    . ($active ? ' background:#2271b1; color:#fff; font-weight:600;' : ' color:#2c3338;'); ?>
+                <li><a href="<?php echo esc_url(hf_panel_tab_url('paginas', $slug)); ?>" style="<?php echo esc_attr($style); ?>"><?php echo esc_html($def['title']); ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="hf-panel-seccontent" style="flex:1 1 auto; min-width:0;">
+            <form method="post">
+                <?php wp_nonce_field('hf_paginas_action'); ?>
+                <input type="hidden" name="hf_paginas_slug" value="<?php echo esc_attr($current); ?>">
+
+                <p>
+                    <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Título de la página', 'horizon-fit-commerce'); ?></label>
+                    <input type="text" name="hf_paginas_title" value="<?php echo esc_attr($data['title']); ?>" style="width:100%; max-width:520px;">
+                </p>
+
+                <p style="font-weight:600; margin:18px 0 6px;"><?php esc_html_e('Contenido', 'horizon-fit-commerce'); ?></p>
+                <?php
+                wp_editor($data['content'], $eid, [
+                    'textarea_name' => $eid,
+                    'media_buttons' => true,
+                    'textarea_rows' => 18,
+                    'teeny'         => false,
+                ]);
+                ?>
+
+                <p class="submit"><button type="submit" name="hf_paginas_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar página', 'horizon-fit-commerce'); ?></button></p>
+            </form>
         </div>
     </div>
     <?php
