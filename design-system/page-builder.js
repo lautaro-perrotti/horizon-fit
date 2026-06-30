@@ -1570,10 +1570,116 @@
     target.push(item);
   };
 
+  const normalizeMerchToken = (value) => `${value || ''}`
+    .toUpperCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .trim();
+
+  const productColorKey = (product) => {
+    const attrColor = product?.attributes
+      ?.find(item => `${item.label || item.name || ''}`.toLowerCase().includes('color')
+        || `${item.label || item.name || ''}`.toLowerCase().includes('colour'))
+      ?.values?.[0];
+    const rawColor = attrColor?.name || attrColor?.slug || '';
+    const text = normalizeMerchToken(rawColor || product?.name || product?.slug || '');
+    const colorAliases = {
+      NEGRO: 'NEG', NEGRA: 'NEG', BLACK: 'NEG',
+      BLANCO: 'BLA', BLANCA: 'BLA', WHITE: 'BLA',
+      AZUL: 'AZU', BLUE: 'AZU',
+      CELESTE: 'CEL',
+      VERDE: 'VER', GREEN: 'VER',
+      ROJO: 'ROJ', ROJA: 'ROJ', RED: 'ROJ',
+      ROSA: 'ROS', PINK: 'ROS',
+      GRIS: 'GRI', GREY: 'GRI', GRAY: 'GRI',
+      ARENA: 'ARE', BEIGE: 'BEI', NUDE: 'NUD', CAMEL: 'CAM',
+      BORDO: 'BOR', BORDEAUX: 'BOR',
+      MARRON: 'MAR', BROWN: 'MAR',
+      LILA: 'LIL', VIOLETA: 'VIO', PURPLE: 'VIO',
+      NARANJA: 'NAR', AMARILLO: 'AMA', MOSTAZA: 'MOS', TURQUESA: 'TUR'
+    };
+
+    for (const word of text.split(/\s+/)) {
+      if (colorAliases[word]) return colorAliases[word];
+    }
+    return '';
+  };
+
+  const productTypeKey = (product) => {
+    const text = normalizeMerchToken(`${product?.name || ''} ${product?.slug || ''} ${(product?.categories || []).map(item => item.name || item.slug).join(' ')}`);
+    const typeAliases = {
+      TOP: 'TOP', BRA: 'TOP', CORPINO: 'TOP',
+      CALZA: 'CAL', CALSAS: 'CAL', CALSA: 'CAL', LEGGING: 'CAL', LEGGINGS: 'CAL',
+      SHORT: 'SHO', SHORTS: 'SHO', BIKER: 'SHO',
+      CAMPERA: 'CAM', CAMPERAS: 'CAM',
+      BUZO: 'BUZ', BUZOS: 'BUZ', HOODIE: 'BUZ',
+      REMERA: 'REM', REMERAS: 'REM', TANK: 'REM',
+      PANTALON: 'PAN', PANTALONES: 'PAN', JOGGER: 'PAN',
+      SET: 'SET', CONJUNTO: 'SET'
+    };
+
+    for (const word of text.split(/\s+/)) {
+      if (typeAliases[word]) return typeAliases[word];
+    }
+    return '';
+  };
+
+  const productDescriptorKeys = (product) => {
+    const text = normalizeMerchToken(`${product?.name || ''} ${product?.slug || ''}`);
+    const typeWords = new Set(['TOP', 'BRA', 'CORPINO', 'CALZA', 'CALSA', 'CALSAS', 'LEGGING', 'LEGGINGS', 'SHORT', 'SHORTS', 'BIKER', 'CAMPERA', 'CAMPERAS', 'BUZO', 'BUZOS', 'HOODIE', 'REMERA', 'REMERAS', 'TANK', 'PANTALON', 'PANTALONES', 'JOGGER', 'SET', 'CONJUNTO']);
+    const colorWords = new Set(['NEGRO', 'NEGRA', 'BLACK', 'BLANCO', 'BLANCA', 'WHITE', 'AZUL', 'BLUE', 'CELESTE', 'VERDE', 'GREEN', 'ROJO', 'ROJA', 'RED', 'ROSA', 'PINK', 'GRIS', 'GREY', 'GRAY', 'ARENA', 'BEIGE', 'NUDE', 'CAMEL', 'BORDO', 'BORDEAUX', 'MARRON', 'BROWN', 'LILA', 'VIOLETA', 'PURPLE', 'NARANJA', 'AMARILLO', 'MOSTAZA', 'TURQUESA']);
+    const ignored = new Set(['LARGO', 'LARGA', 'CORTO', 'CORTA']);
+    const descriptorAliases = {
+      LISO: 'LISO', LISA: 'LISO', LISOS: 'LISO', LISAS: 'LISO',
+      RUSTICO: 'RUSTICO', RUSTICA: 'RUSTICO',
+      TIRA: 'TIRAS', TIRAS: 'TIRAS',
+      FRUNCE: 'FRUNCE', CRUZADO: 'CRUZADO', CRUZADA: 'CRUZADO',
+      SEAMLESS: 'SEAMLESS', PUSH: 'PUSH', UP: 'UP'
+    };
+
+    return new Set(text.split(/\s+/)
+      .map(word => descriptorAliases[word] || word)
+      .filter(word => word && !typeWords.has(word) && !colorWords.has(word) && !ignored.has(word)));
+  };
+
+  const shareDescriptor = (product, candidate) => {
+    const currentDescriptors = productDescriptorKeys(product);
+    const candidateDescriptors = productDescriptorKeys(candidate);
+    if (!currentDescriptors.size || !candidateDescriptors.size) return false;
+    return Array.from(currentDescriptors).some(token => candidateDescriptors.has(token));
+  };
+
+  const buyWithTypeRank = (currentType, item) => {
+    const candidateType = productTypeKey(item);
+    const preferences = {
+      TOP: ['CAL', 'SHO', 'PAN', 'CAM', 'BUZ', 'REM'],
+      CAL: ['TOP', 'CAM', 'BUZ', 'REM', 'SHO'],
+      SHO: ['TOP', 'REM', 'CAM', 'BUZ', 'CAL'],
+      CAM: ['CAL', 'TOP', 'SHO', 'PAN'],
+      BUZ: ['CAL', 'TOP', 'SHO', 'PAN'],
+      REM: ['CAL', 'SHO', 'TOP'],
+      PAN: ['TOP', 'REM', 'CAM', 'BUZ']
+    };
+    const rank = preferences[currentType]?.indexOf(candidateType) ?? -1;
+    return rank === -1 ? 99 : rank;
+  };
+
+  const sortBuyWithItems = (items, currentType) => {
+    return [...items].sort((a, b) => {
+      const rankDiff = buyWithTypeRank(currentType, a) - buyWithTypeRank(currentType, b);
+      if (rankDiff) return rankDiff;
+      return `${a?.name || ''}`.localeCompare(`${b?.name || ''}`, 'es');
+    });
+  };
+
   const getBuyWithProducts = (product, products) => {
     const related = (products || []).filter(item => item?.slug !== product?.slug);
     const currentParts = productSkuParts(product);
+    const currentType = productTypeKey(product);
     const selected = [];
+    const skuSetItems = [];
+    const skuColorItems = [];
 
     if (currentParts) {
       related.forEach(item => {
@@ -1581,7 +1687,7 @@
         if (!parts) return;
         const sameSet = parts.set === currentParts.set;
         const sameColor = !currentParts.color || parts.color === currentParts.color;
-        if (sameSet && sameColor) pushUniqueProduct(selected, item);
+        if (sameSet && sameColor) pushUniqueProduct(skuSetItems, item);
       });
 
       related.forEach(item => {
@@ -1589,11 +1695,11 @@
         if (!parts) return;
         const sameType = parts.type === currentParts.type;
         const otherColor = !currentParts.color || parts.color !== currentParts.color;
-        if (sameType && otherColor) pushUniqueProduct(selected, item);
+        if (sameType && otherColor) pushUniqueProduct(skuColorItems, item);
       });
-
-      if (selected.length) return selected;
     }
+
+    sortBuyWithItems(skuSetItems, currentType).forEach(item => pushUniqueProduct(selected, item));
 
     const currentCollections = (product?.collections || []).map(c => c.slug);
     const currentCategories = (product?.categories || [])
@@ -1603,7 +1709,32 @@
     const collectionItems = currentCollections.length
       ? related.filter(item => (item.collections || []).some(c => currentCollections.includes(c.slug)))
       : [];
-    if (collectionItems.length) return collectionItems;
+    collectionItems.forEach(item => pushUniqueProduct(selected, item));
+
+    const currentColor = productColorKey(product);
+    const inferredSetItems = [];
+
+    related.forEach(item => {
+      const sameColor = currentColor && productColorKey(item) === currentColor;
+      const differentType = currentType && productTypeKey(item) && productTypeKey(item) !== currentType;
+      if (sameColor && differentType && shareDescriptor(product, item)) {
+        pushUniqueProduct(inferredSetItems, item);
+      }
+    });
+
+    sortBuyWithItems(inferredSetItems, currentType).forEach(item => pushUniqueProduct(selected, item));
+
+    related.forEach(item => {
+      const sameType = currentType && productTypeKey(item) === currentType;
+      const otherColor = currentColor && productColorKey(item) && productColorKey(item) !== currentColor;
+      if (sameType && otherColor && shareDescriptor(product, item)) {
+        pushUniqueProduct(selected, item);
+      }
+    });
+
+    skuColorItems.forEach(item => pushUniqueProduct(selected, item));
+
+    if (selected.length) return selected;
 
     return currentCategories.length
       ? related.filter(item => (item.categories || []).some(c => currentCategories.includes(c.slug)))
