@@ -2325,7 +2325,7 @@
         .hf-pdp-view {
           display: grid;
           grid-template-columns: minmax(0, 36rem) 1fr;
-          grid-template-rows: auto auto;
+          grid-template-rows: auto auto auto;
           column-gap: 2rem;
           row-gap: 0;
           width: calc(100% - 128px);
@@ -2364,9 +2364,9 @@
         }
 
         .hf-buy-with {
-          grid-column: 2;
-          grid-row: 2;
-          margin-top: 42px;
+          grid-column: 1 / -1;
+          grid-row: 3;
+          margin-top: 34px;
           align-self: start;
         }
       }
@@ -3034,7 +3034,7 @@
       /* En desktop sí separa de la info de cuotas */
       @media (min-width: 1024px) {
         .hf-buy-with {
-          margin-top: 42px;
+          margin-top: 34px;
           padding-top: 0;
         }
       }
@@ -3101,6 +3101,23 @@
         .hf-buy-with__grid.hf-product-grid--h-scroll .hf-product-item {
           flex: 0 0 calc((100% - 32px) / 3);
         }
+      }
+
+      @media (min-width: 1024px) {
+        .hf-buy-with__shell {
+          padding-inline: 56px;
+        }
+
+        .hf-buy-with__grid.hf-product-grid--h-scroll {
+          gap: 22px;
+        }
+
+        .hf-buy-with__grid.hf-product-grid--h-scroll .hf-product-item {
+          flex: 0 0 calc((100% - 66px) / 4);
+        }
+
+        .hf-buy-with__shell.hf-product-scroll-shell .hf-carousel__nav--prev { left: 18px; }
+        .hf-buy-with__shell.hf-product-scroll-shell .hf-carousel__nav--next { right: 18px; }
       }
 
       /* Los talles no van en el "Compralo con". */

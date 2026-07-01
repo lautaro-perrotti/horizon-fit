@@ -1,0 +1,116 @@
+services:
+  db:
+    image: mariadb:10.6
+    container_name: horizon-fit-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: horizon_fit
+      MYSQL_USER: horizon_fit
+      MYSQL_PASSWORD: horizon_fit
+      MYSQL_ROOT_PASSWORD: root
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3308:3306"
+    volumes:
+      - horizon_fit_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6.9.4-php8.2-apache
+    container_name: horizon-fit-wp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8089:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: horizon_fit
+      WORDPRESS_DB_USER: horizon_fit
+      WORDPRESS_DB_PASSWORD: horizon_fit
+      WORDPRESS_TABLE_PREFIX: hf_
+      DB_HOST: db
+      DB_USER: horizon_fit
+      DB_PASSWORD: horizon_fit
+      # Host público para WP-CLI/cron (sin HTTP_HOST). Default local; en la VPS
+      # se sobreescribe con un archivo .env (WP_PUBLIC_HOST=187.77.28.61:8089).
+      WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*']);
+        define('FS_METHOD', 'direct');
+        define('WP_MEMORY_LIMIT', '256M');
+    volumes:
+      - horizon_fit_html:/var/www/html
+      - ./index.html:/var/www/html/index.html
+      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+      - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
+      - ./docker/wordpress/wp-htaccess:/var/www/html/.htaccess:ro
+      - ./docker/wordpress/wp-config-sample.php:/wp-config-sample.php:ro
+      - ./docker/apache/horizon-fit-api.conf:/etc/apache2/sites-available/000-default.conf:ro
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+      - ./docker/wordpress/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: /entrypoint.sh
+
+  spa:
+    image: httpd:2.4-alpine
+    container_name: horizon-fit-spa
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./index.html:/usr/local/apache2/htdocs/index.html
+      - ./robots.txt:/usr/local/apache2/htdocs/robots.txt:ro
+      - ./sitemap.xml:/usr/local/apache2/htdocs/sitemap.xml:ro
+      - ./design-system:/usr/local/apache2/htdocs/design-system
+      - ./assets:/usr/local/apache2/htdocs/assets:ro
+      - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro
+      - ./docker/apache/spa.conf:/usr/local/apache2/conf/httpd.conf:ro
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    container_name: horizon-fit-wpcli
+    depends_on:
+      wordpress:
+        condition: service_started
+    working_dir: /var/www/html
+    entrypoint: ["sh", "-c", "while true; do sleep 3600; done"]
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: horizon_fit
+      WORDPRESS_DB_USER: horizon_fit
+      WORDPRESS_DB_PASSWORD: horizon_fit
+      WORDPRESS_TABLE_PREFIX: hf_
+      # Mismo host público que wordpress: así la cache que regenera WP-CLI/cron
+      # usa el dominio correcto del entorno (local o VPS) sin parches manuales.
+      WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
+    volumes:
+      - horizon_fit_html:/var/www/html
+      - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: horizon-fit-pma
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+volumes:
+  horizon_fit_db:
+  horizon_fit_html:
