@@ -199,10 +199,10 @@
 }
 
 .hf-product-item__price {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #111;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .hf-product-item__price-original {
@@ -241,16 +241,16 @@
 
 .hf-product-item__price-original {
   display: inline;
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(11, 11, 15, .42);
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .hf-product-item__installments {
   margin: 0;
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(11, 11, 15, .66);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .hf-product-item__installments-value {
@@ -260,9 +260,9 @@
 
 .hf-product-item__transfer {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: #111;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .hf-product-item__transfer-value {
@@ -271,7 +271,7 @@
 }
 
 .hf-product-item__transfer-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   color: rgba(11, 11, 15, .66);
 }
@@ -331,11 +331,11 @@
   }
 
   .hf-product-item__title {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .hf-product-item__price {
-    font-size: 13px;
+    font-size: 15px;
   }
 
 
@@ -374,7 +374,7 @@
 
   .hf-product-item__installments,
   .hf-product-item__transfer-label {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
