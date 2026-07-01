@@ -87,7 +87,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 4px !important;
+  gap: 3px !important;
   padding: 14px 0 0;
 }
 
@@ -192,13 +192,15 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
+  min-height: 18px;
 }
 
 .hf-product-item__price {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--hf-primary);
+  line-height: 1.15;
 }
 
 .hf-product-item__price-original {
@@ -233,6 +235,43 @@
   font-size: 12px;
   font-weight: 400;
   color: #666;
+}
+
+.hf-product-item__price-original {
+  display: inline;
+  font-size: 12px;
+  color: rgba(11, 11, 15, .42);
+  line-height: 1.15;
+}
+
+.hf-product-item__installments {
+  margin: 0;
+  font-size: 11px;
+  color: rgba(11, 11, 15, .66);
+  line-height: 1.2;
+}
+
+.hf-product-item__installments-value {
+  color: var(--hf-primary);
+  font-weight: 800;
+}
+
+.hf-product-item__transfer {
+  margin: 0;
+  font-size: 12px;
+  color: #111;
+  line-height: 1.2;
+}
+
+.hf-product-item__transfer-value {
+  font-weight: 900;
+  color: #111;
+}
+
+.hf-product-item__transfer-label {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(11, 11, 15, .66);
 }
 
 .hf-product-item__actions {

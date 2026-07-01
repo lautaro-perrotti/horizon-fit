@@ -47,7 +47,7 @@
   <link rel="stylesheet" href="/design-system/components/grid/grid.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/card/card.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/lightbox/lightbox.css?v=20260619" />
-  <link rel="stylesheet" href="/design-system/components/product-item/product-item.css?v=20260619" />
+  <link rel="stylesheet" href="/design-system/components/product-item/product-item.css?v=20260701-card-pricing" />
   <link rel="stylesheet" href="/design-system/components/info-banner/info-banner.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/trust-bar/trust-bar.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/sections/account.css?v=20260619" />
@@ -3014,8 +3014,16 @@
       .hf-buy-with__grid.hf-product-grid--h-scroll .hf-product-item {
         flex: 0 0 calc(50% - 0.3rem); /* mobile: 2 visibles */
         min-width: 0;
-        box-shadow: none;
+        box-shadow: none !important;
+        filter: none !important;
         transition-property: transform;
+      }
+
+      .hf-buy-with__grid .hf-product-item,
+      .hf-buy-with__grid .hf-product-item__body,
+      .hf-buy-with__grid .productMedia {
+        box-shadow: none !important;
+        filter: none !important;
       }
 
       /* Desktop/tablet: 3 visibles exactos sin cortar la tercera. */
@@ -4681,7 +4689,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=buy-with-set-first-20260630"></script>
+  <script src="/design-system/page-builder.js?v=buy-with-no-shadow-20260630"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

@@ -693,6 +693,8 @@
       const t2 = performance.now();
       const sectionElements = new Map();
       const tailSectionEls = [];
+      let hasProductsAnchor = false;
+      let hasSetsAnchor = false;
       for (const section of sections) {
         const componentHtml = componentMap.get(section.id);
         if (!componentHtml) continue;
@@ -701,6 +703,16 @@
         wrapper.innerHTML = componentHtml;
         const sectionEl = wrapper.firstElementChild;
         sectionElements.set(section.id, sectionEl);
+
+        if (!productRoute && section.type === 'featured-products' && !hasProductsAnchor) {
+          sectionEl.id = 'productos-destacados';
+          hasProductsAnchor = true;
+        }
+
+        if (!productRoute && section.type === 'featured-sets' && !hasSetsAnchor) {
+          sectionEl.id = 'conjuntos-destacados';
+          hasSetsAnchor = true;
+        }
 
         // Handle optional title
         if (section.config?.title) {
@@ -917,6 +929,30 @@
     return wrapper.innerHTML;
   };
 
+  const renderCardInstallmentsHtml = (text) => {
+    const clean = `${text || ''}`.trim();
+    if (!clean) return '';
+
+    const match = clean.match(/^\s*(\$?\s*[\d.,]+)\s+en\s+(\d+)\s+cuotas/i);
+    if (match) {
+      return `${escapeHtml(match[2])} cuotas de: <span class="hf-product-item__installments-value">${escapeHtml(match[1].trim())}</span>`;
+    }
+
+    return escapeHtml(clean);
+  };
+
+  const renderCardTransferHtml = (text) => {
+    const clean = `${text || ''}`.trim();
+    if (!clean) return '';
+
+    const match = clean.match(/^\s*(\$?\s*[\d.,]+)\s+(.*)$/);
+    if (match) {
+      return `<span class="hf-product-item__transfer-value">${escapeHtml(match[1].trim())}</span> <span class="hf-product-item__transfer-label">${escapeHtml(match[2].trim())}</span>`;
+    }
+
+    return escapeHtml(clean);
+  };
+
   // Clona el template de card y lo rellena con los datos del producto.
   // Reusado por featured-products, colecciones y "Compralo con".
   const fillProductCard = (template, product, options = {}) => {
@@ -938,8 +974,11 @@
 
     const priceOrig = clone.querySelector('.hf-product-item__price-original');
     if (priceOrig) {
-      priceOrig.textContent = availability.compareText || '';
-      priceOrig.hidden = !availability.compareText;
+      const compareText = availability.compareText && availability.compareText !== availability.priceText
+        ? availability.compareText
+        : '';
+      priceOrig.textContent = compareText;
+      priceOrig.hidden = !compareText;
     }
 
     const badge = clone.querySelector('.hf-product-item__badge');
@@ -963,10 +1002,21 @@
     }
 
     const installments = clone.querySelector('.hf-product-item__installments');
-    if (installments) installments.textContent = availability.canPurchase ? (availability.installmentsText || '') : availability.label || '';
+    if (installments) {
+      if (availability.canPurchase) {
+        installments.innerHTML = renderCardInstallmentsHtml(availability.installmentsText);
+        installments.hidden = !installments.innerHTML;
+      } else {
+        installments.textContent = availability.label || '';
+        installments.hidden = !installments.textContent;
+      }
+    }
 
     const transfer = clone.querySelector('.hf-product-item__transfer');
-    if (transfer) transfer.textContent = availability.canPurchase ? (availability.transferText || '') : '';
+    if (transfer) {
+      transfer.innerHTML = availability.canPurchase ? renderCardTransferHtml(availability.transferText) : '';
+      transfer.hidden = !transfer.innerHTML;
+    }
 
     return clone;
   };
@@ -2579,7 +2629,7 @@
   const renderBuyWithCard = (item) => {
     const image = getProductImages(item)[0];
     return `
-          <a class="hf-product-item" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
+          <a class="hf-product-item" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}" style="box-shadow:none;filter:none;">
             <div class="productMedia" style="background:none;">
               <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
             </div>
