@@ -50,17 +50,17 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(11, 11, 15, .10);
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--text);
+  background: #fff;
+  color: var(--hf-primary, #35006d);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.14);
   transition: background var(--fast) var(--ease), transform var(--fast) var(--ease), opacity var(--fast) var(--ease);
 }
 
 .hf-carousel__nav:hover {
-  background: var(--surface-2);
+  background: #fff;
   transform: translateY(-50%) scale(1.05);
 }
 
