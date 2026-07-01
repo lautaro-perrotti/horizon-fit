@@ -201,7 +201,7 @@
 .hf-product-item__price {
   font-size: 14px;
   font-weight: 700;
-  color: var(--hf-primary);
+  color: #111;
   line-height: 1.15;
 }
 
@@ -224,7 +224,7 @@
 }
 
 .hf-product-item__installments-value {
-  color: #c7417b;
+  color: #111;
 }
 
 .hf-product-item__transfer {
@@ -254,7 +254,7 @@
 }
 
 .hf-product-item__installments-value {
-  color: var(--hf-primary);
+  color: #111;
   font-weight: 700;
 }
 
