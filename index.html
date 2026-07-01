@@ -2824,12 +2824,54 @@
       .hf-pdp-look__title {
         margin: 0;
         font-family: 'BlauerNue', var(--font-sans) !important;
-        font-size: 30px !important;
+        font-size: 26px !important;
         font-weight: 400 !important;
         letter-spacing: .04em !important;
-        line-height: .95;
+        line-height: 1;
         text-transform: uppercase;
         color: #111 !important;
+      }
+
+      .hf-pdp-look__colors {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+        margin-bottom: 18px;
+      }
+
+      .hf-pdp-look__color {
+        width: 38px;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid rgba(17, 17, 17, .12);
+        background: #f2ebe4;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #111;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease);
+      }
+
+      .hf-pdp-look__color[aria-current="true"] {
+        border-color: #111;
+        box-shadow: 0 0 0 1px #111 inset;
+      }
+
+      .hf-pdp-look__color:hover {
+        transform: translateY(-1px);
+        border-color: rgba(17, 17, 17, .52);
+      }
+
+      .hf-pdp-look__color img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
       }
 
       .hf-pdp-look__list {
@@ -2951,10 +2993,35 @@
         letter-spacing: .08em;
         text-transform: uppercase;
         text-align: center;
-        white-space: nowrap;
+        white-space: normal;
+        overflow: visible;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, .14);
+      }
+
+      .hf-pdp-look__tag-text {
+        display: block;
         overflow: hidden;
         text-overflow: ellipsis;
-        box-shadow: 0 18px 36px rgba(0, 0, 0, .14);
+        white-space: nowrap;
+      }
+
+      .hf-pdp-look__colors--tag {
+        justify-content: center;
+        gap: 6px;
+        margin: 9px 0 0;
+      }
+
+      .hf-pdp-look__colors--tag .hf-pdp-look__color {
+        width: 28px;
+        height: 34px;
+        border-radius: 9px;
+        border-color: rgba(255, 255, 255, .38);
+        box-shadow: none;
+      }
+
+      .hf-pdp-look__colors--tag .hf-pdp-look__color[aria-current="true"] {
+        border-color: #fff;
+        box-shadow: 0 0 0 1px #fff inset;
       }
 
       /* ---- Compralo con (productos del conjunto) ---- */
@@ -3387,8 +3454,20 @@
         }
 
         .hf-pdp-look__title {
-          font-size: 30px !important;
+          font-size: 24px !important;
           font-weight: 400 !important;
+        }
+
+        .hf-pdp-look__colors {
+          justify-content: center;
+          margin-top: 10px;
+          margin-bottom: 16px;
+        }
+
+        .hf-pdp-look__color {
+          width: 34px;
+          height: 42px;
+          border-radius: 11px;
         }
 
         .hf-pdp-look__item {

@@ -2661,6 +2661,74 @@
   // `meta` (opcional) permite sobreescribir tÃ­tulo/copy/imagen del conjunto
   // (vienen de la colecciÃ³n en wp-admin). Si no se pasa, se infieren del
   // primer producto (comportamiento usado por la PDP).
+  const normalizeSetText = (value) => String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/["']/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const SET_COLOR_PATTERNS = [
+    { label: 'Bordeaux', regex: /\b(bordeaux|bordo|bordó|bor)\b/i },
+    { label: 'Azul', regex: /\b(azul|azu)\b/i },
+    { label: 'Negro', regex: /\b(negro|negra|neg)\b/i },
+    { label: 'Blanco', regex: /\b(blanco|blanca|bla)\b/i },
+    { label: 'Celeste', regex: /\b(celeste|cel)\b/i },
+    { label: 'Rosa', regex: /\b(rosa|ros)\b/i },
+    { label: 'Rojo', regex: /\b(rojo|roja|roj)\b/i },
+    { label: 'Verde', regex: /\b(verde|ver)\b/i }
+  ];
+
+  const getSetColorLabel = (set) => {
+    const haystack = `${set?.name || ''} ${set?.slug || ''}`;
+    const match = SET_COLOR_PATTERNS.find(item => item.regex.test(haystack));
+    return match?.label || set?.name || 'Color';
+  };
+
+  const getSetFamilyKey = (set) => {
+    const base = normalizeSetText(set?.name || set?.slug || '');
+    const withoutColors = SET_COLOR_PATTERNS
+      .reduce((text, item) => text.replace(item.regex, ' '), base)
+      .replace(/\b(conjunto|set)\b/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return withoutColors || normalizeSetText(set?.copy || set?.name || set?.slug);
+  };
+
+  const getSetPreviewImage = (set) => {
+    const firstProduct = set?.products?.[0];
+    return set?.imageMobile?.url || set?.image?.url || getProductImages(firstProduct)[0]?.url || '';
+  };
+
+  const renderSetColorPreviews = (variants = [], currentSlug = '', asLinks = true, extraClass = '') => {
+    const unique = [];
+    const seen = new Set();
+    variants.forEach(set => {
+      const key = set?.slug || set?.name;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      unique.push(set);
+    });
+    if (unique.length <= 1) return '';
+
+    const items = unique.map(set => {
+      const label = getSetColorLabel(set);
+      const imageUrl = getSetPreviewImage(set);
+      const current = set.slug === currentSlug;
+      const inner = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(label)}">`
+        : `<span>${escapeHtml(label.slice(0, 1))}</span>`;
+      if (!asLinks) {
+        return `<span class="hf-pdp-look__color" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</span>`;
+      }
+      return `<a class="hf-pdp-look__color" href="${escapeHtml(buildCollectionUrl(set.slug))}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</a>`;
+    }).join('');
+
+    const containerTag = asLinks ? 'div' : 'span';
+    return `<${containerTag} class="hf-pdp-look__colors ${escapeHtml(extraClass)}" aria-label="Colores disponibles">${items}</${containerTag}>`;
+  };
+
   const renderProductSetSlide = (items, index, total, meta = null) => {
     const heroProduct = items[0];
     const heroImage = getProductImages(heroProduct)[0];
@@ -2668,24 +2736,27 @@
     const tag = meta?.copy || getVisibleCategories(heroProduct?.categories).map(item => item.name).filter(Boolean).join(' / ') || `Conjunto ${index + 1} de ${total}`;
     const heroUrl = meta?.image || heroImage?.url || '';
     const collectionUrl = meta?.slug ? buildCollectionUrl(meta.slug) : '';
+    const variants = meta?.variants || [];
+    const colorPreviews = renderSetColorPreviews(variants, meta?.slug || '', true);
+    const tagColorPreviews = renderSetColorPreviews(variants, meta?.slug || '', false, 'hf-pdp-look__colors--tag');
     const titleMarkup = collectionUrl
       ? `<a href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}"><h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2></a>`
       : `<h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>`;
     const visualMarkup = collectionUrl
       ? `<a class="hf-pdp-look__visual" href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}">
-          <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
+          <span class="hf-pdp-look__tag"><span class="hf-pdp-look__tag-text">${escapeHtml(tag)}</span>${tagColorPreviews}</span>
           <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
         </a>`
       : `<div class="hf-pdp-look__visual">
-          <span class="hf-pdp-look__tag">${escapeHtml(tag)}</span>
+          <span class="hf-pdp-look__tag"><span class="hf-pdp-look__tag-text">${escapeHtml(tag)}</span>${tagColorPreviews}</span>
           <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
         </div>`;
     return `
           <div class="hf-carousel__slide">
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
               <div class="hf-pdp-look__panel">
-                <p class="hf-pdp-look__eyebrow">Conjunto ${index + 1} de ${total}</p>
                 ${titleMarkup}
+                ${colorPreviews}
                 <div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">
                   ${items.map(renderLookItem).join('')}
                 </div>
@@ -2733,12 +2804,20 @@
     if (variant === 'mobile') {
       track.innerHTML = sets.map(renderSetMobileCard).join('');
     } else {
+      const setsByFamily = sets.reduce((acc, set) => {
+        const key = getSetFamilyKey(set);
+        if (!acc.has(key)) acc.set(key, []);
+        acc.get(key).push(set);
+        return acc;
+      }, new Map());
+
       track.innerHTML = sets.map((set, i) =>
         renderProductSetSlide(set.products || [], i, total, {
           slug: set.slug,
           title: set.name,
           copy: set.copy,
-          image: set.image?.url
+          image: set.image?.url,
+          variants: setsByFamily.get(getSetFamilyKey(set)) || [set]
         })
       ).join('');
     }
