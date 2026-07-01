@@ -1041,15 +1041,14 @@
     }
   };
 
-  // Rellena el marquee con los mensajes administrados desde wp-admin.
-  // El marquee NO tiene texto hardcodeado: si no hay mensajes, queda vacÃ­o.
+  const MARQUEE_MESSAGE = '3 Y 6 CUOTAS SIN INTERÉS';
+
+  // El marquee debe mostrar solo el mensaje comercial principal, repetido
+  // las veces necesarias para completar el loop.
   const setupMarquee = (sectionEl, messages) => {
     const content = sectionEl.querySelector('.hf-marquee__content');
     if (!content) return;
-    if (!Array.isArray(messages) || messages.length === 0) {
-      content.innerHTML = '';
-      return;
-    }
+    const marqueeMessages = Array.from({ length: 8 }, () => MARQUEE_MESSAGE);
 
     // Si el motor ya clonÃ³ el contenido para el loop, destruir esa instancia
     // (borra los clones) antes de reemplazar el contenido. AsÃ­ evitamos clones
@@ -1059,7 +1058,7 @@
       sectionEl._hfMarquee = null;
     }
 
-    content.innerHTML = messages.map(msg =>
+    content.innerHTML = marqueeMessages.map(msg =>
       `<span class="hf-marquee__item">${escapeHtml(msg)}</span>` +
       `<span class="hf-marquee__separator" aria-hidden="true"></span>`
     ).join('');
