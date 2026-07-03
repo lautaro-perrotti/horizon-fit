@@ -2782,11 +2782,9 @@
       : `<h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>`;
     const visualMarkup = collectionUrl
       ? `<a class="hf-pdp-look__visual" href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}">
-          <span class="hf-pdp-look__tag"><span class="hf-pdp-look__tag-text">${escapeHtml(tag)}</span></span>
           <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
         </a>`
       : `<div class="hf-pdp-look__visual">
-          <span class="hf-pdp-look__tag"><span class="hf-pdp-look__tag-text">${escapeHtml(tag)}</span></span>
           <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
         </div>`;
     return `
