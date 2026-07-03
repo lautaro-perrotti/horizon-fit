@@ -2802,10 +2802,12 @@
       const inner = imageUrl
         ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(label)}">`
         : `<span>${escapeHtml(label.slice(0, 1))}</span>`;
-      return `<button class="hf-pdp-look__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</button>`;
+      return `<button class="hf-pdp-view__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</button>`;
     }).join('');
 
-    return `<div class="hf-pdp-look__colors ${escapeHtml(extraClass)}" aria-label="Colores disponibles">${items}</div>`;
+    return `
+                <div class="hf-pdp-view__option-head hf-pdp-look__color-head"><span>Colores disponibles</span></div>
+                <div class="hf-pdp-view__color-row hf-pdp-look__color-row ${escapeHtml(extraClass)}" aria-label="Seleccionar color">${items}</div>`;
   };
 
   const renderProductSetSlide = (items, index, total, meta = null) => {
