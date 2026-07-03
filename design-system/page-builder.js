@@ -805,11 +805,12 @@
         ...(localHeroSection?.config || {}),
         ...(wpSettings.get('hero') || {})
       };
+      const featuredProductsRenderState = { usedKeys: new Set() };
       for (const section of sections) {
         if (!productRoute && section.type === 'featured-products' && section.data) {
           const data = dataMap.get(section.id);
           const sectionEl = sectionElements.get(section.id);
-          if (data && sectionEl) await renderFeaturedProducts(sectionEl, section, data);
+          if (data && sectionEl) await renderFeaturedProducts(sectionEl, section, data, featuredProductsRenderState);
         }
 
         if (!productRoute && section.type === 'hero') {
@@ -1021,10 +1022,14 @@
     return clone;
   };
 
-  const renderFeaturedProducts = async (sectionEl, section, products) => {
+  const getProductRenderKey = (product) =>
+    `${product?.id || product?.slug || product?.permalink || product?.url || product?.name || ''}`;
+
+  const renderFeaturedProducts = async (sectionEl, section, products, renderState = null) => {
     try {
       const limit = Number(section.config?.limit || 0);
       const offset = Math.max(0, Number(section.config?.offset || 0));
+      const excludePreviouslyRendered = Boolean(section.config?.excludePreviouslyRendered);
       const excludeCollections = Array.isArray(section.config?.excludeCollections)
         ? section.config.excludeCollections.map(slug => `${slug || ''}`.toLowerCase()).filter(Boolean)
         : [];
@@ -1046,6 +1051,7 @@
           const productName = `${product?.name || ''}`.toLowerCase();
           if (excludeNameContains.some(text => productName.includes(text))) return false;
           if (requireImage && !getProductImages(product)[0]?.url) return false;
+          if (excludePreviouslyRendered && renderState?.usedKeys?.has(getProductRenderKey(product))) return false;
           return true;
         });
       const visibleProducts = limit > 0 ? sourceProducts.slice(offset, offset + limit) : sourceProducts.slice(offset);
@@ -1057,6 +1063,9 @@
       if (!template) return;
 
       visibleProducts.forEach(product => grid.appendChild(fillProductCard(template, product)));
+      if (renderState?.usedKeys) {
+        visibleProducts.forEach(product => renderState.usedKeys.add(getProductRenderKey(product)));
+      }
 
       console.log('Rendered ' + visibleProducts.length + ' featured products');
     } catch (e) {
