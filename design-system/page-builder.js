@@ -1839,6 +1839,63 @@
       : [];
   };
 
+  const normalizeCollectionText = (value) => `${value || ''}`
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+  const isSetCollection = (collection) => {
+    const text = normalizeCollectionText(`${collection?.name || ''} ${collection?.slug || ''}`);
+    return /\b(conjunto|set)\b/.test(text);
+  };
+
+  const PDP_SET_TYPE_ORDER = ['TOP', 'SHO', 'FAL', 'CAL', 'CAM'];
+
+  const sortSetLineProducts = (items) => [...items].sort((a, b) => {
+    const aParts = productSkuParts(a);
+    const bParts = productSkuParts(b);
+    if (aParts && bParts) {
+      const typeDiff = getTokenOrder(PDP_SET_TYPE_ORDER, aParts.type) - getTokenOrder(PDP_SET_TYPE_ORDER, bParts.type);
+      if (typeDiff) return typeDiff;
+    }
+    return `${a?.name || ''}`.localeCompare(`${b?.name || ''}`, 'es');
+  });
+
+  const getPdpSetLineProducts = (product, products) => {
+    const related = (products || []).filter(item => item?.slug !== product?.slug);
+    const currentParts = productSkuParts(product);
+    const selected = [];
+
+    if (currentParts) {
+      related.forEach(item => {
+        const parts = productSkuParts(item);
+        if (!parts) return;
+        const sameSet = parts.set === currentParts.set;
+        const sameColor = !currentParts.color || parts.color === currentParts.color;
+        const differentType = !currentParts.type || parts.type !== currentParts.type;
+        if (sameSet && sameColor && differentType) pushUniqueProduct(selected, item);
+      });
+    }
+
+    if (selected.length) return sortSetLineProducts(selected);
+
+    const setCollectionSlugs = (product?.collections || [])
+      .filter(isSetCollection)
+      .map(collection => collection.slug)
+      .filter(Boolean);
+
+    if (!setCollectionSlugs.length) return [];
+
+    related.forEach(item => {
+      const sameSetCollection = (item?.collections || [])
+        .some(collection => setCollectionSlugs.includes(collection.slug));
+      if (sameSetCollection) pushUniqueProduct(selected, item);
+    });
+
+    return sortSetLineProducts(selected);
+  };
+
   const productFamilyKey = (product) => {
     const slug = `${product?.slug || ''}`.toLowerCase().trim();
     if (!slug) return '';
@@ -3915,6 +3972,21 @@
           if (typeof window.initCarousels === 'function') window.initCarousels();
         } else {
           buyWithSection.hidden = true;
+        }
+      }
+
+      const setLineItems = getPdpSetLineProducts(product, list);
+      const setLineSection = $('[data-pdp-set-line]');
+      const setLineGrid = $('[data-pdp-set-line-grid]');
+      if (setLineSection && setLineGrid) {
+        if (setLineItems.length) {
+          setLineGrid.innerHTML = setLineItems.map(item => renderProductCardHtml(item, { showSizes: false })).join('');
+          setLineSection.hidden = false;
+          const setLineShell = setLineSection.querySelector('[data-grid-shell]');
+          if (setLineShell) delete setLineShell.dataset.carouselReady;
+          if (typeof window.initCarousels === 'function') window.initCarousels();
+        } else {
+          setLineSection.hidden = true;
         }
       }
 
