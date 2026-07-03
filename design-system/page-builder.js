@@ -2744,6 +2744,46 @@
     return set?.image?.url || getProductImages(firstProduct)[0]?.url || getSetPreviewImage(set);
   };
 
+  const getSetFirstSkuParts = (set) => {
+    const products = Array.isArray(set?.products) ? set.products : [];
+    for (const product of products) {
+      const parts = productSkuParts(product);
+      if (parts) return parts;
+    }
+    return null;
+  };
+
+  const SET_COLOR_ORDER = ['BLA', 'NEG', 'AZU', 'CEL', 'VER', 'ROS', 'ROJ', 'BOR'];
+  const SET_TYPE_ORDER = ['TOP', 'SHO', 'FAL', 'CAL', 'CAM'];
+
+  const getTokenOrder = (list, value) => {
+    const index = list.indexOf(`${value || ''}`.toUpperCase());
+    return index === -1 ? list.length : index;
+  };
+
+  const compareFeaturedSetsBySku = (a, b) => {
+    const aParts = getSetFirstSkuParts(a);
+    const bParts = getSetFirstSkuParts(b);
+
+    if (aParts && bParts) {
+      const modelDiff = Number(aParts.set) - Number(bParts.set);
+      if (modelDiff) return modelDiff;
+
+      const typeDiff = getTokenOrder(SET_TYPE_ORDER, aParts.type) - getTokenOrder(SET_TYPE_ORDER, bParts.type);
+      if (typeDiff) return typeDiff;
+
+      const colorDiff = getTokenOrder(SET_COLOR_ORDER, aParts.color) - getTokenOrder(SET_COLOR_ORDER, bParts.color);
+      if (colorDiff) return colorDiff;
+    }
+
+    if (aParts && !bParts) return -1;
+    if (!aParts && bParts) return 1;
+
+    return `${a?.name || a?.slug || ''}`.localeCompare(`${b?.name || b?.slug || ''}`, 'es');
+  };
+
+  const sortFeaturedSetsBySku = (sets = []) => [...sets].sort(compareFeaturedSetsBySku);
+
   const renderSetColorPreviews = (variants = [], currentSlug = '', extraClass = '') => {
     const unique = [];
     const seen = new Set();
@@ -2907,27 +2947,28 @@
       return;
     }
 
-    const total = sets.length;
+    const sortedSets = sortFeaturedSetsBySku(sets);
+    const total = sortedSets.length;
     if (variant === 'mobile') {
-      track.innerHTML = sets.map(renderSetMobileCard).join('');
+      track.innerHTML = sortedSets.map(renderSetMobileCard).join('');
     } else {
-      const setsByFamily = sets.reduce((acc, set) => {
+      const setsByFamily = sortedSets.reduce((acc, set) => {
         const key = getSetFamilyKey(set);
         if (!acc.has(key)) acc.set(key, []);
         acc.get(key).push(set);
         return acc;
       }, new Map());
 
-      track.innerHTML = sets.map((set, i) =>
+      track.innerHTML = sortedSets.map((set, i) =>
         renderProductSetSlide(set.products || [], i, total, {
           slug: set.slug,
           title: set.name,
           copy: set.copy,
           image: set.image?.url,
-          variants: setsByFamily.get(getSetFamilyKey(set)) || [set]
+          variants: sortFeaturedSetsBySku(setsByFamily.get(getSetFamilyKey(set)) || [set])
         })
       ).join('');
-      bindFeaturedSetColorControls(sectionEl, sets);
+      bindFeaturedSetColorControls(sectionEl, sortedSets);
     }
 
     // Ajustar config del carousel segÃºn la cantidad de conjuntos:
@@ -2937,7 +2978,7 @@
     const carousel = track.closest('[data-hf="carousel"]');
     if (carousel) {
       const base = safeParseCarouselConfig(carousel.getAttribute('data-hf-carousel'));
-      const multiple = sets.length > 1;
+      const multiple = sortedSets.length > 1;
       const config = {
         ...base,
         arrows: multiple,
