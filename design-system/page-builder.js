@@ -2948,26 +2948,32 @@
     }
 
     const sortedSets = sortFeaturedSetsBySku(sets);
-    const total = sortedSets.length;
-    if (variant === 'mobile') {
-      track.innerHTML = sortedSets.map(renderSetMobileCard).join('');
-    } else {
-      const setsByFamily = sortedSets.reduce((acc, set) => {
-        const key = getSetFamilyKey(set);
-        if (!acc.has(key)) acc.set(key, []);
-        acc.get(key).push(set);
-        return acc;
-      }, new Map());
+    const setsByFamily = sortedSets.reduce((acc, set) => {
+      const key = getSetFamilyKey(set);
+      if (!acc.has(key)) acc.set(key, []);
+      acc.get(key).push(set);
+      return acc;
+    }, new Map());
+    const groupedSets = Array.from(setsByFamily.values()).map(group => sortFeaturedSetsBySku(group));
+    const representativeSets = groupedSets.map(group => group[0]).filter(Boolean);
+    const total = representativeSets.length;
 
-      track.innerHTML = sortedSets.map((set, i) =>
+    if (variant === 'mobile') {
+      track.innerHTML = representativeSets.map(renderSetMobileCard).join('');
+    } else {
+      track.innerHTML = groupedSets.map((group, i) => {
+        const set = group[0];
+        if (!set) return '';
+        return (
         renderProductSetSlide(set.products || [], i, total, {
           slug: set.slug,
           title: set.name,
           copy: set.copy,
           image: set.image?.url,
-          variants: sortFeaturedSetsBySku(setsByFamily.get(getSetFamilyKey(set)) || [set])
+          variants: group
         })
-      ).join('');
+        );
+      }).join('');
       bindFeaturedSetColorControls(sectionEl, sortedSets);
     }
 
@@ -2978,7 +2984,7 @@
     const carousel = track.closest('[data-hf="carousel"]');
     if (carousel) {
       const base = safeParseCarouselConfig(carousel.getAttribute('data-hf-carousel'));
-      const multiple = sortedSets.length > 1;
+      const multiple = total > 1;
       const config = {
         ...base,
         arrows: multiple,
