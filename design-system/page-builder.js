@@ -2806,7 +2806,7 @@
     }).join('');
 
     return `
-                <div class="hf-pdp-view__option-head hf-pdp-look__color-head"><span>Colores disponibles</span></div>
+                <div class="hf-pdp-view__option-head hf-pdp-look__color-head"><span>Colores disponibles:</span></div>
                 <div class="hf-pdp-view__color-row hf-pdp-look__color-row ${escapeHtml(extraClass)}" aria-label="Seleccionar color">${items}</div>`;
   };
 
