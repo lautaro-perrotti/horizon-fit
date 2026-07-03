@@ -1024,8 +1024,31 @@
   const renderFeaturedProducts = async (sectionEl, section, products) => {
     try {
       const limit = Number(section.config?.limit || 0);
-      const sourceProducts = filterVisibleProducts(products);
-      const visibleProducts = limit > 0 ? sourceProducts.slice(0, limit) : sourceProducts;
+      const offset = Math.max(0, Number(section.config?.offset || 0));
+      const excludeCollections = Array.isArray(section.config?.excludeCollections)
+        ? section.config.excludeCollections.map(slug => `${slug || ''}`.toLowerCase()).filter(Boolean)
+        : [];
+      const excludeNameContains = Array.isArray(section.config?.excludeNameContains)
+        ? section.config.excludeNameContains.map(text => `${text || ''}`.toLowerCase()).filter(Boolean)
+        : [];
+      const requireImage = Boolean(section.config?.requireImage);
+      const getCollectionSlugs = (product) => {
+        const collections = product?.collections || product?.collection || [];
+        return (Array.isArray(collections) ? collections : [collections])
+          .map(collection => typeof collection === 'string' ? collection : collection?.slug)
+          .map(slug => `${slug || ''}`.toLowerCase())
+          .filter(Boolean);
+      };
+      const sourceProducts = filterVisibleProducts(products)
+        .filter(product => {
+          const collectionSlugs = getCollectionSlugs(product);
+          if (excludeCollections.some(slug => collectionSlugs.includes(slug))) return false;
+          const productName = `${product?.name || ''}`.toLowerCase();
+          if (excludeNameContains.some(text => productName.includes(text))) return false;
+          if (requireImage && !getProductImages(product)[0]?.url) return false;
+          return true;
+        });
+      const visibleProducts = limit > 0 ? sourceProducts.slice(offset, offset + limit) : sourceProducts.slice(offset);
 
       const grid = sectionEl.querySelector('[data-products-slot]') || sectionEl.querySelector('[data-products-grid]');
       if (!grid) return;
