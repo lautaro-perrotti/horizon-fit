@@ -55,58 +55,71 @@
       }
     },
     {
+      "id": "featured-products-3",
+      "type": "featured-products",
+      "order": 6,
+      "visible": true,
+      "component": "design-system/components/sections/featured-products.html",
+      "data": "design-system/data/featured-products.json",
+      "config": {
+        "title": "",
+        "collection": "featured-row-3",
+        "limit": 8
+      }
+    },
+    {
       "id": "featured-sets-desktop",
       "type": "featured-sets",
-      "order": 6,
+      "order": 7,
       "visible": true,
       "component": "design-system/components/sections/featured-sets-desktop.html"
     },
     {
       "id": "featured-sets-mobile",
       "type": "featured-sets",
-      "order": 7,
+      "order": 8,
       "visible": true,
       "component": "design-system/components/sections/featured-sets-mobile.html"
     },
     {
       "id": "categorias",
       "type": "categorias",
-      "order": 8,
+      "order": 9,
       "visible": true,
       "component": "design-system/components/sections/categorias.html"
     },
     {
       "id": "trust-bar",
       "type": "trust-bar",
-      "order": 9,
+      "order": 10,
       "visible": true,
       "component": "design-system/components/sections/trust-bar.html"
     },
     {
       "id": "style-edit",
       "type": "style-edit",
-      "order": 10,
-      "visible": true,
+      "order": 11,
+      "visible": false,
       "component": "design-system/components/sections/style-edit.html"
     },
     {
       "id": "social-strip",
       "type": "social-strip",
-      "order": 11,
+      "order": 12,
       "visible": true,
       "component": "design-system/components/sections/social-strip.html"
     },
     {
       "id": "footer",
       "type": "footer",
-      "order": 12,
+      "order": 13,
       "visible": true,
       "component": "design-system/components/sections/footer.html"
     },
     {
       "id": "whatsapp-float",
       "type": "whatsapp-float",
-      "order": 13,
+      "order": 14,
       "visible": true,
       "component": "design-system/components/sections/whatsapp-float.html",
       "config": {
