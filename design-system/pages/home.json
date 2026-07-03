@@ -91,6 +91,12 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "Productos destacados",
+        "sources": [
+          { "type": "category", "slug": "tops" },
+          { "type": "category", "slug": "shorts" },
+          { "type": "category", "slug": "calzas" },
+          { "type": "category", "slug": "camperas" }
+        ],
         "excludePreviouslyRendered": true,
         "excludeNameContains": ["copia"],
         "requireImage": true,
@@ -106,6 +112,12 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "",
+        "sources": [
+          { "type": "category", "slug": "tops" },
+          { "type": "category", "slug": "shorts" },
+          { "type": "category", "slug": "calzas" },
+          { "type": "category", "slug": "camperas" }
+        ],
         "excludePreviouslyRendered": true,
         "excludeNameContains": ["copia"],
         "requireImage": true,

@@ -663,6 +663,19 @@
           // administrada desde wp-admin (taxonomÃ­a hf_collection). Cache por
           // colecciÃ³n; fallback a la cache general y luego al REST.
           if (s.type === 'featured-products') {
+            const sources = Array.isArray(s.config?.sources) ? s.config.sources : [];
+            if (sources.length) {
+              const sourceLists = await Promise.all(sources.map(async source => {
+                const type = `${source?.type || 'category'}`.toLowerCase();
+                const slug = `${source?.slug || ''}`.trim();
+                if (!slug) return [];
+                const src = type === 'featured'
+                  ? productCollectionSrc(slug)
+                  : categoryCollectionSrc(slug);
+                return fetchJson(src).catch(() => []);
+              }));
+              return [s.id, sourceLists.flat()];
+            }
             const collection = s.config?.collection;
             const src = collection ? productCollectionSrc(collection) : PRODUCT_DATA_SRC;
             const data = await fetchJson(src)
@@ -1044,14 +1057,18 @@
           .map(slug => `${slug || ''}`.toLowerCase())
           .filter(Boolean);
       };
+      const seenCandidateKeys = new Set();
       const sourceProducts = filterVisibleProducts(products)
         .filter(product => {
+          const renderKey = getProductRenderKey(product);
+          if (seenCandidateKeys.has(renderKey)) return false;
+          seenCandidateKeys.add(renderKey);
           const collectionSlugs = getCollectionSlugs(product);
           if (excludeCollections.some(slug => collectionSlugs.includes(slug))) return false;
           const productName = `${product?.name || ''}`.toLowerCase();
           if (excludeNameContains.some(text => productName.includes(text))) return false;
           if (requireImage && !getProductImages(product)[0]?.url) return false;
-          if (excludePreviouslyRendered && renderState?.usedKeys?.has(getProductRenderKey(product))) return false;
+          if (excludePreviouslyRendered && renderState?.usedKeys?.has(renderKey)) return false;
           return true;
         });
       const visibleProducts = limit > 0 ? sourceProducts.slice(offset, offset + limit) : sourceProducts.slice(offset);
