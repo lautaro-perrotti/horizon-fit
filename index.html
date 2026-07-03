@@ -3278,38 +3278,31 @@
 
       @media (min-width: 1024px) {
         .hf-pdp-look {
-          --hf-pdp-look-h: clamp(560px, 46vw, 720px);
-          display: grid;
-          grid-template-columns: clamp(320px, 27vw, 420px) minmax(0, 1fr);
-          align-items: stretch;
-          gap: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
           position: relative;
-          min-height: 0;
-          height: var(--hf-pdp-look-h);
+          min-height: 48.75rem;
           padding: 0;
-          margin-top: 0;
+          margin-top: 3.25rem;
           overflow: visible;
         }
 
         .hf-pdp-look__panel {
-          position: relative;
-          left: auto;
-          top: auto;
-          transform: none;
-          width: auto;
-          height: 100%;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 26rem;
+          height: auto;
           min-height: 0;
           margin-left: 0;
           box-shadow: none;
           z-index: 10;
-          overflow: hidden;
-          display: grid;
-          grid-template-rows: auto auto auto minmax(0, 1fr);
         }
 
         .hf-pdp-look__list {
-          height: auto;
-          min-height: 0;
+          height: 531px;
           overflow-y: auto;
           padding-right: 12px;
           scrollbar-width: thin;
@@ -3334,9 +3327,8 @@
         }
 
         .hf-pdp-look__visual {
-          width: auto;
-          height: 100%;
-          min-height: 0;
+          width: 82%;
+          min-height: 48.75rem;
           background: var(--surface);
         }
       }
@@ -4624,8 +4616,7 @@
           display: grid !important;
         }
 
-        #home-pdp-look,
-        #conjuntos-destacados {
+        #home-pdp-look {
           position: relative;
           padding-inline: 56px !important;
         }
@@ -4634,36 +4625,30 @@
           display: none !important;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel,
-        #conjuntos-destacados .hf-pdp-look-carousel {
+        #home-pdp-look .hf-pdp-look-carousel {
           position: relative;
           overflow: visible;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__viewport,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__viewport {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__viewport {
           overflow: hidden;
           border-radius: 0;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__track,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__track {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__track {
           gap: 0 !important;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__slide,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__slide {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__slide {
           flex: 0 0 100%;
           min-width: 100%;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__dots,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__dots {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__dots {
           display: none !important;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__nav {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
           position: absolute;
           top: 50%;
           z-index: 20;
@@ -4680,27 +4665,34 @@
           transition: none;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__nav:hover {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
           background: #fff;
           transform: translateY(-50%) scale(1.04);
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--prev,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__nav--prev {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--prev {
           left: -12px;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--next,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__nav--next {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav--next {
           right: -12px;
         }
 
-        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav svg,
-        #conjuntos-destacados .hf-pdp-look-carousel .hf-carousel__nav svg {
+        #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav svg {
           width: 20px;
           height: 20px;
           stroke-width: 2.6;
+        }
+      }
+
+      /* Unified Desktop scale (0.9) for consistent premium dimensions */
+      @media (min-width: 1024px) {
+        #home-pdp-look .hf-pdp-look {
+          padding: 0 !important;
+          margin: 0;
+          transform: scale(0.9) !important;
+          transform-origin: center top !important;
+          margin-bottom: -78px !important;
         }
       }
 
