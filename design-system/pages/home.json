@@ -91,7 +91,7 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "Productos destacados",
-        "collection": "featured-row-3",
+        "collection": "featured-row-1",
         "limit": 8
       }
     },
@@ -104,7 +104,7 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "",
-        "collection": "featured-row-4",
+        "collection": "featured-row-2",
         "limit": 8
       }
     },
