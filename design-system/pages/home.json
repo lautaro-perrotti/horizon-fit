@@ -90,7 +90,7 @@
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
       "config": {
-        "title": "Productos destacados",
+        "title": "",
         "sources": [
           { "type": "category", "slug": "tops" },
           { "type": "category", "slug": "shorts" },
