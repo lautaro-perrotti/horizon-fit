@@ -1901,7 +1901,37 @@
       if (hasPositiveNumber(candidate)) return Number(candidate);
     }
 
+    if (Array.isArray(product?.variations)) {
+      for (const variation of product.variations) {
+        const variationPrice = getProductPriceValue(variation);
+        if (hasPositiveNumber(variationPrice)) return Number(variationPrice);
+      }
+    }
+
     return null;
+  };
+
+  const formatMajorMoney = (amount, currency = {}) => {
+    const formatted = new Intl.NumberFormat('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Number(amount || 0));
+    return `${currency.currency_prefix || '$ '}${formatted}${currency.currency_suffix || ''}`.trim();
+  };
+
+  const getSetTotalPriceValue = (setOrItems) => {
+    const items = Array.isArray(setOrItems) ? setOrItems : setOrItems?.products;
+    if (!Array.isArray(items)) return null;
+    const total = items.reduce((sum, item) => {
+      const availability = getVisibleProductAvailability(item);
+      return availability.hasPrice ? sum + availability.priceValue : sum;
+    }, 0);
+    return total > 0 ? total : null;
+  };
+
+  const getSetTotalPriceText = (setOrItems) => {
+    const total = getSetTotalPriceValue(setOrItems);
+    return Number.isFinite(total) && total > 0 ? formatMajorMoney(total) : '';
   };
 
   const getProductPriceMinorUnit = (product) => {
@@ -2650,6 +2680,15 @@
                 <p class="hf-product-item__transfer" hidden></p>
               </div>`;
 
+  const renderSetPriceBlock = (priceText) => priceText ? `
+              <div class="hf-product-item__pricing">
+                <div class="hf-product-item__price-row">
+                  <span class="hf-product-item__price">${escapeHtml(priceText)}</span>
+                </div>
+                <p class="hf-product-item__installments" hidden></p>
+                <p class="hf-product-item__transfer" hidden></p>
+              </div>` : renderProductCardDivider();
+
   const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
 
   const renderSizeTableRows = (rows) => rows.map(row => {
@@ -2736,6 +2775,7 @@
     const heroUrl = meta?.image || heroImage?.url || '';
     const collectionUrl = meta?.slug ? buildCollectionUrl(meta.slug) : '';
     const variants = meta?.variants || [];
+    const setPriceText = getSetTotalPriceText(items);
     const colorPreviews = renderSetColorPreviews(variants, meta?.slug || '', true);
     const tagColorPreviews = renderSetColorPreviews(variants, meta?.slug || '', false, 'hf-pdp-look__colors--tag');
     const titleMarkup = collectionUrl
@@ -2755,6 +2795,7 @@
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
               <div class="hf-pdp-look__panel">
                 ${titleMarkup}
+                ${setPriceText ? `<p class="hf-pdp-look__set-price">${escapeHtml(setPriceText)}</p>` : ''}
                 ${colorPreviews}
                 <div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">
                   ${items.map(renderLookItem).join('')}
@@ -2772,6 +2813,7 @@
     const firstProduct = set.products?.[0];
     const href = buildCollectionUrl(set.slug);
     const imageUrl = set.imageMobile?.url || set.image?.url || getProductImages(firstProduct)[0]?.url || '';
+    const priceText = getSetTotalPriceText(set);
     return `
             <div class="hf-carousel__slide">
               <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
@@ -2781,7 +2823,7 @@
                 <div class="hf-product-item__body">
                   <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
                   <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
-                  ${renderProductCardDivider()}
+                  ${renderSetPriceBlock(priceText)}
                 </div>
               </a>
             </div>`;
