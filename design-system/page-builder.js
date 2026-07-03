@@ -2739,7 +2739,12 @@
     return set?.imageMobile?.url || set?.image?.url || getProductImages(firstProduct)[0]?.url || '';
   };
 
-  const renderSetColorPreviews = (variants = [], currentSlug = '', asLinks = true, extraClass = '') => {
+  const getSetHeroImage = (set) => {
+    const firstProduct = set?.products?.[0];
+    return set?.image?.url || getProductImages(firstProduct)[0]?.url || getSetPreviewImage(set);
+  };
+
+  const renderSetColorPreviews = (variants = [], currentSlug = '', extraClass = '') => {
     const unique = [];
     const seen = new Set();
     variants.forEach(set => {
@@ -2757,14 +2762,10 @@
       const inner = imageUrl
         ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(label)}">`
         : `<span>${escapeHtml(label.slice(0, 1))}</span>`;
-      if (!asLinks) {
-        return `<span class="hf-pdp-look__color" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</span>`;
-      }
-      return `<a class="hf-pdp-look__color" href="${escapeHtml(buildCollectionUrl(set.slug))}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</a>`;
+      return `<button class="hf-pdp-look__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</button>`;
     }).join('');
 
-    const containerTag = asLinks ? 'div' : 'span';
-    return `<${containerTag} class="hf-pdp-look__colors ${escapeHtml(extraClass)}" aria-label="Colores disponibles">${items}</${containerTag}>`;
+    return `<div class="hf-pdp-look__colors ${escapeHtml(extraClass)}" aria-label="Colores disponibles">${items}</div>`;
   };
 
   const renderProductSetSlide = (items, index, total, meta = null) => {
@@ -2776,7 +2777,7 @@
     const collectionUrl = meta?.slug ? buildCollectionUrl(meta.slug) : '';
     const variants = meta?.variants || [];
     const setPriceText = getSetTotalPriceText(items);
-    const colorPreviews = renderSetColorPreviews(variants, meta?.slug || '', true);
+    const colorPreviews = renderSetColorPreviews(variants, meta?.slug || '');
     const titleMarkup = collectionUrl
       ? `<a href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}"><h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2></a>`
       : `<h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>`;
@@ -2789,7 +2790,7 @@
         </div>`;
     return `
           <div class="hf-carousel__slide">
-            <section class="hf-pdp-look" aria-label="${escapeHtml(title)}">
+            <section class="hf-pdp-look" aria-label="${escapeHtml(title)}" data-current-set-slug="${escapeHtml(meta?.slug || '')}">
               <div class="hf-pdp-look__panel">
                 ${titleMarkup}
                 ${setPriceText ? `<p class="hf-pdp-look__set-price">${escapeHtml(setPriceText)}</p>` : ''}
@@ -2826,6 +2827,74 @@
             </div>`;
   };
 
+  const updateFeaturedSetCard = (lookEl, set) => {
+    if (!lookEl || !set) return;
+    const title = set.name || '';
+    const href = buildCollectionUrl(set.slug);
+    const heroUrl = getSetHeroImage(set);
+    const priceText = getSetTotalPriceText(set);
+
+    lookEl.setAttribute('aria-label', title);
+    lookEl.dataset.currentSetSlug = set.slug || '';
+
+    const titleEl = lookEl.querySelector('.hf-pdp-look__title');
+    if (titleEl) titleEl.textContent = title;
+    const titleLink = titleEl?.closest('a');
+    if (titleLink) {
+      titleLink.href = href;
+      titleLink.setAttribute('aria-label', `Ver todos los productos de ${title}`);
+    }
+
+    const priceEl = lookEl.querySelector('.hf-pdp-look__set-price');
+    if (priceEl) {
+      priceEl.textContent = priceText;
+      priceEl.hidden = !priceText;
+    }
+
+    lookEl.querySelectorAll('[data-set-color-slug]').forEach(button => {
+      button.setAttribute('aria-current', button.getAttribute('data-set-color-slug') === set.slug ? 'true' : 'false');
+    });
+
+    const listEl = lookEl.querySelector('.hf-pdp-look__list');
+    if (listEl) listEl.innerHTML = (set.products || []).map(renderLookItem).join('');
+
+    const visualEl = lookEl.querySelector('.hf-pdp-look__visual');
+    if (visualEl && visualEl.tagName === 'A') {
+      visualEl.href = href;
+      visualEl.setAttribute('aria-label', `Ver todos los productos de ${title}`);
+    }
+
+    const heroEl = lookEl.querySelector('.hf-pdp-look__hero');
+    if (heroEl) {
+      heroEl.src = heroUrl || '';
+      heroEl.alt = `${title} look principal`;
+    }
+  };
+
+  const bindFeaturedSetColorControls = (sectionEl, sets) => {
+    if (!sectionEl || !Array.isArray(sets)) return;
+    const setsBySlug = new Map(sets.map(set => [set.slug, set]).filter(([slug]) => Boolean(slug)));
+
+    if (sectionEl._hfSetColorHandler) {
+      sectionEl.removeEventListener('click', sectionEl._hfSetColorHandler);
+    }
+
+    sectionEl._hfSetColorHandler = (event) => {
+      const button = event.target.closest('[data-set-color-slug]');
+      if (!button || !sectionEl.contains(button)) return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      const nextSet = setsBySlug.get(button.getAttribute('data-set-color-slug'));
+      const lookEl = button.closest('.hf-pdp-look');
+      if (!nextSet || !lookEl) return;
+
+      updateFeaturedSetCard(lookEl, nextSet);
+    };
+
+    sectionEl.addEventListener('click', sectionEl._hfSetColorHandler);
+  };
+
   // Renderiza el slider "Conjuntos destacados" en su variante (desktop/mobile).
   // VacÃ­a el track del carousel, inyecta los slides de cada conjunto y
   // reinicializa el carousel. Si no hay conjuntos, oculta la secciÃ³n.
@@ -2858,6 +2927,7 @@
           variants: setsByFamily.get(getSetFamilyKey(set)) || [set]
         })
       ).join('');
+      bindFeaturedSetColorControls(sectionEl, sets);
     }
 
     // Ajustar config del carousel segÃºn la cantidad de conjuntos:
