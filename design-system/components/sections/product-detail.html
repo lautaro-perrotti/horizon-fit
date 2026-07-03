@@ -43,8 +43,8 @@
             </svg>
           </div>
           <div class="hf-pdp-trust-content">
-            <h2 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h2>
-            <p class="hf-pdp-trust-text">Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000</p>
+            <h2 class="hf-pdp-trust-title" data-pdp-trust-title="0">RETIRO Y ENVÍO GRATIS</h2>
+            <p class="hf-pdp-trust-text" data-pdp-trust-desc="0">Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000</p>
           </div>
         </div>
         <div class="hf-pdp-trust-item">
@@ -57,8 +57,8 @@
             </svg>
           </div>
           <div class="hf-pdp-trust-content">
-            <h2 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h2>
-            <p class="hf-pdp-trust-text">¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.</p>
+            <h2 class="hf-pdp-trust-title" data-pdp-trust-title="1">CAMBIOS Y DEVOLUCIONES</h2>
+            <p class="hf-pdp-trust-text" data-pdp-trust-desc="1">¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.</p>
           </div>
         </div>
         <div class="hf-pdp-trust-item">
@@ -70,49 +70,19 @@
             </svg>
           </div>
           <div class="hf-pdp-trust-content">
-            <h2 class="hf-pdp-trust-title">Información cuotas</h2>
-            <p class="hf-pdp-trust-text">Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a></p>
+            <h2 class="hf-pdp-trust-title" data-pdp-trust-title="2">Información cuotas</h2>
+            <p class="hf-pdp-trust-text" data-pdp-trust-desc="2">Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a></p>
           </div>
         </div>
       </div>
-
-      <!-- Compralo con: slider horizontal con flechas (mismos botones que el
-           slider de productos). Cards de ancho fijo chico. El viewport con
-           overflow:hidden evita que el scroll expanda la columna de la PDP. -->
-      <section class="hf-buy-with" data-buy-with hidden aria-label="Compralo con">
-        <h2 class="hf-buy-with__title">Compralo con:</h2>
-        <!-- Misma estructura y botones que "Productos destacados" -->
-        <div class="hf-product-scroll-shell hf-buy-with__shell" data-grid-shell="buyWithGrid">
-          <div>
-            <div class="hf-product-grid--h-scroll hide-scrollbar hf-buy-with__grid" data-buy-with-grid></div>
-          </div>
-
-          <button class="hf-carousel__nav hf-carousel__nav--prev" type="button" data-dir="-1" aria-label="Anterior" disabled>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-
-          <button class="hf-carousel__nav hf-carousel__nav--next" type="button" data-dir="1" aria-label="Siguiente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        </div>
-      </section>
     </section>
 
-    <section class="hf-pdp-view__details" aria-label="Detalle del producto">
-      <div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="care">Lavado y cuidado</button>
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>
-      </div>
-      <div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">
+    <section class="hf-pdp-view__details hf-pdp-view__details--split" aria-label="Detalle del producto">
+      <div class="hf-pdp-view__panel is-active" data-product-panel="description">
         <h2 data-product-description-title>Descripción</h2>
         <p data-product-description></p>
       </div>
-      <div class="hf-pdp-view__panel" data-product-panel="care" role="tabpanel">
+      <div class="hf-pdp-view__panel is-active" data-product-panel="care">
         <h2 data-product-care-title>Lavado y cuidado</h2>
         <p data-product-care-text></p>
         <ul data-product-care-list>
@@ -120,13 +90,6 @@
           <li>No centrifugar en caliente.</li>
           <li>Secar a la sombra y no planchar sobre estampas o avíos.</li>
         </ul>
-      </div>
-      <div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">
-        <h2 data-product-size-title>Tabla de talles</h2>
-        <table class="hf-pdp-view__size-table">
-          <thead><tr data-product-size-table-head><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>
-          <tbody data-product-size-table-body><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr></tbody>
-        </table>
       </div>
     </section>
   </div>

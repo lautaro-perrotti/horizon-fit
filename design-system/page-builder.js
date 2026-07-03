@@ -758,6 +758,7 @@
         }
       }
 
+      const wpSettings = await wpSettingsPromise;
       let productPageProducts = null;
       let productPageTemplate = null;
       if (productRoute) {
@@ -765,7 +766,7 @@
           fetchProductCatalog(pageConfig),
           productPageTemplatePromise
         ]);
-        await renderProductPage(root, productPageProducts, productPageTemplate);
+        await renderProductPage(root, productPageProducts, productPageTemplate, wpSettings);
       }
 
       if (collectionRoute) {
@@ -799,7 +800,6 @@
 
       // Hydrate sections with data
       const t3 = performance.now();
-      const wpSettings = await wpSettingsPromise;
       if (!productRoute && !collectionRoute && !utilityRoute) {
         const footerCopy = wpSettings.get('footer')?.copy || HOME_SEO_DESCRIPTION;
         updateSeo({
@@ -3515,7 +3515,17 @@
     }
   };
 
-  const renderProductPage = async (root, products, html) => {
+  const setupPdpTrustItems = (sectionEl, settings) => {
+    const items = Array.isArray(settings?.pdpItems) ? settings.pdpItems : [];
+    items.slice(0, 3).forEach((item, i) => {
+      const titleEl = sectionEl.querySelector(`[data-pdp-trust-title="${i}"]`);
+      const descEl = sectionEl.querySelector(`[data-pdp-trust-desc="${i}"]`);
+      if (titleEl && item?.title != null) titleEl.textContent = `${item.title || ''}`;
+      if (descEl && item?.descriptionHtml != null) descEl.innerHTML = `${item.descriptionHtml || ''}`;
+    });
+  };
+
+  const renderProductPage = async (root, products, html, wpSettings = null) => {
     if (!products || !html) {
       [products, html] = await Promise.all([
         fetchProductCatalog(),
@@ -3551,6 +3561,7 @@
 
     document.body.classList.add('hf-product-mode');
     sectionEl.hidden = false;
+    setupPdpTrustItems(sectionEl, wpSettings?.get?.('trust-bar'));
 
     const $ = (sel, base = sectionEl) => base.querySelector(sel);
     const $$ = (sel, base = sectionEl) => Array.from(base.querySelectorAll(sel));
