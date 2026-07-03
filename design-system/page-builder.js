@@ -3844,11 +3844,12 @@
       await addSelectedProductToCart({ goCheckout: true });
     });
 
-    $$('.hf-pdp-view__tab').forEach(tab => {
+    $$('.hf-pdp-view__tab[data-product-tab]').forEach(tab => {
       tab.addEventListener('click', () => {
         const name = tab.getAttribute('data-product-tab');
-        $$('.hf-pdp-view__tab').forEach(item => item.setAttribute('aria-selected', item === tab ? 'true' : 'false'));
-        $$('.hf-pdp-view__panel').forEach(panel => {
+        const details = tab.closest('.hf-pdp-view__details') || sectionEl;
+        $$('.hf-pdp-view__tab[data-product-tab]', details).forEach(item => item.setAttribute('aria-selected', item === tab ? 'true' : 'false'));
+        $$('.hf-pdp-view__panel', details).forEach(panel => {
           panel.classList.toggle('is-active', panel.getAttribute('data-product-panel') === name);
         });
       });
