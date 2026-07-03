@@ -91,7 +91,10 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "Productos destacados",
-        "collection": "featured-row-1",
+        "excludeCollections": ["featured-row-1", "featured-row-2"],
+        "excludeNameContains": ["copia"],
+        "requireImage": true,
+        "offset": 0,
         "limit": 8
       }
     },
@@ -104,7 +107,10 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "",
-        "collection": "featured-row-2",
+        "excludeCollections": ["featured-row-1", "featured-row-2"],
+        "excludeNameContains": ["copia"],
+        "requireImage": true,
+        "offset": 8,
         "limit": 8
       }
     },
