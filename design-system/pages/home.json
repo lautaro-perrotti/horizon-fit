@@ -85,7 +85,7 @@
     {
       "id": "featured-products-style-1",
       "type": "featured-products",
-      "order": 10,
+      "order": 11,
       "visible": true,
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
@@ -106,7 +106,7 @@
     {
       "id": "featured-products-style-2",
       "type": "featured-products",
-      "order": 11,
+      "order": 12,
       "visible": true,
       "component": "design-system/components/sections/featured-products.html",
       "data": "design-system/data/featured-products.json",
@@ -127,8 +127,8 @@
     {
       "id": "style-edit",
       "type": "style-edit",
-      "order": 12,
-      "visible": false,
+      "order": 10,
+      "visible": true,
       "component": "design-system/components/sections/style-edit.html"
     },
     {
