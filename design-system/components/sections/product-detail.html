@@ -77,12 +77,17 @@
       </div>
     </section>
 
-    <section class="hf-pdp-view__details hf-pdp-view__details--split" aria-label="Detalle del producto">
-      <div class="hf-pdp-view__panel is-active" data-product-panel="description">
+    <section class="hf-pdp-view__details" aria-label="Detalle del producto">
+      <div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">
+        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>
+        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="care">Lavado y cuidado</button>
+        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>
+      </div>
+      <div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">
         <h2 data-product-description-title>Descripción</h2>
         <p data-product-description></p>
       </div>
-      <div class="hf-pdp-view__panel is-active" data-product-panel="care">
+      <div class="hf-pdp-view__panel" data-product-panel="care" role="tabpanel">
         <h2 data-product-care-title>Lavado y cuidado</h2>
         <p data-product-care-text></p>
         <ul data-product-care-list>
@@ -90,6 +95,13 @@
           <li>No centrifugar en caliente.</li>
           <li>Secar a la sombra y no planchar sobre estampas o avíos.</li>
         </ul>
+      </div>
+      <div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">
+        <h2 data-product-size-title>Tabla de talles</h2>
+        <table class="hf-pdp-view__size-table">
+          <thead><tr data-product-size-table-head><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>
+          <tbody data-product-size-table-body><tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr><tr><td>M</td><td>90-96</td><td>70-76</td><td>96-102</td></tr><tr><td>L</td><td>96-104</td><td>76-84</td><td>102-110</td></tr></tbody>
+        </table>
       </div>
     </section>
   </div>
