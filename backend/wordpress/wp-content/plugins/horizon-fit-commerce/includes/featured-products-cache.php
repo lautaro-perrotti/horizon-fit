@@ -539,24 +539,50 @@ function hf_featured_products_write_cache($cache_file, $result) {
 // productos de esa colección, en el orden del término. Así cada fila de la
 // home (featured-row-1, featured-row-2, ...) se administra desde wp-admin
 // asignando productos a su colección.
+function hf_featured_products_manual_row_ids($collection_slug) {
+  $rows = get_option('hf_featured_product_rows', []);
+  if (!is_array($rows) || !array_key_exists($collection_slug, $rows) || !is_array($rows[$collection_slug])) {
+    return null;
+  }
+
+  return array_values(array_filter(array_map('absint', $rows[$collection_slug])));
+}
+
+function hf_featured_products_from_manual_ids($ids) {
+  $products = [];
+  foreach ($ids as $id) {
+    $product = wc_get_product($id);
+    if (!$product || $product->get_status() !== 'publish') {
+      continue;
+    }
+    $products[] = $product;
+  }
+  return $products;
+}
+
 function hf_regenerate_collection_cache($collection_slug) {
   if (!class_exists('WooCommerce')) {
     return;
   }
 
-  $query = [
-    'status'   => 'publish',
-    'limit'    => 50,
-    'orderby'  => 'date',
-    'order'    => 'DESC',
-    'tax_query' => [[
-      'taxonomy' => 'hf_collection',
-      'field'    => 'slug',
-      'terms'    => $collection_slug,
-    ]],
-  ];
+  $manual_ids = hf_featured_products_manual_row_ids($collection_slug);
+  if ($manual_ids !== null) {
+    $products = hf_featured_products_from_manual_ids($manual_ids);
+  } else {
+    $query = [
+      'status'   => 'publish',
+      'limit'    => 50,
+      'orderby'  => 'date',
+      'order'    => 'DESC',
+      'tax_query' => [[
+        'taxonomy' => 'hf_collection',
+        'field'    => 'slug',
+        'terms'    => $collection_slug,
+      ]],
+    ];
 
-  $products = wc_get_products($query);
+    $products = wc_get_products($query);
+  }
 
   $result = [];
   foreach ($products as $product) {

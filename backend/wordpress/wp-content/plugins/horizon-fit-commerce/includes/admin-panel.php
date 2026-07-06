@@ -88,6 +88,7 @@ function hf_panel_tab_inicio() {
     $sections = [
         'hero'   => [__('Hero (video principal)', 'horizon-fit-commerce'), 'hf_panel_render_hero'],
         'marquee'=> [__('Marquee (cinta)', 'horizon-fit-commerce'), 'hf_panel_render_marquee'],
+        'destacados'=> [__('Productos destacados', 'horizon-fit-commerce'), 'hf_panel_render_featured_product_rows'],
         'style'  => [__('Elegí tu estilo', 'horizon-fit-commerce'), 'hf_commerce_render_style_edit_settings_page'],
         'social' => [__('#HorizonFit (redes)', 'horizon-fit-commerce'), 'hf_commerce_render_social_strip_settings_page'],
         'trust'  => [__('Barra de confianza', 'horizon-fit-commerce'), 'hf_commerce_render_trust_settings_page'],
@@ -128,6 +129,180 @@ function hf_panel_tab_inicio() {
 }
 
 // ---- Pestaña: Productos y precios (sub-nav que reusa páginas existentes) ----
+function hf_panel_featured_row_slugs() {
+    return [
+        'featured-row-1' => __('Fila 1', 'horizon-fit-commerce'),
+        'featured-row-2' => __('Fila 2', 'horizon-fit-commerce'),
+        'featured-row-3' => __('Fila 3', 'horizon-fit-commerce'),
+        'featured-row-4' => __('Fila 4', 'horizon-fit-commerce'),
+    ];
+}
+
+function hf_panel_featured_rows_get() {
+    $rows = get_option('hf_featured_product_rows', []);
+    return is_array($rows) ? $rows : [];
+}
+
+function hf_panel_featured_row_ids($slug) {
+    $rows = hf_panel_featured_rows_get();
+    if (isset($rows[$slug]) && is_array($rows[$slug])) {
+        return array_values(array_filter(array_map('absint', $rows[$slug])));
+    }
+
+    if (!function_exists('wc_get_products')) {
+        return [];
+    }
+
+    $products = wc_get_products([
+        'status'   => 'publish',
+        'limit'    => 50,
+        'orderby'  => 'date',
+        'order'    => 'DESC',
+        'tax_query' => [[
+            'taxonomy' => 'hf_collection',
+            'field'    => 'slug',
+            'terms'    => $slug,
+        ]],
+    ]);
+
+    return array_map(static function ($product) {
+        return $product->get_id();
+    }, $products);
+}
+
+function hf_panel_featured_product_rows_text($ids) {
+    $lines = [];
+    foreach ($ids as $id) {
+        $title = get_the_title($id);
+        $lines[] = $title ? $id . ' | ' . $title : (string) $id;
+    }
+    return implode("\n", $lines);
+}
+
+function hf_panel_featured_product_rows_parse($value) {
+    $ids = [];
+    foreach (preg_split('/\r\n|\r|\n/', (string) $value) as $line) {
+        if (preg_match('/^\s*(\d+)/', $line, $m)) {
+            $id = absint($m[1]);
+            if ($id && !in_array($id, $ids, true)) {
+                $ids[] = $id;
+            }
+        }
+    }
+    return $ids;
+}
+
+function hf_panel_featured_product_options() {
+    if (!function_exists('wc_get_products')) {
+        return [];
+    }
+
+    $products = wc_get_products([
+        'status'  => 'publish',
+        'limit'   => -1,
+        'orderby' => 'title',
+        'order'   => 'ASC',
+        'return'  => 'objects',
+    ]);
+
+    $options = [];
+    foreach ($products as $product) {
+        $options[] = [
+            'id'   => $product->get_id(),
+            'name' => $product->get_name(),
+            'sku'  => $product->get_sku(),
+        ];
+    }
+    return $options;
+}
+
+function hf_panel_render_featured_product_rows() {
+    if (!current_user_can('manage_woocommerce')) {
+        return;
+    }
+
+    $row_slugs = hf_panel_featured_row_slugs();
+    $saved = false;
+
+    if (!empty($_POST['hf_featured_rows_submit'])) {
+        check_admin_referer('hf_featured_rows_action');
+
+        $rows = [];
+        foreach ($row_slugs as $slug => $label) {
+            $field = 'hf_featured_row_' . str_replace('-', '_', $slug);
+            $ids = hf_panel_featured_product_rows_parse(wp_unslash($_POST[$field] ?? ''));
+            $rows[$slug] = $ids;
+
+            if (!term_exists($slug, 'hf_collection')) {
+                wp_insert_term(ucwords(str_replace('-', ' ', $slug)), 'hf_collection', ['slug' => $slug]);
+            }
+
+            foreach ($ids as $id) {
+                if (get_post_type($id) === 'product') {
+                    wp_set_object_terms($id, $slug, 'hf_collection', true);
+                }
+            }
+        }
+
+        update_option('hf_featured_product_rows', $rows, false);
+
+        if (function_exists('hf_regenerate_featured_products_cache')) {
+            hf_regenerate_featured_products_cache();
+        }
+        if (function_exists('hf_regenerate_sections_cache')) {
+            hf_regenerate_sections_cache();
+        }
+
+        $saved = true;
+    }
+
+    $products = hf_panel_featured_product_options();
+    ?>
+    <?php if ($saved) : ?>
+        <div class="notice notice-success"><p><?php esc_html_e('Productos destacados guardados y caché regenerada.', 'horizon-fit-commerce'); ?></p></div>
+    <?php endif; ?>
+
+    <h1><?php esc_html_e('Productos destacados', 'horizon-fit-commerce'); ?></h1>
+    <p class="description"><?php esc_html_e('Definí exactamente qué productos van en cada fila del home y en qué orden. Si una fila queda vacía, se mantiene el comportamiento anterior de la colección.', 'horizon-fit-commerce'); ?></p>
+
+    <form method="post">
+        <?php wp_nonce_field('hf_featured_rows_action'); ?>
+        <div style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:18px; max-width:1200px;">
+            <?php foreach ($row_slugs as $slug => $label) :
+                $field = 'hf_featured_row_' . str_replace('-', '_', $slug);
+                $ids = hf_panel_featured_row_ids($slug);
+                ?>
+                <div style="background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:16px;">
+                    <h2 style="margin-top:0;"><?php echo esc_html($label); ?> <code><?php echo esc_html($slug); ?></code></h2>
+                    <p class="description"><?php esc_html_e('Un producto por línea. Puede ser solo ID, o "ID | Nombre". El orden de arriba hacia abajo es el orden de la home.', 'horizon-fit-commerce'); ?></p>
+                    <textarea name="<?php echo esc_attr($field); ?>" rows="10" style="width:100%; font-family:monospace;"><?php echo esc_textarea(hf_panel_featured_product_rows_text($ids)); ?></textarea>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <p class="submit"><button type="submit" name="hf_featured_rows_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar filas destacadas', 'horizon-fit-commerce'); ?></button></p>
+    </form>
+
+    <hr>
+    <h2><?php esc_html_e('IDs de productos disponibles', 'horizon-fit-commerce'); ?></h2>
+    <p class="description"><?php esc_html_e('Copiá el ID del producto y pegalo arriba en la fila que corresponda.', 'horizon-fit-commerce'); ?></p>
+    <div style="max-height:360px; overflow:auto; background:#fff; border:1px solid #dcdcde; border-radius:8px;">
+        <table class="widefat striped">
+            <thead><tr><th style="width:90px;">ID</th><th><?php esc_html_e('Producto', 'horizon-fit-commerce'); ?></th><th style="width:180px;">SKU</th></tr></thead>
+            <tbody>
+                <?php foreach ($products as $product) : ?>
+                    <tr>
+                        <td><code><?php echo esc_html($product['id']); ?></code></td>
+                        <td><?php echo esc_html($product['name']); ?></td>
+                        <td><?php echo esc_html($product['sku']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
 function hf_panel_tab_precios() {
     $secs = [
         'precios'   => [__('Precios', 'horizon-fit-commerce'), 'hf_commerce_render_pricing_page'],
