@@ -16,12 +16,14 @@ function hf_home_layout_defaults() {
     return [
         'featured-products'      => ['label' => 'Productos destacados (fila 1)', 'order' => 4],
         'featured-products-2'    => ['label' => 'Productos destacados (fila 2)', 'order' => 5],
-        'featured-sets-desktop'  => ['label' => 'Conjuntos destacados (desktop)', 'order' => 6],
-        'featured-sets-mobile'   => ['label' => 'Conjuntos destacados (mobile)',  'order' => 7],
-        'categorias'             => ['label' => 'Compra por categoría',           'order' => 8],
-        'trust-bar'              => ['label' => 'Barra de confianza',             'order' => 9],
-        'style-edit'             => ['label' => 'Elegí tu estilo',               'order' => 10],
-        'social-strip'           => ['label' => '#HorizonFit (redes)',            'order' => 11],
+        'featured-products-style-1' => ['label' => 'Productos destacados (fila 3)', 'order' => 6],
+        'featured-products-style-2' => ['label' => 'Productos destacados (fila 4)', 'order' => 7],
+        'featured-sets-desktop'  => ['label' => 'Conjuntos destacados (desktop)', 'order' => 8],
+        'featured-sets-mobile'   => ['label' => 'Conjuntos destacados (mobile)',  'order' => 9],
+        'categorias'             => ['label' => 'Compra por categoría',           'order' => 10],
+        'trust-bar'              => ['label' => 'Barra de confianza',             'order' => 11],
+        'style-edit'             => ['label' => 'Elegí tu estilo',               'order' => 12],
+        'social-strip'           => ['label' => '#HorizonFit (redes)',            'order' => 13],
     ];
 }
 
