@@ -5683,13 +5683,13 @@
           '<p class="hf-pdp-view__copy" data-product-installments></p>' +
           '<p class="hf-pdp-view__copy" data-product-transfer></p>' +
           '</div>' +
-          '<div class="hf-pdp-view__option-head"><span>Talle: <strong data-product-size-label>S</strong></span><a href="#" data-product-size-guide>Tabla de talles</a></div>' +
+          '<div class="hf-pdp-view__option-head"><span>Talles:</span></div>' +
           '<div class="hf-pdp-view__sizes" aria-label="Seleccionar talle">' +
           '<button class="hf-pdp-view__size" type="button" aria-pressed="true">S</button>' +
           '<button class="hf-pdp-view__size" type="button" aria-pressed="false">M</button>' +
           '<button class="hf-pdp-view__size" type="button" aria-pressed="false">L</button>' +
           '</div>' +
-          '<div class="hf-pdp-view__option-head"><span>Color</span></div>' +
+          '<div class="hf-pdp-view__option-head"><span>Colores disponibles:</span></div>' +
           '<div class="hf-pdp-view__color-row" data-product-colors aria-label="Seleccionar color"></div>' +
           '<div class="hf-pdp-view__actions">' +
           '<button class="btn btn--primary hf-pdp-view__button hf-pdp-view__button--primary" type="button">Agregar al carrito</button>' +

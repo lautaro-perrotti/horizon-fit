@@ -173,8 +173,22 @@ function hf_panel_featured_row_ids($slug) {
 function hf_panel_featured_product_rows_text($ids) {
     $lines = [];
     foreach ($ids as $id) {
-        $title = get_the_title($id);
-        $lines[] = $title ? $id . ' | ' . $title : (string) $id;
+        $product = function_exists('wc_get_product') ? wc_get_product($id) : null;
+        $title = $product ? $product->get_name() : get_the_title($id);
+        $sku = $product ? $product->get_sku() : '';
+
+        if (!$sku && $product && $product->is_type('variable')) {
+            foreach ((array) $product->get_children() as $child_id) {
+                $child = wc_get_product($child_id);
+                if ($child && $child->get_sku()) {
+                    $sku = $child->get_sku();
+                    break;
+                }
+            }
+        }
+
+        $token = $sku ?: (string) $id;
+        $lines[] = $title ? $token . ' | ' . $title : $token;
     }
     return implode("\n", $lines);
 }
@@ -182,11 +196,35 @@ function hf_panel_featured_product_rows_text($ids) {
 function hf_panel_featured_product_rows_parse($value) {
     $ids = [];
     foreach (preg_split('/\r\n|\r|\n/', (string) $value) as $line) {
-        if (preg_match('/^\s*(\d+)/', $line, $m)) {
-            $id = absint($m[1]);
-            if ($id && !in_array($id, $ids, true)) {
-                $ids[] = $id;
+        $line = trim((string) $line);
+        if ($line === '') {
+            continue;
+        }
+
+        $token = trim((string) preg_replace('/\s*\|.*$/', '', $line));
+        if ($token === '') {
+            continue;
+        }
+
+        $id = 0;
+        if (preg_match('/^\d+$/', $token)) {
+            $id = absint($token);
+        } elseif (function_exists('wc_get_product_id_by_sku')) {
+            $id = absint(wc_get_product_id_by_sku($token));
+        }
+
+        if ($id && function_exists('wc_get_product')) {
+            $product = wc_get_product($id);
+            if ($product && $product->is_type('variation')) {
+                $parent_id = $product->get_parent_id();
+                if ($parent_id) {
+                    $id = absint($parent_id);
+                }
             }
+        }
+
+        if ($id && get_post_type($id) === 'product' && !in_array($id, $ids, true)) {
+            $ids[] = $id;
         }
     }
     return $ids;
@@ -207,10 +245,21 @@ function hf_panel_featured_product_options() {
 
     $options = [];
     foreach ($products as $product) {
+        $sku = $product->get_sku();
+        if (!$sku && $product->is_type('variable')) {
+            foreach ((array) $product->get_children() as $child_id) {
+                $child = wc_get_product($child_id);
+                if ($child && $child->get_sku()) {
+                    $sku = $child->get_sku();
+                    break;
+                }
+            }
+        }
+
         $options[] = [
             'id'   => $product->get_id(),
             'name' => $product->get_name(),
-            'sku'  => $product->get_sku(),
+            'sku'  => $sku,
         ];
     }
     return $options;
@@ -263,7 +312,7 @@ function hf_panel_render_featured_product_rows() {
     <?php endif; ?>
 
     <h1><?php esc_html_e('Productos destacados', 'horizon-fit-commerce'); ?></h1>
-    <p class="description"><?php esc_html_e('Definí exactamente qué productos van en cada fila del home y en qué orden. Si una fila queda vacía, se mantiene el comportamiento anterior de la colección.', 'horizon-fit-commerce'); ?></p>
+    <p class="description"><?php esc_html_e('Definí exactamente qué productos van en cada fila del home y en qué orden usando SKUs. Si pegás el SKU de una variación/talle, se usa el producto padre. Si una fila queda vacía, se mantiene el comportamiento anterior de la colección.', 'horizon-fit-commerce'); ?></p>
 
     <form method="post">
         <?php wp_nonce_field('hf_featured_rows_action'); ?>
@@ -274,7 +323,7 @@ function hf_panel_render_featured_product_rows() {
                 ?>
                 <div style="background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:16px;">
                     <h2 style="margin-top:0;"><?php echo esc_html($label); ?> <code><?php echo esc_html($slug); ?></code></h2>
-                    <p class="description"><?php esc_html_e('Un producto por línea. Puede ser solo ID, o "ID | Nombre". El orden de arriba hacia abajo es el orden de la home.', 'horizon-fit-commerce'); ?></p>
+                    <p class="description"><?php esc_html_e('Un producto por línea. Puede ser solo SKU, o "SKU | Nombre". El orden de arriba hacia abajo es el orden de la home. Los productos actuales se recuperan automáticamente y se muestran como SKU.', 'horizon-fit-commerce'); ?></p>
                     <textarea name="<?php echo esc_attr($field); ?>" rows="10" style="width:100%; font-family:monospace;"><?php echo esc_textarea(hf_panel_featured_product_rows_text($ids)); ?></textarea>
                 </div>
             <?php endforeach; ?>
@@ -284,17 +333,17 @@ function hf_panel_render_featured_product_rows() {
     </form>
 
     <hr>
-    <h2><?php esc_html_e('IDs de productos disponibles', 'horizon-fit-commerce'); ?></h2>
-    <p class="description"><?php esc_html_e('Copiá el ID del producto y pegalo arriba en la fila que corresponda.', 'horizon-fit-commerce'); ?></p>
+    <h2><?php esc_html_e('SKUs de productos disponibles', 'horizon-fit-commerce'); ?></h2>
+    <p class="description"><?php esc_html_e('Copiá el SKU y pegalo arriba en la fila que corresponda. Si el SKU pertenece a una variación, el sistema usa el producto padre.', 'horizon-fit-commerce'); ?></p>
     <div style="max-height:360px; overflow:auto; background:#fff; border:1px solid #dcdcde; border-radius:8px;">
         <table class="widefat striped">
-            <thead><tr><th style="width:90px;">ID</th><th><?php esc_html_e('Producto', 'horizon-fit-commerce'); ?></th><th style="width:180px;">SKU</th></tr></thead>
+            <thead><tr><th style="width:180px;">SKU</th><th><?php esc_html_e('Producto', 'horizon-fit-commerce'); ?></th><th style="width:90px;">ID</th></tr></thead>
             <tbody>
                 <?php foreach ($products as $product) : ?>
                     <tr>
-                        <td><code><?php echo esc_html($product['id']); ?></code></td>
+                        <td><code><?php echo esc_html($product['sku'] ?: 'SIN SKU'); ?></code></td>
                         <td><?php echo esc_html($product['name']); ?></td>
-                        <td><?php echo esc_html($product['sku']); ?></td>
+                        <td><?php echo esc_html($product['id']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
