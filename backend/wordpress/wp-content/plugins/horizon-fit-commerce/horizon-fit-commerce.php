@@ -22,6 +22,7 @@ require_once HF_COMMERCE_DIR . 'includes/page-sections.php';
 require_once HF_COMMERCE_DIR . 'includes/page-sections-api.php';
 require_once HF_COMMERCE_DIR . 'includes/featured-products-cache.php';
 require_once HF_COMMERCE_DIR . 'includes/product-payment-fields.php';
+require_once HF_COMMERCE_DIR . 'includes/product-parent-sku.php';
 require_once HF_COMMERCE_DIR . 'includes/menu-items.php';
 require_once HF_COMMERCE_DIR . 'includes/footer-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/trust-settings.php';
