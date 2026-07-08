@@ -1865,67 +1865,28 @@
   const getPdpSetLineProducts = (product, products) => {
     const related = (products || []).filter(item => item?.slug !== product?.slug);
     const currentParts = productSkuParts(product);
-    const currentType = productTypeKey(product);
-    const currentColor = currentParts?.color || productColorKey(product);
+    const currentType = currentParts?.type || productTypeKey(product);
     const selected = [];
-    const exactCollectionItems = [];
-    const skuSameColorItems = [];
-    const inferredSameColorItems = [];
-    const sameProductOtherColorItems = [];
+    const skuSameTypeItems = [];
+    const inferredSameTypeItems = [];
 
-    const setCollectionSlugs = (product?.collections || [])
-      .filter(isSetCollection)
-      .map(collection => collection.slug)
-      .filter(Boolean);
-
-    if (setCollectionSlugs.length) {
-      related.forEach(item => {
-        const sameSetCollection = (item?.collections || [])
-          .some(collection => setCollectionSlugs.includes(collection.slug));
-        if (sameSetCollection) pushUniqueProduct(exactCollectionItems, item);
-      });
-    }
-
-    if (currentParts) {
-      related.forEach(item => {
-        const parts = productSkuParts(item);
-        if (!parts) return;
-        const sameSet = parts.set === currentParts.set;
-        const sameColor = !currentParts.color || parts.color === currentParts.color;
-        const differentType = !currentParts.type || parts.type !== currentParts.type;
-        if (sameSet && sameColor && differentType) pushUniqueProduct(skuSameColorItems, item);
-      });
-
-      related.forEach(item => {
-        const parts = productSkuParts(item);
-        if (!parts) return;
-        const sameSet = parts.set === currentParts.set;
-        const sameType = parts.type === currentParts.type;
-        const otherColor = currentParts.color && parts.color && parts.color !== currentParts.color;
-        if (sameSet && sameType && otherColor) pushUniqueProduct(sameProductOtherColorItems, item);
-      });
-    }
+    if (!currentType) return [];
 
     related.forEach(item => {
-      const sameColor = currentColor && productColorKey(item) === currentColor;
-      const differentType = currentType && productTypeKey(item) && productTypeKey(item) !== currentType;
-      if (sameColor && differentType && shareDescriptor(product, item)) {
-        pushUniqueProduct(inferredSameColorItems, item);
-      }
+      const parts = productSkuParts(item);
+      if (parts?.type === currentType) pushUniqueProduct(skuSameTypeItems, item);
     });
 
     related.forEach(item => {
-      const sameType = currentType && productTypeKey(item) === currentType;
-      const otherColor = currentColor && productColorKey(item) && productColorKey(item) !== currentColor;
-      if (sameType && otherColor && shareDescriptor(product, item)) {
-        pushUniqueProduct(sameProductOtherColorItems, item);
-      }
+      const parts = productSkuParts(item);
+      if (parts?.type) return;
+      if (productTypeKey(item) === currentType) pushUniqueProduct(inferredSameTypeItems, item);
     });
 
-    sortSetLineProducts(exactCollectionItems).forEach(item => pushUniqueProduct(selected, item));
-    sortSetLineProducts(skuSameColorItems).forEach(item => pushUniqueProduct(selected, item));
-    sortSetLineProducts(inferredSameColorItems).forEach(item => pushUniqueProduct(selected, item));
-    sortSetLineProducts(sameProductOtherColorItems).forEach(item => pushUniqueProduct(selected, item));
+    sortSetLineProducts(skuSameTypeItems).forEach(item => pushUniqueProduct(selected, item));
+    inferredSameTypeItems
+      .sort((a, b) => `${a?.name || ''}`.localeCompare(`${b?.name || ''}`, 'es'))
+      .forEach(item => pushUniqueProduct(selected, item));
 
     if (selected.length) return selected;
 
