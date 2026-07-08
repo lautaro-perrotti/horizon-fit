@@ -306,34 +306,6 @@
       }
     }
 
-    @media (max-width: 767px) {
-      .hf-featured-products__grid.hf-product-grid--h-scroll {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-rows: repeat(2, auto);
-        grid-auto-columns: calc(50% - 6px);
-        gap: 12px;
-      }
-
-      .hf-featured-products__grid.hf-product-grid--h-scroll .hf-product-item {
-        flex: none;
-        width: 100%;
-        min-width: 0;
-      }
-
-      /* Una flecha por fila, en diagonal: ◄ a la altura de la fila 1
-         (arriba-izquierda) y ► a la altura de la fila 2 (abajo-derecha). */
-      .hf-featured-products__shell.hf-product-scroll-shell .hf-carousel__nav--prev {
-        top: 25%;
-        transform: translateY(-50%);
-      }
-
-      .hf-featured-products__shell.hf-product-scroll-shell .hf-carousel__nav--next {
-        top: 75%;
-        transform: translateY(-50%);
-      }
-    }
-
     .h1 {
       font-size: var(--h1);
       letter-spacing: -.02em;
@@ -2334,23 +2306,6 @@
         }
       }
 
-      /* Mobile: flechas de carrusel estilo "gris/negrita" (chevron oscuro sobre
-         fondo gris) en home, PDP relacionados, colecciones y conjuntos. */
-      @media (max-width: 767px) {
-        .hf-product-scroll-shell .hf-carousel__nav,
-        .hf-set-mobile-carousel .hf-carousel__nav {
-          background: #ececec;
-          color: #1a1a1a;
-          border: 1px solid rgba(11, 11, 15, .14);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, .10);
-        }
-
-        .hf-product-scroll-shell .hf-carousel__nav svg,
-        .hf-set-mobile-carousel .hf-carousel__nav svg {
-          stroke-width: 2.8;
-        }
-      }
-
       .hf-pdp-view {
         width: min(100%, 1200px);
         margin: 0 auto;
@@ -3266,32 +3221,6 @@
       @media (max-width: 767px) {
         .hf-pdp-set-line__shell {
           padding-inline: 0;
-        }
-
-        .hf-pdp-set-line__grid.hf-product-grid--h-scroll {
-          display: grid;
-          grid-auto-flow: column;
-          grid-template-rows: repeat(2, auto);
-          grid-auto-columns: calc(50% - 6px);
-          gap: 12px;
-        }
-
-        .hf-pdp-set-line__grid.hf-product-grid--h-scroll .hf-product-item {
-          flex: none;
-          width: 100%;
-          min-width: 0;
-        }
-
-        /* Una flecha por fila, en diagonal: ◄ a la altura de la fila 1
-           (arriba-izquierda) y ► a la altura de la fila 2 (abajo-derecha). */
-        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav--prev {
-          top: 25%;
-          transform: translateY(-50%);
-        }
-
-        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav--next {
-          top: 75%;
-          transform: translateY(-50%);
         }
       }
 
@@ -4990,10 +4919,7 @@
           var atStart = grid.scrollLeft <= 2;
           var atEnd = grid.scrollLeft >= (maxScroll - 2);
 
-          // Ocultar cada flecha cuando ya no hay más para ese lado:
-          // ◄ al inicio del scroll, ► al final.
-          prevBtn.disabled = false;
-          prevBtn.classList.toggle('is-hidden', !canScroll || atStart);
+          prevBtn.disabled = atStart;
           nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
         }
 
