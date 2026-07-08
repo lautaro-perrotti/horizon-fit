@@ -321,8 +321,16 @@
         min-width: 0;
       }
 
-      .hf-featured-products__shell.hf-product-scroll-shell .hf-carousel__nav {
-        top: 50%;
+      /* Una flecha por fila, en diagonal: ◄ a la altura de la fila 1
+         (arriba-izquierda) y ► a la altura de la fila 2 (abajo-derecha). */
+      .hf-featured-products__shell.hf-product-scroll-shell .hf-carousel__nav--prev {
+        top: 25%;
+        transform: translateY(-50%);
+      }
+
+      .hf-featured-products__shell.hf-product-scroll-shell .hf-carousel__nav--next {
+        top: 75%;
+        transform: translateY(-50%);
       }
     }
 
@@ -3274,8 +3282,16 @@
           min-width: 0;
         }
 
-        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav {
-          top: 50%;
+        /* Una flecha por fila, en diagonal: ◄ a la altura de la fila 1
+           (arriba-izquierda) y ► a la altura de la fila 2 (abajo-derecha). */
+        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav--prev {
+          top: 25%;
+          transform: translateY(-50%);
+        }
+
+        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav--next {
+          top: 75%;
+          transform: translateY(-50%);
         }
       }
 
