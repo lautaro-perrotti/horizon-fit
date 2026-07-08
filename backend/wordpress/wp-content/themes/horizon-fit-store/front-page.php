@@ -2276,7 +2276,7 @@
       .hf-pdp-view__price {
         color: var(--hf-primary);
         font-size: 20px;
-        font-weight: 900;
+        font-weight: 800;
       }
 
       .hf-pdp-view__compare {
