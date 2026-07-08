@@ -4987,12 +4987,14 @@
         function updateControls() {
           var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
           var canScroll = maxScroll > 2;
+          var atStart = grid.scrollLeft <= 2;
+          var atEnd = grid.scrollLeft >= (maxScroll - 2);
 
-          // Mantener ambas flechas visibles siempre que haya contenido para
-          // desplazar (se ocultan las dos juntas solo si no hay scroll).
+          // Ocultar cada flecha cuando ya no hay más para ese lado:
+          // ◄ al inicio del scroll, ► al final.
           prevBtn.disabled = false;
-          prevBtn.classList.toggle('is-hidden', !canScroll);
-          nextBtn.classList.toggle('is-hidden', !canScroll);
+          prevBtn.classList.toggle('is-hidden', !canScroll || atStart);
+          nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
         }
 
         prevBtn.addEventListener('click', function () {
