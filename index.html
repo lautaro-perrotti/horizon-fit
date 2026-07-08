@@ -3224,11 +3224,22 @@
         }
 
         .hf-pdp-set-line__grid.hf-product-grid--h-scroll {
+          display: grid;
+          grid-auto-flow: column;
+          grid-template-rows: repeat(2, auto);
+          grid-auto-columns: calc(50% - 6px);
           gap: 12px;
+          align-items: start;
         }
 
         .hf-pdp-set-line__grid.hf-product-grid--h-scroll .hf-product-item {
-          flex: 0 0 calc(50% - 6px);
+          flex: none;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .hf-pdp-set-line__shell.hf-product-scroll-shell .hf-carousel__nav {
+          top: 50%;
         }
       }
 
