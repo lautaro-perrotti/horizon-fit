@@ -2326,6 +2326,23 @@
         }
       }
 
+      /* Mobile: flechas de carrusel estilo "gris/negrita" (chevron oscuro sobre
+         fondo gris) en home, PDP relacionados, colecciones y conjuntos. */
+      @media (max-width: 767px) {
+        .hf-product-scroll-shell .hf-carousel__nav,
+        .hf-set-mobile-carousel .hf-carousel__nav {
+          background: #ececec;
+          color: #1a1a1a;
+          border: 1px solid rgba(11, 11, 15, .14);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, .10);
+        }
+
+        .hf-product-scroll-shell .hf-carousel__nav svg,
+        .hf-set-mobile-carousel .hf-carousel__nav svg {
+          stroke-width: 2.8;
+        }
+      }
+
       .hf-pdp-view {
         width: min(100%, 1200px);
         margin: 0 auto;
@@ -4954,11 +4971,12 @@
         function updateControls() {
           var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
           var canScroll = maxScroll > 2;
-          var atStart = grid.scrollLeft <= 2;
-          var atEnd = grid.scrollLeft >= (maxScroll - 2);
 
-          prevBtn.disabled = atStart;
-          nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
+          // Mantener ambas flechas visibles siempre que haya contenido para
+          // desplazar (se ocultan las dos juntas solo si no hay scroll).
+          prevBtn.disabled = false;
+          prevBtn.classList.toggle('is-hidden', !canScroll);
+          nextBtn.classList.toggle('is-hidden', !canScroll);
         }
 
         prevBtn.addEventListener('click', function () {
