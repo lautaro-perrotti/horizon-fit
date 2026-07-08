@@ -2833,6 +2833,20 @@
     return match?.label || set?.name || 'Color';
   };
 
+  // Color sólido para los circulitos (selector de color de la card mobile).
+  const SET_COLOR_HEX = {
+    Bordeaux: '#6d2233',
+    Azul: '#274690',
+    Negro: '#1a1a1a',
+    Blanco: '#ffffff',
+    Celeste: '#a8d0e6',
+    Rosa: '#e8a0c0',
+    Rojo: '#c62828',
+    Verde: '#3f7d4e'
+  };
+
+  const getSetColorHex = (set) => SET_COLOR_HEX[getSetColorLabel(set)] || '#cccccc';
+
   const getSetFamilyKey = (set) => {
     const base = normalizeSetText(set?.name || set?.slug || '');
     const withoutColors = SET_COLOR_PATTERNS
@@ -2975,12 +2989,9 @@
 
     const items = unique.map(set => {
       const label = getSetColorLabel(set);
-      const imageUrl = getSetPreviewImage(set);
+      const hex = getSetColorHex(set);
       const current = set.slug === currentSlug;
-      const inner = imageUrl
-        ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(label)}">`
-        : `<span>${escapeHtml(label.slice(0, 1))}</span>`;
-      return `<button class="hf-pdp-view__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</button>`;
+      return `<button class="hf-pdp-view__color hf-set-mobile-card__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><span class="hf-set-mobile-card__dot" style="background:${escapeHtml(hex)}"></span></button>`;
     }).join('');
 
     return `<div class="hf-set-mobile-card__colors" aria-label="Seleccionar color">${items}</div>`;
