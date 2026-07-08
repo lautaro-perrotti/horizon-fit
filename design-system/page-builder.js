@@ -3632,27 +3632,23 @@
     const lookTag = $('[data-product-look-tag]');
     const lookList = $('[data-product-look-list]');
     const setText = (sel, value) => {
-      const el = $(sel);
-      if (el) el.textContent = value || '';
-      return el;
+      const elements = $$(sel);
+      elements.forEach(el => { el.textContent = value || ''; });
+      return elements[0] || null;
     };
 
     setText('.hf-pdp-view__title', product.name || '');
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
-    const descriptionTitle = $('[data-product-description-title]');
-    if (descriptionTitle) descriptionTitle.textContent = product.descriptionTitle || 'Descripción';
+    $$('[data-product-description-title]').forEach(el => { el.textContent = product.descriptionTitle || 'Descripción'; });
     setText('[data-product-description]', product.description || product.shortDescription || 'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.');
 
     const care = normalizeCare(product);
-    const careTitle = $('[data-product-care-title]');
-    const careText = $('[data-product-care-text]');
-    const careList = $('[data-product-care-list]');
-    if (careTitle) careTitle.textContent = care.title;
-    if (careText) careText.textContent = care.text;
-    if (careList) {
-      careList.innerHTML = care.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join('');
-    }
+    $$('[data-product-care-title]').forEach(el => { el.textContent = care.title; });
+    $$('[data-product-care-text]').forEach(el => { el.textContent = care.text; });
+    $$('[data-product-care-list]').forEach(el => {
+      el.innerHTML = care.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+    });
 
     const sizeTable = normalizeSizeTable(product);
     const sizeTitle = $('[data-product-size-title]');
