@@ -4545,6 +4545,53 @@
         border: 0;
       }
 
+      /* Riel compacto de circulitos de color sobre la imagen de la card, a la
+         derecha. Cambian el conjunto mostrado (imagen/nombre/precio/link). */
+      .hf-set-mobile-card {
+        position: relative;
+      }
+
+      .hf-set-mobile-card__colors {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: calc(100% - 20px);
+        overflow: hidden;
+      }
+
+      .hf-set-mobile-card__colors .hf-pdp-view__color {
+        flex: 0 0 auto;
+        width: 28px;
+        height: 28px;
+        min-width: 0;
+        padding: 0;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .hf-set-mobile-card__colors .hf-pdp-view__color img {
+        width: 100% !important;
+        height: 100% !important;
+        aspect-ratio: auto !important;
+        object-fit: cover !important;
+        border-radius: 50% !important;
+        border: 0 !important;
+        display: block;
+      }
+
+      .hf-set-mobile-card__colors .hf-pdp-view__color[aria-current="true"] {
+        border-color: var(--hf-primary, #35006d);
+        box-shadow: 0 0 0 2px var(--hf-primary, #35006d), 0 2px 6px rgba(0, 0, 0, .25);
+      }
+
       .hf-set-mobile-carousel .hf-carousel__viewport,
       .hf-sets-mobile-slider .hf-carousel__viewport {
         overflow: hidden;
@@ -4854,7 +4901,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=buy-with-no-shadow-20260630"></script>
+  <script src="/design-system/page-builder.js?v=set-mobile-colors-20260708"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

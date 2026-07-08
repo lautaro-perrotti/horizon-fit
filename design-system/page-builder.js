@@ -2955,27 +2955,96 @@
           </div>`;
   };
 
+  // Imagen mobile del conjunto (vertical); si no hay, cae a la desktop o a la
+  // del primer producto.
+  const getSetMobileImage = (set) =>
+    set?.imageMobile?.url || set?.image?.url || getProductImages(set?.products?.[0])[0]?.url || '';
+
+  // Riel compacto de circulitos de color para la card mobile: sólo los
+  // círculos (sin el header "Colores disponibles:") y sólo si hay >1 variante.
+  const renderSetMobileColorRail = (variants = [], currentSlug = '') => {
+    const unique = [];
+    const seen = new Set();
+    variants.forEach(set => {
+      const key = set?.slug || set?.name;
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      unique.push(set);
+    });
+    if (unique.length <= 1) return '';
+
+    const items = unique.map(set => {
+      const label = getSetColorLabel(set);
+      const imageUrl = getSetPreviewImage(set);
+      const current = set.slug === currentSlug;
+      const inner = imageUrl
+        ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(label)}">`
+        : `<span>${escapeHtml(label.slice(0, 1))}</span>`;
+      return `<button class="hf-pdp-view__color" type="button" data-set-color-slug="${escapeHtml(set.slug || '')}" aria-current="${current ? 'true' : 'false'}" aria-label="${escapeHtml(label)}">${inner}</button>`;
+    }).join('');
+
+    return `<div class="hf-set-mobile-card__colors" aria-label="Seleccionar color">${items}</div>`;
+  };
+
   // Card de un conjunto para la vista mobile (carousel de cards).
-  // Usa la imagen mobile (vertical); si no hay, cae a la desktop o a la del
-  // primer producto.
-  const renderSetMobileCard = (set) => {
-    const firstProduct = set.products?.[0];
+  // `variants` son las variantes de color de la misma familia; si hay más de
+  // una, se muestra a la derecha un riel de circulitos que cambian el conjunto.
+  const renderSetMobileCard = (set, variants = []) => {
     const href = buildCollectionUrl(set.slug);
-    const imageUrl = set.imageMobile?.url || set.image?.url || getProductImages(firstProduct)[0]?.url || '';
+    const imageUrl = getSetMobileImage(set);
     const priceText = getSetTotalPriceText(set);
     return `
             <div class="hf-carousel__slide">
-              <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
-                <div class="productMedia" style="background:none;">
-                  <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || '')}">
-                </div>
-                <div class="hf-product-item__body">
-                  <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
-                  <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
-                  ${renderSetPriceBlock(priceText)}
-                </div>
-              </a>
+              <div class="hf-set-mobile-card" data-current-set-slug="${escapeHtml(set.slug || '')}">
+                <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
+                  <div class="productMedia" style="background:none;">
+                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || '')}">
+                  </div>
+                  <div class="hf-product-item__body">
+                    <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
+                    <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
+                    ${renderSetPriceBlock(priceText)}
+                  </div>
+                </a>
+                ${renderSetMobileColorRail(variants, set.slug)}
+              </div>
             </div>`;
+  };
+
+  // Swap de una card mobile al tocar un circulito de color: actualiza imagen,
+  // nombre, copy, precio, link y el estado activo de los círculos.
+  const updateSetMobileCard = (cardEl, set) => {
+    if (!cardEl || !set) return;
+    const title = set.name || '';
+    const href = buildCollectionUrl(set.slug);
+    const priceText = getSetTotalPriceText(set);
+
+    cardEl.dataset.currentSetSlug = set.slug || '';
+
+    const linkEl = cardEl.querySelector('a.hf-product-item');
+    if (linkEl) {
+      linkEl.href = href;
+      linkEl.setAttribute('aria-label', `Ver todos los productos de ${title}`);
+    }
+
+    const imgEl = cardEl.querySelector('.productMedia img');
+    if (imgEl) {
+      imgEl.src = getSetMobileImage(set);
+      imgEl.alt = title;
+    }
+
+    const titleEl = cardEl.querySelector('.hf-product-item__title');
+    if (titleEl) titleEl.textContent = title;
+
+    const copyEl = cardEl.querySelector('.hf-product-item__body .small');
+    if (copyEl) copyEl.textContent = set.copy || '';
+
+    const priceEl = cardEl.querySelector('.hf-product-item__price');
+    if (priceEl) priceEl.textContent = priceText || '';
+
+    cardEl.querySelectorAll('[data-set-color-slug]').forEach(button => {
+      button.setAttribute('aria-current', button.getAttribute('data-set-color-slug') === set.slug ? 'true' : 'false');
+    });
   };
 
   const updateFeaturedSetCard = (lookEl, set) => {
@@ -3046,6 +3115,32 @@
     sectionEl.addEventListener('click', sectionEl._hfSetColorHandler);
   };
 
+  // Igual que bindFeaturedSetColorControls pero para la card mobile
+  // (.hf-set-mobile-card en vez de .hf-pdp-look).
+  const bindFeaturedSetMobileColorControls = (sectionEl, sets) => {
+    if (!sectionEl || !Array.isArray(sets)) return;
+    const setsBySlug = new Map(sets.map(set => [set.slug, set]).filter(([slug]) => Boolean(slug)));
+
+    if (sectionEl._hfSetColorHandler) {
+      sectionEl.removeEventListener('click', sectionEl._hfSetColorHandler);
+    }
+
+    sectionEl._hfSetColorHandler = (event) => {
+      const button = event.target.closest('[data-set-color-slug]');
+      if (!button || !sectionEl.contains(button)) return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      const nextSet = setsBySlug.get(button.getAttribute('data-set-color-slug'));
+      const cardEl = button.closest('.hf-set-mobile-card');
+      if (!nextSet || !cardEl) return;
+
+      updateSetMobileCard(cardEl, nextSet);
+    };
+
+    sectionEl.addEventListener('click', sectionEl._hfSetColorHandler);
+  };
+
   // Renderiza el slider "Conjuntos destacados" en su variante (desktop/mobile).
   // VacÃ­a el track del carousel, inyecta los slides de cada conjunto y
   // reinicializa el carousel. Si no hay conjuntos, oculta la secciÃ³n.
@@ -3070,7 +3165,8 @@
     const total = representativeSets.length;
 
     if (variant === 'mobile') {
-      track.innerHTML = representativeSets.map(renderSetMobileCard).join('');
+      track.innerHTML = groupedSets.map(group => renderSetMobileCard(group[0], group)).join('');
+      bindFeaturedSetMobileColorControls(sectionEl, sortedSets);
     } else {
       track.innerHTML = groupedSets.map((group, i) => {
         const set = group[0];
