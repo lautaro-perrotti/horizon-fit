@@ -4558,9 +4558,9 @@
         z-index: 3;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        max-height: calc(100% - 20px);
-        overflow: hidden;
+        gap: 10px;
+        /* overflow visible para que el anillo del swatch activo no se corte. */
+        overflow: visible;
       }
 
       .hf-set-mobile-card__colors .hf-pdp-view__color {
