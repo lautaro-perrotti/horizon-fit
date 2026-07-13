@@ -4083,13 +4083,24 @@
 
       const setLineItems = getPdpSetLineProducts(product, list);
       const setLineSection = $('[data-pdp-set-line]');
-      const setLineGrid = $('[data-pdp-set-line-grid]');
-      if (setLineSection && setLineGrid) {
+      const setLineGrids = $$('[data-pdp-set-line-grid]');
+      if (setLineSection && setLineGrids.length) {
         if (setLineItems.length) {
-          setLineGrid.innerHTML = setLineItems.map(item => renderProductCardHtml(item, { showSizes: false })).join('');
+          const splitAt = setLineGrids.length > 1 ? Math.ceil(setLineItems.length / 2) : setLineItems.length;
+          const rows = setLineGrids.length > 1
+            ? [setLineItems.slice(0, splitAt), setLineItems.slice(splitAt)]
+            : [setLineItems];
+
+          setLineGrids.forEach((grid, index) => {
+            const rowItems = rows[index] || [];
+            const shell = grid.closest('[data-grid-shell]');
+            grid.innerHTML = rowItems.map(item => renderProductCardHtml(item, { showSizes: false })).join('');
+            if (shell) {
+              shell.hidden = rowItems.length === 0;
+              delete shell.dataset.carouselReady;
+            }
+          });
           setLineSection.hidden = false;
-          const setLineShell = setLineSection.querySelector('[data-grid-shell]');
-          if (setLineShell) delete setLineShell.dataset.carouselReady;
           if (typeof window.initCarousels === 'function') window.initCarousels();
         } else {
           setLineSection.hidden = true;
