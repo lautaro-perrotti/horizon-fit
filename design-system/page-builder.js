@@ -1991,19 +1991,12 @@
     return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
   };
 
-  const careDescriptionHtml = (care) => {
-    const text = plainTextFromHtml(care?.text || DEFAULT_CARE.text)
-      .replace(/\s+/g, ' ')
-      .trim();
-    const bullets = (Array.isArray(care?.bullets) && care.bullets.length ? care.bullets : DEFAULT_CARE.bullets)
-      .map(item => plainTextFromHtml(item).replace(/\s+/g, ' ').trim())
-      .filter(Boolean);
-
+  const careDescriptionHtml = () => {
     const paragraphs = [
-      text,
-      bullets.slice(0, 2).join(' '),
-      bullets.slice(2).join(' ')
-    ].filter(Boolean);
+      'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, siempre separando tonos claros y oscuros.',
+      'Usá lavado a mano o ciclo delicado para cuidar las fibras, mantener la elasticidad y evitar que la tela pierda forma con el uso frecuente.',
+      'Evitá lavandina, remojos largos, secadora y calor directo. Secá a la sombra, sin retorcer, y no planches sobre logos, estampas o avíos.'
+    ];
 
     return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
   };
@@ -2748,13 +2741,12 @@
 
   const DEFAULT_CARE = {
     title: 'Lavado y cuidado',
-    text: 'Para mantener el calce, el color y la suavidad de la prenda, lavala con agua fría y jabón neutro. Recomendamos usar lavado a mano o ciclo delicado, separar colores claros y oscuros, y evitar productos abrasivos que puedan afectar la elasticidad o la terminación de la tela.',
+    text: 'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, siempre separando tonos claros y oscuros. Usá lavado a mano o ciclo delicado para cuidar las fibras, mantener la elasticidad y evitar que la tela pierda forma con el uso frecuente. Evitá lavandina, remojos largos, secadora y calor directo. Secá a la sombra, sin retorcer, y no planches sobre logos, estampas o avíos.',
     bullets: [
-      'No usar lavandina.',
-      'No dejar en remojo por tiempo prolongado.',
-      'No centrifugar en caliente ni usar secadora.',
-      'Secar a la sombra, sin retorcer y lejos de fuentes directas de calor.',
-      'No planchar sobre estampas, logos o avíos.'
+      'Lavar con agua fría y jabón neutro.',
+      'Usar lavado a mano o ciclo delicado.',
+      'Secar a la sombra, sin retorcer.',
+      'No usar lavandina, secadora ni calor directo.'
     ]
   };
 
