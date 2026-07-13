@@ -6500,39 +6500,37 @@
       }
     }
 
-    /* Mobile: flechas compactas y redondas. Desktop queda blanco. */
-    @media (max-width: 767px) {
-      .hf-carousel__nav,
-      .hf-product-scroll-shell .hf-carousel__nav,
-      .hf-set-mobile-carousel .hf-carousel__nav,
-      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
-        width: 34px !important;
-        height: 34px !important;
-        border: 1px solid rgba(255, 255, 255, .62) !important;
-        border-radius: 999px !important;
-        background: rgba(11, 11, 15, .42) !important;
-        color: #fff !important;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, .16) !important;
-        padding: 0 !important;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-      }
+    /* Flechas compactas y redondas en desktop y mobile. */
+    .hf-carousel__nav,
+    .hf-product-scroll-shell .hf-carousel__nav,
+    .hf-set-mobile-carousel .hf-carousel__nav,
+    #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
+      width: 34px !important;
+      height: 34px !important;
+      border: 1px solid rgba(255, 255, 255, .62) !important;
+      border-radius: 999px !important;
+      background: rgba(11, 11, 15, .42) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .16) !important;
+      padding: 0 !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
 
-      .hf-carousel__nav:hover,
-      .hf-product-scroll-shell .hf-carousel__nav:hover,
-      .hf-set-mobile-carousel .hf-carousel__nav:hover,
-      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
-        background: rgba(11, 11, 15, .58) !important;
-        transform: translateY(-50%) !important;
-      }
+    .hf-carousel__nav:hover,
+    .hf-product-scroll-shell .hf-carousel__nav:hover,
+    .hf-set-mobile-carousel .hf-carousel__nav:hover,
+    #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
+      background: rgba(11, 11, 15, .58) !important;
+      transform: translateY(-50%) !important;
+    }
 
-      .hf-carousel__nav svg,
-      .hf-product-scroll-shell .hf-carousel__nav svg,
-      .hf-set-mobile-carousel .hf-carousel__nav svg,
-      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav svg {
-        width: 18px !important;
-        height: 18px !important;
-      }
+    .hf-carousel__nav svg,
+    .hf-product-scroll-shell .hf-carousel__nav svg,
+    .hf-set-mobile-carousel .hf-carousel__nav svg,
+    #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav svg {
+      width: 18px !important;
+      height: 18px !important;
     }
   </style>
   <div class="container" id="home-pdp-look" style="background: var(--surface); padding-bottom: 56px;">

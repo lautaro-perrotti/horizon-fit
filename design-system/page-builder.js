@@ -1710,6 +1710,7 @@
       TOP: 'TOP', BRA: 'TOP', CORPINO: 'TOP',
       CALZA: 'CAL', CALSAS: 'CAL', CALSA: 'CAL', LEGGING: 'CAL', LEGGINGS: 'CAL',
       SHORT: 'SHO', SHORTS: 'SHO', BIKER: 'SHO',
+      FALDA: 'FAL', FALDAS: 'FAL',
       CAMPERA: 'CAM', CAMPERAS: 'CAM',
       BUZO: 'BUZ', BUZOS: 'BUZ', HOODIE: 'BUZ',
       REMERA: 'REM', REMERAS: 'REM', TANK: 'REM',
@@ -2921,6 +2922,13 @@
 
   const SET_COLOR_ORDER = ['BLA', 'NEG', 'AZU', 'CEL', 'VER', 'ROS', 'ROJ', 'BOR'];
   const SET_TYPE_ORDER = ['TOP', 'SHO', 'FAL', 'CAL', 'CAM'];
+  const SET_TYPE_LABELS = {
+    TOP: 'Top',
+    SHO: 'short',
+    FAL: 'falda',
+    CAL: 'calza',
+    CAM: 'campera'
+  };
 
   const getTokenOrder = (list, value) => {
     const index = list.indexOf(`${value || ''}`.toUpperCase());
@@ -2949,6 +2957,23 @@
   };
 
   const sortFeaturedSetsBySku = (sets = []) => [...sets].sort(compareFeaturedSetsBySku);
+
+  const getSetCopy = (set) => {
+    const explicitCopy = `${set?.copy || ''}`.trim();
+    const products = Array.isArray(set?.products) ? set.products : [];
+    const types = [];
+
+    products.forEach(product => {
+      const type = productSkuParts(product)?.type || productTypeKey(product);
+      if (!type || !SET_TYPE_LABELS[type] || types.includes(type)) return;
+      types.push(type);
+    });
+
+    const orderedTypes = SET_TYPE_ORDER.filter(type => types.includes(type));
+    const inferredCopy = orderedTypes.map(type => SET_TYPE_LABELS[type]).join(' + ');
+
+    return inferredCopy || explicitCopy || 'Conjunto completo';
+  };
 
   const renderSetColorPreviews = (variants = [], currentSlug = '', extraClass = '') => {
     const unique = [];
@@ -3047,6 +3072,7 @@
     const href = buildCollectionUrl(set.slug);
     const imageUrl = getSetMobileImage(set);
     const priceText = getSetTotalPriceText(set);
+    const copyText = getSetCopy(set);
     return `
             <div class="hf-carousel__slide">
               <div class="hf-set-mobile-card" data-current-set-slug="${escapeHtml(set.slug || '')}">
@@ -3056,7 +3082,7 @@
                   </div>
                   <div class="hf-product-item__body">
                     <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
-                    <p class="small" style="margin-bottom: 8px;">${escapeHtml(set.copy || '')}</p>
+                    <p class="small" style="margin-bottom: 8px;">${escapeHtml(copyText)}</p>
                     ${renderSetPriceBlock(priceText)}
                   </div>
                 </a>
@@ -3072,6 +3098,7 @@
     const title = set.name || '';
     const href = buildCollectionUrl(set.slug);
     const priceText = getSetTotalPriceText(set);
+    const copyText = getSetCopy(set);
 
     cardEl.dataset.currentSetSlug = set.slug || '';
 
@@ -3091,7 +3118,7 @@
     if (titleEl) titleEl.textContent = title;
 
     const copyEl = cardEl.querySelector('.hf-product-item__body .small');
-    if (copyEl) copyEl.textContent = set.copy || '';
+    if (copyEl) copyEl.textContent = copyText;
 
     const priceEl = cardEl.querySelector('.hf-product-item__price');
     if (priceEl) priceEl.textContent = priceText || '';
