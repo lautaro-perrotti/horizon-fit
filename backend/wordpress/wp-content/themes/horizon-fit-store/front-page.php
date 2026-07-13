@@ -6500,6 +6500,33 @@
       }
     }
 
+    /* Desktop: botones grises rectangulares clásicos. */
+    @media (min-width: 768px) {
+      .hf-carousel__nav,
+      .hf-product-scroll-shell .hf-carousel__nav,
+      .hf-set-mobile-carousel .hf-carousel__nav,
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
+        width: 24px !important;
+        height: 48px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: rgba(0, 0, 0, 0.48) !important;
+        color: #fff !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      .hf-carousel__nav:hover,
+      .hf-product-scroll-shell .hf-carousel__nav:hover,
+      .hf-set-mobile-carousel .hf-carousel__nav:hover,
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
+        background: rgba(0, 0, 0, 0.62) !important;
+        transform: translateY(-50%) !important;
+      }
+    }
+
     /* Mobile: flechas compactas y redondas. Desktop queda con su estilo original. */
     @media (max-width: 767px) {
       .hf-carousel__nav,
