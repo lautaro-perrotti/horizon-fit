@@ -2527,6 +2527,17 @@
         padding: 0;
       }
 
+      .hf-pdp-view__panel[data-product-panel="care"] [data-product-care-list] {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 22px 0 24px;
+      }
+
+      .hf-pdp-view__panel[data-product-panel="care"] [data-product-care-list] li {
+        max-width: 58ch;
+      }
+
       .hf-pdp-view__panel a {
         text-decoration: underline;
         text-underline-offset: 3px;
