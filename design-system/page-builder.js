@@ -1991,6 +1991,23 @@
     return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
   };
 
+  const careDescriptionHtml = (care) => {
+    const text = plainTextFromHtml(care?.text || DEFAULT_CARE.text)
+      .replace(/\s+/g, ' ')
+      .trim();
+    const bullets = (Array.isArray(care?.bullets) && care.bullets.length ? care.bullets : DEFAULT_CARE.bullets)
+      .map(item => plainTextFromHtml(item).replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    const paragraphs = [
+      text,
+      bullets.slice(0, 2).join(' '),
+      bullets.slice(2).join(' ')
+    ].filter(Boolean);
+
+    return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+  };
+
   const normalizeSearchText = (value) => decodeEntities(value)
     .toLowerCase()
     .normalize('NFD')
@@ -3791,9 +3808,10 @@
 
     const care = normalizeCare(product);
     $$('[data-product-care-title]').forEach(el => { el.textContent = care.title; });
-    $$('[data-product-care-text]').forEach(el => { el.textContent = care.text; });
+    $$('[data-product-care-text]').forEach(el => { el.innerHTML = careDescriptionHtml(care); });
     $$('[data-product-care-list]').forEach(el => {
-      el.innerHTML = care.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+      el.innerHTML = '';
+      el.hidden = true;
     });
 
     const sizeTable = normalizeSizeTable(product);

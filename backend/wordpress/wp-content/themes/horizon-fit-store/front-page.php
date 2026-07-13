@@ -2527,20 +2527,28 @@
         padding: 0;
       }
 
-      .hf-pdp-view__panel[data-product-panel="care"] [data-product-care-list] {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 22px 0 24px;
-      }
-
-      .hf-pdp-view__panel[data-product-panel="care"] [data-product-care-list] li {
-        max-width: 58ch;
-      }
-
       .hf-pdp-view__panel a {
         text-decoration: underline;
         text-underline-offset: 3px;
+      }
+
+      @media (min-width: 768px) {
+        .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) {
+          min-height: 350px !important;
+          height: 350px !important;
+          overflow: hidden;
+          display: grid;
+          grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) .hf-pdp-view__panel {
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) .hf-pdp-view__panel p {
+          margin-bottom: 22px;
+        }
       }
 
       .hf-pdp-view__size-table {
