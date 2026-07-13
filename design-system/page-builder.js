@@ -2731,11 +2731,13 @@
 
   const DEFAULT_CARE = {
     title: 'Lavado y cuidado',
-    text: 'Lavar a mano o en ciclo delicado con agua fría. Usar jabón neutro y evitar suavizantes para conservar la elasticidad del tejido.',
+    text: 'Para mantener el calce, el color y la suavidad de la prenda, lavala con agua fría y jabón neutro. Recomendamos usar lavado a mano o ciclo delicado, separar colores claros y oscuros, y evitar productos abrasivos que puedan afectar la elasticidad o la terminación de la tela.',
     bullets: [
       'No usar lavandina.',
-      'No centrifugar en caliente.',
-      'Secar a la sombra y no planchar sobre estampas o avíos.'
+      'No dejar en remojo por tiempo prolongado.',
+      'No centrifugar en caliente ni usar secadora.',
+      'Secar a la sombra, sin retorcer y lejos de fuentes directas de calor.',
+      'No planchar sobre estampas, logos o avíos.'
     ]
   };
 
