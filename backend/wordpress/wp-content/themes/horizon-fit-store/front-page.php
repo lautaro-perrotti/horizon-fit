@@ -6480,6 +6480,31 @@
         margin-bottom: -78px !important;
       }
     }
+
+    /* Mobile: volver a los botones grises viejos. Desktop queda blanco. */
+    @media (max-width: 767px) {
+      .hf-carousel__nav,
+      .hf-product-scroll-shell .hf-carousel__nav,
+      .hf-set-mobile-carousel .hf-carousel__nav,
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav {
+        width: 24px !important;
+        height: 48px !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: rgba(0, 0, 0, 0.48) !important;
+        color: #fff !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
+      .hf-carousel__nav:hover,
+      .hf-product-scroll-shell .hf-carousel__nav:hover,
+      .hf-set-mobile-carousel .hf-carousel__nav:hover,
+      #home-pdp-look .hf-pdp-look-carousel .hf-carousel__nav:hover {
+        background: rgba(0, 0, 0, 0.62) !important;
+        transform: translateY(-50%) !important;
+      }
+    }
   </style>
   <div class="container" id="home-pdp-look" style="background: var(--surface); padding-bottom: 56px;">
     <div class="hf-section-head hf-pdp-look-desktop-title"
