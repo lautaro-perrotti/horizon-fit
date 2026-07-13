@@ -1959,6 +1959,38 @@
     return wrapper.textContent || wrapper.innerText || '';
   };
 
+  const splitSentences = (value) => String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
+
+  const productDescriptionHtml = (value) => {
+    const text = plainTextFromHtml(value)
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!text) {
+      return '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.</p>';
+    }
+
+    const sentences = splitSentences(text)
+      .map(sentence => sentence.trim())
+      .filter(Boolean);
+    const selected = sentences.slice(0, 4);
+
+    if (!selected.length) {
+      return `<p>${escapeHtml(text)}</p>`;
+    }
+
+    const paragraphs = [
+      selected.slice(0, 1).join(' '),
+      selected.slice(1, 3).join(' '),
+      selected.slice(3, 4).join(' ')
+    ].filter(Boolean);
+
+    return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+  };
+
   const normalizeSearchText = (value) => decodeEntities(value)
     .toLowerCase()
     .normalize('NFD')
@@ -3743,12 +3775,17 @@
       elements.forEach(el => { el.textContent = value || ''; });
       return elements[0] || null;
     };
+    const setHtml = (sel, value) => {
+      const elements = $$(sel);
+      elements.forEach(el => { el.innerHTML = value || ''; });
+      return elements[0] || null;
+    };
 
     setText('.hf-pdp-view__title', product.name || '');
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
     $$('[data-product-description-title]').forEach(el => { el.textContent = product.descriptionTitle || 'Descripción'; });
-    setText('[data-product-description]', product.description || product.shortDescription || 'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.');
+    setHtml('[data-product-description]', productDescriptionHtml(product.description || product.shortDescription));
 
     const care = normalizeCare(product);
     $$('[data-product-care-title]').forEach(el => { el.textContent = care.title; });
