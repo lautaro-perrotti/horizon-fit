@@ -1993,9 +1993,9 @@
 
   const careDescriptionHtml = () => {
     const paragraphs = [
-      'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, siempre separando tonos claros y oscuros.',
-      'Usá lavado a mano o ciclo delicado para cuidar las fibras, mantener la elasticidad y evitar que la tela pierda forma con el uso frecuente.',
-      'Evitá lavandina, remojos largos, secadora y calor directo. Secá a la sombra, sin retorcer, y no planches sobre logos, estampas o avíos.'
+      'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
+      'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
+      'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.'
     ];
 
     return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
@@ -2741,7 +2741,7 @@
 
   const DEFAULT_CARE = {
     title: 'Lavado y cuidado',
-    text: 'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, siempre separando tonos claros y oscuros. Usá lavado a mano o ciclo delicado para cuidar las fibras, mantener la elasticidad y evitar que la tela pierda forma con el uso frecuente. Evitá lavandina, remojos largos, secadora y calor directo. Secá a la sombra, sin retorcer, y no planches sobre logos, estampas o avíos.',
+    text: 'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso. Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación. Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.',
     bullets: [
       'Lavar con agua fría y jabón neutro.',
       'Usar lavado a mano o ciclo delicado.',
