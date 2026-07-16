@@ -3256,7 +3256,7 @@
 
       .hf-style-edit {
         background: var(--surface);
-        padding: 28px 0 60px;
+        padding: 28px 0 30px;
       }
 
       .hf-style-edit .container {
@@ -3360,7 +3360,7 @@
 
       @media (min-width: 1101px) {
         .hf-style-edit {
-          padding: 34px 0 68px;
+          padding: 34px 0 34px;
         }
 
         .hf-style-edit .container {
@@ -3457,7 +3457,7 @@
 
       @media (max-width: 640px) {
         .hf-style-edit {
-          padding: 24px 0 44px;
+          padding: 24px 0 22px;
         }
 
         .hf-style-edit__grid {
