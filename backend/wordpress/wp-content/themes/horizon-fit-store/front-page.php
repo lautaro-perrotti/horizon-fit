@@ -285,7 +285,7 @@
       display: none !important;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       .hf-section-head--mobile-only {
         display: grid !important;
       }
