@@ -91,7 +91,7 @@
       "data": "design-system/data/featured-products.json",
       "config": {
         "title": "",
-        "mobileTitle": "TENDENCIAS",
+        "titleMobile": "TENDENCIAS",
         "collection": "featured-row-3",
         "limit": 8
       }

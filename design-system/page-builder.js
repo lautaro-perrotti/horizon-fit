@@ -727,14 +727,35 @@
           hasSetsAnchor = true;
         }
 
-        // Handle optional title
-        const sectionTitle = section.config?.title || section.config?.mobileTitle || '';
-        if (sectionTitle) {
+        // Handle optional title. Puede definirse uno común (`title`) o
+        // variantes por breakpoint (`titleDesktop`/`desktopTitle` y
+        // `titleMobile`/`mobileTitle`).
+        const commonTitle = `${section.config?.title || ''}`.trim();
+        const desktopTitle = `${section.config?.titleDesktop ?? section.config?.desktopTitle ?? commonTitle}`.trim();
+        const mobileTitle = `${section.config?.titleMobile ?? section.config?.mobileTitle ?? commonTitle}`.trim();
+        if (desktopTitle || mobileTitle) {
           const titleEl = sectionEl.querySelector('[data-section-title]');
-          if (titleEl) titleEl.textContent = sectionTitle;
-          if (!section.config?.title && section.config?.mobileTitle) {
+          if (titleEl) {
+            if (desktopTitle && mobileTitle && desktopTitle !== mobileTitle) {
+              titleEl.textContent = desktopTitle;
+              titleEl.classList.add('hf-section-title--desktop');
+              const mobileTitleEl = titleEl.cloneNode(true);
+              mobileTitleEl.textContent = mobileTitle;
+              mobileTitleEl.classList.remove('hf-section-title--desktop');
+              mobileTitleEl.classList.add('hf-section-title--mobile');
+              mobileTitleEl.removeAttribute('data-section-title');
+              titleEl.after(mobileTitleEl);
+            } else {
+              titleEl.textContent = desktopTitle || mobileTitle;
+            }
+          }
+
+          if (!desktopTitle && mobileTitle) {
             const headEl = sectionEl.querySelector('.hf-section-head');
             if (headEl) headEl.classList.add('hf-section-head--mobile-only');
+          } else if (desktopTitle && !mobileTitle) {
+            const headEl = sectionEl.querySelector('.hf-section-head');
+            if (headEl) headEl.classList.add('hf-section-head--desktop-only');
           }
         } else {
           const headEl = sectionEl.querySelector('.hf-section-head');

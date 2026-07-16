@@ -281,9 +281,25 @@
       display: none !important;
     }
 
+    .hf-section-title--mobile {
+      display: none !important;
+    }
+
     @media (max-width: 768px) {
       .hf-section-head--mobile-only {
         display: grid !important;
+      }
+
+      .hf-section-head--desktop-only {
+        display: none !important;
+      }
+
+      .hf-section-title--desktop {
+        display: none !important;
+      }
+
+      .hf-section-title--mobile {
+        display: block !important;
       }
     }
 
