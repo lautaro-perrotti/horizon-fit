@@ -2086,6 +2086,30 @@
     return Number.isFinite(total) && total > 0 ? formatMajorMoney(total) : '';
   };
 
+  const FEATURED_SET_DISCOUNT_PERCENT = 10;
+
+  const getFeaturedSetPricing = (setOrItems) => {
+    const originalValue = getSetTotalPriceValue(setOrItems);
+    if (!Number.isFinite(originalValue) || originalValue <= 0) return null;
+    const priceValue = originalValue * (1 - (FEATURED_SET_DISCOUNT_PERCENT / 100));
+    return {
+      priceValue,
+      originalValue,
+      priceText: formatMajorMoney(priceValue),
+      originalText: formatMajorMoney(originalValue)
+    };
+  };
+
+  const renderFeaturedSetPriceHtml = (pricing) => {
+    if (!pricing?.priceText) return '';
+    const originalText = pricing.originalText && pricing.originalText !== pricing.priceText
+      ? pricing.originalText
+      : '';
+    return `
+                  <span class="hf-product-item__price">${escapeHtml(pricing.priceText)}</span>
+                  ${originalText ? `<span class="hf-product-item__price-original">${escapeHtml(originalText)}</span>` : ''}`;
+  };
+
   const getProductPriceMinorUnit = (product) => {
     const minorUnit = Number(product?.prices?.currency_minor_unit);
     if (Number.isFinite(minorUnit) && minorUnit >= 0) return minorUnit;
@@ -2833,10 +2857,10 @@
                 <p class="hf-product-item__transfer" hidden></p>
               </div>`;
 
-  const renderSetPriceBlock = (priceText) => priceText ? `
+  const renderSetPriceBlock = (pricing) => pricing?.priceText ? `
               <div class="hf-product-item__pricing">
                 <div class="hf-product-item__price-row">
-                  <span class="hf-product-item__price">${escapeHtml(priceText)}</span>
+${renderFeaturedSetPriceHtml(pricing)}
                 </div>
                 <p class="hf-product-item__installments" hidden></p>
                 <p class="hf-product-item__transfer" hidden></p>
@@ -3009,7 +3033,7 @@
     const heroUrl = meta?.image || heroImage?.url || '';
     const collectionUrl = meta?.slug ? buildCollectionUrl(meta.slug) : '';
     const variants = meta?.variants || [];
-    const setPriceText = getSetTotalPriceText(items);
+    const setPricing = getFeaturedSetPricing(items);
     const colorPreviews = renderSetColorPreviews(variants, meta?.slug || '');
     const titleMarkup = collectionUrl
       ? `<a href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}"><h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2></a>`
@@ -3026,7 +3050,7 @@
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}" data-current-set-slug="${escapeHtml(meta?.slug || '')}">
               <div class="hf-pdp-look__panel">
                 ${titleMarkup}
-                ${setPriceText ? `<p class="hf-pdp-look__set-price">${escapeHtml(setPriceText)}</p>` : ''}
+                ${setPricing ? `<p class="hf-pdp-look__set-price">${renderFeaturedSetPriceHtml(setPricing)}</p>` : ''}
                 ${colorPreviews}
                 <div class="hf-pdp-look__list" tabindex="0" role="region" aria-label="Lista de productos del look completo">
                   ${items.map(renderLookItem).join('')}
@@ -3071,7 +3095,7 @@
   const renderSetMobileCard = (set, variants = []) => {
     const href = buildCollectionUrl(set.slug);
     const imageUrl = getSetMobileImage(set);
-    const priceText = getSetTotalPriceText(set);
+    const pricing = getFeaturedSetPricing(set);
     const copyText = getSetCopy(set);
     return `
             <div class="hf-carousel__slide">
@@ -3083,7 +3107,7 @@
                   <div class="hf-product-item__body">
                     <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
                     <p class="small" style="margin-bottom: 8px;">${escapeHtml(copyText)}</p>
-                    ${renderSetPriceBlock(priceText)}
+                    ${renderSetPriceBlock(pricing)}
                   </div>
                 </a>
                 ${renderSetMobileColorRail(variants, set.slug)}
@@ -3097,7 +3121,7 @@
     if (!cardEl || !set) return;
     const title = set.name || '';
     const href = buildCollectionUrl(set.slug);
-    const priceText = getSetTotalPriceText(set);
+    const pricing = getFeaturedSetPricing(set);
     const copyText = getSetCopy(set);
 
     cardEl.dataset.currentSetSlug = set.slug || '';
@@ -3121,7 +3145,16 @@
     if (copyEl) copyEl.textContent = copyText;
 
     const priceEl = cardEl.querySelector('.hf-product-item__price');
-    if (priceEl) priceEl.textContent = priceText || '';
+    if (priceEl) priceEl.textContent = pricing?.priceText || '';
+
+    const priceOrigEl = cardEl.querySelector('.hf-product-item__price-original');
+    if (priceOrigEl) {
+      priceOrigEl.textContent = pricing?.originalText || '';
+      priceOrigEl.hidden = !pricing?.originalText;
+    }
+
+    const priceRowEl = cardEl.querySelector('.hf-product-item__price-row');
+    if (priceRowEl) priceRowEl.hidden = !pricing?.priceText;
 
     cardEl.querySelectorAll('[data-set-color-slug]').forEach(button => {
       button.setAttribute('aria-current', button.getAttribute('data-set-color-slug') === set.slug ? 'true' : 'false');
@@ -3133,7 +3166,7 @@
     const title = set.name || '';
     const href = buildCollectionUrl(set.slug);
     const heroUrl = getSetHeroImage(set);
-    const priceText = getSetTotalPriceText(set);
+    const pricing = getFeaturedSetPricing(set);
 
     lookEl.setAttribute('aria-label', title);
     lookEl.dataset.currentSetSlug = set.slug || '';
@@ -3148,8 +3181,8 @@
 
     const priceEl = lookEl.querySelector('.hf-pdp-look__set-price');
     if (priceEl) {
-      priceEl.textContent = priceText;
-      priceEl.hidden = !priceText;
+      priceEl.innerHTML = renderFeaturedSetPriceHtml(pricing);
+      priceEl.hidden = !pricing?.priceText;
     }
 
     lookEl.querySelectorAll('[data-set-color-slug]').forEach(button => {

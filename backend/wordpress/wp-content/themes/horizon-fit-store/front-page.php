@@ -2640,6 +2640,24 @@
         color: #111 !important;
       }
 
+      .hf-pdp-look__set-price {
+        margin: -8px 0 0;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        color: #320a5c;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+
+      .hf-pdp-look__set-price .hf-product-item__price-original {
+        font-size: 13px;
+        font-weight: 300;
+        color: #320a5c;
+        text-decoration: line-through;
+      }
+
       .hf-pdp-look__list {
         display: grid;
         gap: 0;
