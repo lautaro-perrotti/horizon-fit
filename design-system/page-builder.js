@@ -728,9 +728,14 @@
         }
 
         // Handle optional title
-        if (section.config?.title) {
+        const sectionTitle = section.config?.title || section.config?.mobileTitle || '';
+        if (sectionTitle) {
           const titleEl = sectionEl.querySelector('[data-section-title]');
-          if (titleEl) titleEl.textContent = section.config.title;
+          if (titleEl) titleEl.textContent = sectionTitle;
+          if (!section.config?.title && section.config?.mobileTitle) {
+            const headEl = sectionEl.querySelector('.hf-section-head');
+            if (headEl) headEl.classList.add('hf-section-head--mobile-only');
+          }
         } else {
           const headEl = sectionEl.querySelector('.hf-section-head');
           if (headEl) headEl.style.display = 'none';

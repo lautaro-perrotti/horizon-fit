@@ -277,6 +277,16 @@
       }
     }
 
+    .hf-section-head--mobile-only {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .hf-section-head--mobile-only {
+        display: grid !important;
+      }
+    }
+
     .h1 {
       font-size: var(--h1);
       letter-spacing: -.02em;
