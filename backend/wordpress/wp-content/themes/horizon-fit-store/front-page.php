@@ -6557,7 +6557,8 @@
       #conjuntos-destacados .hf-pdp-look__color-row,
       #home-pdp-look .hf-pdp-look__color-row {
         flex: 0 0 auto !important;
-        margin-bottom: 0 !important;
+        margin-top: 16px !important;
+        margin-bottom: 16px !important;
       }
 
       #conjuntos-destacados .hf-pdp-look__list,
