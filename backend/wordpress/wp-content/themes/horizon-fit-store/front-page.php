@@ -6542,6 +6542,26 @@
         transform-origin: center top !important;
         margin-bottom: -78px !important;
       }
+
+      #home-pdp-look .hf-pdp-look__panel {
+        display: flex !important;
+        flex-direction: column;
+        height: 48.75rem;
+        max-height: 48.75rem;
+        overflow: hidden;
+      }
+
+      #home-pdp-look .hf-pdp-look__color-row {
+        flex: 0 0 auto;
+        margin-bottom: 0 !important;
+      }
+
+      #home-pdp-look .hf-pdp-look__list {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: auto !important;
+        overflow-y: auto;
+      }
     }
 
     /* Desktop: mismo botón circular, flecha gris. */
