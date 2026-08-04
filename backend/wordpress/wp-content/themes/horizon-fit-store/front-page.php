@@ -6542,6 +6542,31 @@
         transform-origin: center top !important;
         margin-bottom: -78px !important;
       }
+
+      #conjuntos-destacados .hf-pdp-look__panel,
+      #home-pdp-look .hf-pdp-look__panel {
+        top: 0 !important;
+        transform: none !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      #conjuntos-destacados .hf-pdp-look__color-row,
+      #home-pdp-look .hf-pdp-look__color-row {
+        flex: 0 0 auto !important;
+        margin-bottom: 0 !important;
+      }
+
+      #conjuntos-destacados .hf-pdp-look__list,
+      #home-pdp-look .hf-pdp-look__list {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        height: auto !important;
+        overflow-y: auto !important;
+      }
     }
 
     /* Desktop: mismo botón circular, flecha gris. */
