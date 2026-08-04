@@ -6545,10 +6545,11 @@
 
       #conjuntos-destacados .hf-pdp-look__panel,
       #home-pdp-look .hf-pdp-look__panel {
-        top: 0 !important;
+        top: 16px !important;
+        bottom: 16px !important;
         transform: none !important;
-        height: 100% !important;
-        max-height: 100% !important;
+        height: auto !important;
+        max-height: calc(100% - 32px) !important;
         overflow: hidden !important;
         display: flex !important;
         flex-direction: column !important;
@@ -6557,8 +6558,7 @@
       #conjuntos-destacados .hf-pdp-look__color-row,
       #home-pdp-look .hf-pdp-look__color-row {
         flex: 0 0 auto !important;
-        margin-top: 16px !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 0 !important;
       }
 
       #conjuntos-destacados .hf-pdp-look__list,
