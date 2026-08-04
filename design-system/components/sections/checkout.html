@@ -1,11 +1,58 @@
-<section class="hf-checkout-view" data-checkout-page hidden role="main" aria-label="Checkout">
-  <div class="hf-checkout-view__shell">
-    <div class="hf-checkout-view__intro">
-      <p class="hf-checkout-view__kicker">Horizon Fit</p>
-      <h1 class="hf-checkout-view__title">Checkout</h1>
-    </div>
+<section class="hf-checkout-view" data-checkout-page hidden aria-label="Checkout">
+  <div class="hf-checkout-view__intro">
+    <h1 class="hf-checkout-view__title">Checkout</h1>
+  </div>
 
-    <div class="hf-checkout-view__grid">
+  <template data-checkout-summary-template>
+    <div class="hf-checkout-view__summary-content">
+      <div class="hf-checkout-view__section-head">
+        <span class="hf-checkout-view__section-kicker">Resumen</span>
+        <strong class="hf-checkout-view__section-title">Tu pedido</strong>
+      </div>
+
+      <div class="hf-checkout-view__session">
+        <div>
+          <span class="hf-checkout-view__session-label">Sesion</span>
+          <strong data-checkout-session-status>Verificando...</strong>
+        </div>
+        <p class="hf-checkout-view__session-name" data-checkout-session-name>Cliente</p>
+        <p class="hf-checkout-view__session-email" data-checkout-session-email></p>
+      </div>
+
+      <div class="hf-checkout-view__items" data-checkout-order-items></div>
+      <p class="hf-checkout-view__empty" data-checkout-empty>Tu carrito esta vacio. Volve a la tienda para agregar productos.</p>
+
+      <div class="hf-checkout-view__totals">
+        <div><span>Subtotal</span><strong data-checkout-subtotal>$ 0,00</strong></div>
+        <div><span>Envio</span><strong data-checkout-shipping>Se calcula despues</strong></div>
+        <div class="hf-checkout-view__totals-final"><span>Total</span><strong data-checkout-total>$ 0,00</strong></div>
+      </div>
+
+      <div class="hf-checkout-view__summary-links">
+        <a class="btn btn--secondary" href="/">Seguir comprando</a>
+        <a class="hf-checkout-view__secondary-link" href="/mi-cuenta/">Mi cuenta</a>
+      </div>
+    </div>
+  </template>
+
+  <div class="hf-checkout-view__mobile-summary">
+    <button class="hf-checkout-view__mobile-summary-toggle" type="button" data-checkout-summary-toggle
+      aria-expanded="false" aria-controls="checkoutMobileSummaryPanel">
+      <span>
+        Resumen del pedido
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6"></path>
+        </svg>
+      </span>
+      <strong data-checkout-mobile-total>$ 0,00</strong>
+    </button>
+    <div class="hf-checkout-view__mobile-summary-panel" id="checkoutMobileSummaryPanel"
+      data-checkout-mobile-summary-panel hidden></div>
+  </div>
+
+  <div class="hf-checkout-view__grid">
+    <div class="hf-checkout-view__form-column">
       <form class="hf-checkout-view__panel hf-checkout-view__form" data-checkout-form>
         <div class="hf-checkout-view__section">
           <div class="hf-checkout-view__section-head">
@@ -76,27 +123,27 @@
             </label>
             <label class="hf-checkout-view__field">
               <span>Direccion</span>
-              <input data-checkout-field="shipping.address_1" type="text" name="shipping_address_1" autocomplete="address-line1">
+              <input data-checkout-field="shipping.address_1" type="text" name="shipping_address_1" autocomplete="shipping address-line1">
             </label>
             <label class="hf-checkout-view__field">
               <span>Depto / piso</span>
-              <input data-checkout-field="shipping.address_2" type="text" name="shipping_address_2" autocomplete="address-line2">
+              <input data-checkout-field="shipping.address_2" type="text" name="shipping_address_2" autocomplete="shipping address-line2">
             </label>
             <label class="hf-checkout-view__field">
               <span>Ciudad</span>
-              <input data-checkout-field="shipping.city" type="text" name="shipping_city" autocomplete="address-level2">
+              <input data-checkout-field="shipping.city" type="text" name="shipping_city" autocomplete="shipping address-level2">
             </label>
             <label class="hf-checkout-view__field">
               <span>Provincia</span>
-              <input data-checkout-field="shipping.state" type="text" name="shipping_state" autocomplete="address-level1">
+              <input data-checkout-field="shipping.state" type="text" name="shipping_state" autocomplete="shipping address-level1">
             </label>
             <label class="hf-checkout-view__field">
               <span>Codigo postal</span>
-              <input data-checkout-field="shipping.postcode" type="text" name="shipping_postcode" autocomplete="postal-code">
+              <input data-checkout-field="shipping.postcode" type="text" name="shipping_postcode" autocomplete="shipping postal-code">
             </label>
             <label class="hf-checkout-view__field">
               <span>Pais</span>
-              <input data-checkout-field="shipping.country" type="text" name="shipping_country" autocomplete="country-name">
+              <input data-checkout-field="shipping.country" type="text" name="shipping_country" autocomplete="shipping country-name">
             </label>
           </div>
         </div>
@@ -122,39 +169,14 @@
             <input name="customer_password" type="password" autocomplete="new-password" placeholder="Solo si queres crear cuenta">
           </label>
           <button class="btn btn--primary hf-checkout-view__submit" data-checkout-submit type="submit">Finalizar compra</button>
-          <p class="hf-checkout-view__status" data-checkout-status></p>
+          <p class="hf-checkout-view__status" data-checkout-status aria-live="polite"></p>
         </div>
       </form>
 
-      <aside class="hf-checkout-view__panel hf-checkout-view__summary">
-        <div class="hf-checkout-view__section-head">
-          <span class="hf-checkout-view__section-kicker">Resumen</span>
-          <strong class="hf-checkout-view__section-title">Tu pedido</strong>
-        </div>
-
-        <div class="hf-checkout-view__session">
-          <div>
-            <span class="hf-checkout-view__session-label">Sesion</span>
-            <strong data-checkout-session-status>Verificando...</strong>
-          </div>
-          <p class="hf-checkout-view__session-name" data-checkout-session-name>Cliente</p>
-          <p class="hf-checkout-view__session-email" data-checkout-session-email></p>
-        </div>
-
-        <div class="hf-checkout-view__items" data-checkout-order-items></div>
-        <p class="hf-checkout-view__empty" data-checkout-empty>Tu carrito esta vacio. Volve a la tienda para agregar productos.</p>
-
-        <div class="hf-checkout-view__totals">
-          <div><span>Subtotal</span><strong data-checkout-subtotal>$ 0,00</strong></div>
-          <div><span>Envio</span><strong data-checkout-shipping>Se calcula despues</strong></div>
-          <div class="hf-checkout-view__totals-final"><span>Total</span><strong data-checkout-total>$ 0,00</strong></div>
-        </div>
-
-        <div class="hf-checkout-view__summary-links">
-          <a class="btn btn--secondary" href="/">Seguir comprando</a>
-          <a class="hf-checkout-view__secondary-link" href="/mi-cuenta/">Mi cuenta</a>
-        </div>
-      </aside>
     </div>
+
+    <aside class="hf-checkout-view__summary-rail" aria-label="Resumen del pedido">
+      <div class="hf-checkout-view__panel hf-checkout-view__summary" data-checkout-desktop-summary></div>
+    </aside>
   </div>
 </section>

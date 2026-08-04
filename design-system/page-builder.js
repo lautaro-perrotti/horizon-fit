@@ -3562,17 +3562,29 @@ ${renderFeaturedSetPriceHtml(pricing)}
     sectionEl.hidden = false;
     root.appendChild(sectionEl);
 
+    const summaryTemplate = sectionEl.querySelector('[data-checkout-summary-template]');
+    const summaryMounts = [
+      sectionEl.querySelector('[data-checkout-desktop-summary]'),
+      sectionEl.querySelector('[data-checkout-mobile-summary-panel]')
+    ].filter(Boolean);
+    if (summaryTemplate) {
+      summaryMounts.forEach(mount => {
+        mount.appendChild(summaryTemplate.content.cloneNode(true));
+      });
+    }
+
     const checkoutForm = sectionEl.querySelector('[data-checkout-form]');
-    const sessionName = sectionEl.querySelector('[data-checkout-session-name]');
-    const sessionEmail = sectionEl.querySelector('[data-checkout-session-email]');
-    const sessionStatus = sectionEl.querySelector('[data-checkout-session-status]');
+    const sessionNames = Array.from(sectionEl.querySelectorAll('[data-checkout-session-name]'));
+    const sessionEmails = Array.from(sectionEl.querySelectorAll('[data-checkout-session-email]'));
+    const sessionStatuses = Array.from(sectionEl.querySelectorAll('[data-checkout-session-status]'));
     const paymentList = sectionEl.querySelector('[data-checkout-payment-methods]');
     const paymentHint = sectionEl.querySelector('[data-checkout-payment-hint]');
-    const orderList = sectionEl.querySelector('[data-checkout-order-items]');
-    const subtotalEl = sectionEl.querySelector('[data-checkout-subtotal]');
-    const totalEl = sectionEl.querySelector('[data-checkout-total]');
-    const shippingEl = sectionEl.querySelector('[data-checkout-shipping]');
-    const emptyState = sectionEl.querySelector('[data-checkout-empty]');
+    const orderLists = Array.from(sectionEl.querySelectorAll('[data-checkout-order-items]'));
+    const subtotalEls = Array.from(sectionEl.querySelectorAll('[data-checkout-subtotal]'));
+    const totalEls = Array.from(sectionEl.querySelectorAll('[data-checkout-total]'));
+    const shippingEls = Array.from(sectionEl.querySelectorAll('[data-checkout-shipping]'));
+    const emptyStates = Array.from(sectionEl.querySelectorAll('[data-checkout-empty]'));
+    const mobileTotalEl = sectionEl.querySelector('[data-checkout-mobile-total]');
     const submitBtn = sectionEl.querySelector('[data-checkout-submit]');
     const statusEl = sectionEl.querySelector('[data-checkout-status]');
     const sameAddressToggle = sectionEl.querySelector('[data-checkout-same-address]');
@@ -3582,6 +3594,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const createAccountToggle = sectionEl.querySelector('[data-checkout-create-account]');
     const passwordRow = sectionEl.querySelector('[data-checkout-password-row]');
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
+    const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
+    const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
     const fields = new Map();
     sectionEl.querySelectorAll('[data-checkout-field]').forEach(input => {
       const key = input.getAttribute('data-checkout-field');
@@ -3639,13 +3653,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     const updateOrderSummary = (cart) => {
       const items = Array.isArray(cart?.items) ? cart.items : [];
-      if (!orderList) return;
+      const currency = getCartCurrency(cart);
       if (!items.length) {
-        orderList.innerHTML = '<p class="hf-checkout-view__empty-note">Tu carrito esta vacio.</p>';
-        if (emptyState) emptyState.hidden = false;
+        orderLists.forEach(orderList => {
+          orderList.innerHTML = '<p class="hf-checkout-view__empty-note">Tu carrito esta vacio.</p>';
+        });
+        emptyStates.forEach(emptyState => {
+          emptyState.hidden = false;
+        });
         if (submitBtn) submitBtn.disabled = true;
       } else {
-        orderList.innerHTML = items.map(item => {
+        const orderMarkup = items.map(item => {
           const image = getCartItemImage(item);
           return `
             <div class="hf-checkout-view__order-item">
@@ -3654,20 +3672,36 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))}</strong>
                 <span>${escapeHtml(getCartItemDetails(item) || `Cantidad: ${item.quantity || 1}`)}</span>
               </div>
-              <strong class="hf-checkout-view__order-price">${escapeHtml(formatStoreMoney(item?.totals?.line_total || 0, getCartCurrency(cart)))}</strong>
+              <strong class="hf-checkout-view__order-price">${escapeHtml(formatStoreMoney(item?.totals?.line_total || 0, currency))}</strong>
             </div>
           `;
         }).join('');
-        if (emptyState) emptyState.hidden = true;
+        orderLists.forEach(orderList => {
+          orderList.innerHTML = orderMarkup;
+        });
+        emptyStates.forEach(emptyState => {
+          emptyState.hidden = true;
+        });
         if (submitBtn) submitBtn.disabled = false;
       }
-      if (subtotalEl) subtotalEl.textContent = formatStoreMoney(cart?.totals?.total_items || 0, getCartCurrency(cart));
-      if (shippingEl) {
-        const shippingValue = cart?.totals?.total_shipping;
-        shippingEl.textContent = shippingValue === null || shippingValue === undefined ? 'Se calcula despues' : formatStoreMoney(shippingValue || 0, getCartCurrency(cart));
-      }
-      if (totalEl) totalEl.textContent = formatStoreMoney(cart?.totals?.total_price || 0, getCartCurrency(cart));
+      const subtotalText = formatStoreMoney(cart?.totals?.total_items || 0, currency);
+      const shippingValue = cart?.totals?.total_shipping;
+      const shippingText = shippingValue === null || shippingValue === undefined
+        ? 'Se calcula despues'
+        : formatStoreMoney(shippingValue || 0, currency);
+      const totalText = formatStoreMoney(cart?.totals?.total_price || 0, currency);
+      subtotalEls.forEach(el => { el.textContent = subtotalText; });
+      shippingEls.forEach(el => { el.textContent = shippingText; });
+      totalEls.forEach(el => { el.textContent = totalText; });
+      if (mobileTotalEl) mobileTotalEl.textContent = totalText;
     };
+
+    mobileSummaryToggle?.addEventListener('click', () => {
+      if (!mobileSummaryPanel) return;
+      const expanded = mobileSummaryToggle.getAttribute('aria-expanded') === 'true';
+      mobileSummaryToggle.setAttribute('aria-expanded', `${!expanded}`);
+      mobileSummaryPanel.hidden = expanded;
+    });
 
     const refreshCheckout = async () => {
       const [cart, options, session] = await Promise.all([
@@ -3684,13 +3718,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
         }
       };
       if (session?.loggedIn) {
-        if (sessionName) sessionName.textContent = session.displayName || 'Cliente';
-        if (sessionEmail) sessionEmail.textContent = session.email || '';
-        if (sessionStatus) sessionStatus.textContent = 'Sesion activa';
+        sessionNames.forEach(el => { el.textContent = session.displayName || 'Cliente'; });
+        sessionEmails.forEach(el => { el.textContent = session.email || ''; });
+        sessionStatuses.forEach(el => { el.textContent = 'Sesion activa'; });
         if (createAccountRow) createAccountRow.hidden = true;
         if (passwordRow) passwordRow.hidden = true;
       } else {
-        if (sessionStatus) sessionStatus.textContent = 'Sesion de invitado';
+        sessionStatuses.forEach(el => { el.textContent = 'Sesion de invitado'; });
         if (createAccountRow) createAccountRow.hidden = false;
         if (createAccountToggle) {
           createAccountToggle.checked = false;
