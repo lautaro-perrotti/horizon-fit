@@ -2981,10 +2981,12 @@
       @media (min-width: 1024px) {
         .hf-pdp-look {
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: flex-end;
           position: relative;
-          min-height: 48.75rem;
+          height: clamp(560px, calc(100svh - var(--nav-h) - var(--announce-h) - 170px), 740px);
+          min-height: 560px;
+          max-height: 740px;
           padding: 0;
           margin-top: 3.25rem;
           overflow: visible;
@@ -2993,18 +2995,24 @@
         .hf-pdp-look__panel {
           position: absolute;
           left: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 26rem;
-          height: auto;
+          top: 0;
+          bottom: 0;
+          transform: none;
+          width: clamp(22rem, 27vw, 26rem);
+          height: 100%;
           min-height: 0;
           margin-left: 0;
           box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
           z-index: 10;
+          overflow: hidden;
+          grid-template-rows: auto auto auto minmax(0, 1fr);
+          gap: clamp(10px, 1.1vw, 18px);
+          box-sizing: border-box;
         }
 
         .hf-pdp-look__list {
-          height: 531px;
+          height: auto;
+          min-height: 0;
           overflow-y: auto;
           padding-right: 12px;
           scrollbar-width: thin;
@@ -3030,7 +3038,8 @@
 
         .hf-pdp-look__visual {
           width: 82%;
-          min-height: 48.75rem;
+          height: 100%;
+          min-height: 0;
         }
 
         @media (max-width: 1379px) {
@@ -6538,9 +6547,12 @@
       #home-pdp-look .hf-pdp-look {
         padding: 0 !important;
         margin: 0;
-        transform: scale(0.9) !important;
+        height: clamp(560px, calc(100svh - var(--nav-h) - var(--announce-h) - 170px), 740px) !important;
+        min-height: 560px !important;
+        max-height: 740px !important;
+        transform: none !important;
         transform-origin: center top !important;
-        margin-bottom: -78px !important;
+        margin-bottom: 0 !important;
       }
     }
 
