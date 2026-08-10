@@ -2300,7 +2300,12 @@
     const data = await response.json().catch(() => null);
     if (!response.ok) {
       const message = data?.message || data?.errors?.[0]?.message || `Woo Store API error ${response.status}`;
-      throw new Error(decodeEntities(message));
+      const decodedMessage = decodeEntities(message);
+      const translatedMessage = decodedMessage.replace(
+        /^The minimum quantity of "(.+)" allowed in the cart is ([0-9.,]+)\.?$/i,
+        'La cantidad mínima permitida de "$1" en el carrito es $2.'
+      );
+      throw new Error(translatedMessage);
     }
     return data;
   };
@@ -2365,13 +2370,28 @@
       .join(' / ');
   };
 
+  const cartHasItems = (cart = commerceState.cart) => {
+    const items = Array.isArray(cart?.items) ? cart.items : [];
+    return items.some(item => Number(item?.quantity || 0) > 0);
+  };
+
+  const updateCheckoutButtonState = (cart = commerceState.cart) => {
+    const checkoutButton = document.querySelector('#goCheckoutBtn');
+    if (!checkoutButton) return;
+    const isDisabled = commerceState.busy || !cartHasItems(cart);
+    checkoutButton.disabled = isDisabled;
+    checkoutButton.setAttribute('aria-disabled', `${isDisabled}`);
+    checkoutButton.title = !cartHasItems(cart) ? 'Agrega un producto para ir al checkout.' : '';
+  };
+
   const setCartBusy = (isBusy) => {
     commerceState.busy = isBusy;
-    document.querySelectorAll('[data-cart-action], #applyCouponBtn, #goCheckoutBtn')
+    document.querySelectorAll('[data-cart-action], #applyCouponBtn')
       .forEach(el => {
         if (isBusy) el.setAttribute('disabled', '');
         else el.removeAttribute('disabled');
       });
+    updateCheckoutButtonState();
   };
 
   const renderCartDrawer = (cart = commerceState.cart, message = '') => {
@@ -2393,6 +2413,7 @@
     }
 
     const items = Array.isArray(cart?.items) ? cart.items : [];
+    updateCheckoutButtonState(cart);
     if (empty) empty.hidden = items.length > 0;
     if (subtotal) subtotal.textContent = formatStoreMoney(cart?.totals?.total_items || cart?.totals?.total_price || 0, getCartCurrency(cart));
     if (couponHint) couponHint.textContent = message || 'Tip: proba HF-15';
@@ -2669,7 +2690,7 @@
             await mutateCart('/cart/update-item', { key, quantity: Number(action.dataset.quantity || 0) }, 'Carrito actualizado.');
           }
           if (action.dataset.cartAction === 'remove' && key) {
-            await mutateCart('/cart/remove-item', { key }, 'Producto eliminado.');
+            await mutateCart('/cart/remove-item', { key });
           }
           if (action.dataset.cartAction === 'remove-coupon' && code) {
             await mutateCart('/cart/remove-coupon', { code }, 'Cupon eliminado.');
@@ -2697,7 +2718,7 @@
 
     checkoutButton?.addEventListener('click', async (event) => {
       event.preventDefault();
-      if (!commerceState.cart || Number(commerceState.cart.items_count || 0) === 0) {
+      if (!cartHasItems()) {
         renderCartDrawer(commerceState.cart, 'Agrega un producto para ir al checkout.');
         return;
       }
@@ -3574,11 +3595,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     }
 
     const checkoutForm = sectionEl.querySelector('[data-checkout-form]');
-    const sessionNames = Array.from(sectionEl.querySelectorAll('[data-checkout-session-name]'));
-    const sessionEmails = Array.from(sectionEl.querySelectorAll('[data-checkout-session-email]'));
-    const sessionStatuses = Array.from(sectionEl.querySelectorAll('[data-checkout-session-status]'));
     const paymentList = sectionEl.querySelector('[data-checkout-payment-methods]');
-    const paymentHint = sectionEl.querySelector('[data-checkout-payment-hint]');
     const orderLists = Array.from(sectionEl.querySelectorAll('[data-checkout-order-items]'));
     const subtotalEls = Array.from(sectionEl.querySelectorAll('[data-checkout-subtotal]'));
     const totalEls = Array.from(sectionEl.querySelectorAll('[data-checkout-total]'));
@@ -3588,8 +3605,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const submitBtn = sectionEl.querySelector('[data-checkout-submit]');
     const statusEl = sectionEl.querySelector('[data-checkout-status]');
     const sameAddressToggle = sectionEl.querySelector('[data-checkout-same-address]');
-    const billingSection = sectionEl.querySelector('[data-checkout-billing]');
-    const shippingSection = sectionEl.querySelector('[data-checkout-shipping-fields]');
+    const billingFields = sectionEl.querySelector('[data-checkout-billing-fields]');
     const createAccountRow = sectionEl.querySelector('[data-checkout-create-account-row]');
     const createAccountToggle = sectionEl.querySelector('[data-checkout-create-account]');
     const passwordRow = sectionEl.querySelector('[data-checkout-password-row]');
@@ -3605,7 +3621,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const setFieldValues = (prefix, values = {}) => {
       Object.entries(values || {}).forEach(([key, value]) => {
         const input = fields.get(`${prefix}.${key}`);
-        if (input && value !== undefined && value !== null) {
+        if (input && value !== undefined && value !== null && `${value}` !== '') {
           input.value = `${value}`;
         }
       });
@@ -3624,18 +3640,29 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const renderPaymentMethods = (methods = [], defaultId = '') => {
       if (!paymentList) return;
       if (!methods.length) {
-        paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay metodos de pago disponibles.</p>';
-        if (paymentHint) paymentHint.textContent = 'Revisamos esto desde WooCommerce.';
+        paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
       }
       paymentList.innerHTML = methods.map((method, index) => {
         const checked = defaultId ? method.id === defaultId : index === 0;
+        const paymentCopy = {
+          bacs: {
+            title: 'Transferencia bancaria directa',
+            description: 'Realizá el pago directamente a nuestra cuenta bancaria. Usá el número de pedido como referencia. El pedido se procesará cuando se acredite la transferencia.'
+          },
+          cod: {
+            title: 'Pago contra entrega',
+            description: 'Pagá en efectivo al recibir tu pedido.'
+          }
+        }[method.id] || {};
+        const title = paymentCopy.title || method.title || method.id || 'Pago';
+        const description = paymentCopy.description || method.description || '';
         return `
           <label class="hf-checkout-view__payment">
             <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''}>
             <span>
-              <strong>${escapeHtml(method.title || method.id || 'Pago')}</strong>
-              ${method.description ? `<small>${escapeHtml(method.description)}</small>` : ''}
+              <strong>${escapeHtml(title)}</strong>
+              ${description ? `<small>${escapeHtml(description)}</small>` : ''}
             </span>
           </label>
         `;
@@ -3656,7 +3683,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const currency = getCartCurrency(cart);
       if (!items.length) {
         orderLists.forEach(orderList => {
-          orderList.innerHTML = '<p class="hf-checkout-view__empty-note">Tu carrito esta vacio.</p>';
+          orderList.innerHTML = '';
         });
         emptyStates.forEach(emptyState => {
           emptyState.hidden = false;
@@ -3687,7 +3714,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const subtotalText = formatStoreMoney(cart?.totals?.total_items || 0, currency);
       const shippingValue = cart?.totals?.total_shipping;
       const shippingText = shippingValue === null || shippingValue === undefined
-        ? 'Se calcula despues'
+        ? 'Se calcula después'
         : formatStoreMoney(shippingValue || 0, currency);
       const totalText = formatStoreMoney(cart?.totals?.total_price || 0, currency);
       subtotalEls.forEach(el => { el.textContent = subtotalText; });
@@ -3712,29 +3739,23 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
       updateOrderSummary(cart);
       renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '');
+
       const syncAccountCreationUI = () => {
         if (passwordRow) {
           passwordRow.hidden = Boolean(session?.loggedIn) || !Boolean(createAccountToggle?.checked);
         }
       };
-      if (session?.loggedIn) {
-        sessionNames.forEach(el => { el.textContent = session.displayName || 'Cliente'; });
-        sessionEmails.forEach(el => { el.textContent = session.email || ''; });
-        sessionStatuses.forEach(el => { el.textContent = 'Sesion activa'; });
-        if (createAccountRow) createAccountRow.hidden = true;
-        if (passwordRow) passwordRow.hidden = true;
-      } else {
-        sessionStatuses.forEach(el => { el.textContent = 'Sesion de invitado'; });
-        if (createAccountRow) createAccountRow.hidden = false;
-        if (createAccountToggle) {
-          createAccountToggle.checked = false;
-          createAccountToggle.addEventListener('change', syncAccountCreationUI);
-        }
-        syncAccountCreationUI();
+      if (createAccountRow) createAccountRow.hidden = Boolean(session?.loggedIn);
+      if (createAccountToggle) {
+        createAccountToggle.checked = false;
+        createAccountToggle.addEventListener('change', syncAccountCreationUI);
       }
+      syncAccountCreationUI();
 
       const billing = cart?.billing_address || {};
-      const shipping = cart?.shipping_address || billing;
+      const shipping = cart?.shipping_address && Object.values(cart.shipping_address).some(Boolean)
+        ? cart.shipping_address
+        : billing;
       setFieldValues('billing', billing);
       setFieldValues('shipping', shipping);
       if (paymentMethodInput && options.defaultMethodId) {
@@ -3743,13 +3764,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
       if (sameAddressToggle) {
         sameAddressToggle.checked = true;
-        const syncShippingVisibility = () => {
-          if (billingSection && shippingSection) {
-            shippingSection.hidden = sameAddressToggle.checked;
-          }
+        const syncBillingVisibility = () => {
+          if (!billingFields) return;
+          const useDeliveryAddress = sameAddressToggle.checked;
+          billingFields.hidden = useDeliveryAddress;
+          billingFields.querySelectorAll('input, select, textarea').forEach(input => {
+            input.disabled = useDeliveryAddress;
+          });
         };
-        sameAddressToggle.addEventListener('change', syncShippingVisibility);
-        syncShippingVisibility();
+        sameAddressToggle.addEventListener('change', syncBillingVisibility);
+        syncBillingVisibility();
       }
     };
 
@@ -3759,8 +3783,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
         if (statusEl) statusEl.textContent = 'Procesando pedido...';
         if (submitBtn) submitBtn.disabled = true;
 
-        const billing_address = collectFieldValues('billing');
-        const shipping_address = sameAddressToggle?.checked ? billing_address : collectFieldValues('shipping');
+        const shipping_address = collectFieldValues('shipping');
+        const contactEmail = fields.get('billing.email')?.value.trim() || '';
+        const billing_address = sameAddressToggle?.checked
+          ? { ...shipping_address, email: contactEmail }
+          : collectFieldValues('billing');
         const paymentMethod = paymentMethodInput?.value || paymentList?.querySelector('input[type="radio"]:checked')?.value || '';
         const body = {
           billing_address,
@@ -3793,9 +3820,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
     }
 
     await refreshCheckout();
-    if (statusEl && !statusEl.textContent) {
-      statusEl.textContent = 'Checkout listo.';
-    }
   };
 
   const renderLostPasswordPage = (root, html) => {
@@ -4095,7 +4119,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const buttons = [addToCartButton, buyNowButton].filter(Boolean);
       buttons.forEach(button => button.setAttribute('disabled', ''));
       try {
-        await mutateCart('/cart/add-item', payload, 'Producto agregado.');
+        await mutateCart('/cart/add-item', payload);
         if (goCheckout) {
           const checkoutUrl = await syncCartForCheckout();
           window.location.assign(checkoutUrl);

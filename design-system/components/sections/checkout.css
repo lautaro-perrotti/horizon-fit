@@ -106,6 +106,45 @@ body.hf-checkout-mode .nav {
   gap: 12px;
 }
 
+.hf-checkout-view__contact-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hf-checkout-view__address-fields {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.hf-checkout-view__field--full {
+  grid-column: 1 / -1;
+}
+
+.hf-checkout-view__field--half {
+  grid-column: span 3;
+}
+
+.hf-checkout-view__field--third {
+  grid-column: span 2;
+}
+
+.hf-checkout-view__billing-fields {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.hf-checkout-view__billing-fields[hidden] {
+  display: none;
+}
+
+.hf-checkout-view__fields[hidden] {
+  display: none;
+}
+
+.hf-checkout-view__field[hidden],
+.hf-checkout-view__toggle[hidden] {
+  display: none;
+}
+
 .hf-checkout-view__field {
   display: grid;
   gap: 8px;
@@ -120,6 +159,7 @@ body.hf-checkout-mode .nav {
 }
 
 .hf-checkout-view__field input,
+.hf-checkout-view__field select,
 .hf-checkout-view__field textarea {
   width: 100%;
   min-height: 48px;
@@ -128,6 +168,10 @@ body.hf-checkout-mode .nav {
   background: #fff;
   padding: 12px 14px;
   color: var(--hf-ink, #1d1a1f);
+}
+
+.hf-checkout-view__field select {
+  appearance: auto;
 }
 
 .hf-checkout-view__field textarea {
@@ -207,36 +251,6 @@ body.hf-checkout-mode .nav {
 .hf-checkout-view__summary-content {
   display: grid;
   gap: 16px;
-}
-
-.hf-checkout-view__session {
-  display: grid;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(53, 0, 109, 0.04);
-}
-
-.hf-checkout-view__session-label {
-  display: block;
-  color: var(--hf-primary, #35006d);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.hf-checkout-view__session-name {
-  color: var(--hf-ink, #1d1a1f);
-  font-size: 16px;
-  font-weight: 800;
-}
-
-.hf-checkout-view__session-email {
-  color: var(--hf-muted, #64596f);
-  font-size: 13px;
-  word-break: break-word;
 }
 
 .hf-checkout-view__items {
@@ -381,7 +395,6 @@ body.hf-checkout-mode .nav {
   }
 
   .hf-checkout-view__mobile-summary-panel .hf-checkout-view__section-head,
-  .hf-checkout-view__mobile-summary-panel .hf-checkout-view__session,
   .hf-checkout-view__mobile-summary-panel .hf-checkout-view__summary-links {
     display: none;
   }
@@ -399,7 +412,7 @@ body.hf-checkout-mode .nav {
     display: none;
   }
 
-  .hf-checkout-view__fields {
+  .hf-checkout-view__fields:not(.hf-checkout-view__address-fields) {
     grid-template-columns: 1fr;
   }
 
