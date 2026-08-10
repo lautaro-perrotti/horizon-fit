@@ -40,7 +40,7 @@ body.hf-checkout-mode .nav {
 
 .hf-checkout-view__title {
   margin: 6px 0 8px;
-  color: var(--hf-ink, #1d1a1f);
+  color: #222222;
   font-size: clamp(24px, 2.4vw, 34px);
   line-height: 1;
   text-transform: uppercase;
