@@ -24,6 +24,10 @@ define('NONCE_SALT',       '#>|B2B+cFy5<5$M~4<}h#&d/|:+z,L!e(M%L7/k`5f5l^&M.z"g'
 $forwarded_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
   ? strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'])[0]))
   : '';
+if ($forwarded_proto === 'https') {
+  $_SERVER['HTTPS'] = 'on';
+  $_SERVER['SERVER_PORT'] = '443';
+}
 $is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || $forwarded_proto === 'https';
 $protocol = $is_https ? 'https' : (getenv('WP_PUBLIC_SCHEME') ?: 'http');
 $fallback_host = getenv('WP_PUBLIC_HOST') ?: 'localhost:8089';
