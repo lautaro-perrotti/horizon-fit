@@ -4087,9 +4087,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
         paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
       }
-      const selectedId = visibleMethods.some(method => method.id === defaultId)
-        ? defaultId
-        : visibleMethods[0].id;
+      const requestedDefault = visibleMethods.find(method => (
+        method.id === defaultId && method.id !== PAYWAY_GATEWAY_ID
+      ));
+      const fallbackDefault = visibleMethods.find(method => method.id !== PAYWAY_GATEWAY_ID);
+      const selectedId = requestedDefault?.id || fallbackDefault?.id || '';
       paymentList.innerHTML = visibleMethods.map((method) => {
         const checked = method.id === selectedId;
         const paymentCopy = {
@@ -4105,7 +4107,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           : '';
         return `
           <label class="hf-checkout-view__payment">
-            <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''}>
+            <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''} required>
             <span>
               <strong>${escapeHtml(title)}</strong>
               ${description ? `<small>${escapeHtml(description)}</small>` : ''}

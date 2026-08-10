@@ -206,6 +206,15 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
 
     $user = wp_get_current_user();
     $checkout = WC()->checkout();
+    $default_method_id = '';
+    foreach ($methods as $method) {
+        $method_id = isset($method['id']) ? (string) $method['id'] : '';
+        if ($method_id && ! in_array($method_id, array('payway_gateway', 'cod'), true)) {
+            $default_method_id = $method_id;
+            break;
+        }
+    }
+
     return rest_ensure_response(array(
         'loggedIn'         => is_user_logged_in(),
         'displayName'      => is_user_logged_in() ? (string) $user->display_name : '',
@@ -213,7 +222,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
         'registrationEnabled'  => $checkout ? (bool) $checkout->is_registration_enabled() : false,
         'registrationRequired' => $checkout ? (bool) $checkout->is_registration_required() : false,
         'paymentMethods'   => $methods,
-        'defaultMethodId'  => ! empty($methods[0]['id']) ? (string) $methods[0]['id'] : '',
+        'defaultMethodId'  => $default_method_id,
         'payway'           => $payway,
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
     ));
