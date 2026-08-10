@@ -28,7 +28,12 @@ function hf_footer_defaults() {
         ],
         'contactTitle'    => 'Contacto',
         'contactLines'    => ['WhatsApp: +54 9 11 0000 0000', 'hola@horizonfit.com', 'Lunes a viernes 9 a 18h'],
-        'social'          => ['instagram' => '#', 'tiktok' => '#', 'facebook' => '#', 'spotify' => '#'],
+        'social'          => [
+            'instagram' => 'https://www.instagram.com/horizonfit.oficial/',
+            'tiktok'    => 'https://www.tiktok.com/@horizon.fit',
+            'facebook'  => '#',
+            'spotify'   => '#',
+        ],
         'copyright'       => '© Horizon Fit 2026. Todos los derechos reservados.',
         'legalLinks'      => [
             ['text' => 'Terminos', 'url' => '#'],

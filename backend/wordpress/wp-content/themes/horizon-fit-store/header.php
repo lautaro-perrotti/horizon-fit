@@ -56,9 +56,9 @@
             <?php endforeach; ?>
         </nav>
         <div class="hf-drawer__social">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer noopener" aria-label="Instagram">Instagram</a>
+            <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noreferrer noopener" aria-label="Instagram">Instagram</a>
             <a href="https://facebook.com" target="_blank" rel="noreferrer noopener" aria-label="Facebook">Facebook</a>
-            <a href="https://tiktok.com" target="_blank" rel="noreferrer noopener" aria-label="TikTok">TikTok</a>
+            <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noreferrer noopener" aria-label="TikTok">TikTok</a>
             <a href="https://spotify.com" target="_blank" rel="noreferrer noopener" aria-label="Spotify">Spotify</a>
         </div>
     </aside>

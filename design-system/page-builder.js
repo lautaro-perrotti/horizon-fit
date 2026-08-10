@@ -1224,10 +1224,8 @@
     setText('[data-footer-contact-title]', settings.contactTitle);
     (settings.contactLines || []).forEach((line, i) => setText(`[data-footer-contact="${i}"]`, line));
 
-    const social = { ...SOCIAL_DEFAULT_LINKS, ...(settings.social || {}) };
-    ['instagram', 'tiktok', 'facebook', 'spotify'].forEach(net => {
-      setAttr(`[data-footer-social="${net}"]`, 'href', social[net]);
-    });
+    const social = resolveSocialLinks(settings.social);
+    applySocialLinks(social);
 
     setText('[data-footer-copyright]', settings.copyright);
     (settings.legalLinks || []).forEach((link, i) => {
@@ -1374,10 +1372,34 @@
   };
 
   const SOCIAL_DEFAULT_LINKS = {
-    instagram: 'https://www.instagram.com/',
-    tiktok: 'https://www.tiktok.com/',
+    instagram: 'https://www.instagram.com/horizonfit.oficial/',
+    tiktok: 'https://www.tiktok.com/@horizon.fit',
     facebook: 'https://www.facebook.com/',
     spotify: 'https://www.spotify.com/'
+  };
+
+  let activeSocialLinks = { ...SOCIAL_DEFAULT_LINKS };
+
+  const resolveSocialLinks = (links = {}) => Object.fromEntries(
+    Object.entries(SOCIAL_DEFAULT_LINKS).map(([network, fallback]) => {
+      const candidate = `${links?.[network] || ''}`.trim();
+      return [network, candidate && candidate !== '#' ? candidate : fallback];
+    })
+  );
+
+  const applySocialLinks = (links = {}) => {
+    activeSocialLinks = resolveSocialLinks({ ...activeSocialLinks, ...links });
+    Object.entries(activeSocialLinks).forEach(([network, href]) => {
+      document.querySelectorAll([
+        `[data-footer-social="${network}"]`,
+        `[data-social-link="${network}"]`,
+        `[data-nav-social="${network}"]`
+      ].join(',')).forEach(link => {
+        link.setAttribute('href', href);
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      });
+    });
   };
 
   // "#HorizonFit": textos, posts y redes editables desde wp-admin/cache.
@@ -1401,7 +1423,8 @@
     setText('[data-social-foot-label]', cfg.footLabel);
     setText('[data-social-foot-handle]', cfg.footHandle);
     setAttr('[data-social-foot-icon-alt]', 'alt', cfg.footIconAlt);
-    setAttr('[data-social-foot-link]', 'href', cfg.footLink || SOCIAL_DEFAULT_LINKS.instagram);
+    const footLink = `${cfg.footLink || ''}`.trim();
+    setAttr('[data-social-foot-link]', 'href', footLink && footLink !== '#' ? footLink : activeSocialLinks.instagram);
     setAttr('[data-social-foot-link]', 'aria-label', cfg.footLinkLabel || cfg.footIconAlt);
     setAttr('[data-social-links-label]', 'aria-label', cfg.linksLabel);
 
@@ -1413,12 +1436,14 @@
         if (imgEl && post?.image) imgEl.setAttribute('src', resolveMediaUrl(post.image));
         if (imgEl && post?.alt) imgEl.setAttribute('alt', post.alt);
         if (userEl && post?.user) userEl.textContent = post.user;
-        if (cardEl) cardEl.setAttribute('href', post?.link || SOCIAL_DEFAULT_LINKS.instagram);
+        const postLink = `${post?.link || ''}`.trim();
+        if (cardEl) cardEl.setAttribute('href', postLink && postLink !== '#' ? postLink : activeSocialLinks.instagram);
         if (cardEl && post?.label) cardEl.setAttribute('aria-label', post.label);
       });
     }
 
-    const socialLinks = { ...SOCIAL_DEFAULT_LINKS, ...(cfg.social || cfg.links || {}) };
+    const socialLinks = resolveSocialLinks({ ...activeSocialLinks, ...(cfg.social || cfg.links || {}) });
+    applySocialLinks(socialLinks);
     const socialLabels = cfg.socialLabels || {};
     ['instagram', 'tiktok', 'facebook', 'spotify'].forEach(net => {
       setAttr(`[data-social-link="${net}"]`, 'href', socialLinks[net]);

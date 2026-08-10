@@ -17,9 +17,9 @@
             <div>
                 <h3><?php esc_html_e('Seguinos', 'horizon-fit-store'); ?></h3>
                 <div class="hf-footer__social">
-                    <a href="https://instagram.com" target="_blank" rel="noreferrer noopener">Instagram</a>
+                    <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noreferrer noopener">Instagram</a>
                     <a href="https://facebook.com" target="_blank" rel="noreferrer noopener">Facebook</a>
-                    <a href="https://tiktok.com" target="_blank" rel="noreferrer noopener">TikTok</a>
+                    <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noreferrer noopener">TikTok</a>
                     <a href="https://spotify.com" target="_blank" rel="noreferrer noopener">Spotify</a>
                 </div>
             </div>
