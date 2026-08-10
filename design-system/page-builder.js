@@ -3808,7 +3808,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const billingFields = sectionEl.querySelector('[data-checkout-billing-fields]');
     const createAccountRow = sectionEl.querySelector('[data-checkout-create-account-row]');
     const createAccountToggle = sectionEl.querySelector('[data-checkout-create-account]');
-    const passwordRow = sectionEl.querySelector('[data-checkout-password-row]');
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
@@ -3940,14 +3939,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
       updateOrderSummary(cart);
       renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '');
 
-      const syncAccountCreationUI = () => {
-        const registrationAvailable = Boolean(options.registrationEnabled || options.registrationRequired);
-        if (passwordRow) {
-          passwordRow.hidden = Boolean(session?.loggedIn)
-            || !registrationAvailable
-            || !Boolean(createAccountToggle?.checked);
-        }
-      };
       const registrationRequired = Boolean(options.registrationRequired);
       const registrationAvailable = Boolean(options.registrationEnabled || registrationRequired);
       if (createAccountRow) {
@@ -3956,9 +3947,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       if (createAccountToggle) {
         createAccountToggle.checked = registrationRequired;
         createAccountToggle.disabled = Boolean(session?.loggedIn) || !registrationAvailable;
-        createAccountToggle.addEventListener('change', syncAccountCreationUI);
       }
-      syncAccountCreationUI();
 
       const billing = cart?.billing_address || {};
       const shipping = cart?.shipping_address && Object.values(cart.shipping_address).some(Boolean)
@@ -4009,10 +3998,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
             'horizon-fit-commerce/email-marketing': Boolean(sectionEl.querySelector('[name="email_marketing"]')?.checked)
           }
         };
-        const customerPassword = `${sectionEl.querySelector('[name="customer_password"]')?.value || ''}`.trim();
-        if (customerPassword) {
-          body.customer_password = customerPassword;
-        }
 
         try {
           const response = await storeApiFetch('/checkout', { method: 'POST', body });
