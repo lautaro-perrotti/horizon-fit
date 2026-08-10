@@ -918,6 +918,9 @@
       });
       initNavbarScroll();
       initBrandSwap();
+      // Los grids ya tienen sus productos: recalcular controles en el primer
+      // pintado y cablear cualquier carrusel inyectado de forma asíncrona.
+      if (typeof window.initCarousels === 'function') window.initCarousels();
       console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
       document.documentElement.dataset.pageBuilderReady = 'true';
     } catch (e) {

@@ -5037,7 +5037,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=home-sidebar-scroll-20260810"></script>
+  <script src="/design-system/page-builder.js?v=product-slider-init-20260810"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
@@ -5070,63 +5070,130 @@
         var prevBtn = shell.querySelector('[data-dir="-1"]');
         var nextBtn = shell.querySelector('[data-dir="1"]');
         if (!grid || !prevBtn || !nextBtn) return;
-        if (shell.dataset.carouselReady === 'true') return;
-        shell.dataset.carouselReady = 'true';
+
+        // Puede ejecutarse antes y después de que page-builder inyecte las
+        // cards. Si ya está cableado, refrescar medidas en lugar de salir sin
+        // actualizar los controles.
+        if (shell._hfProductCarousel && shell._hfProductCarousel.grid === grid) {
+          shell._hfProductCarousel.refresh();
+          return;
+        }
+
+        // Si el grid fue reemplazado, liberar los observers/listeners viejos.
+        if (shell._hfProductCarousel && typeof shell._hfProductCarousel.destroy === 'function') {
+          shell._hfProductCarousel.destroy();
+        }
+
+        var controller = new AbortController();
+        var destroyed = false;
+        var rafId = null;
 
         function getItems() {
           return Array.prototype.slice.call(grid.querySelectorAll('.hf-product-item, .hf-buy-with__card'));
         }
 
-        function getMetrics() {
-          var items = getItems();
-          var item = items[0];
-          var gap = parseFloat(getComputedStyle(grid).gap) || 0;
-          var itemWidth = item ? item.getBoundingClientRect().width : 300;
-          var unit = itemWidth + gap;
-          var visible = unit > 0 ? Math.max(1, Math.round((grid.clientWidth + gap) / unit)) : 1;
-          return { items: items, gap: gap, itemWidth: itemWidth, unit: unit, visible: visible };
+        function getItemPositions() {
+          var gridRect = grid.getBoundingClientRect();
+          return getItems().map(function (item) {
+            return Math.max(0, item.getBoundingClientRect().left - gridRect.left + grid.scrollLeft);
+          });
         }
 
         function getAlignedScroll(dir) {
           var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-          var metrics = getMetrics();
-          var step = metrics.unit;
-          var currentPage = step > 0 ? Math.round(grid.scrollLeft / step) : 0;
-          var target = (currentPage + dir) * step;
+          var current = grid.scrollLeft;
+          var positions = getItemPositions();
+          var target;
+
+          if (dir > 0) {
+            target = positions.find(function (position) { return position > current + 2; });
+            if (typeof target === 'undefined') target = maxScroll;
+          } else {
+            target = positions.slice().reverse().find(function (position) { return position < current - 2; });
+            if (typeof target === 'undefined') target = 0;
+          }
+
           return Math.max(0, Math.min(maxScroll, target));
         }
 
         function updateControls() {
+          if (destroyed) return;
           var maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-          var canScroll = maxScroll > 2;
+          var canScroll = getItems().length > 1 && maxScroll > 2;
           var atStart = grid.scrollLeft <= 2;
           var atEnd = grid.scrollLeft >= (maxScroll - 2);
 
-          prevBtn.disabled = atStart;
+          prevBtn.disabled = !canScroll || atStart;
+          nextBtn.disabled = !canScroll || atEnd;
           nextBtn.classList.toggle('is-hidden', !canScroll || atEnd);
         }
 
-        prevBtn.addEventListener('click', function () {
-          grid.scrollTo({ left: getAlignedScroll(-1), behavior: 'smooth' });
-        });
-
-        nextBtn.addEventListener('click', function () {
-          grid.scrollTo({ left: getAlignedScroll(1), behavior: 'smooth' });
-        });
-
-        var rafId = null;
-        grid.addEventListener('scroll', function () {
-          if (rafId) return;
+        function scheduleUpdate() {
+          if (destroyed || rafId) return;
           rafId = requestAnimationFrame(function () {
             rafId = null;
             updateControls();
           });
-        });
+        }
 
-        window.addEventListener('resize', function () {
-          updateControls();
-        });
-        updateControls();
+        function scrollToAlignedPosition(direction) {
+          grid.scrollTo({
+            left: getAlignedScroll(direction),
+            // En desktop, scroll-snap mandatory + smooth puede demorar el
+            // inicio del movimiento. El salto alineado resulta inmediato y
+            // confiable; mobile conserva la transición suave.
+            behavior: window.matchMedia('(min-width: 1024px)').matches ? 'auto' : 'smooth'
+          });
+        }
+
+        prevBtn.addEventListener('click', function (event) {
+          event.preventDefault();
+          scrollToAlignedPosition(-1);
+          window.setTimeout(updateControls, 350);
+        }, { signal: controller.signal });
+
+        nextBtn.addEventListener('click', function (event) {
+          event.preventDefault();
+          scrollToAlignedPosition(1);
+          window.setTimeout(updateControls, 350);
+        }, { signal: controller.signal });
+
+        grid.addEventListener('scroll', scheduleUpdate, { passive: true, signal: controller.signal });
+
+        var mutationObserver = new MutationObserver(scheduleUpdate);
+        mutationObserver.observe(grid, { childList: true });
+
+        var resizeObserver = typeof ResizeObserver === 'function'
+          ? new ResizeObserver(scheduleUpdate)
+          : null;
+        if (resizeObserver) {
+          resizeObserver.observe(shell);
+          resizeObserver.observe(grid);
+        } else {
+          window.addEventListener('resize', scheduleUpdate, { signal: controller.signal });
+        }
+
+        shell.dataset.carouselReady = 'true';
+        shell._hfProductCarousel = {
+          grid: grid,
+          refresh: scheduleUpdate,
+          destroy: function () {
+            destroyed = true;
+            controller.abort();
+            mutationObserver.disconnect();
+            if (resizeObserver) resizeObserver.disconnect();
+            if (rafId) cancelAnimationFrame(rafId);
+            delete shell._hfProductCarousel;
+            delete shell.dataset.carouselReady;
+          }
+        };
+
+        scheduleUpdate();
+        window.setTimeout(scheduleUpdate, 0);
+        window.setTimeout(scheduleUpdate, 250);
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(scheduleUpdate);
+        }
       });
 
       initDataCarousels();
