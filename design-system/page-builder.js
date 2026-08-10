@@ -78,7 +78,7 @@
     ROOT: 'root',
     AFTER_ROOT: 'after-root'
   };
-  const WHATSAPP_DEFAULT_HREF = 'https://wa.me/5491100000000';
+  const WHATSAPP_DEFAULT_HREF = 'https://wa.me/541131150999?text=Hola%20Horizon%20Fit';
   const WHATSAPP_DEFAULT_LABEL = 'Escribinos por WhatsApp';
 
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
@@ -1375,7 +1375,7 @@
     instagram: 'https://www.instagram.com/horizonfit.oficial/',
     tiktok: 'https://www.tiktok.com/@horizon.fit',
     facebook: 'https://www.facebook.com/',
-    spotify: 'https://www.spotify.com/'
+    spotify: 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760'
   };
 
   let activeSocialLinks = { ...SOCIAL_DEFAULT_LINKS };

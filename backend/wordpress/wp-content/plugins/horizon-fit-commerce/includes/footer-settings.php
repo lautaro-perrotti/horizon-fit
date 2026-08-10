@@ -27,12 +27,12 @@ function hf_footer_defaults() {
             ['text' => 'Medios de pago', 'url' => '/medios-de-pago/'],
         ],
         'contactTitle'    => 'Contacto',
-        'contactLines'    => ['WhatsApp: +54 9 11 0000 0000', 'hola@horizonfit.com', 'Lunes a viernes 9 a 18h'],
+        'contactLines'    => ['WhatsApp: +54 11 3115-0999', 'hola@horizonfit.com', 'Lunes a viernes 9 a 18h'],
         'social'          => [
             'instagram' => 'https://www.instagram.com/horizonfit.oficial/',
             'tiktok'    => 'https://www.tiktok.com/@horizon.fit',
             'facebook'  => '#',
-            'spotify'   => '#',
+            'spotify'   => 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760',
         ],
         'copyright'       => '© Horizon Fit 2026. Todos los derechos reservados.',
         'legalLinks'      => [

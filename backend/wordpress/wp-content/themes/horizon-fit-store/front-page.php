@@ -7246,16 +7246,16 @@
       </div>
 
       <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
-        <a href="#" aria-label="Instagram">
+        <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
         </a>
         <a href="#" aria-label="Facebook">
           <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook">
         </a>
-        <a href="#" aria-label="TikTok">
+        <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
           <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok">
         </a>
-        <a href="#" aria-label="Spotify">
+        <a href="https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
           <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify">
         </a>
       </div>
@@ -8680,22 +8680,22 @@
         <div id="footerContact">
           <h4 class="footer__col-title">Contacto</h4>
           <div class="footer__links">
-            <span>WhatsApp: +54 9 11 0000 0000</span>
+            <span>WhatsApp: +54 11 3115-0999</span>
             <span>hola@horizonfit.com</span>
             <span>Lunes a viernes 9 a 18h</span>
           </div>
           <div class="menu-drawer__social" aria-label="Redes sociales"
             style="justify-content: flex-start; margin-top: 16px;">
-            <a href="#" aria-label="Instagram">
+            <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="Instagram">
             </a>
             <a href="#" aria-label="Facebook">
               <img src="https://cdn.simpleicons.org/facebook/FFFFFF" alt="Facebook">
             </a>
-            <a href="#" aria-label="TikTok">
+            <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
               <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok">
             </a>
-            <a href="#" aria-label="Spotify">
+            <a href="https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
               <img src="https://cdn.simpleicons.org/spotify/FFFFFF" alt="Spotify">
             </a>
           </div>
@@ -8714,7 +8714,7 @@
 
   </main>
 
-  <a class="whatsapp-float" href="https://wa.me/541154878253?text=Hola%20Horizon%20Fit" target="_blank"
+  <a class="whatsapp-float" href="https://wa.me/541131150999?text=Hola%20Horizon%20Fit" target="_blank"
     rel="noopener noreferrer" aria-label="Escribinos por WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" aria-hidden="true">
   </a>
@@ -8767,16 +8767,16 @@
           <a class="menu-drawer__link" href="#footerContact" data-menu-link><strong>Contacto</strong></a>
         </nav>
         <div class="menu-drawer__social" aria-label="Redes sociales" style="justify-content: center;">
-          <a href="#" aria-label="Instagram">
+          <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
           </a>
           <a href="#" aria-label="Facebook">
             <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
           </a>
-          <a href="#" aria-label="TikTok">
+          <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
             <img src="https://cdn.simpleicons.org/tiktok/35006D" alt="TikTok" style="width:32px;height:32px;">
           </a>
-          <a href="#" aria-label="Spotify">
+          <a href="https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760" target="_blank" rel="noopener noreferrer" aria-label="Spotify">
             <img src="https://cdn.simpleicons.org/spotify/35006D" alt="Spotify" style="width:32px;height:32px;">
           </a>
         </div>

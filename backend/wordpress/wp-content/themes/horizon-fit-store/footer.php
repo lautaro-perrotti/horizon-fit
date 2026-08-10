@@ -20,7 +20,7 @@
                     <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noreferrer noopener">Instagram</a>
                     <a href="https://facebook.com" target="_blank" rel="noreferrer noopener">Facebook</a>
                     <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noreferrer noopener">TikTok</a>
-                    <a href="https://spotify.com" target="_blank" rel="noreferrer noopener">Spotify</a>
+                    <a href="https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760" target="_blank" rel="noreferrer noopener">Spotify</a>
                 </div>
             </div>
         </div>
