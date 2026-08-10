@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "8089:80"
+      - "127.0.0.1:8089:80"
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: horizon_fit
@@ -65,7 +65,7 @@ services:
     container_name: horizon-fit-spa
     restart: unless-stopped
     ports:
-      - "8088:80"
+      - "127.0.0.1:8088:80"
     volumes:
       - ./index.html:/usr/local/apache2/htdocs/index.html
       - ./robots.txt:/usr/local/apache2/htdocs/robots.txt:ro
