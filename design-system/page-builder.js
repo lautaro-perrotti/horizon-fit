@@ -2469,7 +2469,7 @@
     updateCheckoutButtonState(cart);
     if (empty) empty.hidden = items.length > 0;
     if (subtotal) subtotal.textContent = formatStoreMoney(cart?.totals?.total_items || cart?.totals?.total_price || 0, getCartCurrency(cart));
-    if (couponHint) couponHint.textContent = message || 'Tip: proba HF-15';
+    if (couponHint) couponHint.textContent = message || 'Tip: probá HF-15';
 
     if (!items.length) {
       list.innerHTML = '';

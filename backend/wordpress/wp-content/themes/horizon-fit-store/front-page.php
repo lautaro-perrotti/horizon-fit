@@ -2753,7 +2753,7 @@
         background: var(--hf-primary);
         color: #fff;
         font-size: 11px;
-        font-weight: 900;
+        font-weight: 700;
         letter-spacing: .08em;
         text-transform: uppercase;
         transition: transform var(--fast) var(--ease), background var(--fast) var(--ease);
