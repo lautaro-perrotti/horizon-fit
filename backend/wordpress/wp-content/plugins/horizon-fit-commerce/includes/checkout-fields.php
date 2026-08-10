@@ -36,4 +36,12 @@ add_action('woocommerce_init', function () {
             return true;
         },
     ));
+
+    woocommerce_register_additional_checkout_field(array(
+        'id'       => 'horizon-fit-commerce/email-marketing',
+        'label'    => __('Enviarme novedades y ofertas por correo electrónico', 'horizon-fit-commerce'),
+        'location' => 'contact',
+        'type'     => 'checkbox',
+        'required' => false,
+    ));
 });

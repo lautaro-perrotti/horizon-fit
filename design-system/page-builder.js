@@ -40,6 +40,7 @@
   const STORE_CHECKOUT_URL = `${window.location.origin}/checkout/`;
   const STORE_ACCOUNT_URL = `${window.location.origin}/mi-cuenta/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
+  const CHECKOUT_ORDER_STORAGE_KEY = 'hf-checkout-last-order';
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
   const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
@@ -294,6 +295,37 @@
   const isCheckoutRoute = () => {
     const path = window.location.pathname.replace(/\/+$/, '') || '/';
     return path === '/checkout' || path.startsWith('/checkout/');
+  };
+
+  const getCheckoutConfirmationParams = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    const pathMatch = path.match(/^\/checkout\/(?:pedido-recibido|order-received)(?:\/(\d+))?$/i);
+    if (!pathMatch) return null;
+    const params = new URLSearchParams(window.location.search);
+    const orderId = Number(pathMatch[1] || params.get('order') || 0);
+    const orderKey = `${params.get('key') || ''}`.trim();
+    return orderId > 0 && orderKey ? { orderId, orderKey } : null;
+  };
+
+  const buildCheckoutConfirmationUrl = (orderId, orderKey) => {
+    const url = new URL('/checkout/pedido-recibido/', window.location.origin);
+    url.searchParams.set('order', `${orderId}`);
+    url.searchParams.set('key', `${orderKey}`);
+    return url.href;
+  };
+
+  const isInternalOrderReceivedUrl = (value) => {
+    if (!value) return false;
+    try {
+      const url = new URL(value, window.location.origin);
+      const internalOrigins = new Set([
+        window.location.origin,
+        new URL(WP_BASE_URL, window.location.origin).origin
+      ]);
+      return internalOrigins.has(url.origin) && /\/order-received(?:\/|$)/i.test(url.pathname);
+    } catch (error) {
+      return false;
+    }
   };
 
   // Trae el mapa type -> settings de las secciones. Lee primero la cache
@@ -3627,6 +3659,112 @@ ${renderFeaturedSetPriceHtml(pricing)}
       });
   };
 
+  const rememberCheckoutOrder = (response, context = {}) => {
+    if (!response?.order_id || !response?.order_key) return;
+    const snapshot = {
+      orderId: Number(response.order_id),
+      orderKey: `${response.order_key}`,
+      orderNumber: `${response.order_number || response.order_id}`,
+      status: `${response.status || ''}`,
+      customerId: Number(response.customer_id || 0),
+      paymentMethod: `${response.payment_method || context.paymentMethod || ''}`,
+      billingEmail: `${response.billing_address?.email || context.billingEmail || ''}`,
+      createAccount: Boolean(context.createAccount),
+      cart: response.__experimentalCart || null
+    };
+    try {
+      window.sessionStorage.setItem(CHECKOUT_ORDER_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch (error) {
+      // The confirmation still works during the current navigation if storage is unavailable.
+    }
+  };
+
+  const readCheckoutOrder = (orderId, orderKey) => {
+    try {
+      const snapshot = JSON.parse(window.sessionStorage.getItem(CHECKOUT_ORDER_STORAGE_KEY) || 'null');
+      if (Number(snapshot?.orderId) !== Number(orderId) || `${snapshot?.orderKey || ''}` !== `${orderKey || ''}`) {
+        return null;
+      }
+      return snapshot;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const checkoutStatusLabel = (status) => ({
+    pending: 'Pendiente de pago',
+    'on-hold': 'Pago pendiente',
+    processing: 'En preparación',
+    completed: 'Completado',
+    cancelled: 'Cancelado',
+    refunded: 'Reintegrado',
+    failed: 'Pago fallido'
+  }[`${status || ''}`] || 'Pedido recibido');
+
+  const checkoutPaymentLabel = (method) => ({
+    bacs: 'Transferencia bancaria directa',
+    cod: 'Pago contra entrega'
+  }[`${method || ''}`] || `${method || 'A confirmar'}`);
+
+  const renderCheckoutConfirmation = async (sectionEl, confirmationParams) => {
+    const confirmationEl = sectionEl.querySelector('[data-checkout-confirmation]');
+    if (!confirmationEl) return;
+
+    sectionEl.querySelector('.hf-checkout-view__intro')?.setAttribute('hidden', '');
+    sectionEl.querySelector('.hf-checkout-view__mobile-summary')?.setAttribute('hidden', '');
+    sectionEl.querySelector('.hf-checkout-view__grid')?.setAttribute('hidden', '');
+    confirmationEl.hidden = false;
+
+    const snapshot = readCheckoutOrder(confirmationParams.orderId, confirmationParams.orderKey);
+    const billingEmail = `${snapshot?.billingEmail || ''}`.trim();
+    const query = new URLSearchParams({ key: confirmationParams.orderKey });
+    if (billingEmail) query.set('billing_email', billingEmail);
+
+    let order = null;
+    try {
+      order = await storeApiFetch(`/order/${confirmationParams.orderId}?${query.toString()}`, { method: 'GET' });
+    } catch (error) {
+      console.warn('[HF PB] Order confirmation lookup unavailable:', error.message);
+    }
+
+    const cart = order || snapshot?.cart || {};
+    const currency = getCartCurrency(cart);
+    const orderNumber = snapshot?.orderNumber || confirmationParams.orderId;
+    const status = order?.status || snapshot?.status || '';
+    const paymentMethod = snapshot?.paymentMethod || '';
+    const totalRaw = order?.totals?.total_price ?? snapshot?.cart?.totals?.total_price ?? 0;
+
+    const numberEl = confirmationEl.querySelector('[data-checkout-confirmation-number]');
+    const statusValueEl = confirmationEl.querySelector('[data-checkout-confirmation-status]');
+    const paymentEl = confirmationEl.querySelector('[data-checkout-confirmation-payment]');
+    const totalEl = confirmationEl.querySelector('[data-checkout-confirmation-total]');
+    const messageEl = confirmationEl.querySelector('[data-checkout-confirmation-message]');
+    const accountEl = confirmationEl.querySelector('[data-checkout-confirmation-account]');
+    const accountLink = confirmationEl.querySelector('[data-checkout-confirmation-account-link]');
+    const errorEl = confirmationEl.querySelector('[data-checkout-confirmation-error]');
+
+    if (numberEl) numberEl.textContent = `#${orderNumber}`;
+    if (statusValueEl) statusValueEl.textContent = checkoutStatusLabel(status);
+    if (paymentEl) paymentEl.textContent = checkoutPaymentLabel(paymentMethod);
+    if (totalEl) totalEl.textContent = formatStoreMoney(totalRaw, currency);
+
+    if (messageEl) {
+      messageEl.textContent = paymentMethod === 'bacs'
+        ? `Recibimos tu pedido. Te enviamos a ${billingEmail || 'tu correo'} los datos para completar la transferencia; la preparación comienza cuando se acredita el pago.`
+        : `Recibimos tu pedido y enviamos el detalle a ${billingEmail || 'tu correo electrónico'}.`;
+    }
+
+    if (snapshot?.customerId > 0 && accountEl) {
+      accountEl.textContent = 'Tu cuenta quedó creada y las direcciones de esta compra se guardaron para futuros pedidos.';
+      accountEl.hidden = false;
+      if (accountLink) accountLink.hidden = false;
+    }
+
+    if (!order && !snapshot && errorEl) {
+      errorEl.textContent = 'El pedido fue recibido, pero no pudimos recuperar el detalle en este dispositivo. Revisá el correo de confirmación.';
+    }
+  };
+
   const renderCheckoutPage = async (root, html) => {
     if (!html) return;
 
@@ -3638,6 +3776,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     document.body.classList.add('hf-checkout-mode');
     sectionEl.hidden = false;
     root.appendChild(sectionEl);
+
+    const confirmationParams = getCheckoutConfirmationParams();
+    if (confirmationParams) {
+      await renderCheckoutConfirmation(sectionEl, confirmationParams);
+      return;
+    }
 
     const summaryTemplate = sectionEl.querySelector('[data-checkout-summary-template]');
     const summaryMounts = [
@@ -3797,13 +3941,21 @@ ${renderFeaturedSetPriceHtml(pricing)}
       renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '');
 
       const syncAccountCreationUI = () => {
+        const registrationAvailable = Boolean(options.registrationEnabled || options.registrationRequired);
         if (passwordRow) {
-          passwordRow.hidden = Boolean(session?.loggedIn) || !Boolean(createAccountToggle?.checked);
+          passwordRow.hidden = Boolean(session?.loggedIn)
+            || !registrationAvailable
+            || !Boolean(createAccountToggle?.checked);
         }
       };
-      if (createAccountRow) createAccountRow.hidden = Boolean(session?.loggedIn);
+      const registrationRequired = Boolean(options.registrationRequired);
+      const registrationAvailable = Boolean(options.registrationEnabled || registrationRequired);
+      if (createAccountRow) {
+        createAccountRow.hidden = Boolean(session?.loggedIn) || !registrationAvailable || registrationRequired;
+      }
       if (createAccountToggle) {
-        createAccountToggle.checked = false;
+        createAccountToggle.checked = registrationRequired;
+        createAccountToggle.disabled = Boolean(session?.loggedIn) || !registrationAvailable;
         createAccountToggle.addEventListener('change', syncAccountCreationUI);
       }
       syncAccountCreationUI();
@@ -3814,8 +3966,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
         : billing;
       setFieldValues('billing', billing);
       setFieldValues('shipping', shipping);
-      if (paymentMethodInput && options.defaultMethodId) {
-        paymentMethodInput.value = options.defaultMethodId;
+      const selectedPaymentMethod = paymentList?.querySelector('input[type="radio"]:checked');
+      if (paymentMethodInput) {
+        paymentMethodInput.value = selectedPaymentMethod?.value || '';
       }
 
       if (sameAddressToggle) {
@@ -3845,12 +3998,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
           ? { ...shipping_address, email: contactEmail }
           : collectFieldValues('billing');
         const paymentMethod = paymentMethodInput?.value || paymentList?.querySelector('input[type="radio"]:checked')?.value || '';
+        const createAccount = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
         const body = {
           billing_address,
           shipping_address,
           payment_method: paymentMethod,
-          order_notes: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
-          create_account: Boolean(createAccountToggle?.checked)
+          customer_note: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
+          create_account: createAccount,
+          additional_fields: {
+            'horizon-fit-commerce/email-marketing': Boolean(sectionEl.querySelector('[name="email_marketing"]')?.checked)
+          }
         };
         const customerPassword = `${sectionEl.querySelector('[name="customer_password"]')?.value || ''}`.trim();
         if (customerPassword) {
@@ -3859,9 +4016,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
         try {
           const response = await storeApiFetch('/checkout', { method: 'POST', body });
+          rememberCheckoutOrder(response, {
+            billingEmail: contactEmail,
+            createAccount,
+            paymentMethod
+          });
           const redirectUrl = response?.payment_result?.redirect_url || '';
-          if (redirectUrl) {
+          if (redirectUrl && !isInternalOrderReceivedUrl(redirectUrl)) {
             window.location.assign(redirectUrl);
+            return;
+          }
+          if (response?.order_id && response?.order_key) {
+            window.location.assign(buildCheckoutConfirmationUrl(response.order_id, response.order_key));
             return;
           }
           if (statusEl) {

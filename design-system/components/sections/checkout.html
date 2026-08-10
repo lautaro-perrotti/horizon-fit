@@ -25,6 +25,30 @@
     </div>
   </template>
 
+  <div class="hf-checkout-view__confirmation" data-checkout-confirmation hidden>
+    <div class="hf-checkout-view__panel hf-checkout-view__confirmation-panel">
+      <div class="hf-checkout-view__confirmation-mark" aria-hidden="true">✓</div>
+      <span class="hf-checkout-view__section-kicker">Pedido confirmado</span>
+      <h2>¡Gracias por tu compra!</h2>
+      <p data-checkout-confirmation-message>Recibimos tu pedido y te enviamos el detalle por correo electrónico.</p>
+
+      <div class="hf-checkout-view__confirmation-details">
+        <div><span>Pedido</span><strong data-checkout-confirmation-number></strong></div>
+        <div><span>Estado</span><strong data-checkout-confirmation-status></strong></div>
+        <div><span>Medio de pago</span><strong data-checkout-confirmation-payment></strong></div>
+        <div><span>Total</span><strong data-checkout-confirmation-total></strong></div>
+      </div>
+
+      <p class="hf-checkout-view__confirmation-account" data-checkout-confirmation-account hidden></p>
+      <p class="hf-checkout-view__status" data-checkout-confirmation-error aria-live="polite"></p>
+
+      <div class="hf-checkout-view__confirmation-actions">
+        <a class="btn btn--primary" href="/">Seguir comprando</a>
+        <a class="btn btn--secondary" href="/mi-cuenta/" data-checkout-confirmation-account-link hidden>Ver mi cuenta</a>
+      </div>
+    </div>
+  </div>
+
   <div class="hf-checkout-view__mobile-summary">
     <button class="hf-checkout-view__mobile-summary-toggle" type="button" data-checkout-summary-toggle
       aria-expanded="false" aria-controls="checkoutMobileSummaryPanel">

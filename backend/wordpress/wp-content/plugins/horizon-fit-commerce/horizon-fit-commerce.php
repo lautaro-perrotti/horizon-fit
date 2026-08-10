@@ -167,10 +167,13 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
     }
 
     $user = wp_get_current_user();
+    $checkout = WC()->checkout();
     return rest_ensure_response(array(
         'loggedIn'         => is_user_logged_in(),
         'displayName'      => is_user_logged_in() ? (string) $user->display_name : '',
         'email'            => is_user_logged_in() ? (string) $user->user_email : '',
+        'registrationEnabled'  => $checkout ? (bool) $checkout->is_registration_enabled() : false,
+        'registrationRequired' => $checkout ? (bool) $checkout->is_registration_required() : false,
         'paymentMethods'   => $methods,
         'defaultMethodId'  => ! empty($methods[0]['id']) ? (string) $methods[0]['id'] : '',
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
