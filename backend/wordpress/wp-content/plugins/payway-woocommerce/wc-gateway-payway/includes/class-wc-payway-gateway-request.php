@@ -98,7 +98,11 @@ class WC_Payway_Request {
 		try {
 			/** @var WC_Payway_Logger */
 			$logger = wc_payway_get_logger();
-			$logger->debug( print_r($payment_data, true) );
+			$log_payment_data = $payment_data;
+			if ( isset( $log_payment_data['token'] ) ) {
+				$log_payment_data['token'] = '[redacted]';
+			}
+			$logger->debug( print_r($log_payment_data, true) );
 
 			/** @var \Decidir\Payment\PaymentResponse $result */
 			$result = $this->api->post_payment( $payment_data );

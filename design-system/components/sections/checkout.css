@@ -322,6 +322,32 @@ body.hf-checkout-mode .nav {
   margin-top: 2px;
 }
 
+[data-payment-details][hidden] {
+  display: none !important;
+}
+
+.hf-checkout-view__payway {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(53, 0, 109, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.hf-checkout-view__payway-security {
+  margin: 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.hf-checkout-view__payway-fields {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .hf-checkout-view__hint,
 .hf-checkout-view__status,
 .hf-checkout-view__empty {
@@ -537,6 +563,27 @@ body.hf-checkout-mode .nav {
 }
 
 @media (max-width: 520px) {
+  .hf-checkout-view__payway {
+    padding: 14px;
+  }
+
+  .hf-checkout-view__payway-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--full,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--half {
+    grid-column: 1 / -1;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--third {
+    grid-column: span 1;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--third:has([data-payway-field="security-code"]) {
+    grid-column: 1 / -1;
+  }
+
   .hf-checkout-view__confirmation-details {
     grid-template-columns: 1fr;
   }

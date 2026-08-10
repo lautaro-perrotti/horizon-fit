@@ -160,6 +160,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
 
     $frontend_origin = hf_commerce_frontend_origin_from_request();
     $methods = array();
+    $payway = null;
     if (function_exists('WC') && WC()->payment_gateways()) {
         foreach (WC()->payment_gateways()->get_available_payment_gateways() as $gateway) {
             $methods[] = array(
@@ -167,6 +168,39 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
                 'title'       => (string) $gateway->get_title(),
                 'description' => (string) $gateway->get_description(),
             );
+
+            if (
+                'payway_gateway' === (string) $gateway->id
+                && function_exists('wc_payway_is_sandbox_enabled')
+                && function_exists('wc_payway_checkout_promotions')
+            ) {
+                $sandbox = (bool) wc_payway_is_sandbox_enabled();
+                $credentials = $sandbox && function_exists('wc_payway_get_sandbox_credentials')
+                    ? wc_payway_get_sandbox_credentials(false)
+                    : (function_exists('wc_payway_get_production_credentials')
+                        ? wc_payway_get_production_credentials(false)
+                        : array());
+                $public_key = isset($credentials['creds']['public_key'])
+                    ? (string) $credentials['creds']['public_key']
+                    : '';
+                $endpoint_url = $sandbox
+                    ? 'https://developers.decidir.com/api/v2'
+                    : 'https://live.decidir.com/api/v2';
+
+                if ($public_key) {
+                    $payway = array(
+                        'gatewayId'   => 'payway_gateway',
+                        'sdkUrl'      => 'https://live.decidir.com/static/v2.5/decidir.js',
+                        'endpointUrl' => $endpoint_url,
+                        'publicKey'   => $public_key,
+                        'sandbox'     => $sandbox,
+                        'disableCybersource' => function_exists('wc_payway_config_is_cs_enabled')
+                            ? ! wc_payway_config_is_cs_enabled()
+                            : true,
+                        'promotions'  => wc_payway_checkout_promotions(),
+                    );
+                }
+            }
         }
     }
 
@@ -180,6 +214,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
         'registrationRequired' => $checkout ? (bool) $checkout->is_registration_required() : false,
         'paymentMethods'   => $methods,
         'defaultMethodId'  => ! empty($methods[0]['id']) ? (string) $methods[0]['id'] : '',
+        'payway'           => $payway,
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
     ));
 }

@@ -169,7 +169,9 @@ function wc_payway_storefront_options($encode_as_json = false) {
 		$url = WC_Payway_Rest_Interface::SANDBOX_URL;
 		$sandbox = true;
 	} else {
-		$options = wc_payway_get_production_credentials();
+		// Storefront tokenization only needs the public key. Never expose the
+		// production private key through localized checkout configuration.
+		$options = wc_payway_get_production_credentials( false );
 		$url = WC_Payway_Rest_Interface::PRODUCTION_URL;
 		$sandbox = false;
 	}

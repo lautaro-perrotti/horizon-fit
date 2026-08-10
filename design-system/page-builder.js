@@ -42,6 +42,8 @@
   const STORE_ACCOUNT_URL = `${window.location.origin}/mi-cuenta/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
   const CHECKOUT_ORDER_STORAGE_KEY = 'hf-checkout-last-order';
+  const PAYWAY_GATEWAY_ID = 'payway_gateway';
+  let paywaySdkPromise = null;
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
   const WP_SECTIONS_URL = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/sections`;
@@ -3729,8 +3731,99 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
   const checkoutPaymentLabel = (method) => ({
     bacs: 'Transferencia bancaria directa',
-    cod: 'Pago contra entrega'
+    cod: 'Pago contra entrega',
+    [PAYWAY_GATEWAY_ID]: 'Tarjeta de crédito o débito'
   }[`${method || ''}`] || `${method || 'A confirmar'}`);
+
+  const loadPaywaySdk = (sdkUrl) => {
+    if (window.Decidir) return Promise.resolve(window.Decidir);
+    if (paywaySdkPromise) return paywaySdkPromise;
+    paywaySdkPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-hf-payway-sdk]');
+      const script = existing || document.createElement('script');
+      const onLoad = () => window.Decidir
+        ? resolve(window.Decidir)
+        : reject(new Error('Payway no pudo inicializarse.'));
+      const onError = () => reject(new Error('No pudimos conectar con Payway. Intentá nuevamente.'));
+
+      script.addEventListener('load', onLoad, { once: true });
+      script.addEventListener('error', onError, { once: true });
+      if (!existing) {
+        script.src = sdkUrl;
+        script.async = true;
+        script.dataset.hfPaywaySdk = 'true';
+        document.head.appendChild(script);
+      }
+    }).catch(error => {
+      paywaySdkPromise = null;
+      throw error;
+    });
+    return paywaySdkPromise;
+  };
+
+  const tokenizePaywayCard = async (form, config) => {
+    if (!form || !config?.endpointUrl || !config?.publicKey || !config?.sdkUrl) {
+      throw new Error('Payway no está configurado correctamente.');
+    }
+
+    const value = (name) => `${form.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
+    const digits = (name) => value(name).replace(/\D/g, '');
+    const cardNumber = digits('card-number');
+    const securityCode = digits('security-code');
+    const expirationMonth = digits('expiration-month').padStart(2, '0');
+    const expirationYear = digits('expiration-year').slice(-2);
+    const holderName = value('holder-name');
+    const documentNumber = digits('document-number');
+    const doorNumber = digits('door-number');
+
+    if (cardNumber.length < 13 || cardNumber.length > 19) throw new Error('Revisá el número de la tarjeta.');
+    if (securityCode.length < 3 || securityCode.length > 4) throw new Error('Revisá el código de seguridad.');
+    if (!/^(0[1-9]|1[0-2])$/.test(expirationMonth) || expirationYear.length !== 2) {
+      throw new Error('Revisá la fecha de vencimiento de la tarjeta.');
+    }
+    if (!holderName) throw new Error('Ingresá el nombre que figura en la tarjeta.');
+    if (documentNumber.length < 7 || documentNumber.length > 11) throw new Error('Revisá el DNI del titular.');
+    if (!doorNumber) throw new Error('Ingresá la altura de la dirección de facturación.');
+
+    const DecidirSdk = await loadPaywaySdk(config.sdkUrl);
+    const tokenFields = {
+      card_number: cardNumber,
+      security_code: securityCode,
+      card_expiration_month: expirationMonth,
+      card_expiration_year: expirationYear,
+      card_holder_name: holderName,
+      card_holder_doc_type: 'dni',
+      card_holder_doc_number: documentNumber,
+      card_holder_door_number: doorNumber
+    };
+    const tokenForm = document.createElement('div');
+    Object.entries(tokenFields).forEach(([name, fieldValue]) => {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = name;
+      input.value = fieldValue;
+      input.setAttribute('data-decidir', name);
+      tokenForm.appendChild(input);
+    });
+
+    const api = new DecidirSdk(config.endpointUrl, Boolean(config.disableCybersource));
+    api.setPublishableKey(config.publicKey);
+    api.setTimeout(0);
+
+    return new Promise((resolve, reject) => {
+      api.createToken(tokenForm, (status, result = {}) => {
+        if ((status === 200 || status === 201) && result.id) {
+          resolve({
+            token: `${result.id}`,
+            bin: `${result.bin || ''}`,
+            lastDigits: `${result.last_four_digits || ''}`
+          });
+          return;
+        }
+        reject(new Error('No pudimos validar la tarjeta. Revisá los datos e intentá nuevamente.'));
+      });
+    });
+  };
 
   const renderCheckoutConfirmation = async (sectionEl, confirmationParams) => {
     const confirmationEl = sectionEl.querySelector('[data-checkout-confirmation]');
@@ -3837,6 +3930,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
+    let currentPaywayConfig = null;
     const fields = new Map();
     sectionEl.querySelectorAll('[data-checkout-field]').forEach(input => {
       const key = input.getAttribute('data-checkout-field');
@@ -3862,7 +3956,131 @@ ${renderFeaturedSetPriceHtml(pricing)}
       return data;
     };
 
-    const renderPaymentMethods = (methods = [], defaultId = '') => {
+    const buildPaywayFormMarkup = (config) => {
+      const banks = Object.values(config?.promotions?.banks || {});
+      const bankOptions = banks.map(bank => (
+        `<option value="${escapeHtml(bank.value ?? '')}">${escapeHtml(bank.name || '')}</option>`
+      )).join('');
+      const isReady = Boolean(config?.publicKey && config?.endpointUrl && config?.sdkUrl && banks.length);
+      if (!isReady) {
+        return '<p class="hf-checkout-view__empty-note">Payway no está disponible temporalmente.</p>';
+      }
+
+      return `
+        <div class="hf-checkout-view__payway" data-payway-form>
+          <p class="hf-checkout-view__payway-security">Tus datos se tokenizan de forma segura en Payway y no se guardan en Horizon Fit.</p>
+          <div class="hf-checkout-view__payway-fields">
+            <label class="hf-checkout-view__field hf-checkout-view__field--half">
+              <span>Banco</span>
+              <select data-payway-field="bank" required disabled>
+                <option value="">Seleccioná un banco</option>
+                ${bankOptions}
+              </select>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--half">
+              <span>Tarjeta</span>
+              <select data-payway-field="card-type" required disabled>
+                <option value="">Seleccioná una tarjeta</option>
+              </select>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--full">
+              <span>Cuotas</span>
+              <select data-payway-field="installments" required disabled>
+                <option value="">Seleccioná la cantidad de cuotas</option>
+              </select>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--full">
+              <span>Número de tarjeta</span>
+              <input data-payway-field="card-number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--third">
+              <span>Mes</span>
+              <input data-payway-field="expiration-month" type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" placeholder="MM" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--third">
+              <span>Año</span>
+              <input data-payway-field="expiration-year" type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="2" placeholder="AA" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--third">
+              <span>Código de seguridad</span>
+              <input data-payway-field="security-code" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVV" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--full">
+              <span>Nombre como figura en la tarjeta</span>
+              <input data-payway-field="holder-name" type="text" autocomplete="cc-name" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--half">
+              <span>DNI del titular</span>
+              <input data-payway-field="document-number" type="text" inputmode="numeric" maxlength="11" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--half">
+              <span>Altura de facturación</span>
+              <input data-payway-field="door-number" type="text" inputmode="numeric" maxlength="8" required disabled>
+            </label>
+          </div>
+        </div>
+      `;
+    };
+
+    const bindPaywayForm = (config, cart) => {
+      const form = paymentList?.querySelector('[data-payway-form]');
+      if (!form) return;
+      const bankSelect = form.querySelector('[data-payway-field="bank"]');
+      const cardSelect = form.querySelector('[data-payway-field="card-type"]');
+      const installmentsSelect = form.querySelector('[data-payway-field="installments"]');
+      const promotions = config?.promotions || {};
+      const currency = getCartCurrency(cart);
+      const totalRaw = Number(cart?.totals?.total_price || 0);
+
+      const populateInstallments = () => {
+        const bankId = bankSelect?.value || '';
+        const cardId = cardSelect?.value || '';
+        const plans = promotions?.plans?.[bankId]?.[cardId] || [];
+        if (!installmentsSelect) return;
+        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + plans.map(plan => {
+          const period = Math.max(1, Number(plan?.fee_period || 1));
+          const coefficient = Number(plan?.coefficient || 1);
+          const financedTotal = Math.round(totalRaw * coefficient);
+          const installmentValue = Math.round(financedTotal / period);
+          const label = period === 1
+            ? `1 pago de ${formatStoreMoney(financedTotal, currency)}`
+            : `${period} cuotas de ${formatStoreMoney(installmentValue, currency)} (total ${formatStoreMoney(financedTotal, currency)})`;
+          const optionValue = `${plan?.rule_id || ''}-${cardId}-${plan?.fee_to_send || period}`;
+          return `<option value="${escapeHtml(optionValue)}">${escapeHtml(label)}</option>`;
+        }).join('');
+        if (plans.length === 1) installmentsSelect.selectedIndex = 1;
+      };
+
+      const populateCards = () => {
+        const bankId = bankSelect?.value || '';
+        const cards = Object.values(promotions?.cards?.[bankId] || {});
+        if (!cardSelect) return;
+        cardSelect.innerHTML = '<option value="">Seleccioná una tarjeta</option>' + cards.map(card => (
+          `<option value="${escapeHtml(card.value ?? '')}">${escapeHtml(card.name || '')}</option>`
+        )).join('');
+        if (cards.length === 1) cardSelect.selectedIndex = 1;
+        populateInstallments();
+      };
+
+      bankSelect?.addEventListener('change', populateCards);
+      cardSelect?.addEventListener('change', populateInstallments);
+      if (bankSelect?.options.length === 2) bankSelect.selectedIndex = 1;
+      populateCards();
+    };
+
+    const syncPaymentMethodForm = () => {
+      const activeId = paymentList?.querySelector('input[name="payment_method"]:checked')?.value || '';
+      if (paymentMethodInput) paymentMethodInput.value = activeId;
+      paymentList?.querySelectorAll('[data-payment-details]').forEach(details => {
+        const active = details.getAttribute('data-payment-details') === activeId;
+        details.hidden = !active;
+        details.querySelectorAll('input, select, textarea').forEach(field => {
+          field.disabled = !active;
+        });
+      });
+    };
+
+    const renderPaymentMethods = (methods = [], defaultId = '', paywayConfig = null, cart = null) => {
       if (!paymentList) return;
       const visibleMethods = methods.filter(method => method?.id !== 'cod');
       if (!visibleMethods.length) {
@@ -3882,6 +4100,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
         }[method.id] || {};
         const title = paymentCopy.title || method.title || method.id || 'Pago';
         const description = paymentCopy.description || method.description || '';
+        const details = method.id === PAYWAY_GATEWAY_ID
+          ? `<div data-payment-details="${PAYWAY_GATEWAY_ID}">${buildPaywayFormMarkup(paywayConfig)}</div>`
+          : '';
         return `
           <label class="hf-checkout-view__payment">
             <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''}>
@@ -3890,17 +4111,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
               ${description ? `<small>${escapeHtml(description)}</small>` : ''}
             </span>
           </label>
+          ${details}
         `;
       }).join('');
-      const current = paymentList.querySelector('input[type="radio"]:checked');
-      if (paymentMethodInput && current) {
-        paymentMethodInput.value = current.value;
-      }
+      bindPaywayForm(paywayConfig, cart);
       paymentList.querySelectorAll('input[type="radio"]').forEach(input => {
-        input.addEventListener('change', () => {
-          if (paymentMethodInput) paymentMethodInput.value = input.value;
-        });
+        input.addEventListener('change', syncPaymentMethodForm);
       });
+      syncPaymentMethodForm();
     };
 
     const updateOrderSummary = (cart) => {
@@ -3963,7 +4181,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
       ]);
 
       updateOrderSummary(cart);
-      renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '');
+      currentPaywayConfig = options.payway || null;
+      renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '', options.payway || null, cart);
 
       const registrationRequired = Boolean(options.registrationRequired);
       const registrationAvailable = Boolean(options.registrationEnabled || registrationRequired);
@@ -3981,6 +4200,22 @@ ${renderFeaturedSetPriceHtml(pricing)}
         : billing;
       setFieldValues('billing', billing);
       setFieldValues('shipping', shipping);
+      const paywayForm = paymentList?.querySelector('[data-payway-form]');
+      if (paywayForm) {
+        const holderName = paywayForm.querySelector('[data-payway-field="holder-name"]');
+        const documentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
+        const doorNumber = paywayForm.querySelector('[data-payway-field="door-number"]');
+        const addressNumbers = `${shipping.address_1 || ''}`.match(/\d+/g) || [];
+        if (holderName && !holderName.value) {
+          holderName.value = `${shipping.first_name || ''} ${shipping.last_name || ''}`.trim();
+        }
+        if (documentNumber && !documentNumber.value) {
+          documentNumber.value = `${fields.get('shipping.horizon-fit-commerce/dni')?.value || ''}`.replace(/\D/g, '');
+        }
+        if (doorNumber && !doorNumber.value && addressNumbers.length) {
+          doorNumber.value = addressNumbers[addressNumbers.length - 1];
+        }
+      }
       const selectedPaymentMethod = paymentList?.querySelector('input[type="radio"]:checked');
       if (paymentMethodInput) {
         paymentMethodInput.value = selectedPaymentMethod?.value || '';
@@ -4014,10 +4249,37 @@ ${renderFeaturedSetPriceHtml(pricing)}
           : collectFieldValues('billing');
         const paymentMethod = paymentMethodInput?.value || paymentList?.querySelector('input[type="radio"]:checked')?.value || '';
         const createAccount = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
+        let paymentData = [];
+
+        try {
+          if (paymentMethod === PAYWAY_GATEWAY_ID) {
+            const paywayForm = paymentList?.querySelector('[data-payway-form]');
+            if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
+            if (statusEl) statusEl.textContent = 'Validando la tarjeta de forma segura...';
+            const token = await tokenizePaywayCard(paywayForm, currentPaywayConfig);
+            const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
+            paymentData = [
+              { key: 'payway_gateway_cc_bank', value: paywayValue('bank') },
+              { key: 'payway_gateway_cc_type', value: paywayValue('card-type') },
+              { key: 'payway_gateway_cc_installments', value: paywayValue('installments') },
+              { key: 'payway_gateway_cc_token', value: token.token },
+              { key: 'payway_gateway_cc_bin', value: token.bin },
+              { key: 'payway_gateway_cc_last_digits', value: token.lastDigits },
+              { key: 'payway_gateway_cc_holder_door_number', value: paywayValue('door-number').replace(/\D/g, '') }
+            ];
+            if (statusEl) statusEl.textContent = 'Procesando el pago...';
+          }
+        } catch (error) {
+          if (statusEl) statusEl.textContent = error.message || 'No pudimos validar la tarjeta.';
+          if (submitBtn) submitBtn.disabled = false;
+          return;
+        }
+
         const body = {
           billing_address,
           shipping_address,
           payment_method: paymentMethod,
+          payment_data: paymentData,
           customer_note: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
           create_account: createAccount,
           additional_fields: {
@@ -4027,6 +4289,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
         try {
           const response = await storeApiFetch('/checkout', { method: 'POST', body });
+          const paymentFailed = response?.payment_result?.payment_status === 'failure' || response?.status === 'failed';
+          if (paymentFailed) {
+            const details = Array.isArray(response?.payment_result?.payment_details)
+              ? response.payment_result.payment_details
+              : [];
+            const paymentError = details.find(detail => ['errorMessage', 'messages'].includes(detail?.key))?.value;
+            throw new Error(decodeEntities(paymentError || 'El pago fue rechazado. Revisá los datos o intentá con otra tarjeta.'));
+          }
           rememberCheckoutOrder(response, {
             billingEmail: contactEmail,
             createAccount,
@@ -4048,6 +4318,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
         } catch (error) {
           if (statusEl) statusEl.textContent = error.message || 'No pudimos completar el checkout.';
           if (submitBtn) submitBtn.disabled = false;
+        } finally {
+          if (paymentMethod === PAYWAY_GATEWAY_ID) {
+            paymentList?.querySelectorAll('[data-payway-field="card-number"], [data-payway-field="security-code"]').forEach(field => {
+              field.value = '';
+            });
+          }
         }
       });
     }
