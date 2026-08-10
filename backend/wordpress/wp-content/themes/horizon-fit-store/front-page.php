@@ -7115,14 +7115,14 @@
           </div>
         </a>
 
-        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo Studio">
+        <a href="#fullSlider" class="hf-style-tile" aria-label="Ver estilo DISEÑO">
           <div class="hf-style-tile__media">
             <video muted loop playsinline preload="none" aria-hidden="true" data-style-video>
               <source src="http://localhost:8088/assets/style-tile-studio.mp4" type="video/mp4">
             </video>
           </div>
           <div class="hf-style-tile__body">
-            <h3 class="hf-style-tile__title">Studio</h3>
+            <h3 class="hf-style-tile__title">DISEÑO</h3>
             <span class="hf-style-tile__cta">Quiero ver</span>
             <span class="hf-style-tile__arrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

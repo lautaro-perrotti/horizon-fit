@@ -13,7 +13,7 @@ function hf_style_edit_defaults() {
     return [
         'tiles' => [
             ['title' => 'Básicos', 'video' => 'assets/style-tile-basicos.mp4', 'link' => '#fullSlider'],
-            ['title' => 'Studio',  'video' => 'assets/style-tile-studio.mp4',  'link' => '#fullSlider'],
+            ['title' => 'DISEÑO',  'video' => 'assets/style-tile-studio.mp4',  'link' => '#fullSlider'],
             ['title' => 'Urbano',  'video' => 'assets/style-tile-urbano.mp4',  'link' => '#fullSlider'],
             ['title' => 'Prints',  'video' => 'assets/style-tile-prints.mp4',  'link' => '#fullSlider'],
         ],
