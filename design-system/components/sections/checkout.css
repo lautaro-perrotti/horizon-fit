@@ -458,7 +458,11 @@ body.hf-checkout-mode .nav {
 
   .hf-checkout-view__mobile-summary {
     display: block;
-    border-bottom: 1px solid var(--border);
+    width: calc(100% - 32px);
+    margin-inline: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 14px;
     background: var(--surface-2, #f7eee4);
   }
 
