@@ -69,9 +69,11 @@ services:
     volumes:
       - ./index.html:/usr/local/apache2/htdocs/index.html
       - ./robots.txt:/usr/local/apache2/htdocs/robots.txt:ro
-      - ./sitemap.xml:/usr/local/apache2/htdocs/sitemap.xml:ro
+      - ./backend/wordpress/wp-content/uploads/horizon-fit-seo:/usr/local/apache2/htdocs/seo-generated:ro
       - ./design-system:/usr/local/apache2/htdocs/design-system
       - ./assets:/usr/local/apache2/htdocs/assets:ro
+      - ./LOGOS:/usr/local/apache2/htdocs/LOGOS:ro
+      - ./favicon.ico:/usr/local/apache2/htdocs/favicon.ico:ro
       - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro
       - ./docker/apache/spa.conf:/usr/local/apache2/conf/httpd.conf:ro
 
@@ -95,6 +97,7 @@ services:
       WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
     volumes:
       - horizon_fit_html:/var/www/html
+      - ./index.html:/var/www/html/index.html:ro
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
 

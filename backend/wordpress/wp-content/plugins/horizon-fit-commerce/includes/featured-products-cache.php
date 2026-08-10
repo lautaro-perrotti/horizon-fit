@@ -648,6 +648,12 @@ function hf_regenerate_featured_products_cache() {
     }
   }
   hf_regenerate_collection_settings_cache();
+
+  // Mantener sincronizados el sitemap y el HTML prerenderizado del dominio
+  // público cada vez que se regenera el catálogo.
+  if (function_exists('hf_regenerate_storefront_seo_cache')) {
+    hf_regenerate_storefront_seo_cache();
+  }
 }
 
 // Cache de TODOS los productos publicados de una categoría (product_cat),

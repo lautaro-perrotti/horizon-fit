@@ -2,7 +2,9 @@ User-agent: *
 Disallow: /cart/
 Disallow: /checkout/
 Disallow: /my-account/
+Disallow: /mi-cuenta/
+Disallow: /recuperar-contrasena/
 Disallow: /index.html
 Allow: /assets/
 Allow: /design-system/
-Sitemap: http://localhost:8088/sitemap.xml
+Sitemap: https://horizonfit.com.ar/sitemap.xml
