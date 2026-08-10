@@ -1455,6 +1455,29 @@
     return rootUrl(url);
   };
 
+  const HOME_MENU_SECTION_ANCHORS = {
+    'productos destacados': '#productos-destacados',
+    'conjuntos destacados': '#conjuntos-destacados',
+    'redes sociales': '#homeSocialStrip'
+  };
+
+  const resolveMenuItemHref = (item) => {
+    const normalizedLabel = `${item?.label || ''}`
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+    return resolveMenuHref(HOME_MENU_SECTION_ANCHORS[normalizedLabel] || item?.url);
+  };
+
+  const getHomeMenuSection = (hash) => {
+    if (!Object.values(HOME_MENU_SECTION_ANCHORS).includes(hash)) return null;
+    if (hash === '#conjuntos-destacados' && window.matchMedia('(max-width: 1024px)').matches) {
+      return document.querySelector('#conjuntos-mobile-carousel');
+    }
+    return document.querySelector(hash);
+  };
+
   // Rellena ambos menÃºs de la navbar (desktop menu__grid y mobile
   // menu-drawer__nav) con los items administrados desde wp-admin (menu.json).
   const renderNavMenu = async (items) => {
@@ -1470,7 +1493,7 @@
       items.forEach(item => {
         const a = document.createElement('a');
         a.setAttribute('role', 'menuitem');
-        a.href = resolveMenuHref(item.url);
+        a.href = resolveMenuItemHref(item);
         a.textContent = item.label || '';
         desktopGrid.insertBefore(a, cartBtn || null);
       });
@@ -1479,7 +1502,7 @@
     // Mobile: <a class="menu-drawer__link" data-menu-link><strong>..</strong></a>
     if (mobileNav) {
       mobileNav.innerHTML = items.map(item =>
-        `<a class="menu-drawer__link" href="${escapeHtml(resolveMenuHref(item.url))}" data-menu-link><strong>${escapeHtml(item.label || '')}</strong></a>`
+        `<a class="menu-drawer__link" href="${escapeHtml(resolveMenuItemHref(item))}" data-menu-link><strong>${escapeHtml(item.label || '')}</strong></a>`
       ).join('');
     }
   };
@@ -1575,8 +1598,38 @@
     $("#searchBtnMobile")?.addEventListener("click", openSearchDrawer);
 
     $$("[data-menu-link]").forEach(link => {
-      link.addEventListener("click", () => closeMenuDrawer());
+      link.addEventListener("click", (event) => {
+        const destination = new URL(link.href, window.location.href);
+        const isHomeSection = Object.values(HOME_MENU_SECTION_ANCHORS).includes(destination.hash);
+        const isSamePage = destination.origin === window.location.origin &&
+          destination.pathname === window.location.pathname &&
+          destination.search === window.location.search;
+
+        closeMenuDrawer();
+
+        // Al cerrar el drawer, el foco vuelve al botón hamburguesa. En algunos
+        // navegadores eso anula el salto del ancla, por eso las secciones de la
+        // home se desplazan explícitamente cuando la sidebar ya quedó cerrada.
+        if (!isHomeSection || !isSamePage) return;
+
+        const targetSection = getHomeMenuSection(destination.hash);
+        if (!targetSection) return;
+
+        event.preventDefault();
+        window.requestAnimationFrame(() => {
+          targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          window.history.replaceState(null, "", destination.hash);
+        });
+      });
     });
+
+    // Si se llegó desde otra página con una de estas anclas, las secciones ya
+    // están montadas y podemos corregir también el destino responsive.
+    if (Object.values(HOME_MENU_SECTION_ANCHORS).includes(window.location.hash)) {
+      window.requestAnimationFrame(() => {
+        getHomeMenuSection(window.location.hash)?.scrollIntoView({ behavior: "auto", block: "start" });
+      });
+    }
 
     $$("[data-close-menu-drawer]").forEach(b => b.addEventListener("click", closeMenuDrawer));
     $$("[data-close-drawer]").forEach(b => b.addEventListener("click", closeDrawer));

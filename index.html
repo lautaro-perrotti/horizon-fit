@@ -2166,6 +2166,13 @@
       scroll-margin-top: 90px;
     }
 
+    #productos-destacados,
+    #conjuntos-destacados,
+    #conjuntos-mobile-carousel,
+    #homeSocialStrip {
+      scroll-margin-top: calc(var(--nav-h) + var(--announce-h) + 8px);
+    }
+
     /* Hide scrollbar for slider */
     .hide-scrollbar::-webkit-scrollbar {
       display: none;
@@ -5030,7 +5037,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=cart-messages-es-20260810"></script>
+  <script src="/design-system/page-builder.js?v=home-sidebar-scroll-20260810"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
