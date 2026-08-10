@@ -3695,20 +3695,20 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     const renderPaymentMethods = (methods = [], defaultId = '') => {
       if (!paymentList) return;
-      if (!methods.length) {
+      const visibleMethods = methods.filter(method => method?.id !== 'cod');
+      if (!visibleMethods.length) {
         paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
       }
-      paymentList.innerHTML = methods.map((method, index) => {
-        const checked = defaultId ? method.id === defaultId : index === 0;
+      const selectedId = visibleMethods.some(method => method.id === defaultId)
+        ? defaultId
+        : visibleMethods[0].id;
+      paymentList.innerHTML = visibleMethods.map((method) => {
+        const checked = method.id === selectedId;
         const paymentCopy = {
           bacs: {
             title: 'Transferencia bancaria directa',
             description: 'Realizá el pago directamente a nuestra cuenta bancaria. Usá el número de pedido como referencia. El pedido se procesará cuando se acredite la transferencia.'
-          },
-          cod: {
-            title: 'Pago contra entrega',
-            description: 'Pagá en efectivo al recibir tu pedido.'
           }
         }[method.id] || {};
         const title = paymentCopy.title || method.title || method.id || 'Pago';
