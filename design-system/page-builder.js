@@ -29,12 +29,13 @@
     return promise;
   }
 
-  // WordPress se sirve en el MISMO host que el SPA pero en el puerto 8089.
-  // Derivamos la base dinÃ¡micamente del host actual: funciona en local
-  // (localhost:8088 -> localhost:8089) y en la VPS (IP:8088 -> IP:8089)
-  // sin hardcodear nada ni depender de archivos estÃ¡ticos.
+  // En local/VPS por IP, WordPress usa el mismo host en el puerto 8089.
+  // En el dominio pÃºblico usa el subdominio HTTPS de la API.
   const WP_PORT = '8089';
-  const WP_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`;
+  const isProductionDomain = /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname);
+  const WP_BASE_URL = window.HF_WP_BASE_URL || (isProductionDomain
+    ? 'https://api.horizonfit.com.ar'
+    : `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`);
   const WOO_STORE_API_BASE = `${WP_BASE_URL}/wp-json/wc/store/v1`;
   const HF_REST_BASE = `${WP_BASE_URL}/wp-json/hf/v1`;
   const STORE_CHECKOUT_URL = `${window.location.origin}/checkout/`;

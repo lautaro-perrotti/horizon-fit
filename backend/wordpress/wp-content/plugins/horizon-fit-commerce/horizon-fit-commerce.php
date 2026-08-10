@@ -50,6 +50,10 @@ add_filter('allowed_http_origin', function($allowed_origin, $origin) {
         return $origin;
     }
 
+    if (in_array($host, array('horizonfit.com.ar', 'www.horizonfit.com.ar'), true)) {
+        return $origin;
+    }
+
     $server_host = isset($_SERVER['HTTP_HOST']) ? explode(':', sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])))[0] : '';
     if ($server_host && $host === $server_host) {
         return $origin;

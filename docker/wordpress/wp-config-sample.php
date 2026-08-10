@@ -21,14 +21,18 @@ define('NONCE_SALT',       '#>|B2B+cFy5<5$M~4<}h#&d/|:+z,L!e(M%L7/k`5f5l^&M.z"g'
 // - En WP-CLI/cron (sin HTTP_HOST): usa la env var WP_PUBLIC_HOST.
 //   Así la cache de productos/imágenes se genera con el dominio público
 //   correcto en cada entorno, sin tener que parchear a mano tras cada deploy.
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+$forwarded_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+  ? strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'])[0]))
+  : '';
+$is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || $forwarded_proto === 'https';
+$protocol = $is_https ? 'https' : (getenv('WP_PUBLIC_SCHEME') ?: 'http');
 $fallback_host = getenv('WP_PUBLIC_HOST') ?: 'localhost:8089';
 $http_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $fallback_host;
 $wp_url = $protocol . '://' . $http_host;
 
 define('WP_HOME', $wp_url);
 define('WP_SITEURL', $wp_url);
-define('WP_REST_ALLOWED_HOSTS', array('localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*'));
+define('WP_REST_ALLOWED_HOSTS', array('localhost:8089', 'localhost:8088', '187.127.43.87:8089', 'api.horizonfit.com.ar', 'horizonfit.com.ar', 'www.horizonfit.com.ar', '*'));
 
 // Force cookie domain to work on both localhost and VPS
 define('COOKIE_DOMAIN', false);

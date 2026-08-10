@@ -42,8 +42,9 @@ services:
       # Host público para WP-CLI/cron (sin HTTP_HOST). Default local; en la VPS
       # se sobreescribe con un archivo .env (WP_PUBLIC_HOST=187.77.28.61:8089).
       WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
+      WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.77.28.61:8089', '*']);
+        define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.127.43.87:8089', 'api.horizonfit.com.ar', 'horizonfit.com.ar', 'www.horizonfit.com.ar', '*']);
         define('FS_METHOD', 'direct');
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
@@ -91,6 +92,7 @@ services:
       # Mismo host público que wordpress: así la cache que regenera WP-CLI/cron
       # usa el dominio correcto del entorno (local o VPS) sin parches manuales.
       WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
+      WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
     volumes:
       - horizon_fit_html:/var/www/html
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
