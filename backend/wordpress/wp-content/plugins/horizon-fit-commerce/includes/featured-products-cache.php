@@ -49,10 +49,10 @@ register_deactivation_hook(dirname(dirname(__FILE__)) . '/horizon-fit-commerce.p
   wp_clear_scheduled_hook('hf_regenerate_featured_products_cache_cron');
 });
 
-if (defined('WP_CLI') && WP_CLI) {
-  WP_CLI::add_command('horizon-fit regenerate-featured-products-cache', function() {
+if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
+  call_user_func(array('WP_CLI', 'add_command'), 'horizon-fit regenerate-featured-products-cache', function() {
     hf_regenerate_featured_products_cache();
-    WP_CLI::success('Featured products cache regenerated');
+    call_user_func(array('WP_CLI', 'success'), 'Featured products cache regenerated');
   });
 }
 
