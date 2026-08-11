@@ -222,7 +222,14 @@
     '@type': 'Organization',
     '@id': routeBaseUrl('/#organization'),
     name: SITE_NAME,
-    url: routeBaseUrl('/')
+    url: routeBaseUrl('/'),
+    email: 'hola@horizonfit.com.ar',
+    sameAs: [
+      'https://www.instagram.com/horizonfit.oficial/',
+      'https://www.tiktok.com/@horizon.fit',
+      'https://www.facebook.com/profile.php?id=61582311777195',
+      'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC'
+    ]
   });
 
   const websiteSchema = (description = HOME_SEO_DESCRIPTION) => ({
@@ -1377,7 +1384,7 @@
   const SOCIAL_DEFAULT_LINKS = {
     instagram: 'https://www.instagram.com/horizonfit.oficial/',
     tiktok: 'https://www.tiktok.com/@horizon.fit',
-    facebook: 'https://www.facebook.com/',
+    facebook: 'https://www.facebook.com/profile.php?id=61582311777195',
     spotify: 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760'
   };
 

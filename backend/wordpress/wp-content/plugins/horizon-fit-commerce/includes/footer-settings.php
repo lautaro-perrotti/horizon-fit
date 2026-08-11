@@ -27,11 +27,11 @@ function hf_footer_defaults() {
             ['text' => 'Medios de pago', 'url' => '/medios-de-pago/'],
         ],
         'contactTitle'    => 'Contacto',
-        'contactLines'    => ['WhatsApp: +54 11 3115-0999', 'hola@horizonfit.com', 'Lunes a viernes 9 a 18h'],
+        'contactLines'    => ['WhatsApp: +54 11 3115-0999', 'hola@horizonfit.com.ar', 'Lunes a viernes 9 a 18h'],
         'social'          => [
             'instagram' => 'https://www.instagram.com/horizonfit.oficial/',
             'tiktok'    => 'https://www.tiktok.com/@horizon.fit',
-            'facebook'  => '#',
+            'facebook'  => 'https://www.facebook.com/profile.php?id=61582311777195',
             'spotify'   => 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760',
         ],
         'copyright'       => '© Horizon Fit 2026. Todos los derechos reservados.',
@@ -68,7 +68,38 @@ function hf_footer_get_settings() {
             }
         }
     }
-    return array_merge(hf_footer_defaults(), $saved);
+    $settings = array_merge(hf_footer_defaults(), $saved);
+
+    // Migra solamente los valores heredados que quedaron publicados antes de
+    // contar con dominio y perfil oficial; el resto sigue siendo editable.
+    if (!empty($settings['contactLines']) && is_array($settings['contactLines'])) {
+        foreach ($settings['contactLines'] as &$line) {
+            if (trim((string) $line) === 'hola@horizonfit.com') {
+                $line = 'hola@horizonfit.com.ar';
+            }
+            if (trim((string) $line) === 'WhatsApp: +54 9 11 0000 0000') {
+                $line = 'WhatsApp: +54 11 3115-0999';
+            }
+        }
+        unset($line);
+    }
+    if (!isset($settings['social']) || !is_array($settings['social'])) {
+        $settings['social'] = [];
+    }
+    $official_social = [
+        'instagram' => 'https://www.instagram.com/horizonfit.oficial/',
+        'tiktok'    => 'https://www.tiktok.com/@horizon.fit',
+        'facebook'  => 'https://www.facebook.com/profile.php?id=61582311777195',
+        'spotify'   => 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760',
+    ];
+    foreach ($official_social as $network => $official_url) {
+        $legacy_url = trim((string) ($settings['social'][$network] ?? ''));
+        if ($legacy_url === '' || $legacy_url === '#' || ($network === 'facebook' && rtrim($legacy_url, '/') === 'https://www.facebook.com')) {
+            $settings['social'][$network] = $official_url;
+        }
+    }
+
+    return $settings;
 }
 
 function hf_commerce_render_footer_settings_page() {

@@ -60,13 +60,21 @@ function hf_build_page_sections($slug) {
         $section_type = get_post_meta($section->ID, '_hf_section_type', true);
         $section_order = get_post_meta($section->ID, '_hf_section_order', true);
         $section_settings = get_post_meta($section->ID, '_hf_section_settings', true);
+        $decoded_settings = $section_settings ? json_decode($section_settings, true) : [];
+
+        // El footer tiene migraciones puntuales para datos institucionales
+        // heredados (email y perfiles sociales). Aplicarlas también al JSON
+        // público evita que una opción vieja vuelva a publicar placeholders.
+        if ($section_type === 'footer' && function_exists('hf_footer_get_settings')) {
+            $decoded_settings = hf_footer_get_settings();
+        }
 
         $formatted_sections[] = [
             'id' => $section->ID,
             'type' => $section_type,
             'order' => (int) $section_order,
             'visible' => (bool) $is_visible,
-            'settings' => $section_settings ? json_decode($section_settings, true) : []
+            'settings' => is_array($decoded_settings) ? $decoded_settings : []
         ];
     }
 

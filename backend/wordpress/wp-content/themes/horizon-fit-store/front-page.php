@@ -7249,7 +7249,7 @@
         <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
           <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
         </a>
-        <a href="#" aria-label="Facebook">
+        <a href="https://www.facebook.com/profile.php?id=61582311777195" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
           <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook">
         </a>
         <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
@@ -7463,7 +7463,7 @@
                 <div class="grid" style="gap:14px;">
                   <div class="field">
                     <div class="label">Email</div>
-                    <input class="control" type="email" placeholder="hola@horizonfit.com" />
+                    <input class="control" type="email" placeholder="hola@horizonfit.com.ar" />
                     <div class="hint">Usado para enviarte el tracking del pedido.</div>
                   </div>
 
@@ -8681,7 +8681,7 @@
           <h4 class="footer__col-title">Contacto</h4>
           <div class="footer__links">
             <span>WhatsApp: +54 11 3115-0999</span>
-            <span>hola@horizonfit.com</span>
+            <span>hola@horizonfit.com.ar</span>
             <span>Lunes a viernes 9 a 18h</span>
           </div>
           <div class="menu-drawer__social" aria-label="Redes sociales"
@@ -8689,7 +8689,7 @@
             <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <img src="https://cdn.simpleicons.org/instagram/FFFFFF" alt="Instagram">
             </a>
-            <a href="#" aria-label="Facebook">
+            <a href="https://www.facebook.com/profile.php?id=61582311777195" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
               <img src="https://cdn.simpleicons.org/facebook/FFFFFF" alt="Facebook">
             </a>
             <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
@@ -8770,7 +8770,7 @@
           <a href="https://www.instagram.com/horizonfit.oficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram" style="width:32px;height:32px;">
           </a>
-          <a href="#" aria-label="Facebook">
+          <a href="https://www.facebook.com/profile.php?id=61582311777195" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
             <img src="https://cdn.simpleicons.org/facebook/35006D" alt="Facebook" style="width:32px;height:32px;">
           </a>
           <a href="https://www.tiktok.com/@horizon.fit" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
