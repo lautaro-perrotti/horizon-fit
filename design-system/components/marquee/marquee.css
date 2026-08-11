@@ -22,6 +22,8 @@
   width: max-content;
   animation: marquee var(--marquee-speed, 30s) linear infinite;
   will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 .hf-marquee__content {
@@ -56,10 +58,10 @@
 /* Keyframes */
 @keyframes marquee {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(var(--marquee-shift, -50%));
+    transform: translate3d(var(--marquee-shift, -50%), 0, 0);
   }
 }
 

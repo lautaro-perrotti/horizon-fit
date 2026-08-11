@@ -94,7 +94,7 @@
 
   const SITE_NAME = 'Horizon Fit';
   const HOME_SEO_TITLE = `${SITE_NAME} | Ropa deportiva y conjuntos`;
-  const HOME_SEO_DESCRIPTION = 'Activewear funcional, conjuntos pensados para combinar y una experiencia de compra clara, rápida y móvil.';
+  const HOME_SEO_DESCRIPTION = 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.';
   const DEFAULT_SOCIAL_IMAGE = resolveMediaUrl('assets/hero-poster-desktop.jpg');
   const INFO_PAGES = {
     '/envios-y-entregas': {
@@ -169,6 +169,7 @@
     twitterImage: 'hfTwitterImage',
     jsonLd: 'hfSeoJsonLd'
   };
+  const HAS_SERVER_RENDERED_SEO = Boolean(document.querySelector('[data-hf-prerender]'));
 
   const ensureHeadNode = (tagName, id, attrs = {}) => {
     let node = document.getElementById(id);
@@ -217,6 +218,37 @@
     applicableCountry: 'AR',
     returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
     merchantReturnDays: 15
+  });
+
+  const merchantShippingServiceSchema = () => ({
+    '@type': 'ShippingService',
+    '@id': routeBaseUrl('/envios-y-entregas/#envio-gratis'),
+    name: 'Envío gratis desde $150.000',
+    fulfillmentType: 'https://schema.org/FulfillmentTypeDelivery',
+    shippingConditions: {
+      '@type': 'ShippingConditions',
+      shippingDestination: {
+        '@type': 'DefinedRegion',
+        addressCountry: 'AR'
+      },
+      orderValue: {
+        '@type': 'MonetaryAmount',
+        minValue: 150000,
+        currency: 'ARS'
+      },
+      shippingRate: {
+        '@type': 'MonetaryAmount',
+        value: 0,
+        currency: 'ARS'
+      }
+    }
+  });
+
+  const merchantShippingDetailsSchema = () => ({
+    '@type': 'OfferShippingDetails',
+    hasShippingService: {
+      '@id': routeBaseUrl('/envios-y-entregas/#envio-gratis')
+    }
   });
 
   const productPrimarySku = (product) => `${product?.sku || product?.variations?.find(item => item?.sku)?.sku || ''}`.trim();
@@ -272,39 +304,40 @@
     }
     const schemaNode = ensureHeadNode('script', SEO_TAGS.jsonLd, { type: 'application/ld+json' });
     const graph = Array.isArray(schema) ? schema.filter(Boolean) : [];
-    if (graph.length) {
+    if (graph.length && !HAS_SERVER_RENDERED_SEO) {
       schemaNode.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
-    } else {
+    } else if (!graph.length && !HAS_SERVER_RENDERED_SEO) {
       schemaNode.textContent = '';
     }
   };
 
-  const organizationSchema = () => ({
-    '@type': 'Organization',
-    '@id': routeBaseUrl('/#organization'),
-    name: SITE_NAME,
-    url: routeBaseUrl('/'),
-    email: 'hola@horizonfit.com.ar',
-    sameAs: [
-      'https://www.instagram.com/horizonfit.oficial/',
-      'https://www.tiktok.com/@horizon.fit',
-      'https://www.facebook.com/profile.php?id=61582311777195',
-      'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC'
-    ],
-    hasMerchantReturnPolicy: merchantReturnPolicySchema()
-  });
+  const organizationSchema = () => {
+    const schema = {
+      '@type': 'Organization',
+      '@id': routeBaseUrl('/#organization'),
+      name: SITE_NAME,
+      url: routeBaseUrl('/'),
+      email: 'hola@horizonfit.com.ar',
+      sameAs: [
+        'https://www.instagram.com/horizonfit.oficial/',
+        'https://www.tiktok.com/@horizon.fit',
+        'https://www.facebook.com/profile.php?id=61582311777195',
+        'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC'
+      ],
+      hasMerchantReturnPolicy: merchantReturnPolicySchema()
+    };
+    if (window.location.pathname.replace(/\/+$/, '') === '/envios-y-entregas') {
+      schema.hasShippingService = merchantShippingServiceSchema();
+    }
+    return schema;
+  };
 
   const websiteSchema = (description = HOME_SEO_DESCRIPTION) => ({
     '@type': 'WebSite',
     '@id': routeBaseUrl('/#website'),
     name: SITE_NAME,
     url: routeBaseUrl('/'),
-    description: normalizeSeoDescription(description),
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: routeBaseUrl('/?s={search_term_string}'),
-      'query-input': 'required name=search_term_string'
-    }
+    description: normalizeSeoDescription(description)
   });
 
   const breadcrumbSchema = (items) => ({
@@ -350,20 +383,55 @@
     return schemas;
   };
 
-  const productSchema = (product, canonical, imageUrl = '') => {
+  const productColorForSchema = (product) => {
+    const explicit = productAttributeValue(product, ['pa_color', 'color', 'Color']);
+    if (explicit) return explicit;
+    const name = plainTextFromHtml(product?.name || '');
+    const colors = [
+      ['Bordeaux', /\b(bordeaux|bord[oó])\b/i],
+      ['Blanco', /\bblanc[oa]\b/i],
+      ['Negro', /\bnegr[oa]\b/i],
+      ['Celeste', /\bceleste\b/i],
+      ['Verde', /\bverde\b/i],
+      ['Rosa', /\brosa\b/i],
+      ['Rojo', /\broj[oa]\b/i],
+      ['Azul', /\bazul\b/i]
+    ];
+    return colors.find(([, pattern]) => pattern.test(name))?.[0] || '';
+  };
+
+  const productSizesForSchema = (product) => {
+    const explicit = productAttributeValue(product, ['pa_talle', 'talle', 'Talle']);
+    if (explicit) return explicit.split(/\s*[|,]\s*/).filter(Boolean);
+    return (Array.isArray(product?.variations) ? product.variations : [])
+      .flatMap(variation => {
+        const value = productAttributeValue(variation, ['pa_talle', 'talle', 'Talle']);
+        return value ? [value] : [];
+      })
+      .filter((value, index, values) => values.indexOf(value) === index);
+  };
+
+  const productOfferSchema = (product, canonical) => {
     const availability = getVisibleProductAvailability(product);
     const priceValue = getProductPriceValue(product);
     const minorUnit = getProductPriceMinorUnit(product);
-    const canPurchase = Boolean(availability.canPurchase);
     const offers = {
       '@type': 'Offer',
       url: canonical,
       priceCurrency: product?.prices?.currency_code || product?.currency || 'ARS',
-      availability: canPurchase ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
+      availability: availability.canPurchase ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      hasMerchantReturnPolicy: merchantReturnPolicySchema(),
+      shippingDetails: merchantShippingDetailsSchema()
     };
     if (Number.isFinite(priceValue) && priceValue > 0) {
       offers.price = `${priceValue / Math.pow(10, minorUnit)}`;
     }
+    return offers;
+  };
+
+  const productSchema = (product, canonical, imageUrl = '') => {
+    const offers = productOfferSchema(product, canonical);
     const schema = {
       '@type': 'Product',
       '@id': `${canonical}#product`,
@@ -375,8 +443,6 @@
     const sku = productPrimarySku(product);
     if (sku) schema.sku = sku;
     schema.brand = { '@type': 'Brand', name: SITE_NAME };
-    offers.itemCondition = 'https://schema.org/NewCondition';
-    offers.hasMerchantReturnPolicy = merchantReturnPolicySchema();
     const groupId = productGroupId(product);
     if (groupId) {
       schema.isVariantOf = {
@@ -385,10 +451,44 @@
         name: `${product?.name || ''}`.replace(/\s+(blanco|negro|azul|celeste|verde|rosa|rojo|bordó|bordo)$/i, '').trim()
       };
     }
-    const color = productAttributeValue(product, ['pa_color', 'color', 'Color']);
-    const size = productAttributeValue(product, ['pa_talle', 'talle', 'Talle']);
+    const color = productColorForSchema(product);
+    const sizes = productSizesForSchema(product);
     if (color) schema.color = color;
-    if (size) schema.size = size;
+    if (sizes.length) schema.size = sizes.join(', ');
+
+    const variations = Array.isArray(product?.variations) ? product.variations : [];
+    if (variations.length) {
+      const variants = variations.map(variation => {
+        const variationSizes = productSizesForSchema(variation);
+        const variant = {
+          '@type': 'Product',
+          '@id': `${canonical}#variation-${variation?.id || variation?.sku || variationSizes.join('-')}`,
+          name: `${product?.name || SITE_NAME}${variationSizes.length ? ` - ${variationSizes.join(', ')}` : ''}`,
+          url: canonical,
+          brand: { '@type': 'Brand', name: SITE_NAME },
+          offers: productOfferSchema(variation, canonical)
+        };
+        if (variation?.sku) variant.sku = variation.sku;
+        if (imageUrl) variant.image = [imageUrl];
+        if (variationSizes.length) variant.size = variationSizes.join(', ');
+        if (color) variant.color = color;
+        return variant;
+      });
+      const group = {
+        '@type': 'ProductGroup',
+        '@id': `${canonical}#product-group`,
+        name: product?.name || SITE_NAME,
+        description: productSeoDescription(product),
+        url: canonical,
+        brand: { '@type': 'Brand', name: SITE_NAME },
+        productGroupID: groupId || `HF-${product?.id || 'product'}`,
+        variesBy: ['https://schema.org/size'],
+        hasVariant: variants
+      };
+      if (imageUrl) group.image = [imageUrl];
+      if (color) group.color = color;
+      return group;
+    }
     return schema;
   };
 
@@ -856,6 +956,11 @@
       const componentMap = new Map(componentEntries);
       const dataMap = new Map(dataEntries);
 
+      // El servidor entrega contenido semántico real para el primer byte.
+      // Se mantiene como cubierta estable durante TODO el armado e hidratado;
+      // retirarlo antes deja visibles secciones parciales y provoca FOUC/CLS.
+      const prerenderedContent = root.querySelector('[data-hf-prerender]');
+
       // Render sections in order
       const t2 = performance.now();
       const sectionElements = new Map();
@@ -869,6 +974,7 @@
         const wrapper = document.createElement('div');
         wrapper.innerHTML = componentHtml;
         const sectionEl = wrapper.firstElementChild;
+        sectionEl.classList.add('hf-runtime-pending');
         sectionElements.set(section.id, sectionEl);
 
         if (!productRoute && section.type === 'featured-products' && !hasProductsAnchor) {
@@ -932,6 +1038,7 @@
           let child = wrapper.firstElementChild;
           while (child) {
             const next = child.nextElementSibling;
+            child.classList.add('hf-runtime-pending');
             document.body.appendChild(child);
             child = next;
           }
@@ -1093,7 +1200,20 @@
       // pintado y cablear cualquier carrusel inyectado de forma asíncrona.
       if (typeof window.initCarousels === 'function') window.initCarousels();
       console.log(`[HF PB] TOTAL: ${Math.round(performance.now() - startedAt)}ms`);
+      // Evita que el intercambio entre el HTML prerenderizado y la interfaz
+      // hidratada ocurra mientras la tipografÃ­a todavÃ­a puede cambiar mÃ©tricas.
+      if (document.fonts?.ready) {
+        await Promise.race([
+          document.fonts.ready,
+          new Promise(resolve => setTimeout(resolve, 1500))
+        ]);
+      }
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       document.documentElement.dataset.pageBuilderReady = 'true';
+      document.querySelectorAll('.hf-runtime-pending').forEach(element => {
+        element.classList.remove('hf-runtime-pending');
+      });
+      if (prerenderedContent) prerenderedContent.remove();
     } catch (e) {
       console.error('Page builder error:', e);
       document.documentElement.dataset.pageBuilderReady = 'error';
@@ -1199,14 +1319,26 @@
     if (badge) badge.textContent = availability.badge || '';
 
     const images = product.imageObjects || product.images || [];
-    const imgElements = clone.querySelectorAll('.hf-product-item__slide img');
-    imgElements.forEach((img, idx) => {
-      if (images[idx]) {
-        const imgUrl = typeof images[idx] === 'string' ? images[idx] : images[idx].url;
-        img.src = imgUrl;
-        img.alt = product.name || '';
+    const slides = Array.from(clone.querySelectorAll('.hf-product-item__slide'));
+    const dots = Array.from(clone.querySelectorAll('.hf-product-item__dot'));
+    let renderedImageCount = 0;
+    slides.forEach((slide, idx) => {
+      const image = images[idx];
+      const imgUrl = typeof image === 'string' ? image : image?.url;
+      const img = slide.querySelector('img');
+      if (!imgUrl || !img) {
+        slide.remove();
+        dots[idx]?.remove();
+        return;
       }
+      img.src = imgUrl;
+      img.alt = product.name || 'Producto Horizon Fit';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      renderedImageCount += 1;
     });
+    const media = clone.querySelector('.hf-product-item__media');
+    if (media && renderedImageCount === 0) media.hidden = true;
 
     const sizesEl = clone.querySelector('.hf-product-item__sizes');
     if (sizesEl && !showSizes) {
@@ -2695,7 +2827,7 @@
           return `
             <article class="hf-cart-item">
               <a class="hf-cart-item__media" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(decodeEntities(item.name || 'producto'))}">
-                ${image ? `<img src="${escapeHtml(image)}" alt="">` : ''}
+                ${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(decodeEntities(item.name || 'Producto Horizon Fit'))}">` : ''}
               </a>
               <div class="hf-cart-item__body">
                 <a class="hf-cart-item__title" href="${productUrl(item)}">${escapeHtml(decodeEntities(item.name || 'Producto'))}</a>
@@ -2915,7 +3047,7 @@
           const category = getVisibleCategories(product.categories).map(item => item.name).filter(Boolean)[0] || '';
           return `
             <a class="hf-search-result" href="${productUrl(product)}">
-              <span class="hf-search-result__media">${image ? `<img src="${escapeHtml(image)}" alt="">` : ''}</span>
+              <span class="hf-search-result__media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(decodeEntities(product.name || 'Producto Horizon Fit'))}">` : ''}</span>
               <span class="hf-search-result__body">
                 <strong>${escapeHtml(decodeEntities(product.name || 'Producto'))}</strong>
                 ${category ? `<small>${escapeHtml(decodeEntities(category))}</small>` : ''}
@@ -3124,10 +3256,13 @@
 
   const renderLookItem = (item) => {
     const image = getProductImages(item)[0];
+    const imageMarkup = image?.url
+      ? `<img src="${escapeHtml(image.url)}" alt="${escapeHtml(item.name || 'Producto Horizon Fit')}" loading="lazy" decoding="async">`
+      : '';
     return `
           <article class="hf-pdp-look__item">
             <a class="hf-pdp-look__thumb" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}">
-              <img src="${escapeHtml(image?.url || '')}" alt="">
+              ${imageMarkup}
             </a>
             <div class="hf-pdp-look__meta">
               <h3 class="hf-pdp-look__name">${escapeHtml(item.name || '')}</h3>
@@ -3141,10 +3276,13 @@
   // "Conjuntos destacados" (imagen + titulo), sin precio/talles/cuotas.
   const renderBuyWithCard = (item) => {
     const image = getProductImages(item)[0];
+    const imageMarkup = image?.url
+      ? `<img src="${escapeHtml(image.url)}" alt="${escapeHtml(item.name || 'Producto Horizon Fit')}" loading="lazy" decoding="async">`
+      : '';
     return `
           <a class="hf-product-item" href="${productUrl(item)}" aria-label="Ver ${escapeHtml(item.name || 'producto')}" style="box-shadow:none;filter:none;">
             <div class="productMedia" style="background:none;">
-              <img src="${escapeHtml(image?.url || '')}" alt="${escapeHtml(item.name || '')}">
+              ${imageMarkup}
             </div>
             <div class="hf-product-item__body">
               <h3 class="hf-product-item__title">${escapeHtml(item.name || '')}</h3>
@@ -3345,13 +3483,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const titleMarkup = collectionUrl
       ? `<a href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}"><h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2></a>`
       : `<h2 class="hf-pdp-look__title">${escapeHtml(title)}</h2>`;
+    const heroMarkup = heroUrl
+      ? `<img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal" loading="lazy" decoding="async">`
+      : '';
     const visualMarkup = collectionUrl
-      ? `<a class="hf-pdp-look__visual" href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}">
-          <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
-        </a>`
-      : `<div class="hf-pdp-look__visual">
-          <img class="hf-pdp-look__hero" src="${escapeHtml(heroUrl)}" alt="${escapeHtml(title)} look principal">
-        </div>`;
+      ? `<a class="hf-pdp-look__visual" href="${escapeHtml(collectionUrl)}" aria-label="Ver todos los productos de ${escapeHtml(title)}">${heroMarkup}</a>`
+      : `<div class="hf-pdp-look__visual">${heroMarkup}</div>`;
     return `
           <div class="hf-carousel__slide">
             <section class="hf-pdp-look" aria-label="${escapeHtml(title)}" data-current-set-slug="${escapeHtml(meta?.slug || '')}">
@@ -3404,12 +3541,15 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const imageUrl = getSetMobileImage(set);
     const pricing = getFeaturedSetPricing(set);
     const copyText = getSetCopy(set);
+    const imageMarkup = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || 'Conjunto Horizon Fit')}" loading="lazy" decoding="async">`
+      : '';
     return `
             <div class="hf-carousel__slide">
               <div class="hf-set-mobile-card" data-current-set-slug="${escapeHtml(set.slug || '')}">
                 <a class="hf-product-item" href="${escapeHtml(href)}" aria-label="Ver todos los productos de ${escapeHtml(set.name || 'conjunto')}">
                   <div class="productMedia" style="background:none;">
-                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(set.name || '')}">
+                    ${imageMarkup}
                   </div>
                   <div class="hf-product-item__body">
                     <h3 class="hf-product-item__title">${escapeHtml(set.name || '')}</h3>
@@ -3639,9 +3779,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const imageUrl = cat.image?.url || '';
     const slug = getCollectionSlugFromUrl(cat.url || cat.link || '') || '';
     const href = slug ? buildCollectionUrl(slug) : (cat.link || cat.url || '#');
+    const imageMarkup = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="Categoria ${escapeHtml(cat.name || '')}" loading="lazy" decoding="async">`
+      : '';
     return `
         <a href="${escapeHtml(href)}" class="hf-category-card" aria-label="Ver ${escapeHtml(cat.name || '')}">
-          <img src="${escapeHtml(imageUrl)}" alt="Categoria ${escapeHtml(cat.name || '')}">
+          ${imageMarkup}
           <div class="hf-category-card__overlay">
             <div>
               <h3 class="hf-category-card__title">${escapeHtml(cat.name || '')}</h3>
@@ -3769,7 +3912,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
               '@type': 'ListItem',
               position: index + 1,
               name: product?.name || '',
-              url: buildProductUrl(product)
+              url: productUrl(product)
             }))
           }
         }
@@ -4306,7 +4449,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           const image = getCartItemImage(item);
           return `
             <div class="hf-checkout-view__order-item">
-              <div class="hf-checkout-view__order-media">${image ? `<img src="${escapeHtml(image)}" alt="">` : ''}</div>
+              <div class="hf-checkout-view__order-media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(decodeEntities(item.name || 'Producto Horizon Fit'))}">` : ''}</div>
               <div class="hf-checkout-view__order-body">
                 <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))}</strong>
                 <span>${escapeHtml(getCartItemDetails(item) || `Cantidad: ${item.quantity || 1}`)}</span>
@@ -4643,10 +4786,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (images[0] && mainImage) {
       mainImage.src = images[0].url;
       mainImage.alt = images[0].alt || product.name || '';
+      mainImage.loading = 'eager';
+      mainImage.decoding = 'async';
+      mainImage.fetchPriority = 'high';
       if (lookImage) {
         lookImage.src = images[0].url;
         lookImage.alt = `${product.name || 'Producto'} look principal`;
       }
+    } else {
+      if (mainMedia) mainMedia.hidden = true;
+      mainImage?.remove();
     }
 
     const productSlug = canonicalSlug || requestedSlug;
