@@ -3881,10 +3881,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
     const canonical = normalizedCat ? buildCollectionUrl(normalizedCat) : routeBaseUrl('/coleccion/');
-    const visibleDescription = collectionDescription(catName, list);
-    const description = normalizeSeoDescription(visibleDescription);
-    const descriptionEl = sectionEl.querySelector('[data-collection-description]');
-    if (descriptionEl) descriptionEl.textContent = visibleDescription;
+    // La descripción se conserva para metadata y schema, pero no se imprime
+    // como un bloque largo antes del catálogo.
+    const description = normalizeSeoDescription(collectionDescription(catName, list));
     updateSeo({
       title: normalizedCat ? `${catName} | ${SITE_NAME}` : `Colección | ${SITE_NAME}`,
       description,

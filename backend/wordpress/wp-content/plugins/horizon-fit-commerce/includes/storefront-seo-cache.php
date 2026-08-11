@@ -318,7 +318,6 @@ function hf_storefront_collection_body($term, $products, $description) {
     return '<div class="hf-prerender hf-prerender--collection" data-hf-prerender>' .
         hf_storefront_prerender_chrome() .
         '<h1>' . esc_html($term->name) . '</h1>' .
-        '<p>' . esc_html($description) . '</p>' .
         '<div class="hf-prerender__grid">' . $cards . '</div></div>';
 }
 
