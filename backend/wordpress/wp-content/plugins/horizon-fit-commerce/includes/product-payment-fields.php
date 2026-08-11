@@ -23,13 +23,13 @@ function hf_product_payment_fields_render() {
         'id'                => '_hf_installments_count',
         'type'              => 'number',
         'label'             => __('Cantidad de cuotas sin interés', 'horizon-fit-commerce'),
-        'placeholder'       => __('Automático según precio', 'horizon-fit-commerce'),
+        'placeholder'       => __('6', 'horizon-fit-commerce'),
         'custom_attributes' => [
             'min'  => '0',
             'step' => '1',
         ],
         'desc_tip'    => true,
-        'description' => __('Vacío aplica la política automática: 3 cuotas desde $60.000 y 6 cuotas desde $150.000. Poné 0 para ocultarlas. Un valor manual nunca supera el máximo permitido por el precio.', 'horizon-fit-commerce'),
+        'description' => __('Vacío usa 6 cuotas. Podés indicar 3 o 6 según la promoción aplicable, o poner 0 para ocultarlas.', 'horizon-fit-commerce'),
         'value'       => get_post_meta($post->ID, '_hf_installments_count', true),
     ]);
 

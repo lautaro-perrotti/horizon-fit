@@ -18,7 +18,7 @@ function hf_footer_defaults() {
         'copy'            => 'Activewear funcional para todos los dias. Nuevos drops, mejores telas y fits pensados para entrenar y vivir en movimiento.',
         'newsPlaceholder' => 'Tu email para promos y drops',
         'newsBtn'         => 'Suscribirme',
-        'chips'           => ['Envío gratis desde $150.000', '3 cuotas desde $60.000 · 6 desde $150.000', 'Cambios fáciles'],
+        'chips'           => ['Envío gratis desde $150.000', '3 y 6 cuotas sin interés', 'Cambios fáciles'],
         'helpTitle'       => 'Ayuda',
         'helpLinks'       => [
             ['text' => 'Envíos y entregas', 'url' => '/envios-y-entregas/'],
@@ -111,7 +111,7 @@ function hf_footer_get_settings() {
     }
 
     $legacy_chips = implode(' ', array_map('strval', (array) ($settings['chips'] ?? [])));
-    if (stripos($legacy_chips, '$60.000') === false) {
+    if (stripos($legacy_chips, '$60.000') !== false || stripos($legacy_chips, '6 desde $150.000') !== false) {
         $settings['chips'] = hf_footer_defaults()['chips'];
     }
 

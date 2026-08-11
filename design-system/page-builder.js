@@ -336,7 +336,7 @@
         '@id': `${canonical}#faq`,
         mainEntity: [
           ['¿Cómo elijo mi talle?', 'Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.'],
-          ['¿Qué cuotas están disponibles?', 'Ofrecemos 3 cuotas sin interés desde $60.000 y 6 cuotas sin interés desde $150.000, sujeto a las tarjetas y medios habilitados en el checkout.'],
+          ['¿Qué cuotas están disponibles?', 'Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.'],
           ['¿Cuándo el envío es gratis?', 'El envío es gratuito en compras iguales o superiores a $150.000.'],
           ['¿Cómo sigo mi pedido?', 'Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.'],
           ['¿Cuánto tiempo tengo para cambiar una prenda?', 'Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.']
@@ -1290,7 +1290,7 @@
     }
   };
 
-  const MARQUEE_MESSAGE = '3 CUOTAS SIN INTERÉS DESDE $60.000 · 6 CUOTAS SIN INTERÉS DESDE $150.000';
+  const MARQUEE_MESSAGE = '3 Y 6 CUOTAS SIN INTERÉS';
 
   // El marquee debe mostrar solo el mensaje comercial principal, repetido
   // las veces necesarias para completar el loop.

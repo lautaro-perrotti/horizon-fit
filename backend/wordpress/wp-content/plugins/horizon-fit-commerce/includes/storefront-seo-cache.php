@@ -315,7 +315,7 @@ function hf_regenerate_storefront_seo_cache() {
             if ('preguntas-frecuentes' === $slug) {
                 $faq_items = array(
                     array('¿Cómo elijo mi talle?', 'Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.'),
-                    array('¿Qué cuotas están disponibles?', 'Ofrecemos 3 cuotas sin interés desde $60.000 y 6 cuotas sin interés desde $150.000, sujeto a las tarjetas y medios habilitados en el checkout.'),
+                    array('¿Qué cuotas están disponibles?', 'Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.'),
                     array('¿Cuándo el envío es gratis?', 'El envío es gratuito en compras iguales o superiores a $150.000.'),
                     array('¿Cómo sigo mi pedido?', 'Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.'),
                     array('¿Cuánto tiempo tengo para cambiar una prenda?', 'Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.'),

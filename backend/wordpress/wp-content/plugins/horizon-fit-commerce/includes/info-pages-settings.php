@@ -32,7 +32,7 @@ function hf_info_pages_defaults() {
         'medios-de-pago' => [
             'title' => 'Medios de pago',
             'description' => 'Conocé los medios de pago, las cuotas sin interés y el beneficio por transferencia de Horizon Fit.',
-            'content' => '<h2>Tarjetas</h2><p>Podés pagar con tarjetas habilitadas mediante Payway o Mercado Pago. Las opciones definitivas se muestran en el checkout.</p><h2>Cuotas sin interés</h2><p><strong>3 cuotas sin interés desde $60.000.</strong></p><p><strong>6 cuotas sin interés desde $150.000.</strong></p><p>La disponibilidad puede depender de la tarjeta, el banco y la aprobación del proveedor de pagos.</p><h2>Transferencia bancaria</h2><p>Cuando esta opción esté disponible, el checkout muestra el importe final y las instrucciones necesarias para completar la operación. El pedido se prepara después de acreditar el pago.</p><h2>Seguridad</h2><p>Horizon Fit no almacena los datos completos de tu tarjeta. El procesamiento se realiza a través de las plataformas de pago habilitadas.</p>',
+            'content' => '<h2>Tarjetas</h2><p>Podés pagar con tarjetas habilitadas mediante Payway o Mercado Pago. Las opciones definitivas se muestran en el checkout.</p><h2>Cuotas sin interés</h2><p><strong>Ofrecemos 3 y 6 cuotas sin interés.</strong></p><p>La disponibilidad puede depender de la tarjeta, el banco y la aprobación del proveedor de pagos.</p><h2>Transferencia bancaria</h2><p>Cuando esta opción esté disponible, el checkout muestra el importe final y las instrucciones necesarias para completar la operación. El pedido se prepara después de acreditar el pago.</p><h2>Seguridad</h2><p>Horizon Fit no almacena los datos completos de tu tarjeta. El procesamiento se realiza a través de las plataformas de pago habilitadas.</p>',
         ],
         'terminos' => [
             'title' => 'Términos y condiciones',
@@ -62,7 +62,7 @@ function hf_info_pages_defaults() {
         'preguntas-frecuentes' => [
             'title' => 'Preguntas frecuentes',
             'description' => 'Respuestas sobre talles, pagos, cuotas, envíos, cambios y seguimiento de pedidos de Horizon Fit.',
-            'content' => '<h2>¿Cómo elijo mi talle?</h2><p>Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.</p><h2>¿Qué cuotas están disponibles?</h2><p>Ofrecemos 3 cuotas sin interés desde $60.000 y 6 cuotas sin interés desde $150.000, sujeto a las tarjetas y medios habilitados en el checkout.</p><h2>¿Cuándo el envío es gratis?</h2><p>El envío es gratuito en compras iguales o superiores a $150.000.</p><h2>¿Cómo sigo mi pedido?</h2><p>Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.</p><h2>¿Cuánto tiempo tengo para cambiar una prenda?</h2><p>Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.</p>',
+            'content' => '<h2>¿Cómo elijo mi talle?</h2><p>Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.</p><h2>¿Qué cuotas están disponibles?</h2><p>Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.</p><h2>¿Cuándo el envío es gratis?</h2><p>El envío es gratuito en compras iguales o superiores a $150.000.</p><h2>¿Cómo sigo mi pedido?</h2><p>Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.</p><h2>¿Cuánto tiempo tengo para cambiar una prenda?</h2><p>Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.</p>',
         ],
     ];
 }
@@ -91,8 +91,8 @@ function hf_info_pages_get() {
             $has_legacy_policy = '' !== $saved_content
                 && (false === stripos($saved_content, '6 meses') || false === stripos($saved_content, '15 días'));
         } elseif ('medios-de-pago' === $slug) {
-            $has_legacy_policy = '' !== $saved_content
-                && (false === stripos($saved_content, '$60.000') || false === stripos($saved_content, '$150.000'));
+            $has_legacy_policy = false !== stripos($saved_content, '$60.000')
+                || false !== stripos($saved_content, '6 cuotas sin interés desde $150.000');
         }
 
         if ($has_legacy_policy) {

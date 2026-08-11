@@ -117,14 +117,6 @@ function hf_catalog_display_name($name) {
   return trim($name);
 }
 
-function hf_featured_products_installments_count_for_price($price) {
-  if (!is_numeric($price) || (float) $price < 60000) {
-    return 0;
-  }
-
-  return (float) $price >= 150000 ? 6 : 3;
-}
-
 function hf_featured_products_default_transfer_discount_percent() {
   return 10;
 }
@@ -150,23 +142,12 @@ function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $
 }
 
 function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
-  $configured_count = hf_featured_products_get_payment_number_meta(
+  $installments_count = hf_featured_products_get_payment_number_meta(
     $product_id,
     $parent_id,
     '_hf_installments_count',
-    null
+    hf_featured_products_default_installments_count()
   );
-  $policy_count = hf_featured_products_installments_count_for_price($price);
-
-  // Un 0 explícito continúa ocultando las cuotas. Cualquier cantidad manual
-  // queda limitada por la política comercial vigente para evitar prometer
-  // 6 cuotas en productos que no alcanzan los $150.000.
-  if ($configured_count !== null && (float) $configured_count === 0.0) {
-    return '';
-  }
-  $installments_count = $configured_count === null
-    ? $policy_count
-    : min((int) $configured_count, $policy_count);
 
   if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
     $installment_amount = (float) $price / $installments_count;

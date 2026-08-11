@@ -30,12 +30,12 @@ function hf_register_marquee_settings_endpoint() {
 add_action('rest_api_init', 'hf_register_marquee_settings_endpoint');
 
 function hf_get_marquee_settings() {
-    $policy_message = '3 cuotas sin interés desde $60.000 · 6 cuotas sin interés desde $150.000';
+    $policy_message = '3 y 6 cuotas sin interés';
     $default_messages = array_fill(0, 5, $policy_message);
     $messages = get_option('hf_marquee_messages', $default_messages);
 
     $legacy = !is_array($messages) || array_filter((array) $messages, function ($message) {
-        return stripos((string) $message, '$60.000') === false || stripos((string) $message, '$150.000') === false;
+        return stripos((string) $message, '$60.000') !== false || stripos((string) $message, '$150.000') !== false;
     });
     if ($legacy) {
         $messages = $default_messages;

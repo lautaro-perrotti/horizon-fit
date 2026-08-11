@@ -4420,7 +4420,7 @@
   <div class="hf-marquee hf-marquee--fixed" id="topMarquee" data-hf="marquee" data-speed="20">
     <div class="hf-marquee__track">
       <div class="hf-marquee__content">
-        <span class="hf-marquee__item">3 cuotas sin interés desde $60.000 · 6 cuotas sin interés desde $150.000</span>
+        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
       </div>
     </div>
@@ -5825,7 +5825,7 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h2 class="hf-pdp-trust-title">3 CUOTAS DESDE $60.000 · 6 CUOTAS DESDE $150.000</h2>' +
+          '      <h2 class="hf-pdp-trust-title">3 Y 6 CUOTAS SIN INTERÉS</h2>' +
           '      <p class="hf-pdp-trust-text">Cuotas sin interés con las tarjetas habilitadas en el checkout. <a href="/medios-de-pago/">Ver medios de pago</a>.</p>' +
           '    </div>' +
           '  </div>' +
@@ -7046,7 +7046,7 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">3 CUOTAS DESDE $60.000 &middot; 6 CUOTAS DESDE $150.000</h3>
+              <h3 class="trust-item__title">3 Y 6 CUOTAS SIN INTER&Eacute;S</h3>
               <p class="trust-item__description">Sin inter&eacute;s con tarjetas habilitadas</p>
             </div>
           </div>
