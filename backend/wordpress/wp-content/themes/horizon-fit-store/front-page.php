@@ -4420,7 +4420,7 @@
   <div class="hf-marquee hf-marquee--fixed" id="topMarquee" data-hf="marquee" data-speed="20">
     <div class="hf-marquee__track">
       <div class="hf-marquee__content">
-        <span class="hf-marquee__item">3 y 6 cuotas sin interés</span>
+        <span class="hf-marquee__item">3 cuotas sin interés desde $60.000 · 6 cuotas sin interés desde $150.000</span>
         <span class="hf-marquee__separator" aria-hidden="true"></span>
       </div>
     </div>
@@ -5797,8 +5797,8 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h2 class="hf-pdp-trust-title">RETIRO Y ENVÍO GRATIS</h2>' +
-          '      <p class="hf-pdp-trust-text">Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000</p>' +
+          '      <h2 class="hf-pdp-trust-title">ENVÍO GRATIS</h2>' +
+          '      <p class="hf-pdp-trust-text">Envío gratis a todo el país en compras iguales o superiores a $150.000.</p>' +
           '    </div>' +
           '  </div>' +
           '  <div class="hf-pdp-trust-item">' +
@@ -5812,7 +5812,7 @@
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
           '      <h2 class="hf-pdp-trust-title">CAMBIOS Y DEVOLUCIONES</h2>' +
-          '      <p class="hf-pdp-trust-text">¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.</p>' +
+          '      <p class="hf-pdp-trust-text">¿Dudas sobre tu elección? Tenés hasta 6 meses para cambiar tu compra y hasta 15 días para solicitar una devolución.</p>' +
           '    </div>' +
           '  </div>' +
           '  <div class="hf-pdp-trust-item">' +
@@ -5825,8 +5825,8 @@
           '      </svg>' +
           '    </div>' +
           '    <div class="hf-pdp-trust-content">' +
-          '      <h2 class="hf-pdp-trust-title">Información cuotas</h2>' +
-          '      <p class="hf-pdp-trust-text">Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a></p>' +
+          '      <h2 class="hf-pdp-trust-title">3 CUOTAS DESDE $60.000 · 6 CUOTAS DESDE $150.000</h2>' +
+          '      <p class="hf-pdp-trust-text">Cuotas sin interés con las tarjetas habilitadas en el checkout. <a href="/medios-de-pago/">Ver medios de pago</a>.</p>' +
           '    </div>' +
           '  </div>' +
           '</div>' +
@@ -7046,8 +7046,8 @@
               </svg>
             </div>
             <div class="trust-item__content">
-              <h3 class="trust-item__title">3 y 6 cuotas sin inter&eacute;s</h3>
-              <p class="trust-item__description">Pagando con d&eacute;bito y cr&eacute;dito</p>
+              <h3 class="trust-item__title">3 CUOTAS DESDE $60.000 &middot; 6 CUOTAS DESDE $150.000</h3>
+              <p class="trust-item__description">Sin inter&eacute;s con tarjetas habilitadas</p>
             </div>
           </div>
           <div class="trust-item">
@@ -7064,7 +7064,7 @@
             </div>
             <div class="trust-item__content">
               <h3 class="trust-item__title">Cambios f&aacute;ciles</h3>
-              <p class="trust-item__description">Ten&eacute;s hasta 30 d&iacute;as para cambiar tu compra</p>
+              <p class="trust-item__description">Ten&eacute;s 6 meses para cambios y 15 d&iacute;as para devoluciones</p>
             </div>
           </div>
           <div class="trust-item">
@@ -7646,13 +7646,13 @@
               <div class="hf-marquee hf-marquee--primary" data-hf="marquee" data-speed="25">
                 <div class="hf-marquee__track">
                   <div class="hf-marquee__content">
-                    <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                    <span class="hf-marquee__item">Envío gratis desde $150.000</span>
                     <span class="hf-marquee__separator" aria-hidden="true"></span>
                     <span class="hf-marquee__item">DROP 01 disponible</span>
                     <span class="hf-marquee__separator" aria-hidden="true"></span>
                     <span class="hf-marquee__item">Cambios sin costo</span>
                     <span class="hf-marquee__separator" aria-hidden="true"></span>
-                    <span class="hf-marquee__item">Envío gratis en compras +$120.000</span>
+                    <span class="hf-marquee__item">Envío gratis desde $150.000</span>
                     <span class="hf-marquee__separator" aria-hidden="true"></span>
                     <span class="hf-marquee__item">DROP 01 disponible</span>
                     <span class="hf-marquee__separator" aria-hidden="true"></span>
@@ -8506,7 +8506,7 @@
                     <div class="alert__dot"></div>
                     <div>
                       <b>Envío gratis</b>
-                      <div class="small">Superando $ 120.000 (CABA/GBA).</div>
+                      <div class="small">Envío gratis desde $150.000.</div>
                     </div>
                   </div>
 

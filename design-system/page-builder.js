@@ -99,38 +99,58 @@
   const INFO_PAGES = {
     '/envios-y-entregas': {
       title: 'Envíos y entregas',
-      description: 'Información de envíos y entregas de Horizon Fit.'
+      description: 'Conocé cómo preparamos, despachamos y entregamos tu compra de Horizon Fit en Argentina.'
     },
     '/cambios-y-devoluciones': {
       title: 'Cambios y devoluciones',
-      description: 'Información de cambios y devoluciones de Horizon Fit.'
+      description: 'Consultá los plazos y condiciones para cambios y devoluciones de compras realizadas en Horizon Fit.'
     },
     '/guia-de-talles': {
       title: 'Guía de talles',
-      description: 'Guía de talles de Horizon Fit.'
+      description: 'Aprendé a tomar tus medidas y elegí el talle de activewear Horizon Fit que mejor se adapte a vos.'
     },
     '/medios-de-pago': {
       title: 'Medios de pago',
-      description: 'Información de medios de pago de Horizon Fit.'
+      description: 'Conocé los medios de pago, las cuotas sin interés y el beneficio por transferencia de Horizon Fit.'
     },
     '/terminos': {
       title: 'Términos y condiciones',
-      description: 'Términos y condiciones de Horizon Fit.'
+      description: 'Términos de compra, disponibilidad, pagos, envíos, cambios y uso del sitio web de Horizon Fit.'
     },
     '/privacidad': {
       title: 'Política de privacidad',
-      description: 'Política de privacidad de Horizon Fit.'
+      description: 'Conocé qué datos utiliza Horizon Fit, para qué se procesan y cómo podés ejercer tus derechos de privacidad.'
     },
     '/defensa-al-consumidor': {
       title: 'Defensa al consumidor',
-      description: 'Información de defensa al consumidor de Horizon Fit.'
+      description: 'Información y canales de atención para consumidores que compran productos en la tienda online Horizon Fit.'
+    },
+    '/quienes-somos': {
+      title: 'Quiénes somos',
+      description: 'Conocé Horizon Fit, una propuesta argentina de activewear funcional pensada para entrenar y vivir en movimiento.'
+    },
+    '/contacto': {
+      title: 'Contacto',
+      description: 'Contactate con Horizon Fit por WhatsApp y recibí ayuda sobre productos, talles, pedidos, pagos o entregas.'
+    },
+    '/preguntas-frecuentes': {
+      title: 'Preguntas frecuentes',
+      description: 'Respuestas sobre talles, pagos, cuotas, envíos, cambios y seguimiento de pedidos de Horizon Fit.'
     }
   };
   const FOOTER_HELP_DEFAULT_LINKS = [
     { text: 'Envíos y entregas', url: '/envios-y-entregas/' },
     { text: 'Cambios y devoluciones', url: '/cambios-y-devoluciones/' },
     { text: 'Guía de talles', url: '/guia-de-talles/' },
-    { text: 'Medios de pago', url: '/medios-de-pago/' }
+    { text: 'Medios de pago', url: '/medios-de-pago/' },
+    { text: 'Quiénes somos', url: '/quienes-somos/' },
+    { text: 'Contacto', url: '/contacto/' },
+    { text: 'Preguntas frecuentes', url: '/preguntas-frecuentes/' }
+  ];
+  const FOOTER_LEGAL_DEFAULT_LINKS = [
+    { text: 'Términos', url: '/terminos/' },
+    { text: 'Privacidad', url: '/privacidad/' },
+    { text: 'Defensa al consumidor', url: '/defensa-al-consumidor/' }
   ];
 
   const SEO_TAGS = {
@@ -178,10 +198,51 @@
 
   const routeBaseUrl = (pathname, search = '') => {
     const url = new URL(window.location.href);
-    url.pathname = pathname;
+    const [cleanPathname, fragment = ''] = `${pathname || '/'}`.split('#', 2);
+    url.pathname = cleanPathname || '/';
     url.search = search;
-    url.hash = '';
+    url.hash = fragment ? `#${fragment}` : '';
     return url.href;
+  };
+
+  const productSeoDescription = (product) => {
+    const name = plainTextFromHtml(product?.name || 'Activewear Horizon Fit').trim();
+    return normalizeSeoDescription(
+      `Descubrí ${name} de Horizon Fit: una prenda de activewear cómoda y funcional para entrenar, combinar con tu set y acompañarte todos los días.`
+    );
+  };
+
+  const merchantReturnPolicySchema = () => ({
+    '@type': 'MerchantReturnPolicy',
+    applicableCountry: 'AR',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+    merchantReturnDays: 15
+  });
+
+  const productPrimarySku = (product) => `${product?.sku || product?.variations?.find(item => item?.sku)?.sku || ''}`.trim();
+
+  const productGroupId = (product) => {
+    const sku = productPrimarySku(product);
+    const match = sku.match(/^(\d{3})-([A-Z]{3})-/i);
+    return match ? `${match[1]}-${match[2]}`.toUpperCase() : '';
+  };
+
+  const productAttributeValue = (product, names) => {
+    const attributes = product?.attributes && typeof product.attributes === 'object' ? product.attributes : {};
+    if (Array.isArray(attributes)) {
+      const normalizedNames = names.map(name => `${name}`.replace(/^pa_/, '').toLowerCase());
+      const match = attributes.find(attribute => normalizedNames.includes(`${attribute?.name || attribute?.label || ''}`.replace(/^pa_/, '').toLowerCase()));
+      const values = Array.isArray(match?.values)
+        ? match.values.map(value => value?.name || value?.slug || value).filter(Boolean)
+        : [];
+      if (values.length) return values.join(', ');
+    }
+    for (const name of names) {
+      const direct = attributes[name];
+      const value = Array.isArray(direct) ? direct.join(', ') : direct?.options?.join?.(', ') || direct?.value || direct;
+      if (`${value || ''}`.trim()) return `${value}`.trim();
+    }
+    return '';
   };
 
   const updateSeo = ({
@@ -229,7 +290,8 @@
       'https://www.tiktok.com/@horizon.fit',
       'https://www.facebook.com/profile.php?id=61582311777195',
       'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC'
-    ]
+    ],
+    hasMerchantReturnPolicy: merchantReturnPolicySchema()
   });
 
   const websiteSchema = (description = HOME_SEO_DESCRIPTION) => ({
@@ -255,6 +317,39 @@
     }))
   });
 
+  const infoPageSchema = (page, canonical) => {
+    const pageType = page?.path === '/quienes-somos'
+      ? 'AboutPage'
+      : page?.path === '/contacto'
+        ? 'ContactPage'
+        : 'WebPage';
+    const schemas = [{
+      '@type': pageType,
+      '@id': `${canonical}#webpage`,
+      name: page?.title || SITE_NAME,
+      description: normalizeSeoDescription(page?.description || ''),
+      url: canonical
+    }];
+    if (page?.path === '/preguntas-frecuentes') {
+      schemas.push({
+        '@type': 'FAQPage',
+        '@id': `${canonical}#faq`,
+        mainEntity: [
+          ['¿Cómo elijo mi talle?', 'Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.'],
+          ['¿Qué cuotas están disponibles?', 'Ofrecemos 3 cuotas sin interés desde $60.000 y 6 cuotas sin interés desde $150.000, sujeto a las tarjetas y medios habilitados en el checkout.'],
+          ['¿Cuándo el envío es gratis?', 'El envío es gratuito en compras iguales o superiores a $150.000.'],
+          ['¿Cómo sigo mi pedido?', 'Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.'],
+          ['¿Cuánto tiempo tengo para cambiar una prenda?', 'Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.']
+        ].map(([name, text]) => ({
+          '@type': 'Question',
+          name,
+          acceptedAnswer: { '@type': 'Answer', text }
+        }))
+      });
+    }
+    return schemas;
+  };
+
   const productSchema = (product, canonical, imageUrl = '') => {
     const availability = getVisibleProductAvailability(product);
     const priceValue = getProductPriceValue(product);
@@ -273,12 +368,27 @@
       '@type': 'Product',
       '@id': `${canonical}#product`,
       name: product?.name || SITE_NAME,
-      description: normalizeSeoDescription(plainTextFromHtml(product?.shortDescription || product?.description || product?.excerpt || ''), HOME_SEO_DESCRIPTION),
+      description: productSeoDescription(product),
       offers
     };
     if (imageUrl) schema.image = [imageUrl];
-    if (product?.sku) schema.sku = `${product.sku}`;
+    const sku = productPrimarySku(product);
+    if (sku) schema.sku = sku;
     schema.brand = { '@type': 'Brand', name: SITE_NAME };
+    offers.itemCondition = 'https://schema.org/NewCondition';
+    offers.hasMerchantReturnPolicy = merchantReturnPolicySchema();
+    const groupId = productGroupId(product);
+    if (groupId) {
+      schema.isVariantOf = {
+        '@type': 'ProductGroup',
+        productGroupID: groupId,
+        name: `${product?.name || ''}`.replace(/\s+(blanco|negro|azul|celeste|verde|rosa|rojo|bordó|bordo)$/i, '').trim()
+      };
+    }
+    const color = productAttributeValue(product, ['pa_color', 'color', 'Color']);
+    const size = productAttributeValue(product, ['pa_talle', 'talle', 'Talle']);
+    if (color) schema.color = color;
+    if (size) schema.size = size;
     return schema;
   };
 
@@ -618,18 +728,20 @@
           schema: []
         });
       } else if (infoPage) {
+        const canonical = routeBaseUrl(`${infoPage.path}/`);
         updateSeo({
           title: `${infoPage.title} | ${SITE_NAME}`,
           description: infoPage.description,
-          canonical: routeBaseUrl(`${infoPage.path}/`),
+          canonical,
           ogType: 'website',
           schema: [
             organizationSchema(),
             websiteSchema(infoPage.description),
             breadcrumbSchema([
               { name: 'Inicio', url: routeBaseUrl('/') },
-              { name: infoPage.title, url: routeBaseUrl(`${infoPage.path}/`) }
-            ])
+              { name: infoPage.title, url: canonical }
+            ]),
+            ...infoPageSchema(infoPage, canonical)
           ]
         });
       } else if (utilityRoute) {
@@ -854,8 +966,25 @@
         const saved = infoData && infoData[infoPage.path];
         if (saved) {
           if (saved.title) infoPage.title = saved.title;
+          if (saved.description) infoPage.description = saved.description;
           if (saved.content) infoPage.content = saved.content;
         }
+        const canonical = routeBaseUrl(`${infoPage.path}/`);
+        updateSeo({
+          title: `${infoPage.title} | ${SITE_NAME}`,
+          description: infoPage.description,
+          canonical,
+          ogType: 'article',
+          schema: [
+            organizationSchema(),
+            websiteSchema(infoPage.description),
+            breadcrumbSchema([
+              { name: 'Inicio', url: routeBaseUrl('/') },
+              { name: infoPage.title, url: canonical }
+            ]),
+            ...infoPageSchema(infoPage, canonical)
+          ]
+        });
         renderInfoPage(root, infoPage, await infoPageTemplatePromise);
       }
 
@@ -1161,7 +1290,7 @@
     }
   };
 
-  const MARQUEE_MESSAGE = '3 Y 6 CUOTAS SIN INTERÉS';
+  const MARQUEE_MESSAGE = '3 CUOTAS SIN INTERÉS DESDE $60.000 · 6 CUOTAS SIN INTERÉS DESDE $150.000';
 
   // El marquee debe mostrar solo el mensaje comercial principal, repetido
   // las veces necesarias para completar el loop.
@@ -1238,9 +1367,15 @@
     applySocialLinks(social);
 
     setText('[data-footer-copyright]', settings.copyright);
-    (settings.legalLinks || []).forEach((link, i) => {
-      setText(`[data-footer-legal-link="${i}"]`, link?.text);
-      setAttr(`[data-footer-legal-link="${i}"]`, 'href', link?.url);
+    FOOTER_LEGAL_DEFAULT_LINKS.forEach((fallback, i) => {
+      const saved = settings.legalLinks?.[i] || {};
+      const savedUrl = `${saved.url || ''}`.trim();
+      const link = {
+        text: saved.text || fallback.text,
+        url: savedUrl && savedUrl !== '#' ? savedUrl : fallback.url
+      };
+      setText(`[data-footer-legal-link="${i}"]`, link.text);
+      setAttr(`[data-footer-legal-link="${i}"]`, 'href', link.url);
     });
   };
 
@@ -2262,7 +2397,9 @@
   const getProductPriceMinorUnit = (product) => {
     const minorUnit = Number(product?.prices?.currency_minor_unit);
     if (Number.isFinite(minorUnit) && minorUnit >= 0) return minorUnit;
-    return 2;
+    // La caché propia guarda importes en unidades mayores (67000 = $67.000),
+    // a diferencia de Store API, que siempre informa currency_minor_unit.
+    return 0;
   };
 
   const getProductDisplayPriceText = (product) => {
@@ -3533,6 +3670,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
   const capitalize = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
+  const collectionDescription = (catName, list = []) => {
+    const names = list.slice(0, 4).map(product => plainTextFromHtml(product?.name || '')).filter(Boolean);
+    const examples = names.length ? ` Encontrá opciones como ${names.join(', ')} y descubrí otras variantes disponibles.` : '';
+    return `Explorá ${catName} de Horizon Fit, una selección de activewear pensada para acompañarte en entrenamientos y en tu rutina diaria. Compará modelos, colores, talles y precios, elegí cada prenda por separado o combinala con piezas de la misma línea para armar un conjunto completo.${examples} Revisá la ficha de cada producto para conocer su calce, medios de pago y disponibilidad antes de comprar.`;
+  };
+
   const renderInfoPage = (root, page, html) => {
     if (!page || !html) return;
 
@@ -3548,7 +3691,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (titleEl) titleEl.textContent = page.title || '';
 
     const kickerEl = sectionEl.querySelector('[data-info-kicker]');
-    if (kickerEl) kickerEl.textContent = 'Ayuda';
+    if (kickerEl) {
+      const legalPaths = ['/terminos', '/privacidad', '/defensa-al-consumidor'];
+      kickerEl.textContent = legalPaths.includes(page.path) ? 'Información legal' : 'Horizon Fit';
+    }
 
     const contentEl = sectionEl.querySelector('[data-info-content]');
     if (contentEl && page.content) contentEl.innerHTML = page.content;
@@ -3592,9 +3738,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const titleEl = sectionEl.querySelector('[data-collection-title]');
     if (titleEl) titleEl.textContent = catName;
     const canonical = normalizedCat ? buildCollectionUrl(normalizedCat) : routeBaseUrl('/coleccion/');
-    const description = normalizedCat
-      ? normalizeSeoDescription(`Explorá ${catName} de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`)
-      : normalizeSeoDescription(`Explorá la colección de ${SITE_NAME}: prendas y sets listos para comprar el look completo.`);
+    const visibleDescription = collectionDescription(catName, list);
+    const description = normalizeSeoDescription(visibleDescription);
+    const descriptionEl = sectionEl.querySelector('[data-collection-description]');
+    if (descriptionEl) descriptionEl.textContent = visibleDescription;
     updateSeo({
       title: normalizedCat ? `${catName} | ${SITE_NAME}` : `Colección | ${SITE_NAME}`,
       description,
@@ -3608,7 +3755,24 @@ ${renderFeaturedSetPriceHtml(pricing)}
           { name: 'Inicio', url: routeBaseUrl('/') },
           { name: 'Tienda', url: routeBaseUrl('/coleccion/') },
           { name: catName, url: canonical }
-        ])
+        ]),
+        {
+          '@type': 'CollectionPage',
+          '@id': `${canonical}#collection`,
+          name: catName,
+          description,
+          url: canonical,
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: list.length,
+            itemListElement: list.map((product, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              name: product?.name || '',
+              url: buildProductUrl(product)
+            }))
+          }
+        }
       ]
     });
 
@@ -4489,17 +4653,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const canonical = productSlug
       ? routeBaseUrl(`/producto/${encodeURIComponent(productSlug)}/`)
       : routeBaseUrl('/producto/');
-    const productDescription = normalizeSeoDescription(
-      plainTextFromHtml(product.description || product.shortDescription || product.excerpt || ''),
-      HOME_SEO_DESCRIPTION
-    );
-    const productImage = images[0]?.url || DEFAULT_SOCIAL_IMAGE;
+    const productDescription = productSeoDescription(product);
+    const productImage = images[0]?.url || '';
     updateSeo({
       title: `${product.name || 'Producto'} | ${SITE_NAME}`,
       description: productDescription,
       canonical,
+      robots: productImage
+        ? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
+        : 'noindex,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
       ogType: 'product',
-      ogImage: productImage,
+      ogImage: productImage || DEFAULT_SOCIAL_IMAGE,
       schema: [
         organizationSchema(),
         websiteSchema(productDescription),

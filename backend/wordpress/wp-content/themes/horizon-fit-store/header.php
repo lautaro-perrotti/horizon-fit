@@ -12,10 +12,10 @@
 
 <div class="hf-announce-bar" role="presentation">
     <div class="hf-announce-bar__track">
-        <span>3 y 6 cuotas sin inter&eacute;s</span>
+        <span>3 cuotas sin inter&eacute;s desde $60.000 &middot; 6 cuotas sin inter&eacute;s desde $150.000</span>
         <span>Env&iacute;o gratis desde $150.000</span>
         <span>Cambios f&aacute;ciles</span>
-        <span>3 y 6 cuotas sin inter&eacute;s</span>
+        <span>3 cuotas sin inter&eacute;s desde $60.000 &middot; 6 cuotas sin inter&eacute;s desde $150.000</span>
         <span>Env&iacute;o gratis desde $150.000</span>
         <span>Cambios f&aacute;ciles</span>
     </div>

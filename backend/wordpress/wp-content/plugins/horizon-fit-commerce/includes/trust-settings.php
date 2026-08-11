@@ -12,22 +12,22 @@ function hf_trust_defaults() {
     return [
         'items' => [
             ['title' => 'Envíos gratis a todo el país', 'description' => 'En compras superiores a $150.000'],
-            ['title' => '3 y 6 cuotas sin interés', 'description' => 'Pagando con débito y crédito'],
-            ['title' => 'Cambios fáciles', 'description' => 'Tenés hasta 30 días para cambiar tu compra'],
+            ['title' => '3 CUOTAS DESDE $60.000 · 6 CUOTAS DESDE $150.000', 'description' => 'Sin interés con tarjetas habilitadas'],
+            ['title' => 'Cambios fáciles', 'description' => 'Tenés 6 meses para cambios y 15 días para devoluciones'],
             ['title' => 'Atención personalizada', 'description' => 'Te acompañamos antes y después de tu compra'],
         ],
         'pdpItems' => [
             [
-                'title' => 'RETIRO Y ENVÍO GRATIS',
-                'descriptionHtml' => 'Retira gratis en nuestras tiendas o envío gratis en compras mayores a $40.000',
+                'title' => 'ENVÍO GRATIS',
+                'descriptionHtml' => 'Envío gratis a todo el país en compras iguales o superiores a $150.000.',
             ],
             [
                 'title' => 'CAMBIOS Y DEVOLUCIONES',
-                'descriptionHtml' => '¿Dudas sobre tu elección? Tenes hasta 6 meses para cambiar tu compra y hasta 15 días de devolución.',
+                'descriptionHtml' => '¿Dudas sobre tu elección? Tenés hasta 6 meses para cambiar tu compra y hasta 15 días para solicitar una devolución.',
             ],
             [
-                'title' => 'Información cuotas',
-                'descriptionHtml' => 'Pagá con Visa, Amex y Master en 3 cuotas sin interés en compras superiores a $60.000. <a href="#">Ver condiciones de financiación</a>',
+                'title' => '3 CUOTAS DESDE $60.000 · 6 CUOTAS DESDE $150.000',
+                'descriptionHtml' => 'Cuotas sin interés con las tarjetas habilitadas en el checkout. <a href="/medios-de-pago/">Ver medios de pago</a>.',
             ],
         ],
     ];
@@ -126,10 +126,28 @@ function hf_trust_get_settings() {
 
     $defaults = hf_trust_defaults();
 
-    return [
-        'items' => !empty($saved['items']) && is_array($saved['items']) ? $saved['items'] : $defaults['items'],
-        'pdpItems' => !empty($saved['pdpItems']) && is_array($saved['pdpItems']) ? $saved['pdpItems'] : $defaults['pdpItems'],
-    ];
+    $items = !empty($saved['items']) && is_array($saved['items']) ? $saved['items'] : $defaults['items'];
+    $pdp_items = !empty($saved['pdpItems']) && is_array($saved['pdpItems']) ? $saved['pdpItems'] : $defaults['pdpItems'];
+
+    // Migra la política anterior sin pisar futuras ediciones que ya utilicen
+    // los importes y plazos vigentes.
+    if (isset($items[1]) && stripos((string) ($items[1]['title'] ?? ''), '$60.000') === false) {
+        $items[1] = $defaults['items'][1];
+    }
+    if (isset($items[2]) && stripos((string) ($items[2]['description'] ?? ''), '6 meses') === false) {
+        $items[2] = $defaults['items'][2];
+    }
+    if (isset($pdp_items[0]) && stripos((string) ($pdp_items[0]['descriptionHtml'] ?? ''), '$150.000') === false) {
+        $pdp_items[0] = $defaults['pdpItems'][0];
+    }
+    if (isset($pdp_items[1]) && stripos((string) ($pdp_items[1]['descriptionHtml'] ?? ''), 'Tenés') === false) {
+        $pdp_items[1] = $defaults['pdpItems'][1];
+    }
+    if (isset($pdp_items[2]) && stripos((string) ($pdp_items[2]['title'] ?? ''), '$150.000') === false) {
+        $pdp_items[2] = $defaults['pdpItems'][2];
+    }
+
+    return ['items' => $items, 'pdpItems' => $pdp_items];
 }
 
 function hf_commerce_render_trust_settings_page() {

@@ -18,13 +18,16 @@ function hf_footer_defaults() {
         'copy'            => 'Activewear funcional para todos los dias. Nuevos drops, mejores telas y fits pensados para entrenar y vivir en movimiento.',
         'newsPlaceholder' => 'Tu email para promos y drops',
         'newsBtn'         => 'Suscribirme',
-        'chips'           => ['Envio 24/48h', '6 cuotas sin interes', 'Cambios faciles'],
+        'chips'           => ['Envío gratis desde $150.000', '3 cuotas desde $60.000 · 6 desde $150.000', 'Cambios fáciles'],
         'helpTitle'       => 'Ayuda',
         'helpLinks'       => [
-            ['text' => 'Envios y entregas', 'url' => '/envios-y-entregas/'],
+            ['text' => 'Envíos y entregas', 'url' => '/envios-y-entregas/'],
             ['text' => 'Cambios y devoluciones', 'url' => '/cambios-y-devoluciones/'],
-            ['text' => 'Guia de talles', 'url' => '/guia-de-talles/'],
+            ['text' => 'Guía de talles', 'url' => '/guia-de-talles/'],
             ['text' => 'Medios de pago', 'url' => '/medios-de-pago/'],
+            ['text' => 'Quiénes somos', 'url' => '/quienes-somos/'],
+            ['text' => 'Contacto', 'url' => '/contacto/'],
+            ['text' => 'Preguntas frecuentes', 'url' => '/preguntas-frecuentes/'],
         ],
         'contactTitle'    => 'Contacto',
         'contactLines'    => ['WhatsApp: +54 11 3115-0999', 'hola@horizonfit.com.ar', 'Lunes a viernes 9 a 18h'],
@@ -36,9 +39,9 @@ function hf_footer_defaults() {
         ],
         'copyright'       => '© Horizon Fit 2026. Todos los derechos reservados.',
         'legalLinks'      => [
-            ['text' => 'Terminos', 'url' => '#'],
-            ['text' => 'Privacidad', 'url' => '#'],
-            ['text' => 'Defensa al consumidor', 'url' => '#'],
+            ['text' => 'Términos', 'url' => '/terminos/'],
+            ['text' => 'Privacidad', 'url' => '/privacidad/'],
+            ['text' => 'Defensa al consumidor', 'url' => '/defensa-al-consumidor/'],
         ],
     ];
 }
@@ -97,6 +100,19 @@ function hf_footer_get_settings() {
         if ($legacy_url === '' || $legacy_url === '#' || ($network === 'facebook' && rtrim($legacy_url, '/') === 'https://www.facebook.com')) {
             $settings['social'][$network] = $official_url;
         }
+    }
+
+    $legal_defaults = hf_footer_defaults()['legalLinks'];
+    foreach ($legal_defaults as $index => $legal_default) {
+        $saved_url = trim((string) ($settings['legalLinks'][$index]['url'] ?? ''));
+        if ($saved_url === '' || $saved_url === '#') {
+            $settings['legalLinks'][$index] = $legal_default;
+        }
+    }
+
+    $legacy_chips = implode(' ', array_map('strval', (array) ($settings['chips'] ?? [])));
+    if (stripos($legacy_chips, '$60.000') === false) {
+        $settings['chips'] = hf_footer_defaults()['chips'];
     }
 
     return $settings;
@@ -195,7 +211,7 @@ function hf_commerce_render_footer_settings_page() {
             <h2><?php esc_html_e('Columna "Ayuda"', 'horizon-fit-commerce'); ?></h2>
             <table class="form-table">
                 <?php $field('helpTitle', $s['helpTitle'], 'Título columna'); ?>
-                <?php for ($i = 0; $i < 4; $i++) :
+                <?php for ($i = 0; $i < 7; $i++) :
                     $hl = $s['helpLinks'][$i] ?? ['text' => '', 'url' => '#']; ?>
                     <tr><th scope="row"><label><?php echo 'Link ' . ($i + 1); ?></label></th>
                     <td><input type="text" name="help_text[]" value="<?php echo esc_attr($hl['text']); ?>" placeholder="Texto" style="width:48%;">

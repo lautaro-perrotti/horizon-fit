@@ -23,13 +23,13 @@ function hf_product_payment_fields_render() {
         'id'                => '_hf_installments_count',
         'type'              => 'number',
         'label'             => __('Cantidad de cuotas sin interés', 'horizon-fit-commerce'),
-        'placeholder'       => '6',
+        'placeholder'       => __('Automático según precio', 'horizon-fit-commerce'),
         'custom_attributes' => [
             'min'  => '0',
             'step' => '1',
         ],
         'desc_tip'    => true,
-        'description' => __('Vacío usa el default 6. Poné 0 para no mostrar cuotas en este producto. El monto se calcula con el precio de cada variación.', 'horizon-fit-commerce'),
+        'description' => __('Vacío aplica la política automática: 3 cuotas desde $60.000 y 6 cuotas desde $150.000. Poné 0 para ocultarlas. Un valor manual nunca supera el máximo permitido por el precio.', 'horizon-fit-commerce'),
         'value'       => get_post_meta($post->ID, '_hf_installments_count', true),
     ]);
 
@@ -37,14 +37,14 @@ function hf_product_payment_fields_render() {
         'id'                => '_hf_transfer_discount_percent',
         'type'              => 'number',
         'label'             => __('Descuento transferencia (%)', 'horizon-fit-commerce'),
-        'placeholder'       => '15',
+        'placeholder'       => '10',
         'custom_attributes' => [
             'min'  => '0',
             'max'  => '100',
             'step' => '0.01',
         ],
         'desc_tip'    => true,
-        'description' => __('Vacío usa el default 15%. Poné 0 para no mostrar transferencia en este producto. Se calcula con el precio de cada variación.', 'horizon-fit-commerce'),
+        'description' => __('Vacío usa el default 10%. Poné 0 para no mostrar transferencia en este producto. Se calcula con el precio de cada variación.', 'horizon-fit-commerce'),
         'value'       => get_post_meta($post->ID, '_hf_transfer_discount_percent', true),
     ]);
 

@@ -69,6 +69,13 @@ function hf_build_page_sections($slug) {
             $decoded_settings = hf_footer_get_settings();
         }
 
+        // La barra de confianza también contiene migraciones de políticas
+        // heredadas. Usar el getter normalizado al generar la caché evita
+        // volver a publicar montos o plazos anteriores guardados en el post.
+        if ($section_type === 'trust-bar' && function_exists('hf_trust_get_settings')) {
+            $decoded_settings = hf_trust_get_settings();
+        }
+
         $formatted_sections[] = [
             'id' => $section->ID,
             'type' => $section_type,

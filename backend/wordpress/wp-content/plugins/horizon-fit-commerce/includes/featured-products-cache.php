@@ -106,6 +106,25 @@ function hf_featured_products_default_installments_count() {
   return 6;
 }
 
+function hf_catalog_display_name($name) {
+  $name = trim((string) $name);
+  $name = preg_replace('/\bCalsa\b/u', 'Calza', $name);
+  $name = preg_replace('/\bcalsa\b/u', 'calza', $name);
+  $name = preg_replace('/\bRustico\b/u', 'Rústico', $name);
+  $name = preg_replace('/\brustico\b/u', 'rústico', $name);
+  $name = preg_replace('/["“”\'](Tiras blancas|tiras blancas|Conjunto falda|conjunto falda)["“”\']/u', '$1', $name);
+  $name = preg_replace('/\s*\(copia(?:\s+\d+)?\)\s*$/iu', '', $name);
+  return trim($name);
+}
+
+function hf_featured_products_installments_count_for_price($price) {
+  if (!is_numeric($price) || (float) $price < 60000) {
+    return 0;
+  }
+
+  return (float) $price >= 150000 ? 6 : 3;
+}
+
 function hf_featured_products_default_transfer_discount_percent() {
   return 10;
 }
@@ -131,12 +150,23 @@ function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $
 }
 
 function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
-  $installments_count = hf_featured_products_get_payment_number_meta(
+  $configured_count = hf_featured_products_get_payment_number_meta(
     $product_id,
     $parent_id,
     '_hf_installments_count',
-    hf_featured_products_default_installments_count()
+    null
   );
+  $policy_count = hf_featured_products_installments_count_for_price($price);
+
+  // Un 0 explícito continúa ocultando las cuotas. Cualquier cantidad manual
+  // queda limitada por la política comercial vigente para evitar prometer
+  // 6 cuotas en productos que no alcanzan los $150.000.
+  if ($configured_count !== null && (float) $configured_count === 0.0) {
+    return '';
+  }
+  $installments_count = $configured_count === null
+    ? $policy_count
+    : min((int) $configured_count, $policy_count);
 
   if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
     $installment_amount = (float) $price / $installments_count;
@@ -383,7 +413,7 @@ function hf_featured_products_get_images($product) {
 
   $images = [];
   foreach (array_unique(array_filter($image_ids)) as $image_id) {
-    $image = hf_featured_products_get_image_object($image_id, $product->get_name());
+    $image = hf_featured_products_get_image_object($image_id, hf_catalog_display_name($product->get_name()));
     if ($image) {
       $images[] = $image;
     }
@@ -483,7 +513,7 @@ function hf_featured_products_serialize_product($product) {
     'sku' => $product->get_sku(),
     'type' => $product->get_type(),
     'status' => get_post_status($product->get_id()),
-    'name' => $product->get_name(),
+    'name' => hf_catalog_display_name($product->get_name()),
     'permalink' => $product->get_permalink(),
     'price' => $price_data['price'],
     'regularPrice' => $price_data['regularPrice'],
