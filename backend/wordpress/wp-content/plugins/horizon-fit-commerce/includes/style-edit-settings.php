@@ -12,10 +12,10 @@ if (!defined('ABSPATH')) {
 function hf_style_edit_defaults() {
     return [
         'tiles' => [
-            ['title' => 'Básicos', 'video' => 'assets/style-tile-basicos.mp4', 'link' => '#fullSlider'],
-            ['title' => 'DISEÑO',  'video' => 'assets/style-tile-studio.mp4',  'link' => '#fullSlider'],
-            ['title' => 'Urbano',  'video' => 'assets/style-tile-urbano.mp4',  'link' => '#fullSlider'],
-            ['title' => 'Prints',  'video' => 'assets/style-tile-prints.mp4',  'link' => '#fullSlider'],
+            ['title' => 'Básicos', 'videoDesktop' => 'assets/style-tile-basicos.mp4', 'videoMobile' => '', 'link' => '#fullSlider'],
+            ['title' => 'DISEÑO',  'videoDesktop' => 'assets/style-tile-studio.mp4',  'videoMobile' => '', 'link' => '#fullSlider'],
+            ['title' => 'Urbano',  'videoDesktop' => 'assets/style-tile-urbano.mp4',  'videoMobile' => '', 'link' => '#fullSlider'],
+            ['title' => 'Prints',  'videoDesktop' => 'assets/style-tile-prints.mp4',  'videoMobile' => '', 'link' => '#fullSlider'],
         ],
     ];
 }
@@ -80,13 +80,15 @@ function hf_commerce_render_style_edit_settings_page() {
         check_admin_referer('hf_style_edit_action');
         $p = wp_unslash($_POST);
         $titles = array_map('sanitize_text_field', (array) ($p['style_title'] ?? []));
-        $videos = array_map('esc_url_raw', (array) ($p['style_video'] ?? []));
+        $desktop_videos = array_map('esc_url_raw', (array) ($p['style_video_desktop'] ?? []));
+        $mobile_videos = array_map('esc_url_raw', (array) ($p['style_video_mobile'] ?? []));
         $links  = array_map('sanitize_text_field', (array) ($p['style_link'] ?? []));
         $tiles = [];
         for ($i = 0; $i < 4; $i++) {
             $tiles[] = [
                 'title' => $titles[$i] ?? '',
-                'video' => $videos[$i] ?? '',
+                'videoDesktop' => $desktop_videos[$i] ?? '',
+                'videoMobile' => $mobile_videos[$i] ?? '',
                 'link'  => $links[$i] ?? '',
             ];
         }
@@ -112,8 +114,9 @@ function hf_commerce_render_style_edit_settings_page() {
             <?php wp_nonce_field('hf_style_edit_action'); ?>
             <table class="form-table">
                 <?php for ($i = 0; $i < 4; $i++) :
-                    $tile = $s['tiles'][$i] ?? ['title' => '', 'video' => '', 'link' => ''];
-                    $vid = $tile['video'] ?? ''; ?>
+                    $tile = $s['tiles'][$i] ?? ['title' => '', 'link' => ''];
+                    $desktop_video = $tile['videoDesktop'] ?? ($tile['video'] ?? '');
+                    $mobile_video = $tile['videoMobile'] ?? ''; ?>
                     <tr>
                         <th scope="row"><label><?php echo 'Tile ' . ($i + 1); ?></label></th>
                         <td>
@@ -121,9 +124,16 @@ function hf_commerce_render_style_edit_settings_page() {
                                 <input type="text" name="style_title[]" value="<?php echo esc_attr($tile['title']); ?>" placeholder="Título (ej. Básicos)" style="width:100%;max-width:520px;">
                             </p>
                             <p>
-                                <input type="text" name="style_video[]" id="hf_style_video_<?php echo $i; ?>" value="<?php echo esc_attr($vid); ?>" placeholder="URL del video (.mp4)" style="width:100%;max-width:420px;">
-                                <button class="button" type="button" data-hf-media-url data-hf-media-url-type="video" data-hf-target="#hf_style_video_<?php echo $i; ?>" data-hf-preview=".hf-style-video-preview-<?php echo $i; ?>"><?php esc_html_e('Elegir video', 'horizon-fit-commerce'); ?></button>
-                                <span class="hf-style-video-preview-<?php echo $i; ?>" style="display:inline-block;vertical-align:middle;margin-left:8px;"><?php if ($vid) : ?><video src="<?php echo esc_url($vid); ?>" muted loop style="max-width:140px;border-radius:6px;"></video><?php endif; ?></span>
+                                <strong style="display:block;margin-bottom:4px;">Video desktop</strong>
+                                <input type="text" name="style_video_desktop[]" id="hf_style_video_desktop_<?php echo $i; ?>" value="<?php echo esc_attr($desktop_video); ?>" placeholder="URL del video desktop (.mp4)" style="width:100%;max-width:420px;">
+                                <button class="button" type="button" data-hf-media-url data-hf-media-url-type="video" data-hf-target="#hf_style_video_desktop_<?php echo $i; ?>" data-hf-preview=".hf-style-video-desktop-preview-<?php echo $i; ?>">Elegir video desktop</button>
+                                <span class="hf-style-video-desktop-preview-<?php echo $i; ?>" style="display:inline-block;vertical-align:middle;margin-left:8px;"><?php if ($desktop_video) : ?><video src="<?php echo esc_url($desktop_video); ?>" muted loop style="max-width:140px;border-radius:6px;"></video><?php endif; ?></span>
+                            </p>
+                            <p>
+                                <strong style="display:block;margin-bottom:4px;">Video mobile</strong>
+                                <input type="text" name="style_video_mobile[]" id="hf_style_video_mobile_<?php echo $i; ?>" value="<?php echo esc_attr($mobile_video); ?>" placeholder="URL del video mobile (.mp4)" style="width:100%;max-width:420px;">
+                                <button class="button" type="button" data-hf-media-url data-hf-media-url-type="video" data-hf-target="#hf_style_video_mobile_<?php echo $i; ?>" data-hf-preview=".hf-style-video-mobile-preview-<?php echo $i; ?>">Elegir video mobile</button>
+                                <span class="hf-style-video-mobile-preview-<?php echo $i; ?>" style="display:inline-block;vertical-align:middle;margin-left:8px;"><?php if ($mobile_video) : ?><video src="<?php echo esc_url($mobile_video); ?>" muted loop style="max-width:140px;border-radius:6px;"></video><?php endif; ?></span>
                             </p>
                             <p>
                                 <input type="text" name="style_link[]" value="<?php echo esc_attr($tile['link']); ?>" placeholder="Link (ej. /coleccion/basicos/ o #fullSlider)" style="width:100%;max-width:520px;">

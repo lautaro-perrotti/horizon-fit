@@ -1550,14 +1550,16 @@
     if (typeof window.initTrustBar === 'function') window.initTrustBar();
   };
 
-  // "ElegÃ­ tu estilo": tÃ­tulos y links editables desde wp-admin.
-  // Los videos espejan siempre el video activo del hero.
+  // "ElegÃ­ tu estilo": tÃ­tulos, links y videos responsive editables desde wp-admin.
   const setupStyleEdit = (sectionEl, settings, heroConfig = {}) => {
-    const desktopVideo = heroConfig.videoDesktop ? resolveMediaUrl(heroConfig.videoDesktop) : '';
-    const mobileVideo = heroConfig.videoMobile ? resolveMediaUrl(heroConfig.videoMobile) : desktopVideo;
+    const heroDesktopVideo = heroConfig.videoDesktop ? resolveMediaUrl(heroConfig.videoDesktop) : '';
+    const heroMobileVideo = heroConfig.videoMobile ? resolveMediaUrl(heroConfig.videoMobile) : heroDesktopVideo;
 
-    const setHeroVideoSources = (videoEl) => {
-      if (!videoEl || (!desktopVideo && !mobileVideo)) return;
+    const setStyleVideoSources = (videoEl, tile = {}) => {
+      if (!videoEl) return;
+      const desktopVideo = resolveMediaUrl(tile.videoDesktop || tile.video || heroDesktopVideo || '');
+      const mobileVideo = resolveMediaUrl(tile.videoMobile || tile.videoDesktop || tile.video || heroMobileVideo || desktopVideo || '');
+      if (!desktopVideo && !mobileVideo) return;
       videoEl.removeAttribute('src');
       videoEl.innerHTML = '';
 
@@ -1580,7 +1582,11 @@
       videoEl.load();
     };
 
-    sectionEl.querySelectorAll('[data-style-video]').forEach(setHeroVideoSources);
+    sectionEl.querySelectorAll('[data-style-video]').forEach((videoEl) => {
+      const index = Number.parseInt(videoEl.dataset.styleVideo || '', 10);
+      const tile = Number.isInteger(index) ? settings?.tiles?.[index] : null;
+      setStyleVideoSources(videoEl, tile || {});
+    });
 
     if (settings && Array.isArray(settings.tiles)) {
       settings.tiles.forEach((tile, i) => {
