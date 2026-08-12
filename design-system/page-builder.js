@@ -4272,6 +4272,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const key = input.getAttribute('data-checkout-field');
       if (key) fields.set(key, input);
     });
+    sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/dni"]').forEach(input => {
+      input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '').slice(0, 11);
+      });
+    });
 
     const setFieldValues = (prefix, values = {}) => {
       Object.entries(values || {}).forEach(([key, value]) => {
@@ -4477,12 +4482,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
         cardNumberInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
         populateInstallments();
       });
-      ['expiration-month', 'expiration-year'].forEach(fieldName => {
-        const input = form.querySelector(`[data-payway-field="${fieldName}"]`);
-        input?.addEventListener('input', () => {
-          input.value = input.value.replace(/\D/g, '').slice(0, 2);
-        });
-      });
       installmentsSelect?.addEventListener('change', syncHiddenSelection);
       populateInstallments();
     };
@@ -4617,6 +4616,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
         : billing;
       setFieldValues('billing', billing);
       setFieldValues('shipping', shipping);
+      ['billing', 'shipping'].forEach(prefix => {
+        const documentType = fields.get(`${prefix}.horizon-fit-commerce/document-type`);
+        if (documentType && !documentType.value) documentType.value = 'dni';
+      });
+      if (fields.get('shipping.horizon-fit-commerce/dni') && !fields.get('shipping.horizon-fit-commerce/dni').value) {
+        fields.get('shipping.horizon-fit-commerce/dni').value = `${billing['horizon-fit-commerce/dni'] || ''}`;
+      }
+      if (fields.get('shipping.horizon-fit-commerce/document-type') && !shipping['horizon-fit-commerce/document-type']) {
+        fields.get('shipping.horizon-fit-commerce/document-type').value = billing['horizon-fit-commerce/document-type'] || 'dni';
+      }
       const paywayForm = paymentList?.querySelector('[data-payway-form]');
       if (paywayForm) {
         const holderName = paywayForm.querySelector('[data-payway-field="holder-name"]');
@@ -4627,7 +4636,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
           holderName.value = `${shipping.first_name || ''} ${shipping.last_name || ''}`.trim();
         }
         if (documentNumber && !documentNumber.value) {
-          documentNumber.value = `${fields.get('shipping.horizon-fit-commerce/dni')?.value || ''}`.replace(/\D/g, '');
+          const checkoutDocumentType = fields.get('shipping.horizon-fit-commerce/document-type')?.value || 'dni';
+          if (checkoutDocumentType === 'dni') {
+            documentNumber.value = `${fields.get('shipping.horizon-fit-commerce/dni')?.value || ''}`.replace(/\D/g, '');
+          }
         }
         if (doorNumber && !doorNumber.value && addressNumbers.length) {
           doorNumber.value = addressNumbers[addressNumbers.length - 1];
@@ -4673,6 +4685,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
             const paywayForm = paymentList?.querySelector('[data-payway-form]');
             if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
             const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
+            const paywayDocumentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
+            if (
+              paywayDocumentNumber
+              && !paywayDocumentNumber.value
+              && `${shipping_address['horizon-fit-commerce/document-type'] || 'dni'}` === 'dni'
+            ) {
+              paywayDocumentNumber.value = `${shipping_address['horizon-fit-commerce/dni'] || ''}`.replace(/\D/g, '');
+            }
             const doorNumberInput = paywayForm.querySelector('[data-payway-field="door-number"]');
             if (doorNumberInput && !doorNumberInput.value) {
               const addressNumbers = `${shipping_address.address_1 || ''}`.match(/\d+/g) || [];

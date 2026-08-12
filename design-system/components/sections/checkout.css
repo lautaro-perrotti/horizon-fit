@@ -220,6 +220,13 @@ body.hf-checkout-mode .nav {
   grid-column: span 2;
 }
 
+.hf-checkout-view__document-row {
+  display: grid;
+  grid-template-columns: minmax(128px, 0.8fr) minmax(0, 1.55fr);
+  grid-column: 1 / -1;
+  gap: 12px;
+}
+
 .hf-checkout-view__billing-fields {
   display: grid;
   gap: 14px;
@@ -651,6 +658,16 @@ body.hf-checkout-mode .nav {
 }
 
 @media (max-width: 420px) {
+  .hf-checkout-view__document-row {
+    grid-template-columns: minmax(92px, 0.72fr) minmax(0, 1.28fr);
+    gap: 8px;
+  }
+
+  .hf-checkout-view__document-row .hf-checkout-view__field span {
+    font-size: 10px;
+    letter-spacing: 0.055em;
+  }
+
   .hf-checkout-view__form-column {
     padding-inline: 12px;
   }

@@ -14,8 +14,34 @@ add_action('woocommerce_init', function () {
     }
 
     woocommerce_register_additional_checkout_field(array(
+        'id'       => 'horizon-fit-commerce/document-type',
+        'label'    => __('Tipo de documento', 'horizon-fit-commerce'),
+        'location' => 'address',
+        'type'     => 'select',
+        'required' => true,
+        'options'  => array(
+            array('value' => 'dni', 'label' => __('DNI', 'horizon-fit-commerce')),
+            array('value' => 'cuit', 'label' => __('CUIT', 'horizon-fit-commerce')),
+            array('value' => 'cuil', 'label' => __('CUIL', 'horizon-fit-commerce')),
+        ),
+        'sanitize_callback' => function ($value) {
+            $value = strtolower(sanitize_text_field((string) $value));
+            return in_array($value, array('dni', 'cuit', 'cuil'), true) ? $value : 'dni';
+        },
+        'validate_callback' => function ($value) {
+            if (! in_array((string) $value, array('dni', 'cuit', 'cuil'), true)) {
+                return new WP_Error(
+                    'hf_invalid_document_type',
+                    __('Seleccioná un tipo de documento válido.', 'horizon-fit-commerce')
+                );
+            }
+            return true;
+        },
+    ));
+
+    woocommerce_register_additional_checkout_field(array(
         'id'       => 'horizon-fit-commerce/dni',
-        'label'    => __('DNI/CUIT/CUIL', 'horizon-fit-commerce'),
+        'label'    => __('N° de documento', 'horizon-fit-commerce'),
         'location' => 'address',
         'type'     => 'text',
         'required' => true,
