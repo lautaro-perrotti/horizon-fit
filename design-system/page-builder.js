@@ -4281,6 +4281,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
     let currentPaywayConfig = null;
+    const syncAccountPasswordVisibility = () => {
+      const needsPassword = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
+      if (accountPasswordRow) accountPasswordRow.hidden = !needsPassword;
+      if (accountPasswordInput) {
+        accountPasswordInput.disabled = !needsPassword;
+        accountPasswordInput.required = needsPassword;
+        if (!needsPassword) accountPasswordInput.value = '';
+      }
+    };
+    createAccountToggle?.addEventListener('change', syncAccountPasswordVisibility);
+    createAccountToggle?.addEventListener('input', syncAccountPasswordVisibility);
+    syncAccountPasswordVisibility();
     const fields = new Map();
     sectionEl.querySelectorAll('[data-checkout-field]').forEach(input => {
       const key = input.getAttribute('data-checkout-field');
@@ -4638,21 +4650,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
         createAccountRow.hidden = Boolean(session?.loggedIn) || !registrationAvailable || registrationRequired;
       }
       if (createAccountToggle) {
-        createAccountToggle.checked = registrationRequired;
+        if (registrationRequired) createAccountToggle.checked = true;
+        if (session?.loggedIn || !registrationAvailable) createAccountToggle.checked = false;
         createAccountToggle.disabled = Boolean(session?.loggedIn) || !registrationAvailable;
       }
-      const syncAccountPasswordVisibility = () => {
-        const needsPassword = !session?.loggedIn
-          && registrationAvailable
-          && Boolean(registrationRequired || createAccountToggle?.checked);
-        if (accountPasswordRow) accountPasswordRow.hidden = !needsPassword;
-        if (accountPasswordInput) {
-          accountPasswordInput.disabled = !needsPassword;
-          accountPasswordInput.required = needsPassword;
-          if (!needsPassword) accountPasswordInput.value = '';
-        }
-      };
-      if (createAccountToggle) createAccountToggle.onchange = syncAccountPasswordVisibility;
       syncAccountPasswordVisibility();
 
       const cartBilling = cart?.billing_address || {};
