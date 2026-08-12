@@ -4106,8 +4106,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const digits = (name) => value(name).replace(/\D/g, '');
     const cardNumber = digits('card-number');
     const securityCode = digits('security-code');
-    const expirationMonth = digits('expiration-month').padStart(2, '0');
-    const expirationYear = digits('expiration-year').slice(-2);
+    const expiration = digits('expiration');
+    const expirationMonth = expiration.slice(0, 2).padStart(2, '0');
+    const expirationYear = expiration.slice(2, 4);
     const holderName = value('holder-name');
     const documentNumber = digits('document-number');
     const doorNumber = digits('door-number');
@@ -4128,7 +4129,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       card_expiration_month: expirationMonth,
       card_expiration_year: expirationYear,
       card_holder_name: holderName,
-      card_holder_doc_type: 'dni',
+      card_holder_doc_type: value('document-type') || 'dni',
       card_holder_doc_number: documentNumber,
       card_holder_door_number: doorNumber
     };
@@ -4294,9 +4295,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     const buildPaywayFormMarkup = (config) => {
       const banks = Object.values(config?.promotions?.banks || {});
-      const bankOptions = banks.map(bank => (
-        `<option value="${escapeHtml(bank.value ?? '')}">${escapeHtml(bank.name || '')}</option>`
-      )).join('');
       const isReady = Boolean(config?.publicKey && config?.endpointUrl && config?.sdkUrl && banks.length);
       if (!isReady) {
         return '<p class="hf-checkout-view__empty-note">Payway no está disponible temporalmente.</p>';
@@ -4305,103 +4303,186 @@ ${renderFeaturedSetPriceHtml(pricing)}
       return `
         <div class="hf-checkout-view__payway" data-payway-form>
           <p class="hf-checkout-view__payway-security">Tus datos se tokenizan de forma segura en Payway y no se guardan en Horizon Fit.</p>
+          <input data-payway-field="bank" type="hidden">
+          <input data-payway-field="card-type" type="hidden">
           <div class="hf-checkout-view__payway-fields">
-            <label class="hf-checkout-view__field hf-checkout-view__field--half">
-              <span>Banco</span>
-              <select data-payway-field="bank" required disabled>
-                <option value="">Seleccioná un banco</option>
-                ${bankOptions}
-              </select>
-            </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--half">
-              <span>Tarjeta</span>
-              <select data-payway-field="card-type" required disabled>
-                <option value="">Seleccioná una tarjeta</option>
-              </select>
-            </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--full">
-              <span>Cuotas</span>
-              <select data-payway-field="installments" required disabled>
-                <option value="">Seleccioná la cantidad de cuotas</option>
-              </select>
-            </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
               <span>Número de tarjeta</span>
-              <input data-payway-field="card-number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" required disabled>
+              <input data-payway-field="card-number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" aria-describedby="paywayCardDetection" required disabled>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--third">
-              <span>Mes</span>
-              <input data-payway-field="expiration-month" type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" placeholder="MM" required disabled>
+            <p class="hf-checkout-view__payway-detection" id="paywayCardDetection" data-payway-card-detection aria-live="polite"></p>
+            <label class="hf-checkout-view__field hf-checkout-view__field--card-holder">
+              <span>Titular de la tarjeta</span>
+              <input data-payway-field="holder-name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--third">
-              <span>Año</span>
-              <input data-payway-field="expiration-year" type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="2" placeholder="AA" required disabled>
+            <label class="hf-checkout-view__field hf-checkout-view__field--expiration">
+              <span>Vencimiento</span>
+              <input data-payway-field="expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" required disabled>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--third">
+            <label class="hf-checkout-view__field hf-checkout-view__field--security-code">
               <span>Código de seguridad</span>
               <input data-payway-field="security-code" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVV" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
-              <span>Nombre como figura en la tarjeta</span>
-              <input data-payway-field="holder-name" type="text" autocomplete="cc-name" required disabled>
+              <span>Cuotas</span>
+              <select data-payway-field="installments" required disabled>
+                <option value="">Ingresá el número de tarjeta</option>
+              </select>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--half">
-              <span>DNI del titular</span>
-              <input data-payway-field="document-number" type="text" inputmode="numeric" maxlength="11" required disabled>
+            <label class="hf-checkout-view__field hf-checkout-view__field--document-type">
+              <span>Tipo de documento</span>
+              <select data-payway-field="document-type" disabled>
+                <option value="dni" selected>DNI</option>
+              </select>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--half">
-              <span>Altura de facturación</span>
-              <input data-payway-field="door-number" type="text" inputmode="numeric" maxlength="8" required disabled>
+            <label class="hf-checkout-view__field hf-checkout-view__field--document-number">
+              <span>Documento del titular</span>
+              <input data-payway-field="document-number" type="text" inputmode="numeric" maxlength="11" placeholder="Sin puntos ni guiones" required disabled>
             </label>
+            <input data-payway-field="door-number" type="hidden">
           </div>
+          <p class="hf-checkout-view__payway-brands">Payway acepta tarjetas de débito, crédito y prepagas de las principales marcas como Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.</p>
         </div>
       `;
     };
 
+    const normalizePaywayCardName = (value) => `${value || ''}`
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+
+    const paywayCardBrandFromName = (name) => {
+      const normalized = normalizePaywayCardName(name);
+      if (normalized.includes('visa')) return 'visa';
+      if (normalized.includes('master') || normalized.includes('mc debit')) return 'mastercard';
+      if (normalized.includes('amex') || normalized.includes('american express')) return 'amex';
+      if (normalized.includes('cabal')) return 'cabal';
+      if (normalized.includes('diners')) return 'diners';
+      if (normalized.includes('discover')) return 'discover';
+      if (normalized.includes('union')) return 'unionpay';
+      return 'other';
+    };
+
+    const paywayCardFundingFromName = (name) => {
+      const normalized = normalizePaywayCardName(name);
+      if (normalized.includes('debito') || normalized.includes('debit')) return 'Débito';
+      if (normalized.includes('prepaga') || normalized.includes('prepaid')) return 'Prepaga';
+      return 'Crédito';
+    };
+
+    const detectPaywayCardBrand = (rawNumber) => {
+      const number = `${rawNumber || ''}`.replace(/\D/g, '');
+      if (!number) return '';
+      if (/^4/.test(number)) return 'visa';
+      if (/^(5[1-5]|2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d{2}|7(?:0\d|1\d|20)))/.test(number)) return 'mastercard';
+      if (/^3[47]/.test(number)) return 'amex';
+      if (/^(?:30[0-5]|3[68])/.test(number)) return 'diners';
+      if (/^(?:6011|65|64[4-9]|622)/.test(number)) return 'discover';
+      if (/^62/.test(number)) return 'unionpay';
+      if (/^(?:6042|6043|589657)/.test(number)) return 'cabal';
+      return 'other';
+    };
+
+    const paywayBrandLabel = (brand) => ({
+      visa: 'Visa',
+      mastercard: 'Mastercard',
+      amex: 'American Express',
+      cabal: 'Cabal',
+      diners: 'Diners',
+      discover: 'Discover',
+      unionpay: 'Union Pay'
+    }[brand] || 'Tarjeta');
+
     const bindPaywayForm = (config, cart) => {
       const form = paymentList?.querySelector('[data-payway-form]');
       if (!form) return;
-      const bankSelect = form.querySelector('[data-payway-field="bank"]');
-      const cardSelect = form.querySelector('[data-payway-field="card-type"]');
+      const bankInput = form.querySelector('[data-payway-field="bank"]');
+      const cardInput = form.querySelector('[data-payway-field="card-type"]');
+      const cardNumberInput = form.querySelector('[data-payway-field="card-number"]');
       const installmentsSelect = form.querySelector('[data-payway-field="installments"]');
+      const detectionEl = form.querySelector('[data-payway-card-detection]');
       const promotions = config?.promotions || {};
       const currency = getCartCurrency(cart);
       const totalRaw = Number(cart?.totals?.total_price || 0);
 
+      const configuredCards = Object.entries(promotions?.cards || {}).flatMap(([bankId, cards]) => (
+        Object.values(cards || {}).map(card => ({
+          bankId: `${bankId}`,
+          cardId: `${card?.value ?? ''}`,
+          name: `${card?.name || ''}`,
+          brand: paywayCardBrandFromName(card?.name),
+          funding: paywayCardFundingFromName(card?.name)
+        }))
+      ));
+
+      const clearSelection = () => {
+        if (bankInput) bankInput.value = '';
+        if (cardInput) cardInput.value = '';
+      };
+
+      const syncHiddenSelection = () => {
+        const option = installmentsSelect?.selectedOptions?.[0];
+        if (bankInput) bankInput.value = option?.dataset?.bankId || '';
+        if (cardInput) cardInput.value = option?.dataset?.cardId || '';
+      };
+
       const populateInstallments = () => {
-        const bankId = bankSelect?.value || '';
-        const cardId = cardSelect?.value || '';
-        const plans = promotions?.plans?.[bankId]?.[cardId] || [];
         if (!installmentsSelect) return;
-        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + plans.map(plan => {
+        clearSelection();
+        const brand = detectPaywayCardBrand(cardNumberInput?.value);
+        const digits = `${cardNumberInput?.value || ''}`.replace(/\D/g, '');
+        const compatibleCards = configuredCards.filter(card => card.brand === brand);
+        const planOptions = compatibleCards.flatMap(card => (
+          (promotions?.plans?.[card.bankId]?.[card.cardId] || []).map(plan => ({ card, plan }))
+        ));
+
+        if (!digits) {
+          installmentsSelect.innerHTML = '<option value="">Ingresá el número de tarjeta</option>';
+          if (detectionEl) detectionEl.textContent = '';
+          return;
+        }
+
+        if (brand === 'other' || !compatibleCards.length) {
+          installmentsSelect.innerHTML = '<option value="">Tarjeta no habilitada en Payway</option>';
+          if (detectionEl) {
+            detectionEl.textContent = digits.length < 6
+              ? 'Ingresá más dígitos para identificar la tarjeta.'
+              : 'Esta tarjeta todavía no está habilitada en la configuración de Payway.';
+          }
+          return;
+        }
+
+        if (detectionEl) detectionEl.textContent = `${paywayBrandLabel(brand)} detectada.`;
+        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + planOptions.map(({ card, plan }) => {
           const period = Math.max(1, Number(plan?.fee_period || 1));
           const coefficient = Number(plan?.coefficient || 1);
           const financedTotal = Math.round(totalRaw * coefficient);
           const installmentValue = Math.round(financedTotal / period);
-          const label = period === 1
+          const paymentLabel = period === 1
             ? `1 pago de ${formatStoreMoney(financedTotal, currency)}`
             : `${period} cuotas de ${formatStoreMoney(installmentValue, currency)} (total ${formatStoreMoney(financedTotal, currency)})`;
-          const optionValue = `${plan?.rule_id || ''}-${cardId}-${plan?.fee_to_send || period}`;
-          return `<option value="${escapeHtml(optionValue)}">${escapeHtml(label)}</option>`;
+          const label = `${card.funding} · ${paymentLabel}`;
+          const optionValue = `${plan?.rule_id || ''}-${card.cardId}-${plan?.fee_to_send || period}`;
+          return `<option value="${escapeHtml(optionValue)}" data-bank-id="${escapeHtml(card.bankId)}" data-card-id="${escapeHtml(card.cardId)}">${escapeHtml(label)}</option>`;
         }).join('');
-        if (plans.length === 1) installmentsSelect.selectedIndex = 1;
+        if (planOptions.length === 1) installmentsSelect.selectedIndex = 1;
+        syncHiddenSelection();
       };
 
-      const populateCards = () => {
-        const bankId = bankSelect?.value || '';
-        const cards = Object.values(promotions?.cards?.[bankId] || {});
-        if (!cardSelect) return;
-        cardSelect.innerHTML = '<option value="">Seleccioná una tarjeta</option>' + cards.map(card => (
-          `<option value="${escapeHtml(card.value ?? '')}">${escapeHtml(card.name || '')}</option>`
-        )).join('');
-        if (cards.length === 1) cardSelect.selectedIndex = 1;
+      cardNumberInput?.addEventListener('input', () => {
+        const digits = cardNumberInput.value.replace(/\D/g, '').slice(0, 19);
+        cardNumberInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
         populateInstallments();
-      };
-
-      bankSelect?.addEventListener('change', populateCards);
-      cardSelect?.addEventListener('change', populateInstallments);
-      if (bankSelect?.options.length === 2) bankSelect.selectedIndex = 1;
-      populateCards();
+      });
+      const expirationInput = form.querySelector('[data-payway-field="expiration"]');
+      expirationInput?.addEventListener('input', () => {
+        const digits = expirationInput.value.replace(/\D/g, '').slice(0, 4);
+        expirationInput.value = digits.length > 2
+          ? `${digits.slice(0, 2)}/${digits.slice(2)}`
+          : digits;
+      });
+      installmentsSelect?.addEventListener('change', syncHiddenSelection);
+      populateInstallments();
     };
 
     const syncPaymentMethodForm = () => {
@@ -4589,9 +4670,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
           if (paymentMethod === PAYWAY_GATEWAY_ID) {
             const paywayForm = paymentList?.querySelector('[data-payway-form]');
             if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
+            const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
+            const doorNumberInput = paywayForm.querySelector('[data-payway-field="door-number"]');
+            if (doorNumberInput && !doorNumberInput.value) {
+              const addressNumbers = `${shipping_address.address_1 || ''}`.match(/\d+/g) || [];
+              doorNumberInput.value = addressNumbers[addressNumbers.length - 1] || '';
+            }
+            if (!paywayValue('bank') || !paywayValue('card-type') || !paywayValue('installments')) {
+              throw new Error('Ingresá una tarjeta habilitada y seleccioná la cantidad de cuotas.');
+            }
             if (statusEl) statusEl.textContent = 'Validando la tarjeta de forma segura...';
             const token = await tokenizePaywayCard(paywayForm, currentPaywayConfig);
-            const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
             paymentData = [
               { key: 'payway_gateway_cc_bank', value: paywayValue('bank') },
               { key: 'payway_gateway_cc_type', value: paywayValue('card-type') },

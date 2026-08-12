@@ -348,6 +348,46 @@ body.hf-checkout-mode .nav {
   gap: 12px;
 }
 
+.hf-checkout-view__payway-fields .hf-checkout-view__field--card-holder {
+  grid-column: span 2;
+}
+
+.hf-checkout-view__payway-fields .hf-checkout-view__field--expiration {
+  grid-column: span 2;
+}
+
+.hf-checkout-view__payway-fields .hf-checkout-view__field--security-code {
+  grid-column: span 2;
+}
+
+.hf-checkout-view__payway-fields .hf-checkout-view__field--document-type {
+  grid-column: span 2;
+}
+
+.hf-checkout-view__payway-fields .hf-checkout-view__field--document-number {
+  grid-column: span 4;
+}
+
+.hf-checkout-view__payway-detection {
+  grid-column: 1 / -1;
+  min-height: 18px;
+  margin: -6px 0 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.hf-checkout-view__payway-detection:empty {
+  display: none;
+}
+
+.hf-checkout-view__payway-brands {
+  margin: 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 .hf-checkout-view__hint,
 .hf-checkout-view__status,
 .hf-checkout-view__empty {
@@ -582,6 +622,17 @@ body.hf-checkout-mode .nav {
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--third:has([data-payway-field="security-code"]) {
     grid-column: 1 / -1;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--card-holder,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--document-number {
+    grid-column: 1 / -1;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--document-type {
+    grid-column: span 1;
   }
 
   .hf-checkout-view__confirmation-details {
