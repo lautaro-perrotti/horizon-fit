@@ -4284,9 +4284,31 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const key = input.getAttribute('data-checkout-field');
       if (key) fields.set(key, input);
     });
+    const normalizeDocumentNumber = (value) => `${value || ''}`
+      .replace(/[^A-Za-z0-9]/g, '')
+      .toUpperCase()
+      .slice(0, 20);
+
+    const syncCheckoutDocumentToPayway = (prefix = 'shipping') => {
+      const paywayForm = paymentList?.querySelector('[data-payway-form]');
+      if (!paywayForm) return;
+      const documentType = fields.get(`${prefix}.horizon-fit-commerce/document-type`)?.value || 'dni';
+      const documentNumber = normalizeDocumentNumber(fields.get(`${prefix}.horizon-fit-commerce/dni`)?.value);
+      const paywayDocumentType = paywayForm.querySelector('[data-payway-field="document-type"]');
+      const paywayDocumentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
+      if (paywayDocumentType) paywayDocumentType.value = documentType;
+      if (paywayDocumentNumber) paywayDocumentNumber.value = documentNumber;
+    };
+
     sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/dni"]').forEach(input => {
       input.addEventListener('input', () => {
-        input.value = input.value.replace(/\D/g, '').slice(0, 11);
+        input.value = normalizeDocumentNumber(input.value);
+        syncCheckoutDocumentToPayway(input.getAttribute('data-checkout-field')?.startsWith('billing.') ? 'billing' : 'shipping');
+      });
+    });
+    sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/document-type"]').forEach(input => {
+      input.addEventListener('change', () => {
+        syncCheckoutDocumentToPayway(input.getAttribute('data-checkout-field')?.startsWith('billing.') ? 'billing' : 'shipping');
       });
     });
 
@@ -4345,16 +4367,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 <option value="">Ingresá el número de tarjeta</option>
               </select>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--document-type">
-              <span>Tipo de documento</span>
-              <select data-payway-field="document-type" disabled>
-                <option value="dni" selected>DNI</option>
-              </select>
-            </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--document-number">
-              <span>Documento del titular</span>
-              <input data-payway-field="document-number" type="text" inputmode="numeric" maxlength="11" placeholder="Sin puntos ni guiones" required disabled>
-            </label>
+            <input data-payway-field="document-type" type="hidden" value="dni" disabled>
+            <input data-payway-field="document-number" type="hidden" value="" disabled>
             <input data-payway-field="door-number" type="hidden">
           </div>
           <p class="hf-checkout-view__payway-brands">Payway acepta tarjetas de débito, crédito y prepagas de las principales marcas como Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.</p>
