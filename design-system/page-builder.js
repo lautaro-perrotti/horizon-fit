@@ -4106,9 +4106,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const digits = (name) => value(name).replace(/\D/g, '');
     const cardNumber = digits('card-number');
     const securityCode = digits('security-code');
-    const expiration = digits('expiration');
-    const expirationMonth = expiration.slice(0, 2).padStart(2, '0');
-    const expirationYear = expiration.slice(2, 4);
+    const expirationMonth = digits('expiration-month').padStart(2, '0');
+    const expirationYear = digits('expiration-year').slice(-2);
     const holderName = value('holder-name');
     const documentNumber = digits('document-number');
     const doorNumber = digits('door-number');
@@ -4315,9 +4314,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
               <span>Titular de la tarjeta</span>
               <input data-payway-field="holder-name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--expiration">
-              <span>Vencimiento</span>
-              <input data-payway-field="expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" required disabled>
+            <label class="hf-checkout-view__field hf-checkout-view__field--expiration-month">
+              <span>Mes</span>
+              <input data-payway-field="expiration-month" type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" placeholder="MM" required disabled>
+            </label>
+            <label class="hf-checkout-view__field hf-checkout-view__field--expiration-year">
+              <span>Año</span>
+              <input data-payway-field="expiration-year" type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="2" placeholder="AA" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--security-code">
               <span>Código de seguridad</span>
@@ -4474,12 +4477,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
         cardNumberInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
         populateInstallments();
       });
-      const expirationInput = form.querySelector('[data-payway-field="expiration"]');
-      expirationInput?.addEventListener('input', () => {
-        const digits = expirationInput.value.replace(/\D/g, '').slice(0, 4);
-        expirationInput.value = digits.length > 2
-          ? `${digits.slice(0, 2)}/${digits.slice(2)}`
-          : digits;
+      ['expiration-month', 'expiration-year'].forEach(fieldName => {
+        const input = form.querySelector(`[data-payway-field="${fieldName}"]`);
+        input?.addEventListener('input', () => {
+          input.value = input.value.replace(/\D/g, '').slice(0, 2);
+        });
       });
       installmentsSelect?.addEventListener('change', syncHiddenSelection);
       populateInstallments();

@@ -352,8 +352,9 @@ body.hf-checkout-mode .nav {
   grid-column: span 2;
 }
 
-.hf-checkout-view__payway-fields .hf-checkout-view__field--expiration {
-  grid-column: span 2;
+.hf-checkout-view__payway-fields .hf-checkout-view__field--expiration-month,
+.hf-checkout-view__payway-fields .hf-checkout-view__field--expiration-year {
+  grid-column: span 1;
 }
 
 .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code {
@@ -629,10 +630,14 @@ body.hf-checkout-mode .nav {
     grid-column: 1 / -1;
   }
 
-  .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration,
-  .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration-month,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration-year,
   .hf-checkout-view__payway-fields .hf-checkout-view__field--document-type {
     grid-column: span 1;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code {
+    grid-column: 1 / -1;
   }
 
   .hf-checkout-view__confirmation-details {
