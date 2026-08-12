@@ -2311,6 +2311,23 @@
       .sort((a, b) => `${a?.name || ''}`.localeCompare(`${b?.name || ''}`, 'es'))
       .forEach(item => pushUniqueProduct(selected, item));
 
+    // Las faldas tienen pocas variantes: completar sus relacionados con shorts,
+    // manteniendo primero todas las faldas y un máximo de 8 cards (4 por fila).
+    if (currentType === 'FAL') {
+      const shorts = related.filter(item => {
+        const parts = productSkuParts(item);
+        return (parts?.type || productTypeKey(item)) === 'SHO';
+      });
+
+      sortSetLineProducts(shorts).forEach(item => {
+        if (selected.length < 8) pushUniqueProduct(selected, item);
+      });
+
+      const balanced = selected.slice(0, 8);
+      if (balanced.length > 1 && balanced.length % 2 !== 0) balanced.pop();
+      return balanced;
+    }
+
     if (selected.length) return selected;
 
     const currentCategories = (product?.categories || [])
