@@ -613,7 +613,9 @@ function hf_regenerate_featured_products_cache() {
   // 1) Cache general (todos los productos) — fallback / compatibilidad.
   $query = [
     'status' => 'publish',
-    'limit' => 50,
+    // El PDP y los relacionados consumen este archivo: no excluir productos
+    // publicados por un límite arbitrario del catálogo general.
+    'limit' => -1,
     'orderby' => 'date',
     'order' => 'DESC',
   ];
