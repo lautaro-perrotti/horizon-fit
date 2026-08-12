@@ -67,7 +67,7 @@
 
   <div class="hf-checkout-view__grid">
     <div class="hf-checkout-view__form-column">
-      <form class="hf-checkout-view__panel hf-checkout-view__form" data-checkout-form>
+      <form class="hf-checkout-view__panel hf-checkout-view__form" data-checkout-form autocomplete="on">
         <div class="hf-checkout-view__section">
           <div class="hf-checkout-view__section-head">
             <span class="hf-checkout-view__section-kicker">Contacto</span>
@@ -122,7 +122,7 @@
               </label>
               <label class="hf-checkout-view__field">
                 <span>Número de documento</span>
-                <input data-checkout-field="shipping.horizon-fit-commerce/dni" type="text" name="shipping_hf_dni" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="on" placeholder="Sin puntos ni guiones" required>
+                <input id="shipping_document_number" data-checkout-field="shipping.horizon-fit-commerce/dni" type="text" name="shipping_document_number" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="on" placeholder="Sin puntos ni guiones" required>
               </label>
             </div>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
@@ -158,7 +158,7 @@
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
               <span>Teléfono</span>
-              <input data-checkout-field="shipping.phone" type="tel" name="shipping_phone" autocomplete="shipping tel" required>
+              <input id="shipping_phone" data-checkout-field="shipping.phone" type="tel" name="shipping_phone" autocomplete="section-shipping shipping tel" required>
             </label>
           </div>
           <label class="hf-checkout-view__toggle">
@@ -193,7 +193,7 @@
               </label>
               <label class="hf-checkout-view__field">
                 <span>Número de documento</span>
-                <input data-checkout-field="billing.horizon-fit-commerce/dni" type="text" name="billing_hf_dni" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="on" placeholder="Sin puntos ni guiones" required>
+                <input id="billing_document_number" data-checkout-field="billing.horizon-fit-commerce/dni" type="text" name="billing_document_number" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="on" placeholder="Sin puntos ni guiones" required>
               </label>
             </div>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
@@ -229,7 +229,7 @@
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
               <span>Teléfono</span>
-              <input data-checkout-field="billing.phone" type="tel" name="billing_phone" autocomplete="billing tel" required>
+              <input id="billing_phone" data-checkout-field="billing.phone" type="tel" name="billing_phone" autocomplete="section-billing billing tel" required>
             </label>
             </div>
           </div>

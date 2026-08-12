@@ -4372,7 +4372,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
               </label>
               <label class="hf-checkout-view__field">
                 <span>Número de documento</span>
-                <input data-payway-field="document-number" type="text" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="off" placeholder="Sin puntos ni guiones" required disabled>
+                <input id="cardholder_document_number" data-payway-field="document-number" type="text" name="cardholder_document_number" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="on" placeholder="Sin puntos ni guiones" required disabled>
               </label>
             </div>
             <input data-payway-field="door-number" type="hidden">
