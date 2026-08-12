@@ -4688,6 +4688,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           billingFields.querySelectorAll('input, select, textarea').forEach(input => {
             input.disabled = useDeliveryAddress;
           });
+          syncCheckoutDocumentToPayway(useDeliveryAddress ? 'shipping' : 'billing');
         };
         sameAddressToggle.addEventListener('change', syncBillingVisibility);
         syncBillingVisibility();
@@ -4715,12 +4716,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
             if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
             const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
             const paywayDocumentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
-            if (
-              paywayDocumentNumber
-              && !paywayDocumentNumber.value
-              && `${shipping_address['horizon-fit-commerce/document-type'] || 'dni'}` === 'dni'
-            ) {
-              paywayDocumentNumber.value = `${shipping_address['horizon-fit-commerce/dni'] || ''}`.replace(/\D/g, '');
+            const checkoutDocumentAddress = sameAddressToggle?.checked ? shipping_address : billing_address;
+            const paywayDocumentType = paywayForm.querySelector('[data-payway-field="document-type"]');
+            if (paywayDocumentType) {
+              paywayDocumentType.value = `${checkoutDocumentAddress['horizon-fit-commerce/document-type'] || 'dni'}`;
+            }
+            if (paywayDocumentNumber) {
+              paywayDocumentNumber.value = normalizeDocumentNumber(checkoutDocumentAddress['horizon-fit-commerce/dni']);
             }
             const doorNumberInput = paywayForm.querySelector('[data-payway-field="door-number"]');
             if (doorNumberInput && !doorNumberInput.value) {
