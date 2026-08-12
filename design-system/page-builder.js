@@ -4669,12 +4669,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         if (holderName && !holderName.value) {
           holderName.value = `${shipping.first_name || ''} ${shipping.last_name || ''}`.trim();
         }
-        if (documentNumber && !documentNumber.value) {
-          const checkoutDocumentType = fields.get('shipping.horizon-fit-commerce/document-type')?.value || 'dni';
-          if (checkoutDocumentType === 'dni') {
-            documentNumber.value = `${fields.get('shipping.horizon-fit-commerce/dni')?.value || ''}`.replace(/\D/g, '');
-          }
-        }
+        syncCheckoutDocumentToPayway(sameAddressToggle?.checked ? 'shipping' : 'billing');
         if (doorNumber && !doorNumber.value && addressNumbers.length) {
           doorNumber.value = addressNumbers[addressNumbers.length - 1];
         }
