@@ -21,15 +21,12 @@ add_action('woocommerce_init', function () {
         'required' => true,
         'options'  => array(
             array('value' => 'dni', 'label' => __('DNI', 'horizon-fit-commerce')),
-            array('value' => 'cuit', 'label' => __('CUIT', 'horizon-fit-commerce')),
-            array('value' => 'cuil', 'label' => __('CUIL', 'horizon-fit-commerce')),
         ),
         'sanitize_callback' => function ($value) {
-            $value = strtolower(sanitize_text_field((string) $value));
-            return in_array($value, array('dni', 'cuit', 'cuil'), true) ? $value : 'dni';
+            return 'dni';
         },
         'validate_callback' => function ($value) {
-            if (! in_array((string) $value, array('dni', 'cuit', 'cuil'), true)) {
+            if ((string) $value !== 'dni') {
                 return new WP_Error(
                     'hf_invalid_document_type',
                     __('Seleccioná un tipo de documento válido.', 'horizon-fit-commerce')
@@ -41,22 +38,22 @@ add_action('woocommerce_init', function () {
 
     woocommerce_register_additional_checkout_field(array(
         'id'       => 'horizon-fit-commerce/dni',
-        'label'    => __('N° de documento', 'horizon-fit-commerce'),
+        'label'    => __('Documento del titular', 'horizon-fit-commerce'),
         'location' => 'address',
         'type'     => 'text',
         'required' => true,
         'attributes' => array(
-            'pattern'   => '[A-Za-z0-9]{5,20}',
-            'maxLength' => 20,
+            'pattern'   => '[0-9]{7,11}',
+            'maxLength' => 11,
         ),
         'sanitize_callback' => function ($value) {
-            return strtoupper((string) preg_replace('/[^A-Za-z0-9]+/', '', (string) $value));
+            return (string) preg_replace('/\D+/', '', (string) $value);
         },
         'validate_callback' => function ($value) {
-            if (! preg_match('/^[A-Za-z0-9]{5,20}$/', (string) $value)) {
+            if (! preg_match('/^[0-9]{7,11}$/', (string) $value)) {
                 return new WP_Error(
                     'hf_invalid_dni',
-                    __('Ingresá entre 5 y 20 letras o números, sin puntos, espacios ni guiones.', 'horizon-fit-commerce')
+                    __('Revisá el DNI del titular.', 'horizon-fit-commerce')
                 );
             }
             return true;

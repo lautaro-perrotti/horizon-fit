@@ -4110,7 +4110,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const expirationMonth = expirationParts?.[1]?.padStart(2, '0') || '';
     const expirationYear = expirationParts?.[2] || '';
     const holderName = value('holder-name');
-    const documentNumber = value('document-number').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    const documentNumber = digits('document-number');
     const doorNumber = digits('door-number');
 
     if (cardNumber.length < 13 || cardNumber.length > 19) throw new Error('Revisá el número de la tarjeta.');
@@ -4130,9 +4130,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       throw new Error('La tarjeta está vencida. Revisá la fecha de vencimiento.');
     }
     if (!holderName) throw new Error('Ingresá el nombre que figura en la tarjeta.');
-    if (documentNumber.length < 5 || documentNumber.length > 20) {
-      throw new Error('Ingresá entre 5 y 20 letras o números, sin puntos, espacios ni guiones.');
-    }
+    if (documentNumber.length < 7 || documentNumber.length > 11) throw new Error('Revisá el DNI del titular.');
     if (!doorNumber) throw new Error('Ingresá la altura de la dirección de facturación.');
 
     const DecidirSdk = await loadPaywaySdk(config.sdkUrl);
@@ -4287,9 +4285,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
       if (key) fields.set(key, input);
     });
     const normalizeDocumentNumber = (value) => `${value || ''}`
-      .replace(/[^A-Za-z0-9]/g, '')
-      .toUpperCase()
-      .slice(0, 20);
+      .replace(/\D/g, '')
+      .slice(0, 11);
 
     sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/dni"]').forEach(input => {
       input.addEventListener('input', () => {
@@ -4357,13 +4354,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 <span>Tipo de documento</span>
                 <select data-payway-field="document-type" required disabled>
                   <option value="dni" selected>DNI</option>
-                  <option value="cuit">CUIT</option>
-                  <option value="cuil">CUIL</option>
                 </select>
               </label>
               <label class="hf-checkout-view__field">
-                <span>N° de documento</span>
-                <input data-payway-field="document-number" type="text" inputmode="text" pattern="[A-Za-z0-9]{5,20}" maxlength="20" autocomplete="off" placeholder="Sin puntos, espacios ni guiones" required disabled>
+                <span>Documento del titular</span>
+                <input data-payway-field="document-number" type="text" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="off" placeholder="Sin puntos ni guiones" required disabled>
               </label>
             </div>
             <input data-payway-field="door-number" type="hidden">
@@ -4655,12 +4650,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const documentType = fields.get(`${prefix}.horizon-fit-commerce/document-type`);
         if (documentType && !documentType.value) documentType.value = 'dni';
       });
-      if (fields.get('shipping.horizon-fit-commerce/dni') && !fields.get('shipping.horizon-fit-commerce/dni').value) {
-        fields.get('shipping.horizon-fit-commerce/dni').value = `${billing['horizon-fit-commerce/dni'] || ''}`;
-      }
-      if (fields.get('shipping.horizon-fit-commerce/document-type') && !shipping['horizon-fit-commerce/document-type']) {
-        fields.get('shipping.horizon-fit-commerce/document-type').value = billing['horizon-fit-commerce/document-type'] || 'dni';
-      }
       const paywayForm = paymentList?.querySelector('[data-payway-form]');
       if (paywayForm) {
         const holderName = paywayForm.querySelector('[data-payway-field="holder-name"]');
