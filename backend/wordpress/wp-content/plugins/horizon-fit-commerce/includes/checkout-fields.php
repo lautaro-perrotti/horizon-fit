@@ -46,17 +46,17 @@ add_action('woocommerce_init', function () {
         'type'     => 'text',
         'required' => true,
         'attributes' => array(
-            'pattern'   => '[0-9]{7,11}',
-            'maxLength' => 11,
+            'pattern'   => '[A-Za-z0-9]{5,20}',
+            'maxLength' => 20,
         ),
         'sanitize_callback' => function ($value) {
-            return preg_replace('/\D+/', '', (string) $value);
+            return strtoupper((string) preg_replace('/[^A-Za-z0-9]+/', '', (string) $value));
         },
         'validate_callback' => function ($value) {
-            if (! preg_match('/^[0-9]{7,11}$/', (string) $value)) {
+            if (! preg_match('/^[A-Za-z0-9]{5,20}$/', (string) $value)) {
                 return new WP_Error(
                     'hf_invalid_dni',
-                    __('Ingresá entre 7 y 11 números, sin puntos ni guiones.', 'horizon-fit-commerce')
+                    __('Ingresá entre 5 y 20 letras o números, sin puntos, espacios ni guiones.', 'horizon-fit-commerce')
                 );
             }
             return true;

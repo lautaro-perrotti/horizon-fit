@@ -4106,19 +4106,31 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const digits = (name) => value(name).replace(/\D/g, '');
     const cardNumber = digits('card-number');
     const securityCode = digits('security-code');
-    const expirationMonth = digits('expiration-month').padStart(2, '0');
-    const expirationYear = digits('expiration-year').slice(-2);
+    const expirationParts = value('expiration').match(/^\s*(0?[1-9]|1[0-2])\s*\/\s*(\d{2})\s*$/);
+    const expirationMonth = expirationParts?.[1]?.padStart(2, '0') || '';
+    const expirationYear = expirationParts?.[2] || '';
     const holderName = value('holder-name');
-    const documentNumber = digits('document-number');
+    const documentNumber = value('document-number').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     const doorNumber = digits('door-number');
 
     if (cardNumber.length < 13 || cardNumber.length > 19) throw new Error('Revisá el número de la tarjeta.');
     if (securityCode.length < 3 || securityCode.length > 4) throw new Error('Revisá el código de seguridad.');
-    if (!/^(0[1-9]|1[0-2])$/.test(expirationMonth) || expirationYear.length !== 2) {
+    if (!expirationParts) {
       throw new Error('Revisá la fecha de vencimiento de la tarjeta.');
     }
+    const today = new Date();
+    const currentYear = today.getFullYear() % 100;
+    const currentMonth = today.getMonth() + 1;
+    const numericExpirationYear = Number(expirationYear);
+    const numericExpirationMonth = Number(expirationMonth);
+    if (
+      numericExpirationYear < currentYear
+      || (numericExpirationYear === currentYear && numericExpirationMonth < currentMonth)
+    ) {
+      throw new Error('La tarjeta está vencida. Revisá la fecha de vencimiento.');
+    }
     if (!holderName) throw new Error('Ingresá el nombre que figura en la tarjeta.');
-    if (documentNumber.length < 7 || documentNumber.length > 11) throw new Error('Revisá el DNI del titular.');
+    if (documentNumber.length < 5 || documentNumber.length > 20) throw new Error('Revisá el documento del titular.');
     if (!doorNumber) throw new Error('Ingresá la altura de la dirección de facturación.');
 
     const DecidirSdk = await loadPaywaySdk(config.sdkUrl);
@@ -4319,13 +4331,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
               <span>Titular de la tarjeta</span>
               <input data-payway-field="holder-name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
             </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--expiration-month">
-              <span>Mes</span>
-              <input data-payway-field="expiration-month" type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" placeholder="MM" required disabled>
-            </label>
-            <label class="hf-checkout-view__field hf-checkout-view__field--expiration-year">
-              <span>Año</span>
-              <input data-payway-field="expiration-year" type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="2" placeholder="AA" required disabled>
+            <label class="hf-checkout-view__field hf-checkout-view__field--expiration">
+              <span>Vencimiento</span>
+              <input data-payway-field="expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" aria-label="Vencimiento en formato mes y año" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--security-code">
               <span>Código de seguridad</span>
@@ -4407,6 +4415,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const bankInput = form.querySelector('[data-payway-field="bank"]');
       const cardInput = form.querySelector('[data-payway-field="card-type"]');
       const cardNumberInput = form.querySelector('[data-payway-field="card-number"]');
+      const expirationInput = form.querySelector('[data-payway-field="expiration"]');
       const installmentsSelect = form.querySelector('[data-payway-field="installments"]');
       const detectionEl = form.querySelector('[data-payway-card-detection]');
       const promotions = config?.promotions || {};
@@ -4481,6 +4490,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const digits = cardNumberInput.value.replace(/\D/g, '').slice(0, 19);
         cardNumberInput.value = digits.replace(/(.{4})/g, '$1 ').trim();
         populateInstallments();
+      });
+      expirationInput?.addEventListener('input', () => {
+        const digits = expirationInput.value.replace(/\D/g, '').slice(0, 4);
+        expirationInput.value = digits.length > 2
+          ? `${digits.slice(0, 2)}/${digits.slice(2)}`
+          : digits;
+        expirationInput.setCustomValidity('');
+      });
+      expirationInput?.addEventListener('blur', () => {
+        const match = expirationInput.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+        expirationInput.setCustomValidity(match ? '' : 'Ingresá una fecha válida en formato MM/AA.');
       });
       installmentsSelect?.addEventListener('change', syncHiddenSelection);
       populateInstallments();
