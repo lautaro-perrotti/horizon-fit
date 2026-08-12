@@ -33,6 +33,10 @@ require_once HF_COMMERCE_DIR . 'includes/info-pages-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/storefront-seo-cache.php';
 require_once HF_COMMERCE_DIR . 'includes/admin-panel.php';
 
+// La contraseña de las cuentas creadas durante el checkout la define el cliente
+// en el formulario. No enviar el email automático de configuración de contraseña.
+add_filter('woocommerce_email_enabled_customer_new_account', '__return_false');
+
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
 

@@ -84,8 +84,14 @@
           </label>
           <label class="hf-checkout-view__toggle hf-checkout-view__toggle--compact" data-checkout-create-account-row>
             <input data-checkout-create-account type="checkbox" name="create_account" value="1">
-            <span>Crear una cuenta para futuras compras y obtener descuentos. Te enviaremos un correo para definir tu contraseña.</span>
+            <span>Crear una cuenta para futuras compras y obtener descuentos.</span>
           </label>
+          <div class="hf-checkout-view__fields" data-checkout-account-password-row hidden>
+            <label class="hf-checkout-view__field hf-checkout-view__field--full">
+              <span>Contraseña</span>
+              <input data-checkout-account-password type="password" name="customer_password" autocomplete="new-password" minlength="8" disabled>
+            </label>
+          </div>
         </div>
 
         <div class="hf-checkout-view__section" data-checkout-delivery>
@@ -156,10 +162,10 @@
             </label>
           </div>
           <label class="hf-checkout-view__toggle">
-            <input data-checkout-same-address type="checkbox">
+            <input data-checkout-same-address type="checkbox" checked>
             <span>Usar la misma dirección para facturación</span>
           </label>
-          <div class="hf-checkout-view__billing-fields" data-checkout-billing-fields>
+          <div class="hf-checkout-view__billing-fields" data-checkout-billing-fields hidden>
             <div class="hf-checkout-view__section-head">
               <strong class="hf-checkout-view__section-title">Facturación</strong>
             </div>

@@ -4275,6 +4275,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const billingFields = sectionEl.querySelector('[data-checkout-billing-fields]');
     const createAccountRow = sectionEl.querySelector('[data-checkout-create-account-row]');
     const createAccountToggle = sectionEl.querySelector('[data-checkout-create-account]');
+    const accountPasswordRow = sectionEl.querySelector('[data-checkout-account-password-row]');
+    const accountPasswordInput = sectionEl.querySelector('[data-checkout-account-password]');
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
@@ -4639,6 +4641,19 @@ ${renderFeaturedSetPriceHtml(pricing)}
         createAccountToggle.checked = registrationRequired;
         createAccountToggle.disabled = Boolean(session?.loggedIn) || !registrationAvailable;
       }
+      const syncAccountPasswordVisibility = () => {
+        const needsPassword = !session?.loggedIn
+          && registrationAvailable
+          && Boolean(registrationRequired || createAccountToggle?.checked);
+        if (accountPasswordRow) accountPasswordRow.hidden = !needsPassword;
+        if (accountPasswordInput) {
+          accountPasswordInput.disabled = !needsPassword;
+          accountPasswordInput.required = needsPassword;
+          if (!needsPassword) accountPasswordInput.value = '';
+        }
+      };
+      if (createAccountToggle) createAccountToggle.onchange = syncAccountPasswordVisibility;
+      syncAccountPasswordVisibility();
 
       const cartBilling = cart?.billing_address || {};
       const billing = {
@@ -4688,9 +4703,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
           : collectFieldValues('billing');
         const paymentMethod = paymentMethodInput?.value || paymentList?.querySelector('input[type="radio"]:checked')?.value || '';
         const createAccount = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
+        const customerPassword = `${accountPasswordInput?.value || ''}`;
         let paymentData = [];
 
         try {
+          if (createAccount && customerPassword.length < 8) {
+            throw new Error('La contraseña debe tener al menos 8 caracteres.');
+          }
           if (paymentMethod === PAYWAY_GATEWAY_ID) {
             const paywayForm = paymentList?.querySelector('[data-payway-form]');
             if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
@@ -4729,6 +4748,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           payment_data: paymentData,
           customer_note: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
           create_account: createAccount,
+          customer_password: createAccount ? customerPassword : '',
           additional_fields: {
             'horizon-fit-commerce/email-marketing': Boolean(sectionEl.querySelector('[name="email_marketing"]')?.checked)
           }
