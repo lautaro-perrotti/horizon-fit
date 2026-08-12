@@ -4336,7 +4336,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
               <input data-payway-field="holder-name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--expiration">
-              <span>Mes / Año</span>
+              <span>Mes / Año de vencimiento</span>
               <input data-payway-field="expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" aria-label="Vencimiento en formato mes y año" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--security-code">
