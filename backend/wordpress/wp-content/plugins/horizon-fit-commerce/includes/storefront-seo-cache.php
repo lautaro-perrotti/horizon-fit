@@ -20,6 +20,14 @@ function hf_storefront_seo_dir() {
     return trailingslashit($uploads['basedir']) . 'horizon-fit-seo';
 }
 
+function hf_storefront_template_path() {
+    $configured = trim((string) getenv('HF_STOREFRONT_TEMPLATE_PATH'));
+    if ($configured !== '' && is_readable($configured)) {
+        return $configured;
+    }
+    return ABSPATH . 'index.html';
+}
+
 function hf_storefront_seo_description($value, $fallback = '') {
     $value = html_entity_decode(wp_strip_all_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $value = trim(preg_replace('/\s+/u', ' ', $value));
@@ -592,7 +600,7 @@ function hf_regenerate_storefront_seo_cache() {
     if (! class_exists('WooCommerce')) {
         return false;
     }
-    $template_path = ABSPATH . 'index.html';
+    $template_path = hf_storefront_template_path();
     $template = @file_get_contents($template_path);
     if (! is_string($template) || $template === '') {
         return false;

@@ -1,0 +1,12 @@
+[Unit]
+Description=Buscar cambios de Horizon Fit en GitHub cada minuto
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+RandomizedDelaySec=10s
+Persistent=true
+Unit=horizon-fit-deploy.service
+
+[Install]
+WantedBy=timers.target

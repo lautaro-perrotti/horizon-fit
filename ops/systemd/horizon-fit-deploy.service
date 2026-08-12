@@ -1,0 +1,14 @@
+[Unit]
+Description=Deploy automatico de Horizon Fit desde GitHub
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+Environment=HF_REPO_DIR=/root/horizon-fit
+ExecStart=/usr/bin/bash /root/horizon-fit/scripts/deploy-vps.sh
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

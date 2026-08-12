@@ -43,13 +43,17 @@ services:
       # se sobreescribe con un archivo .env (WP_PUBLIC_HOST=187.77.28.61:8089).
       WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
       WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
+      # El template vive dentro de un bind mount de directorio. A diferencia de
+      # montar index.html como archivo, esto sigue viendo el archivo nuevo
+      # cuando `git pull` lo reemplaza atómicamente.
+      HF_STOREFRONT_TEMPLATE_PATH: /workspace/index.html
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_REST_ALLOWED_HOSTS', ['localhost:8089', 'localhost:8088', '187.127.43.87:8089', 'api.horizonfit.com.ar', 'horizonfit.com.ar', 'www.horizonfit.com.ar', '*']);
         define('FS_METHOD', 'direct');
         define('WP_MEMORY_LIMIT', '256M');
     volumes:
       - horizon_fit_html:/var/www/html
-      - ./index.html:/var/www/html/index.html
+      - ./:/workspace:ro
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
@@ -67,7 +71,7 @@ services:
     ports:
       - "127.0.0.1:8088:80"
     volumes:
-      - ./index.html:/usr/local/apache2/htdocs/index.html
+      - ./:/workspace:ro
       - ./robots.txt:/usr/local/apache2/htdocs/robots.txt:ro
       - ./backend/wordpress/wp-content/uploads/horizon-fit-seo:/usr/local/apache2/htdocs/seo-generated:ro
       - ./design-system:/usr/local/apache2/htdocs/design-system
@@ -76,6 +80,8 @@ services:
       - ./favicon.ico:/usr/local/apache2/htdocs/favicon.ico:ro
       - ./TIPOGRAFIAS:/usr/local/apache2/htdocs/TIPOGRAFIAS:ro
       - ./docker/apache/spa.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./docker/apache/spa-entrypoint.sh:/spa-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/spa-entrypoint.sh"]
 
   wpcli:
     image: wordpress:cli-php8.2
@@ -95,9 +101,10 @@ services:
       # usa el dominio correcto del entorno (local o VPS) sin parches manuales.
       WP_PUBLIC_HOST: ${WP_PUBLIC_HOST:-localhost:8089}
       WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
+      HF_STOREFRONT_TEMPLATE_PATH: /workspace/index.html
     volumes:
       - horizon_fit_html:/var/www/html
-      - ./index.html:/var/www/html/index.html:ro
+      - ./:/workspace:ro
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
 
