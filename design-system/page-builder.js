@@ -4289,26 +4289,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
       .toUpperCase()
       .slice(0, 20);
 
-    const syncCheckoutDocumentToPayway = (prefix = 'shipping') => {
-      const paywayForm = paymentList?.querySelector('[data-payway-form]');
-      if (!paywayForm) return;
-      const documentType = fields.get(`${prefix}.horizon-fit-commerce/document-type`)?.value || 'dni';
-      const documentNumber = normalizeDocumentNumber(fields.get(`${prefix}.horizon-fit-commerce/dni`)?.value);
-      const paywayDocumentType = paywayForm.querySelector('[data-payway-field="document-type"]');
-      const paywayDocumentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
-      if (paywayDocumentType) paywayDocumentType.value = documentType;
-      if (paywayDocumentNumber) paywayDocumentNumber.value = documentNumber;
-    };
-
     sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/dni"]').forEach(input => {
       input.addEventListener('input', () => {
         input.value = normalizeDocumentNumber(input.value);
-        syncCheckoutDocumentToPayway(input.getAttribute('data-checkout-field')?.startsWith('billing.') ? 'billing' : 'shipping');
-      });
-    });
-    sectionEl.querySelectorAll('[data-checkout-field$=".horizon-fit-commerce/document-type"]').forEach(input => {
-      input.addEventListener('change', () => {
-        syncCheckoutDocumentToPayway(input.getAttribute('data-checkout-field')?.startsWith('billing.') ? 'billing' : 'shipping');
       });
     });
 
@@ -4367,8 +4350,20 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 <option value="">Ingresá el número de tarjeta</option>
               </select>
             </label>
-            <input data-payway-field="document-type" type="hidden" value="dni" disabled>
-            <input data-payway-field="document-number" type="hidden" value="" disabled>
+            <div class="hf-checkout-view__document-row hf-checkout-view__payway-document-row">
+              <label class="hf-checkout-view__field">
+                <span>Tipo de documento</span>
+                <select data-payway-field="document-type" required disabled>
+                  <option value="dni" selected>DNI</option>
+                  <option value="cuit">CUIT</option>
+                  <option value="cuil">CUIL</option>
+                </select>
+              </label>
+              <label class="hf-checkout-view__field">
+                <span>N° de documento</span>
+                <input data-payway-field="document-number" type="text" inputmode="text" pattern="[A-Za-z0-9]{5,20}" maxlength="20" autocomplete="off" placeholder="Sin puntos, espacios ni guiones" required disabled>
+              </label>
+            </div>
             <input data-payway-field="door-number" type="hidden">
           </div>
           <p class="hf-checkout-view__payway-brands">Payway acepta tarjetas de débito, crédito y prepagas de las principales marcas como Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.</p>
@@ -4430,6 +4425,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const cardInput = form.querySelector('[data-payway-field="card-type"]');
       const cardNumberInput = form.querySelector('[data-payway-field="card-number"]');
       const expirationInput = form.querySelector('[data-payway-field="expiration"]');
+      const documentNumberInput = form.querySelector('[data-payway-field="document-number"]');
       const installmentsSelect = form.querySelector('[data-payway-field="installments"]');
       const detectionEl = form.querySelector('[data-payway-card-detection]');
       const promotions = config?.promotions || {};
@@ -4515,6 +4511,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
       expirationInput?.addEventListener('blur', () => {
         const match = expirationInput.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
         expirationInput.setCustomValidity(match ? '' : 'Ingresá una fecha válida en formato MM/AA.');
+      });
+      documentNumberInput?.addEventListener('input', () => {
+        documentNumberInput.value = normalizeDocumentNumber(documentNumberInput.value);
       });
       installmentsSelect?.addEventListener('change', syncHiddenSelection);
       populateInstallments();
@@ -4663,13 +4662,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const paywayForm = paymentList?.querySelector('[data-payway-form]');
       if (paywayForm) {
         const holderName = paywayForm.querySelector('[data-payway-field="holder-name"]');
-        const documentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
         const doorNumber = paywayForm.querySelector('[data-payway-field="door-number"]');
         const addressNumbers = `${shipping.address_1 || ''}`.match(/\d+/g) || [];
         if (holderName && !holderName.value) {
           holderName.value = `${shipping.first_name || ''} ${shipping.last_name || ''}`.trim();
         }
-        syncCheckoutDocumentToPayway(sameAddressToggle?.checked ? 'shipping' : 'billing');
         if (doorNumber && !doorNumber.value && addressNumbers.length) {
           doorNumber.value = addressNumbers[addressNumbers.length - 1];
         }
@@ -4688,7 +4685,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
           billingFields.querySelectorAll('input, select, textarea').forEach(input => {
             input.disabled = useDeliveryAddress;
           });
-          syncCheckoutDocumentToPayway(useDeliveryAddress ? 'shipping' : 'billing');
         };
         sameAddressToggle.addEventListener('change', syncBillingVisibility);
         syncBillingVisibility();
@@ -4715,15 +4711,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
             const paywayForm = paymentList?.querySelector('[data-payway-form]');
             if (!paywayForm) throw new Error('No pudimos cargar el formulario de Payway.');
             const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
-            const paywayDocumentNumber = paywayForm.querySelector('[data-payway-field="document-number"]');
-            const checkoutDocumentAddress = sameAddressToggle?.checked ? shipping_address : billing_address;
-            const paywayDocumentType = paywayForm.querySelector('[data-payway-field="document-type"]');
-            if (paywayDocumentType) {
-              paywayDocumentType.value = `${checkoutDocumentAddress['horizon-fit-commerce/document-type'] || 'dni'}`;
-            }
-            if (paywayDocumentNumber) {
-              paywayDocumentNumber.value = normalizeDocumentNumber(checkoutDocumentAddress['horizon-fit-commerce/dni']);
-            }
             const doorNumberInput = paywayForm.querySelector('[data-payway-field="door-number"]');
             if (doorNumberInput && !doorNumberInput.value) {
               const addressNumbers = `${shipping_address.address_1 || ''}`.match(/\d+/g) || [];

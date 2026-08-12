@@ -375,6 +375,10 @@ body.hf-checkout-mode .nav {
   grid-column: span 4;
 }
 
+.hf-checkout-view__payway-document-row {
+  grid-column: 1 / -1;
+}
+
 .hf-checkout-view__payway-detection {
   grid-column: 1 / -1;
   min-height: 18px;
