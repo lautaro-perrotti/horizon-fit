@@ -4130,7 +4130,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
       throw new Error('La tarjeta está vencida. Revisá la fecha de vencimiento.');
     }
     if (!holderName) throw new Error('Ingresá el nombre que figura en la tarjeta.');
-    if (documentNumber.length < 5 || documentNumber.length > 20) throw new Error('Revisá el documento del titular.');
+    if (documentNumber.length < 5 || documentNumber.length > 20) {
+      throw new Error('Ingresá entre 5 y 20 letras o números, sin puntos, espacios ni guiones.');
+    }
     if (!doorNumber) throw new Error('Ingresá la altura de la dirección de facturación.');
 
     const DecidirSdk = await loadPaywaySdk(config.sdkUrl);
