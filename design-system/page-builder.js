@@ -4640,35 +4640,28 @@ ${renderFeaturedSetPriceHtml(pricing)}
         createAccountToggle.disabled = Boolean(session?.loggedIn) || !registrationAvailable;
       }
 
-      const billing = cart?.billing_address || {};
-      const shipping = cart?.shipping_address && Object.values(cart.shipping_address).some(Boolean)
-        ? cart.shipping_address
-        : billing;
+      const cartBilling = cart?.billing_address || {};
+      const billing = {
+        ...cartBilling,
+        phone: cartBilling.phone || session?.billingPhone || ''
+      };
+      const storedShipping = cart?.shipping_address || {};
+      const shipping = {
+        ...storedShipping,
+        phone: storedShipping.phone || session?.shippingPhone || ''
+      };
       setFieldValues('billing', billing);
       setFieldValues('shipping', shipping);
       ['billing', 'shipping'].forEach(prefix => {
         const documentType = fields.get(`${prefix}.horizon-fit-commerce/document-type`);
         if (documentType && !documentType.value) documentType.value = 'dni';
       });
-      const paywayForm = paymentList?.querySelector('[data-payway-form]');
-      if (paywayForm) {
-        const holderName = paywayForm.querySelector('[data-payway-field="holder-name"]');
-        const doorNumber = paywayForm.querySelector('[data-payway-field="door-number"]');
-        const addressNumbers = `${shipping.address_1 || ''}`.match(/\d+/g) || [];
-        if (holderName && !holderName.value) {
-          holderName.value = `${shipping.first_name || ''} ${shipping.last_name || ''}`.trim();
-        }
-        if (doorNumber && !doorNumber.value && addressNumbers.length) {
-          doorNumber.value = addressNumbers[addressNumbers.length - 1];
-        }
-      }
       const selectedPaymentMethod = paymentList?.querySelector('input[type="radio"]:checked');
       if (paymentMethodInput) {
         paymentMethodInput.value = selectedPaymentMethod?.value || '';
       }
 
       if (sameAddressToggle) {
-        sameAddressToggle.checked = true;
         const syncBillingVisibility = () => {
           if (!billingFields) return;
           const useDeliveryAddress = sameAddressToggle.checked;
@@ -4704,7 +4697,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
             const paywayValue = (name) => `${paywayForm.querySelector(`[data-payway-field="${name}"]`)?.value || ''}`.trim();
             const doorNumberInput = paywayForm.querySelector('[data-payway-field="door-number"]');
             if (doorNumberInput && !doorNumberInput.value) {
-              const addressNumbers = `${shipping_address.address_1 || ''}`.match(/\d+/g) || [];
+              const addressNumbers = `${billing_address.address_1 || ''}`.match(/\d+/g) || [];
               doorNumberInput.value = addressNumbers[addressNumbers.length - 1] || '';
             }
             if (!paywayValue('bank') || !paywayValue('card-type') || !paywayValue('installments')) {

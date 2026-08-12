@@ -141,6 +141,16 @@ function hf_commerce_get_account_session(WP_REST_Request $request) {
     $is_logged_in = is_user_logged_in();
     $frontend_origin = hf_commerce_frontend_origin_from_request();
     $redirect_to = trailingslashit($frontend_origin) . 'mi-cuenta/';
+    $billing_phone = '';
+    $shipping_phone = '';
+
+    if ($is_logged_in && class_exists('WC_Customer')) {
+        $customer = new WC_Customer($user->ID);
+        $billing_phone = (string) $customer->get_billing_phone();
+        $shipping_phone = method_exists($customer, 'get_shipping_phone')
+            ? (string) $customer->get_shipping_phone()
+            : (string) get_user_meta($user->ID, 'shipping_phone', true);
+    }
 
     return rest_ensure_response(array(
         'loggedIn'    => $is_logged_in,
@@ -148,6 +158,8 @@ function hf_commerce_get_account_session(WP_REST_Request $request) {
         'userLogin'   => $is_logged_in ? (string) $user->user_login : '',
         'displayName' => $is_logged_in ? (string) $user->display_name : '',
         'email'       => $is_logged_in ? (string) $user->user_email : '',
+        'billingPhone'  => $is_logged_in ? $billing_phone : '',
+        'shippingPhone' => $is_logged_in ? $shipping_phone : '',
         'logoutUrl'   => $is_logged_in ? html_entity_decode(wp_logout_url($redirect_to), ENT_QUOTES, 'UTF-8') : '',
         'loginUrl'    => trailingslashit(home_url('/')) . 'wp-login.php',
         'redirectTo'  => $redirect_to,
