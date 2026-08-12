@@ -38,7 +38,7 @@ add_action('woocommerce_init', function () {
 
     woocommerce_register_additional_checkout_field(array(
         'id'       => 'horizon-fit-commerce/dni',
-        'label'    => __('Documento del titular', 'horizon-fit-commerce'),
+        'label'    => __('Número de documento', 'horizon-fit-commerce'),
         'location' => 'address',
         'type'     => 'text',
         'required' => true,

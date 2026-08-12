@@ -4357,7 +4357,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 </select>
               </label>
               <label class="hf-checkout-view__field">
-                <span>Documento del titular</span>
+                <span>Número de documento</span>
                 <input data-payway-field="document-number" type="text" inputmode="numeric" pattern="[0-9]{7,11}" maxlength="11" autocomplete="off" placeholder="Sin puntos ni guiones" required disabled>
               </label>
             </div>
