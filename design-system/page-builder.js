@@ -4595,6 +4595,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const totalRaw = Number(cart?.totals?.total_price || 0);
       let binResolution = null;
       let binRequestSequence = 0;
+      let lastObservedCardNumber = '';
 
       const populateInstallments = async () => {
         if (!installmentsSelect) return;
@@ -4658,17 +4659,43 @@ ${renderFeaturedSetPriceHtml(pricing)}
         }).join('');
       };
 
-      cardNumberInput?.addEventListener('input', () => {
-        cardNumberInput.value = formatPaywayCardNumber(cardNumberInput.value);
-        void populateInstallments();
-      });
-      expirationInput?.addEventListener('input', () => {
+      const formatExpirationValue = (clearValidity = true) => {
+        if (!expirationInput) return;
         const digits = expirationInput.value.replace(/\D/g, '').slice(0, 4);
-        expirationInput.value = digits.length > 2
+        const formattedValue = digits.length > 2
           ? `${digits.slice(0, 2)}/${digits.slice(2)}`
           : digits;
-        expirationInput.setCustomValidity('');
+        if (expirationInput.value !== formattedValue) expirationInput.value = formattedValue;
+        if (clearValidity) expirationInput.setCustomValidity('');
+      };
+
+      const syncAutofilledPaywayFields = () => {
+        if (!form.isConnected) return false;
+        if (cardNumberInput) {
+          const formattedNumber = formatPaywayCardNumber(cardNumberInput.value);
+          if (cardNumberInput.value !== formattedNumber) cardNumberInput.value = formattedNumber;
+          const currentCardNumber = formattedNumber.replace(/\D/g, '');
+          if (currentCardNumber !== lastObservedCardNumber) {
+            lastObservedCardNumber = currentCardNumber;
+            void populateInstallments();
+          }
+        }
+        formatExpirationValue(false);
+        return true;
+      };
+
+      const scheduleAutofillSync = () => {
+        [0, 80, 250, 600].forEach(delay => {
+          window.setTimeout(syncAutofilledPaywayFields, delay);
+        });
+      };
+
+      ['input', 'change', 'blur', 'animationstart'].forEach(eventName => {
+        cardNumberInput?.addEventListener(eventName, syncAutofilledPaywayFields);
       });
+      cardNumberInput?.addEventListener('focus', scheduleAutofillSync);
+      expirationInput?.addEventListener('input', formatExpirationValue);
+      expirationInput?.addEventListener('change', formatExpirationValue);
       expirationInput?.addEventListener('blur', () => {
         const match = expirationInput.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
         expirationInput.setCustomValidity(match ? '' : 'Ingresá una fecha válida en formato MM/AA.');
@@ -4676,7 +4703,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
       documentNumberInput?.addEventListener('input', () => {
         documentNumberInput.value = normalizeDocumentNumber(documentNumberInput.value);
       });
-      void populateInstallments();
+
+      const autofillObserver = window.setInterval(() => {
+        if (!syncAutofilledPaywayFields()) window.clearInterval(autofillObserver);
+      }, 250);
+      scheduleAutofillSync();
     };
 
     const syncPaymentMethodForm = () => {
