@@ -4598,6 +4598,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
       let binRequestSequence = 0;
       let lastObservedCardNumber = '';
 
+      const clearPaywayCardDetails = () => {
+        [expirationInput, securityCodeInput].forEach(input => {
+          if (!input) return;
+          input.value = '';
+          input.setCustomValidity('');
+        });
+        const holderNameInput = form.querySelector('[data-payway-field="holder-name"]');
+        if (holderNameInput) holderNameInput.value = '';
+      };
+
       const resetPaywayCardState = (message = 'Ingresá el número de tarjeta') => {
         binResolution = null;
         if (cardInput) cardInput.value = '';
@@ -4699,6 +4709,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           if (cardNumberInput.value !== formattedNumber) cardNumberInput.value = formattedNumber;
           const currentCardNumber = formattedNumber.replace(/\D/g, '');
           if (currentCardNumber !== lastObservedCardNumber) {
+            if (lastObservedCardNumber) clearPaywayCardDetails();
             lastObservedCardNumber = currentCardNumber;
             resetPaywayCardState(currentCardNumber ? 'Identificando la tarjeta...' : 'Ingresá el número de tarjeta');
             void populateInstallments();
