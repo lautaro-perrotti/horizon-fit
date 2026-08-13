@@ -4342,20 +4342,20 @@ ${renderFeaturedSetPriceHtml(pricing)}
           <div class="hf-checkout-view__payway-fields">
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
               <span>Número de tarjeta</span>
-              <input data-payway-field="card-number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" aria-describedby="paywayCardDetection" required disabled>
+              <input id="payway_card_number" data-payway-field="card-number" name="payway_card_number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" aria-describedby="paywayCardDetection" required disabled>
             </label>
             <p class="hf-checkout-view__payway-detection" id="paywayCardDetection" data-payway-card-detection aria-live="polite"></p>
             <label class="hf-checkout-view__field hf-checkout-view__field--card-holder">
               <span>Titular de la tarjeta</span>
-              <input data-payway-field="holder-name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
+              <input id="payway_card_holder_name" data-payway-field="holder-name" name="payway_card_holder_name" type="text" autocomplete="cc-name" placeholder="Nombre como figura en la tarjeta" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--expiration">
               <span>Mes / Año de vencimiento</span>
-              <input data-payway-field="expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" aria-label="Vencimiento en formato mes y año" required disabled>
+              <input id="payway_card_expiration" data-payway-field="expiration" name="payway_card_expiration" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" aria-label="Vencimiento en formato mes y año" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--security-code">
               <span>Código de seguridad</span>
-              <input data-payway-field="security-code" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVV" required disabled>
+              <input id="payway_card_security_code" data-payway-field="security-code" name="payway_card_security_code" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVV" required disabled>
             </label>
             <label class="hf-checkout-view__field hf-checkout-view__field--full">
               <span>Cuotas</span>
