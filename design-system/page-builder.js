@@ -4107,6 +4107,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     unionpay: { label: 'Union Pay', lengths: [16, 17, 18, 19], securityCodeLength: 3, paymentMethodId: 0, skipLuhn: true }
   });
 
+  const PAYWAY_DEBIT_PAYMENT_METHOD_IDS = new Set([31, 66, 67]);
   const paywayBinCache = new Map();
 
   const normalizePaywayBrand = (value) => {
@@ -4597,6 +4598,26 @@ ${renderFeaturedSetPriceHtml(pricing)}
       let binRequestSequence = 0;
       let lastObservedCardNumber = '';
 
+      const resetPaywayCardState = (message = 'Ingresá el número de tarjeta') => {
+        binResolution = null;
+        if (cardInput) cardInput.value = '';
+        if (installmentsSelect) {
+          installmentsSelect.innerHTML = `<option value="">${escapeHtml(message)}</option>`;
+          installmentsSelect.value = '';
+        }
+        cardNumberInput?.setCustomValidity('');
+        if (detectionEl) detectionEl.textContent = '';
+      };
+
+      const getPaywayInstallmentPeriods = (rules) => {
+        const methodId = Number(rules?.paymentMethodId || 0);
+        const fundingType = `${rules?.fundingType || ''}`.toUpperCase();
+        if (fundingType === 'DEBIT' || fundingType === 'PREPAID' || PAYWAY_DEBIT_PAYMENT_METHOD_IDS.has(methodId)) {
+          return [1];
+        }
+        return [1, 3, 6];
+      };
+
       const populateInstallments = async () => {
         if (!installmentsSelect) return;
         const digits = `${cardNumberInput?.value || ''}`.replace(/\D/g, '');
@@ -4620,9 +4641,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         }
 
         if (!digits) {
-          installmentsSelect.innerHTML = '<option value="">Ingresá el número de tarjeta</option>';
-          if (detectionEl) detectionEl.textContent = '';
-          cardNumberInput?.setCustomValidity('');
+          resetPaywayCardState();
           return;
         }
 
@@ -4653,9 +4672,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
         const fundingLabel = ({ CREDIT: 'crédito', DEBIT: 'débito', PREPAID: 'prepaga' })[rules.fundingType] || '';
         if (detectionEl) detectionEl.textContent = `${rules.label}${fundingLabel ? ` ${fundingLabel}` : ''} detectada.`;
-        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + [3, 6].map(period => {
+        const installmentPeriods = getPaywayInstallmentPeriods(rules);
+        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + installmentPeriods.map(period => {
           const installmentValue = Math.round(totalRaw / period);
-          return `<option value="0-${rules.paymentMethodId || 0}-${period}">${period} cuotas sin interés de ${escapeHtml(formatStoreMoney(installmentValue, currency))}</option>`;
+          const label = period === 1
+            ? `1 pago de ${escapeHtml(formatStoreMoney(totalRaw, currency))}`
+            : `${period} cuotas sin interés de ${escapeHtml(formatStoreMoney(installmentValue, currency))}`;
+          return `<option value="0-${rules.paymentMethodId || 0}-${period}">${label}</option>`;
         }).join('');
       };
 
@@ -4677,6 +4700,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           const currentCardNumber = formattedNumber.replace(/\D/g, '');
           if (currentCardNumber !== lastObservedCardNumber) {
             lastObservedCardNumber = currentCardNumber;
+            resetPaywayCardState(currentCardNumber ? 'Identificando la tarjeta...' : 'Ingresá el número de tarjeta');
             void populateInstallments();
           }
         }
