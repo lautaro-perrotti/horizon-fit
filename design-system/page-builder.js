@@ -4097,6 +4097,176 @@ ${renderFeaturedSetPriceHtml(pricing)}
     return paywaySdkPromise;
   };
 
+  const PAYWAY_CARD_BRANDS = Object.freeze({
+    visa: { label: 'Visa', lengths: [13, 16, 19], securityCodeLength: 3, paymentMethodId: 1 },
+    mastercard: { label: 'Mastercard', lengths: [16], securityCodeLength: 3, paymentMethodId: 15 },
+    cabal: { label: 'Cabal', lengths: [16], securityCodeLength: 3, paymentMethodId: 27 },
+    amex: { label: 'American Express', lengths: [15], securityCodeLength: 4, paymentMethodId: 65 },
+    diners: { label: 'Diners', lengths: [14], securityCodeLength: 3, paymentMethodId: 8 },
+    discover: { label: 'Discover', lengths: [16, 17, 18, 19], securityCodeLength: 3, paymentMethodId: 8 },
+    unionpay: { label: 'Union Pay', lengths: [16, 17, 18, 19], securityCodeLength: 3, paymentMethodId: 0, skipLuhn: true }
+  });
+
+  const paywayBinCache = new Map();
+
+  const normalizePaywayBrand = (value) => {
+    const brand = `${value || ''}`
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    if (brand.includes('union')) return 'unionpay';
+    if (brand.includes('american') || brand.includes('amex')) return 'amex';
+    if (brand.includes('master')) return 'mastercard';
+    if (brand.includes('discover')) return 'discover';
+    if (brand.includes('diners')) return 'diners';
+    if (brand.includes('cabal')) return 'cabal';
+    if (brand.includes('visa')) return 'visa';
+    return '';
+  };
+
+  const resolvePaywayBin = async (rawNumber, config) => {
+    const number = `${rawNumber || ''}`.replace(/\D/g, '');
+    const bin = number.slice(0, 8);
+    if (bin.length < 8 || !config?.endpointUrl || !config?.publicKey) return null;
+    if (paywayBinCache.has(bin)) return paywayBinCache.get(bin);
+
+    const request = fetch(`${`${config.endpointUrl}`.replace(/\/$/, '')}/bins?bin=${encodeURIComponent(bin)}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        apikey: config.publicKey
+      }
+    }).then(async response => {
+      if (!response.ok) return null;
+      const payload = await response.json().catch(() => ({}));
+      const match = Array.isArray(payload?.data) ? payload.data[0] : null;
+      const brand = normalizePaywayBrand(match?.brand);
+      if (!match || !brand || !PAYWAY_CARD_BRANDS[brand]) return null;
+
+      const methods = Array.isArray(match.payment_methods) ? match.payment_methods : [];
+      const eligibleMethods = methods
+        .filter(method => Number(method?.id) > 0)
+        .sort((left, right) => Number(right?.priority || 0) - Number(left?.priority || 0));
+      const preferredIds = {
+        visa: `${match?.type || ''}`.toUpperCase() === 'DEBIT' ? [31] : [1],
+        mastercard: `${match?.type || ''}`.toUpperCase() === 'DEBIT' ? [66] : [15],
+        cabal: `${match?.type || ''}`.toUpperCase() === 'DEBIT' ? [67] : [27],
+        amex: [65, 6],
+        diners: [8],
+        discover: [],
+        unionpay: []
+      }[brand] || [];
+      const selectedMethod = preferredIds
+        .map(id => eligibleMethods.find(method => Number(method.id) === id))
+        .find(Boolean) || eligibleMethods[0] || null;
+
+      return {
+        bin,
+        brand,
+        brandLabel: PAYWAY_CARD_BRANDS[brand].label,
+        fundingType: `${match?.type || selectedMethod?.type || ''}`.toUpperCase(),
+        paymentMethodId: Number(selectedMethod?.id || 0),
+        validateLuhn: selectedMethod?.validate_luhn !== false
+      };
+    }).catch(() => null);
+
+    paywayBinCache.set(bin, request);
+    return request;
+  };
+
+  const isPaywayDiscoverRange = (number) => {
+    if (/^(?:6011|65|64[4-9])/.test(number)) return true;
+    if (number.length < 6 || !number.startsWith('622')) return false;
+    const issuerRange = Number(number.slice(0, 6));
+    return issuerRange >= 622126 && issuerRange <= 622925;
+  };
+
+  const detectPaywayCard = (rawNumber) => {
+    const number = `${rawNumber || ''}`.replace(/\D/g, '');
+    if (!number) return null;
+    let brand = '';
+
+    if (/^(?:6042|6043|589657)/.test(number)) {
+      brand = 'cabal';
+    } else if (/^3[47]/.test(number)) {
+      brand = 'amex';
+    } else if (/^(?:30[0-5]|3[68])/.test(number)) {
+      brand = 'diners';
+    } else if (isPaywayDiscoverRange(number)) {
+      brand = 'discover';
+    } else if (/^62/.test(number)) {
+      brand = 'unionpay';
+    } else if (/^4/.test(number)) {
+      brand = 'visa';
+    } else if (/^(?:5[1-5]|2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d{2}|7(?:0\d|1\d|20)))/.test(number)) {
+      brand = 'mastercard';
+    }
+
+    if (!brand) return { brand: 'other', number, paymentMethodId: 0 };
+    return {
+      brand,
+      number,
+      paymentMethodId: PAYWAY_CARD_BRANDS[brand].paymentMethodId
+    };
+  };
+
+  const isPaywayLuhnValid = (number) => {
+    let sum = 0;
+    let doubleDigit = false;
+    for (let index = number.length - 1; index >= 0; index -= 1) {
+      let digit = Number(number[index]);
+      if (doubleDigit) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+      sum += digit;
+      doubleDigit = !doubleDigit;
+    }
+    return number.length > 0 && sum % 10 === 0;
+  };
+
+  const validatePaywayCardNumber = (rawNumber, binResolution = null) => {
+    const detected = detectPaywayCard(rawNumber);
+    if (!detected || !detected.number) return { valid: false, complete: false, message: '', rules: null };
+    const brand = binResolution?.brand || detected.brand;
+    if (brand === 'other' || !PAYWAY_CARD_BRANDS[brand]) {
+      return {
+        valid: false,
+        complete: detected.number.length >= 8,
+        message: detected.number.length >= 8 ? 'No pudimos identificar la marca de la tarjeta.' : 'Ingresá más dígitos para identificar la tarjeta.',
+        rules: null
+      };
+    }
+    const baseRules = PAYWAY_CARD_BRANDS[brand];
+    const rules = {
+      ...baseRules,
+      paymentMethodId: Number(binResolution?.paymentMethodId || baseRules.paymentMethodId || 0),
+      fundingType: binResolution?.fundingType || '',
+      skipLuhn: binResolution ? binResolution.validateLuhn === false : Boolean(baseRules.skipLuhn)
+    };
+    const complete = rules.lengths.includes(detected.number.length);
+    const tooLong = detected.number.length > Math.max(...rules.lengths);
+    if (!complete) {
+      return {
+        ...detected,
+        valid: false,
+        complete: tooLong,
+        message: tooLong ? `Revisá el número de ${rules.label}.` : `${rules.label} detectada.`,
+        rules
+      };
+    }
+    const valid = rules.skipLuhn || isPaywayLuhnValid(detected.number);
+    return {
+      ...detected,
+      brand,
+      paymentMethodId: rules.paymentMethodId,
+      valid,
+      complete: true,
+      message: valid ? `${rules.label} detectada.` : `Revisá el número de ${rules.label}.`,
+      rules
+    };
+  };
+
   const tokenizePaywayCard = async (form, config) => {
     if (!form || !config?.endpointUrl || !config?.publicKey || !config?.sdkUrl) {
       throw new Error('Payway no está configurado correctamente.');
@@ -4113,8 +4283,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const documentNumber = digits('document-number');
     const doorNumber = digits('door-number');
 
-    if (cardNumber.length < 13 || cardNumber.length > 19) throw new Error('Revisá el número de la tarjeta.');
-    if (securityCode.length < 3 || securityCode.length > 4) throw new Error('Revisá el código de seguridad.');
+    const binResolution = await resolvePaywayBin(cardNumber, config);
+    const cardValidation = validatePaywayCardNumber(cardNumber, binResolution);
+    if (!cardValidation.valid) throw new Error(cardValidation.message || 'Revisá el número de la tarjeta.');
+    const securityCodeLength = PAYWAY_CARD_BRANDS[cardValidation.brand]?.securityCodeLength || 3;
+    if (securityCode.length !== securityCodeLength) {
+      throw new Error(`El código de seguridad de ${PAYWAY_CARD_BRANDS[cardValidation.brand]?.label || 'la tarjeta'} debe tener ${securityCodeLength} dígitos.`);
+    }
     if (!expirationParts) {
       throw new Error('Revisá la fecha de vencimiento de la tarjeta.');
     }
@@ -4164,7 +4339,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
           resolve({
             token: `${result.id}`,
             bin: `${result.bin || ''}`,
-            lastDigits: `${result.last_four_digits || ''}`
+            lastDigits: `${result.last_four_digits || ''}`,
+            paymentMethodId: Number(
+              result.payment_method_id
+              || result.paymentMethodId
+              || result.card?.payment_method_id
+              || binResolution?.paymentMethodId
+              || cardValidation.paymentMethodId
+              || 0
+            ) || 0,
+            brand: cardValidation.brand
           });
           return;
         }
@@ -4328,8 +4512,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     };
 
     const buildPaywayFormMarkup = (config) => {
-      const banks = Object.values(config?.promotions?.banks || {});
-      const isReady = Boolean(config?.publicKey && config?.endpointUrl && config?.sdkUrl && banks.length);
+      const isReady = Boolean(config?.publicKey && config?.endpointUrl && config?.sdkUrl);
       if (!isReady) {
         return '<p class="hf-checkout-view__empty-note">Payway no está disponible temporalmente.</p>';
       }
@@ -4382,43 +4565,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
       `;
     };
 
-    const normalizePaywayCardName = (value) => `${value || ''}`
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
-
-    const paywayCardBrandFromName = (name) => {
-      const normalized = normalizePaywayCardName(name);
-      if (normalized.includes('visa')) return 'visa';
-      if (normalized.includes('master') || normalized.includes('mc debit')) return 'mastercard';
-      if (normalized.includes('amex') || normalized.includes('american express')) return 'amex';
-      if (normalized.includes('cabal')) return 'cabal';
-      if (normalized.includes('diners')) return 'diners';
-      if (normalized.includes('discover')) return 'discover';
-      if (normalized.includes('union')) return 'unionpay';
-      return 'other';
-    };
-
-    const paywayCardFundingFromName = (name) => {
-      const normalized = normalizePaywayCardName(name);
-      if (normalized.includes('debito') || normalized.includes('debit')) return 'Débito';
-      if (normalized.includes('prepaga') || normalized.includes('prepaid')) return 'Prepaga';
-      return 'Crédito';
-    };
-
-    const detectPaywayCardBrand = (rawNumber) => {
-      const number = `${rawNumber || ''}`.replace(/\D/g, '');
-      if (!number) return '';
-      if (/^4/.test(number)) return 'visa';
-      if (/^(5[1-5]|2(?:2(?:2[1-9]|[3-9]\d)|[3-6]\d{2}|7(?:0\d|1\d|20)))/.test(number)) return 'mastercard';
-      if (/^3[47]/.test(number)) return 'amex';
-      if (/^(?:30[0-5]|3[68])/.test(number)) return 'diners';
-      if (/^(?:6011|65|64[4-9]|622)/.test(number)) return 'discover';
-      if (/^62/.test(number)) return 'unionpay';
-      if (/^(?:6042|6043|589657)/.test(number)) return 'cabal';
-      return 'other';
-    };
-
     const formatPaywayCardNumber = (rawNumber) => {
       const digits = `${rawNumber || ''}`.replace(/\D/g, '').slice(0, 19);
       if (/^3[47]/.test(digits)) {
@@ -4426,18 +4572,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
           .filter(Boolean)
           .join(' ');
       }
+      if (/^(?:30[0-5]|3[689])/.test(digits)) {
+        return [digits.slice(0, 4), digits.slice(4, 10), digits.slice(10, 14)]
+          .filter(Boolean)
+          .join(' ');
+      }
       return digits.replace(/(.{4})/g, '$1 ').trim();
     };
-
-    const paywayBrandLabel = (brand) => ({
-      visa: 'Visa',
-      mastercard: 'Mastercard',
-      amex: 'American Express',
-      cabal: 'Cabal',
-      diners: 'Diners',
-      discover: 'Discover',
-      unionpay: 'Union Pay'
-    }[brand] || 'Tarjeta');
 
     const bindPaywayForm = (config, cart) => {
       const form = paymentList?.querySelector('[data-payway-form]');
@@ -4446,80 +4587,80 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const cardInput = form.querySelector('[data-payway-field="card-type"]');
       const cardNumberInput = form.querySelector('[data-payway-field="card-number"]');
       const expirationInput = form.querySelector('[data-payway-field="expiration"]');
+      const securityCodeInput = form.querySelector('[data-payway-field="security-code"]');
       const documentNumberInput = form.querySelector('[data-payway-field="document-number"]');
       const installmentsSelect = form.querySelector('[data-payway-field="installments"]');
       const detectionEl = form.querySelector('[data-payway-card-detection]');
-      const promotions = config?.promotions || {};
       const currency = getCartCurrency(cart);
       const totalRaw = Number(cart?.totals?.total_price || 0);
+      let binResolution = null;
+      let binRequestSequence = 0;
 
-      const configuredCards = Object.entries(promotions?.cards || {}).flatMap(([bankId, cards]) => (
-        Object.values(cards || {}).map(card => ({
-          bankId: `${bankId}`,
-          cardId: `${card?.value ?? ''}`,
-          name: `${card?.name || ''}`,
-          brand: paywayCardBrandFromName(card?.name),
-          funding: paywayCardFundingFromName(card?.name)
-        }))
-      ));
-
-      const clearSelection = () => {
-        if (bankInput) bankInput.value = '';
-        if (cardInput) cardInput.value = '';
-      };
-
-      const syncHiddenSelection = () => {
-        const option = installmentsSelect?.selectedOptions?.[0];
-        if (bankInput) bankInput.value = option?.dataset?.bankId || '';
-        if (cardInput) cardInput.value = option?.dataset?.cardId || '';
-      };
-
-      const populateInstallments = () => {
+      const populateInstallments = async () => {
         if (!installmentsSelect) return;
-        clearSelection();
-        const brand = detectPaywayCardBrand(cardNumberInput?.value);
         const digits = `${cardNumberInput?.value || ''}`.replace(/\D/g, '');
-        const compatibleCards = configuredCards.filter(card => card.brand === brand);
-        const planOptions = compatibleCards.flatMap(card => (
-          (promotions?.plans?.[card.bankId]?.[card.cardId] || []).map(plan => ({ card, plan }))
-        ));
+        const requestSequence = ++binRequestSequence;
+        const localValidation = validatePaywayCardNumber(digits);
+        const localRules = localValidation.rules;
+        binResolution = null;
+        if (digits.length >= 8) {
+          installmentsSelect.innerHTML = '<option value="">Identificando la tarjeta...</option>';
+          if (detectionEl) detectionEl.textContent = `${localRules?.label || 'Tarjeta'} detectada. Verificando con Payway...`;
+          binResolution = await resolvePaywayBin(digits, config);
+          if (requestSequence !== binRequestSequence) return;
+        }
+        const validation = validatePaywayCardNumber(digits, binResolution);
+        const rules = validation.rules;
+        if (bankInput) bankInput.value = '1';
+        if (cardInput) cardInput.value = rules?.paymentMethodId ? `${rules.paymentMethodId}` : '';
+        if (securityCodeInput) {
+          securityCodeInput.maxLength = rules?.securityCodeLength || 4;
+          securityCodeInput.placeholder = rules?.securityCodeLength === 4 ? 'CVV (4 dígitos)' : 'CVV';
+        }
 
         if (!digits) {
           installmentsSelect.innerHTML = '<option value="">Ingresá el número de tarjeta</option>';
           if (detectionEl) detectionEl.textContent = '';
+          cardNumberInput?.setCustomValidity('');
           return;
         }
 
-        if (brand === 'other' || !compatibleCards.length) {
-          installmentsSelect.innerHTML = '<option value="">Tarjeta no habilitada en Payway</option>';
+        if (!rules) {
+          installmentsSelect.innerHTML = '<option value="">Ingresá una tarjeta aceptada</option>';
+          if (detectionEl) detectionEl.textContent = digits.length < 6
+            ? 'Ingresá más dígitos para identificar la tarjeta.'
+            : 'Aceptamos Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.';
+          cardNumberInput?.setCustomValidity(digits.length >= 8 ? 'La marca de esta tarjeta no está admitida.' : '');
+          return;
+        }
+
+        cardNumberInput?.setCustomValidity(validation.complete && !validation.valid ? validation.message : '');
+        if (!validation.complete || !validation.valid) {
+          installmentsSelect.innerHTML = '<option value="">Completá un número de tarjeta válido</option>';
+          if (detectionEl) detectionEl.textContent = validation.message;
+          return;
+        }
+
+        if (digits.length >= 8 && binResolution && !rules.paymentMethodId) {
+          installmentsSelect.innerHTML = '<option value="">Tarjeta no habilitada para venta online</option>';
           if (detectionEl) {
-            detectionEl.textContent = digits.length < 6
-              ? 'Ingresá más dígitos para identificar la tarjeta.'
-              : 'Esta tarjeta todavía no está habilitada en la configuración de Payway.';
+            detectionEl.textContent = `${rules.label} detectada, pero Payway no devolvió un medio de pago habilitado para este BIN.`;
           }
+          cardNumberInput?.setCustomValidity('Payway no habilitó este BIN para venta online.');
           return;
         }
 
-        if (detectionEl) detectionEl.textContent = `${paywayBrandLabel(brand)} detectada.`;
-        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + planOptions.map(({ card, plan }) => {
-          const period = Math.max(1, Number(plan?.fee_period || 1));
-          const coefficient = Number(plan?.coefficient || 1);
-          const financedTotal = Math.round(totalRaw * coefficient);
-          const installmentValue = Math.round(financedTotal / period);
-          const paymentLabel = period === 1
-            ? `1 pago de ${formatStoreMoney(financedTotal, currency)}`
-            : `${period} cuotas de ${formatStoreMoney(installmentValue, currency)} (total ${formatStoreMoney(financedTotal, currency)})`;
-          const label = `${card.funding} · ${paymentLabel}`;
-          const optionValue = `${plan?.rule_id || ''}-${card.cardId}-${plan?.fee_to_send || period}`;
-          return `<option value="${escapeHtml(optionValue)}" data-bank-id="${escapeHtml(card.bankId)}" data-card-id="${escapeHtml(card.cardId)}">${escapeHtml(label)}</option>`;
+        const fundingLabel = ({ CREDIT: 'crédito', DEBIT: 'débito', PREPAID: 'prepaga' })[rules.fundingType] || '';
+        if (detectionEl) detectionEl.textContent = `${rules.label}${fundingLabel ? ` ${fundingLabel}` : ''} detectada.`;
+        installmentsSelect.innerHTML = '<option value="">Seleccioná la cantidad de cuotas</option>' + [3, 6].map(period => {
+          const installmentValue = Math.round(totalRaw / period);
+          return `<option value="0-${rules.paymentMethodId || 0}-${period}">${period} cuotas sin interés de ${escapeHtml(formatStoreMoney(installmentValue, currency))}</option>`;
         }).join('');
-        if (planOptions.length === 1) installmentsSelect.selectedIndex = 1;
-        syncHiddenSelection();
       };
 
       cardNumberInput?.addEventListener('input', () => {
         cardNumberInput.value = formatPaywayCardNumber(cardNumberInput.value);
-        populateInstallments();
+        void populateInstallments();
       });
       expirationInput?.addEventListener('input', () => {
         const digits = expirationInput.value.replace(/\D/g, '').slice(0, 4);
@@ -4535,8 +4676,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       documentNumberInput?.addEventListener('input', () => {
         documentNumberInput.value = normalizeDocumentNumber(documentNumberInput.value);
       });
-      installmentsSelect?.addEventListener('change', syncHiddenSelection);
-      populateInstallments();
+      void populateInstallments();
     };
 
     const syncPaymentMethodForm = () => {
@@ -4729,14 +4869,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
               const addressNumbers = `${billing_address.address_1 || ''}`.match(/\d+/g) || [];
               doorNumberInput.value = addressNumbers[addressNumbers.length - 1] || '';
             }
-            if (!paywayValue('bank') || !paywayValue('card-type') || !paywayValue('installments')) {
-              throw new Error('Ingresá una tarjeta habilitada y seleccioná la cantidad de cuotas.');
+            if (!paywayValue('installments')) {
+              throw new Error('Ingresá una tarjeta válida y seleccioná 3 o 6 cuotas.');
             }
             if (statusEl) statusEl.textContent = 'Validando la tarjeta de forma segura...';
             const token = await tokenizePaywayCard(paywayForm, currentPaywayConfig);
+            const paymentMethodId = Number(token.paymentMethodId || paywayValue('card-type') || 0);
+            if (!paymentMethodId) {
+              throw new Error('Payway no pudo identificar el medio de pago de esta tarjeta. Revisá el número o intentá con otra.');
+            }
             paymentData = [
-              { key: 'payway_gateway_cc_bank', value: paywayValue('bank') },
-              { key: 'payway_gateway_cc_type', value: paywayValue('card-type') },
+              { key: 'payway_gateway_cc_bank', value: paywayValue('bank') || '1' },
+              { key: 'payway_gateway_cc_type', value: `${paymentMethodId}` },
               { key: 'payway_gateway_cc_installments', value: paywayValue('installments') },
               { key: 'payway_gateway_cc_token', value: token.token },
               { key: 'payway_gateway_cc_bin', value: token.bin },
