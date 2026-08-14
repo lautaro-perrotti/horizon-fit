@@ -11,15 +11,15 @@ if (!defined('ABSPATH')) {
 function hf_trust_defaults() {
     return [
         'items' => [
-            ['title' => 'Envíos gratis a todo el país', 'description' => 'En compras superiores a $150.000'],
+            ['title' => 'Envíos gratis a todo el país', 'description' => 'Con opciones disponibles en checkout'],
             ['title' => '3 Y 6 CUOTAS SIN INTERÉS', 'description' => 'Con tarjetas habilitadas'],
             ['title' => 'Cambios fáciles', 'description' => 'Tenés 6 meses para cambios y 15 días para devoluciones'],
             ['title' => 'Atención personalizada', 'description' => 'Te acompañamos antes y después de tu compra'],
         ],
         'pdpItems' => [
             [
-                'title' => 'ENVÍO GRATIS',
-                'descriptionHtml' => 'Envío gratis a todo el país en compras iguales o superiores a $150.000.',
+                'title' => 'ENVÍOS',
+                'descriptionHtml' => 'Envíos a todo el país con opciones disponibles en checkout.',
             ],
             [
                 'title' => 'CAMBIOS Y DEVOLUCIONES',
@@ -131,13 +131,16 @@ function hf_trust_get_settings() {
 
     // Migra la política anterior sin pisar futuras ediciones que ya utilicen
     // los importes y plazos vigentes.
+    if (isset($items[0]) && (stripos((string) ($items[0]['title'] ?? ''), '$150.000') !== false || stripos((string) ($items[0]['description'] ?? ''), '$150.000') !== false)) {
+        $items[0] = $defaults['items'][0];
+    }
     if (isset($items[1]) && (stripos((string) ($items[1]['title'] ?? ''), '$60.000') !== false || stripos((string) ($items[1]['title'] ?? ''), '$150.000') !== false)) {
         $items[1] = $defaults['items'][1];
     }
     if (isset($items[2]) && stripos((string) ($items[2]['description'] ?? ''), '6 meses') === false) {
         $items[2] = $defaults['items'][2];
     }
-    if (isset($pdp_items[0]) && stripos((string) ($pdp_items[0]['descriptionHtml'] ?? ''), '$150.000') === false) {
+    if (isset($pdp_items[0]) && stripos((string) ($pdp_items[0]['descriptionHtml'] ?? ''), '$150.000') !== false) {
         $pdp_items[0] = $defaults['pdpItems'][0];
     }
     if (isset($pdp_items[1]) && stripos((string) ($pdp_items[1]['descriptionHtml'] ?? ''), 'Tenés') === false) {

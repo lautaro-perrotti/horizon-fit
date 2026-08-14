@@ -222,24 +222,14 @@
 
   const merchantShippingServiceSchema = () => ({
     '@type': 'ShippingService',
-    '@id': routeBaseUrl('/envios-y-entregas/#envio-gratis'),
-    name: 'Envío gratis desde $150.000',
+    '@id': routeBaseUrl('/envios-y-entregas/#envios'),
+    name: 'Envíos a todo el país',
     fulfillmentType: 'https://schema.org/FulfillmentTypeDelivery',
     shippingConditions: {
       '@type': 'ShippingConditions',
       shippingDestination: {
         '@type': 'DefinedRegion',
         addressCountry: 'AR'
-      },
-      orderValue: {
-        '@type': 'MonetaryAmount',
-        minValue: 150000,
-        currency: 'ARS'
-      },
-      shippingRate: {
-        '@type': 'MonetaryAmount',
-        value: 0,
-        currency: 'ARS'
       }
     }
   });
@@ -247,7 +237,7 @@
   const merchantShippingDetailsSchema = () => ({
     '@type': 'OfferShippingDetails',
     hasShippingService: {
-      '@id': routeBaseUrl('/envios-y-entregas/#envio-gratis')
+      '@id': routeBaseUrl('/envios-y-entregas/#envios')
     }
   });
 
@@ -370,7 +360,7 @@
         mainEntity: [
           ['¿Cómo elijo mi talle?', 'Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.'],
           ['¿Qué cuotas están disponibles?', 'Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.'],
-          ['¿Cuándo el envío es gratis?', 'El envío es gratuito en compras iguales o superiores a $150.000.'],
+          ['¿Cómo se calcula el envío?', 'Las opciones, costos y plazos disponibles se muestran en el checkout según el código postal y la dirección de entrega.'],
           ['¿Cómo sigo mi pedido?', 'Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.'],
           ['¿Cuánto tiempo tengo para cambiar una prenda?', 'Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.']
         ].map(([name, text]) => ({

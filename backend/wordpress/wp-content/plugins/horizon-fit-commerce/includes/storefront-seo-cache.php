@@ -109,24 +109,14 @@ function hf_storefront_return_policy_schema() {
 function hf_storefront_shipping_service_schema() {
     return array(
         '@type' => 'ShippingService',
-        '@id' => hf_storefront_public_url('envios-y-entregas/#envio-gratis'),
-        'name' => 'Envío gratis desde $150.000',
+        '@id' => hf_storefront_public_url('envios-y-entregas/#envios'),
+        'name' => 'Envíos a todo el país',
         'fulfillmentType' => 'https://schema.org/FulfillmentTypeDelivery',
         'shippingConditions' => array(
             '@type' => 'ShippingConditions',
             'shippingDestination' => array(
                 '@type' => 'DefinedRegion',
                 'addressCountry' => 'AR',
-            ),
-            'orderValue' => array(
-                '@type' => 'MonetaryAmount',
-                'minValue' => 150000,
-                'currency' => 'ARS',
-            ),
-            'shippingRate' => array(
-                '@type' => 'MonetaryAmount',
-                'value' => 0,
-                'currency' => 'ARS',
             ),
         ),
     );
@@ -136,7 +126,7 @@ function hf_storefront_offer_shipping_reference_schema() {
     return array(
         '@type' => 'OfferShippingDetails',
         'hasShippingService' => array(
-            '@id' => hf_storefront_public_url('envios-y-entregas/#envio-gratis'),
+            '@id' => hf_storefront_public_url('envios-y-entregas/#envios'),
         ),
     );
 }
@@ -695,7 +685,7 @@ function hf_regenerate_storefront_seo_cache() {
                 $faq_items = array(
                     array('¿Cómo elijo mi talle?', 'Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.'),
                     array('¿Qué cuotas están disponibles?', 'Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.'),
-                    array('¿Cuándo el envío es gratis?', 'El envío es gratuito en compras iguales o superiores a $150.000.'),
+                    array('¿Cómo se calcula el envío?', 'Las opciones de envío, costos y plazos disponibles se muestran durante el checkout.'),
                     array('¿Cómo sigo mi pedido?', 'Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.'),
                     array('¿Cuánto tiempo tengo para cambiar una prenda?', 'Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.'),
                 );

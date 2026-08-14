@@ -17,7 +17,7 @@ function hf_info_pages_defaults() {
         'envios-y-entregas' => [
             'title' => 'Envíos y entregas',
             'description' => 'Conocé cómo preparamos, despachamos y entregamos tu compra de Horizon Fit en Argentina.',
-            'content' => '<h2>Envíos a todo el país</h2><p>Realizamos envíos dentro de Argentina. El costo y las opciones disponibles se informan durante el checkout, antes de confirmar el pago.</p><h2>Envío gratis</h2><p>El envío es gratuito en compras iguales o superiores a $150.000. Si el pedido no alcanza ese importe, el costo correspondiente se muestra en el resumen de compra.</p><h2>Preparación y seguimiento</h2><p>Una vez acreditado el pago, preparamos el pedido y enviamos la información de seguimiento al correo indicado en la compra. Los plazos pueden variar según el destino, el operador logístico y fechas de alta demanda.</p><h2>Datos de entrega</h2><p>Revisá que nombre, teléfono, código postal y dirección estén completos. Si detectás un error, escribinos por WhatsApp al +54 11 3115-0999 antes del despacho.</p>',
+            'content' => '<h2>Envíos a todo el país</h2><p>Realizamos envíos dentro de Argentina. El costo y las opciones disponibles se informan durante el checkout, antes de confirmar el pago.</p><h2>Costos y opciones</h2><p>El costo y las opciones disponibles se informan durante el checkout, antes de confirmar el pago.</p><h2>Preparación y seguimiento</h2><p>Una vez acreditado el pago, preparamos el pedido y enviamos la información de seguimiento al correo indicado en la compra. Los plazos pueden variar según el destino, el operador logístico y fechas de alta demanda.</p><h2>Datos de entrega</h2><p>Revisá que nombre, teléfono, código postal y dirección estén completos. Si detectás un error, escribinos por WhatsApp al +54 11 3115-0999 antes del despacho.</p>',
         ],
         'cambios-y-devoluciones' => [
             'title' => 'Cambios y devoluciones',
@@ -37,7 +37,7 @@ function hf_info_pages_defaults() {
         'terminos' => [
             'title' => 'Términos y condiciones',
             'description' => 'Términos de compra, disponibilidad, pagos, envíos, cambios y uso del sitio web de Horizon Fit.',
-            'content' => '<h2>Uso del sitio</h2><p>Al navegar o comprar en Horizon Fit aceptás estos términos y las políticas informadas en el sitio. La información del catálogo puede actualizarse para reflejar disponibilidad, precios y características de los productos.</p><h2>Precios y pedidos</h2><p>Los precios se expresan en pesos argentinos. Un pedido queda confirmado cuando el pago es aprobado y la operación es aceptada. Si se detecta un error evidente de precio, stock o publicación, nos comunicaremos antes de continuar.</p><h2>Pagos</h2><p>Los medios, promociones y cuotas disponibles se muestran durante el checkout. Las operaciones están sujetas a validación por parte del proveedor de pagos y la entidad emisora.</p><h2>Envíos, cambios y devoluciones</h2><p>El envío es gratuito desde $150.000. Los cambios pueden solicitarse dentro de los 6 meses y las devoluciones dentro de los 15 días, respetando las condiciones publicadas en las páginas correspondientes.</p><h2>Contacto</h2><p>Para consultas sobre una compra, escribinos por WhatsApp al +54 11 3115-0999.</p>',
+            'content' => '<h2>Uso del sitio</h2><p>Al navegar o comprar en Horizon Fit aceptás estos términos y las políticas informadas en el sitio. La información del catálogo puede actualizarse para reflejar disponibilidad, precios y características de los productos.</p><h2>Precios y pedidos</h2><p>Los precios se expresan en pesos argentinos. Un pedido queda confirmado cuando el pago es aprobado y la operación es aceptada. Si se detecta un error evidente de precio, stock o publicación, nos comunicaremos antes de continuar.</p><h2>Pagos</h2><p>Los medios, promociones y cuotas disponibles se muestran durante el checkout. Las operaciones están sujetas a validación por parte del proveedor de pagos y la entidad emisora.</p><h2>Envíos, cambios y devoluciones</h2><p>Las opciones de envío, costos y plazos disponibles se muestran durante el checkout. Los cambios pueden solicitarse dentro de los 6 meses y las devoluciones dentro de los 15 días, respetando las condiciones publicadas en las páginas correspondientes.</p><h2>Contacto</h2><p>Para consultas sobre una compra, escribinos por WhatsApp al +54 11 3115-0999.</p>',
         ],
         'privacidad' => [
             'title' => 'Política de privacidad',
@@ -62,7 +62,7 @@ function hf_info_pages_defaults() {
         'preguntas-frecuentes' => [
             'title' => 'Preguntas frecuentes',
             'description' => 'Respuestas sobre talles, pagos, cuotas, envíos, cambios y seguimiento de pedidos de Horizon Fit.',
-            'content' => '<h2>¿Cómo elijo mi talle?</h2><p>Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.</p><h2>¿Qué cuotas están disponibles?</h2><p>Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.</p><h2>¿Cuándo el envío es gratis?</h2><p>El envío es gratuito en compras iguales o superiores a $150.000.</p><h2>¿Cómo sigo mi pedido?</h2><p>Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.</p><h2>¿Cuánto tiempo tengo para cambiar una prenda?</h2><p>Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.</p>',
+            'content' => '<h2>¿Cómo elijo mi talle?</h2><p>Consultá la guía de talles y la información específica de cada producto. Si seguís con dudas, escribinos con tus medidas y el nombre de la prenda.</p><h2>¿Qué cuotas están disponibles?</h2><p>Ofrecemos 3 y 6 cuotas sin interés, sujeto a las tarjetas y medios habilitados en el checkout.</p><h2>¿Cómo se calcula el envío?</h2><p>Las opciones de envío, costos y plazos disponibles se muestran durante el checkout.</p><h2>¿Cómo sigo mi pedido?</h2><p>Después del despacho enviamos la información de seguimiento al correo utilizado en la compra.</p><h2>¿Cuánto tiempo tengo para cambiar una prenda?</h2><p>Podés solicitar un cambio dentro de los 6 meses o una devolución dentro de los 15 días, respetando las condiciones publicadas.</p>',
         ],
     ];
 }
@@ -85,6 +85,7 @@ function hf_info_pages_get() {
         $has_legacy_policy = false;
         if ('envios-y-entregas' === $slug) {
             $has_legacy_policy = false !== stripos($saved_content, '$40.000')
+                || false !== stripos($saved_content, '$150.000')
                 || false !== stripos($saved_content, 'Retira gratis')
                 || false !== stripos($saved_content, 'retiro en nuestras tiendas');
         } elseif ('cambios-y-devoluciones' === $slug) {
@@ -93,6 +94,8 @@ function hf_info_pages_get() {
         } elseif ('medios-de-pago' === $slug) {
             $has_legacy_policy = false !== stripos($saved_content, '$60.000')
                 || false !== stripos($saved_content, '6 cuotas sin interés desde $150.000');
+        } elseif ('terminos' === $slug || 'preguntas-frecuentes' === $slug) {
+            $has_legacy_policy = false !== stripos($saved_content, '$150.000');
         }
 
         if ($has_legacy_policy) {

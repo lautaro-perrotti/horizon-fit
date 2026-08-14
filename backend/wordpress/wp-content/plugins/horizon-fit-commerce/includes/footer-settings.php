@@ -18,7 +18,7 @@ function hf_footer_defaults() {
         'copy'            => 'Activewear funcional para todos los dias. Nuevos drops, mejores telas y fits pensados para entrenar y vivir en movimiento.',
         'newsPlaceholder' => 'Tu email para promos y drops',
         'newsBtn'         => 'Suscribirme',
-        'chips'           => ['Envío gratis desde $150.000', '3 y 6 cuotas sin interés', 'Cambios fáciles'],
+        'chips'           => ['Envíos a todo el país', '3 y 6 cuotas sin interés', 'Cambios fáciles'],
         'helpTitle'       => 'Ayuda',
         'helpLinks'       => [
             ['text' => 'Envíos y entregas', 'url' => '/envios-y-entregas/'],
