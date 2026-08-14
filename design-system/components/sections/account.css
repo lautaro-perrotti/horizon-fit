@@ -18,10 +18,10 @@
 }
 
 .hf-account-view__intro {
-  width: min(720px, 100%);
+  width: min(760px, 100%);
   margin: 0 auto;
-  padding: 0 22px;
-  text-align: center;
+  padding: 0 34px;
+  text-align: left;
 }
 
 .hf-account-view__kicker {
@@ -36,7 +36,7 @@
 .hf-account-view__title {
   margin: 0 0 8px;
   color: #222222;
-  font-size: clamp(28px, 3vw, 42px);
+  font-size: clamp(26px, 2.6vw, 36px);
   font-weight: 400;
   letter-spacing: -0.025em;
   line-height: 1;
@@ -45,7 +45,7 @@
 
 .hf-account-view__lead {
   max-width: 44ch;
-  margin: 0 auto;
+  margin: 0;
   color: var(--hf-muted, #64596f);
   font-size: 14px;
   line-height: 1.5;
@@ -322,12 +322,12 @@ body.hf-account-signed-out .hf-account-view__orders {
   }
 
   .hf-account-view__intro {
-    padding-inline: 14px;
+    padding-inline: 16px;
   }
 
   .hf-account-view__title {
     margin: 0 0 10px;
-    font-size: clamp(24px, 7vw, 30px);
+    font-size: clamp(24px, 7vw, 28px);
     letter-spacing: -0.02em;
     line-height: 1;
   }
