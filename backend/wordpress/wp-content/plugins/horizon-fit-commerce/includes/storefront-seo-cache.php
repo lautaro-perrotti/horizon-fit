@@ -406,17 +406,6 @@ function hf_storefront_render_seo_html($template, $seo) {
     $html = hf_storefront_replace_head_node($html, '/<meta\s+id="hfTwitterDescription"[^>]*>/i', '<meta id="hfTwitterDescription" name="twitter:description" content="' . $description . '" />');
     $html = hf_storefront_replace_head_node($html, '/<meta\s+id="hfTwitterImage"[^>]*>/i', '<meta id="hfTwitterImage" name="twitter:image" content="' . $image . '" />');
     $html = hf_storefront_replace_head_node($html, '/<script\s+id="hfSeoJsonLd"[^>]*>.*?<\/script>/is', '<script id="hfSeoJsonLd" type="application/ld+json">' . $schema . '</script>');
-    if (! empty($seo['body'])) {
-        $body = (string) $seo['body'];
-        $html = preg_replace_callback(
-            '/(<main\b[^>]*\bid="hfPageBuilderRoot"[^>]*>).*?(<\/main>)/is',
-            static function ($matches) use ($body) {
-                return $matches[1] . $body . $matches[2];
-            },
-            $html,
-            1
-        );
-    }
     return $html;
 }
 

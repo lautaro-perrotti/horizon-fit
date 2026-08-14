@@ -36,18 +36,13 @@
       visibility: hidden !important;
     }
     .hf-prerender {
-      visibility: visible !important;
-      position: fixed;
-      inset: 0;
-      z-index: 2147483000;
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: clamp(48px, 7vw, 88px) max(16px, calc((100vw - 1180px) / 2));
-      overflow: auto;
-      background: #FBF3E8;
-      color: #222;
+      /*
+       * El SEO real vive en <title>, meta, canonical y JSON-LD.
+       * No pintamos el HTML prerenderizado como una UI temporal porque en
+       * conexiones lentas se veía como una segunda página y después desaparecía,
+       * generando FOUC/CLS fuerte en home, colección y PDP.
+       */
+      display: none !important;
     }
     .hf-prerender__chrome {
       position: absolute;
@@ -2917,7 +2912,7 @@
         letter-spacing: .04em !important;
         line-height: .95;
         text-transform: uppercase;
-        color: #111 !important;
+        color: #222 !important;
       }
 
       .hf-pdp-view__pricing {
@@ -3948,6 +3943,7 @@
         margin: 0 0 0.75rem;
         text-transform: uppercase;
         line-height: 1;
+        color: #222 !important;
       }
 
       .hf-collection-view__subtitle {
