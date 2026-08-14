@@ -109,6 +109,12 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true',
     ));
 
+    register_rest_route('hf/v1', '/account/orders', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'hf_commerce_get_account_orders',
+        'permission_callback' => '__return_true',
+    ));
+
     register_rest_route('hf/v1', '/checkout/options', array(
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'hf_commerce_get_checkout_options',
@@ -167,6 +173,61 @@ function hf_commerce_get_account_session(WP_REST_Request $request) {
         'logoutUrl'   => $is_logged_in ? html_entity_decode(wp_logout_url($redirect_to), ENT_QUOTES, 'UTF-8') : '',
         'loginUrl'    => trailingslashit(home_url('/')) . 'wp-login.php',
         'redirectTo'  => $redirect_to,
+    ));
+}
+
+function hf_commerce_get_account_orders(WP_REST_Request $request) {
+    if (! function_exists('wc_get_orders') || ! is_user_logged_in()) {
+        return rest_ensure_response(array(
+            'loggedIn' => is_user_logged_in(),
+            'orders'   => array(),
+        ));
+    }
+
+    $orders = wc_get_orders(array(
+        'customer_id' => get_current_user_id(),
+        'limit'       => 8,
+        'orderby'     => 'date',
+        'order'       => 'DESC',
+        'status'      => array_keys(wc_get_order_statuses()),
+    ));
+
+    $payload = array();
+    foreach ($orders as $order) {
+        if (! $order instanceof WC_Order) {
+            continue;
+        }
+
+        $items = array();
+        foreach ($order->get_items() as $item) {
+            if (! $item instanceof WC_Order_Item_Product) {
+                continue;
+            }
+            $items[] = array(
+                'name'     => wp_strip_all_tags((string) $item->get_name()),
+                'quantity' => (int) $item->get_quantity(),
+            );
+            if (count($items) >= 3) {
+                break;
+            }
+        }
+
+        $date_created = $order->get_date_created();
+        $payload[] = array(
+            'id'          => (int) $order->get_id(),
+            'number'      => (string) $order->get_order_number(),
+            'date'        => $date_created ? wp_date('d/m/Y', $date_created->getTimestamp()) : '',
+            'status'      => wc_get_order_status_name($order->get_status()),
+            'total'       => html_entity_decode(wp_strip_all_tags($order->get_formatted_order_total()), ENT_QUOTES, 'UTF-8'),
+            'payment'     => wp_strip_all_tags((string) $order->get_payment_method_title()),
+            'items'       => $items,
+            'itemsCount'  => (int) $order->get_item_count(),
+        );
+    }
+
+    return rest_ensure_response(array(
+        'loggedIn' => true,
+        'orders'   => $payload,
     ));
 }
 

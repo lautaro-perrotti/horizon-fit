@@ -4013,12 +4013,46 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const sessionStatus = sectionEl.querySelector('[data-account-session-status]');
     const logoutLink = sectionEl.querySelector('[data-account-logout]');
     const loginStatus = sectionEl.querySelector('[data-account-login-status]');
+    const ordersShell = sectionEl.querySelector('[data-account-orders-shell]');
+    const ordersList = sectionEl.querySelector('[data-account-orders-list]');
+    const ordersEmpty = sectionEl.querySelector('[data-account-orders-empty]');
+
+    const renderAccountOrders = (orders = []) => {
+      if (!ordersShell || !ordersList || !ordersEmpty) return;
+      ordersShell.hidden = false;
+      if (!orders.length) {
+        ordersList.innerHTML = '';
+        ordersEmpty.hidden = false;
+        return;
+      }
+
+      ordersEmpty.hidden = true;
+      ordersList.innerHTML = orders.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const itemText = items
+          .map(item => `${escapeHtml(item.name || 'Producto')} × ${Number(item.quantity || 1)}`)
+          .join(', ');
+        const extraCount = Math.max(0, Number(order.itemsCount || 0) - items.length);
+        const itemsSummary = `${itemText}${extraCount ? ` y ${extraCount} más` : ''}`;
+        return `
+          <article class="hf-account-view__order">
+            <div class="hf-account-view__order-main">
+              <strong class="hf-account-view__order-title">Pedido #${escapeHtml(order.number || order.id || '')}</strong>
+              <span class="hf-account-view__order-meta">${escapeHtml(order.date || '')}${order.status ? ` · ${escapeHtml(order.status)}` : ''}${order.payment ? ` · ${escapeHtml(order.payment)}` : ''}</span>
+              ${itemsSummary ? `<span class="hf-account-view__order-items">${itemsSummary}</span>` : ''}
+            </div>
+            <strong class="hf-account-view__order-total">${escapeHtml(order.total || '')}</strong>
+          </article>
+        `;
+      }).join('');
+    };
 
     const showLoginState = (message = '') => {
       document.body.classList.remove('hf-account-signed-in');
       document.body.classList.add('hf-account-signed-out');
       if (loginShell) loginShell.hidden = false;
       if (sessionShell) sessionShell.hidden = true;
+      if (ordersShell) ordersShell.hidden = true;
       if (sessionStatus) sessionStatus.textContent = 'Sesión cerrada';
       if (loginStatus) loginStatus.textContent = message;
       if (logoutLink) logoutLink.setAttribute('href', '#');
@@ -4040,6 +4074,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
       .then(data => {
         if (data?.loggedIn) {
           showSessionState(data);
+          hfRestFetch('/account/orders', null, { method: 'GET' })
+            .then(orderData => renderAccountOrders(orderData?.orders || []))
+            .catch(error => {
+              console.warn('[HF PB] Account orders unavailable:', error.message);
+              renderAccountOrders([]);
+            });
         } else {
           showLoginState('No hay una sesión activa.');
         }
@@ -4160,6 +4200,23 @@ ${renderFeaturedSetPriceHtml(pricing)}
       </div>
     `;
   };
+
+  const buildMercadoPagoMarkup = () => `
+    <div class="hf-checkout-view__mercado-pago" data-mercado-pago-details>
+      <div class="hf-checkout-view__secure-note">
+        ${checkoutIconSvg('wallet')}
+        <span>
+          <strong>Pago seguro con Mercado Pago</strong>
+          <small>Al finalizar la compra vas a continuar en Mercado Pago para elegir tarjeta, dinero en cuenta u otros medios disponibles.</small>
+        </span>
+      </div>
+      <div class="hf-checkout-view__trust-row" aria-label="Seguridad de Mercado Pago">
+        <span>${checkoutIconSvg('shield')} Plataforma protegida</span>
+        <span>${checkoutIconSvg('card')} Tarjetas y saldo</span>
+        <span>${checkoutIconSvg('check')} Confirmación automática</span>
+      </div>
+    </div>
+  `;
 
   const loadPaywaySdk = (sdkUrl) => {
     if (window.Decidir) return Promise.resolve(window.Decidir);
@@ -4920,7 +4977,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
           ? `<div data-payment-details="${PAYWAY_GATEWAY_ID}">${buildPaywayFormMarkup(paywayConfig)}</div>`
           : (method.id === 'bacs'
               ? `<div data-payment-details="bacs">${buildBankTransferMarkup(currentBankTransferConfig || {}, cart)}</div>`
-              : '');
+              : (isMercadoPago
+                  ? `<div data-payment-details="${escapeHtml(method.id || '')}">${buildMercadoPagoMarkup()}</div>`
+                  : ''));
         return `
           <label class="hf-checkout-view__payment">
             <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''} required>

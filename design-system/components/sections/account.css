@@ -239,6 +239,66 @@ body.hf-account-signed-out .hf-account-view__session {
   padding-top: 2px;
 }
 
+.hf-account-view__orders {
+  width: min(760px, 100%);
+}
+
+body.hf-account-signed-out .hf-account-view__orders {
+  display: none;
+}
+
+.hf-account-view__orders-list {
+  display: grid;
+  gap: 0;
+  border-block: 1px solid rgba(53, 0, 109, 0.10);
+}
+
+.hf-account-view__order {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.hf-account-view__order + .hf-account-view__order {
+  border-top: 1px solid rgba(53, 0, 109, 0.08);
+}
+
+.hf-account-view__order-main {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.hf-account-view__order-title {
+  color: #222222;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.hf-account-view__order-meta,
+.hf-account-view__order-items {
+  color: var(--hf-muted, #64596f);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hf-account-view__order-total {
+  color: #320a5c;
+  font-size: 15px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.hf-account-view__orders-empty {
+  margin: 0;
+  padding: 18px 0 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 @media (max-width: 900px) {
   .hf-account-view {
     min-height: auto;
@@ -277,5 +337,18 @@ body.hf-account-signed-out .hf-account-view__session {
 
   .hf-account-view__session-actions {
     grid-template-columns: 1fr;
+  }
+
+  .hf-account-view__orders {
+    width: 100%;
+  }
+
+  .hf-account-view__order {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hf-account-view__order-total {
+    white-space: normal;
   }
 }
