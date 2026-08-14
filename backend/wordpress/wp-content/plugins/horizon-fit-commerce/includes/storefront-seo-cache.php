@@ -29,6 +29,7 @@ function hf_storefront_template_path() {
 }
 
 function hf_storefront_seo_description($value, $fallback = '') {
+    $value = preg_replace('/<\s*\/?\s*(p|br|div|section|article|header|footer|h[1-6]|li|ul|ol)\b[^>]*>/i', ' ', (string) $value);
     $value = html_entity_decode(wp_strip_all_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $value = trim(preg_replace('/\s+/u', ' ', $value));
     if ($value === '') {
