@@ -4218,6 +4218,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
     </div>
   `;
 
+  const buildBankTransferCheckoutMarkup = () => `
+    <div class="hf-checkout-view__bank-transfer-hint">
+      <div class="hf-checkout-view__secure-note">
+        ${checkoutIconSvg('bank')}
+        <span>
+          <strong>Pedido pendiente de transferencia</strong>
+          <small>Al finalizar la compra te mostramos los datos para transferir y enviar el comprobante.</small>
+        </span>
+      </div>
+    </div>
+  `;
+
   const loadPaywaySdk = (sdkUrl) => {
     if (window.Decidir) return Promise.resolve(window.Decidir);
     if (paywaySdkPromise) return paywaySdkPromise;
@@ -4538,6 +4550,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const paymentEl = confirmationEl.querySelector('[data-checkout-confirmation-payment]');
     const totalEl = confirmationEl.querySelector('[data-checkout-confirmation-total]');
     const messageEl = confirmationEl.querySelector('[data-checkout-confirmation-message]');
+    const kickerEl = confirmationEl.querySelector('[data-checkout-confirmation-kicker]');
+    const titleEl = confirmationEl.querySelector('[data-checkout-confirmation-title]');
     const bankTransferEl = confirmationEl.querySelector('[data-checkout-confirmation-bank-transfer]');
     const accountEl = confirmationEl.querySelector('[data-checkout-confirmation-account]');
     const accountLink = confirmationEl.querySelector('[data-checkout-confirmation-account-link]');
@@ -4547,6 +4561,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (statusValueEl) statusValueEl.textContent = checkoutStatusLabel(status);
     if (paymentEl) paymentEl.textContent = checkoutPaymentLabel(paymentMethod);
     if (totalEl) totalEl.textContent = formatStoreMoney(totalRaw, currency);
+
+    if (paymentMethod === 'bacs') {
+      if (kickerEl) kickerEl.textContent = 'Pedido pendiente';
+      if (titleEl) titleEl.textContent = 'Pedido recibido';
+    } else {
+      if (kickerEl) kickerEl.textContent = 'Pedido confirmado';
+      if (titleEl) titleEl.textContent = '¡Gracias por tu compra!';
+    }
 
     if (messageEl) {
       messageEl.textContent = paymentMethod === 'bacs'
@@ -4976,7 +4998,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const details = method.id === PAYWAY_GATEWAY_ID
           ? `<div data-payment-details="${PAYWAY_GATEWAY_ID}">${buildPaywayFormMarkup(paywayConfig)}</div>`
           : (method.id === 'bacs'
-              ? `<div data-payment-details="bacs">${buildBankTransferMarkup(currentBankTransferConfig || {}, cart)}</div>`
+              ? `<div data-payment-details="bacs">${buildBankTransferCheckoutMarkup()}</div>`
               : (isMercadoPago
                   ? `<div data-payment-details="${escapeHtml(method.id || '')}">${buildMercadoPagoMarkup()}</div>`
                   : ''));
