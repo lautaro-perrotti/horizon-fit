@@ -347,6 +347,19 @@ body.hf-checkout-mode .nav {
   font-size: 14px;
 }
 
+.hf-checkout-view__payment-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hf-checkout-view__payment-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .hf-checkout-view__payment small {
   display: block;
   color: var(--hf-muted, #64596f);
@@ -434,6 +447,38 @@ body.hf-checkout-mode .nav {
   line-height: 1.5;
 }
 
+.hf-checkout-view__secure-note {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(53, 0, 109, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--hf-ink, #1d1a1f);
+}
+
+.hf-checkout-view__secure-note span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hf-checkout-view__secure-note strong {
+  color: #222222;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hf-checkout-view__secure-note small {
+  color: var(--hf-muted, #64596f);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .hf-checkout-view__payway-fields {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -482,6 +527,49 @@ body.hf-checkout-mode .nav {
   color: var(--hf-muted, #64596f);
   font-size: 12px;
   line-height: 1.55;
+}
+
+.hf-checkout-view__trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hf-checkout-view__trust-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 6px 9px;
+  border: 1px solid rgba(53, 0, 109, 0.10);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--hf-muted, #64596f);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.hf-checkout-view__trust-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #320a5c;
+}
+
+.hf-checkout-view__secure-note > .hf-checkout-view__trust-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.hf-checkout-view__payment-title .hf-checkout-view__trust-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.hf-checkout-view__trust-row .hf-checkout-view__trust-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .hf-checkout-view__hint,

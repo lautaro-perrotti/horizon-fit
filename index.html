@@ -28,21 +28,23 @@
      * `display:none`) permite que sliders y layouts midan sus dimensiones sin
      * provocar saltos visibles durante el primer render.
      */
-    html:not([data-page-builder-ready="true"]) #hfPageBuilderRoot {
-      visibility: hidden !important;
-    }
     html:not([data-page-builder-ready="true"]) #hfPageBuilderRoot > :not([data-hf-prerender]),
     .hf-runtime-pending {
       visibility: hidden !important;
     }
     .hf-prerender {
       /*
-       * El SEO real vive en la etiqueta de titulo, meta, canonical y JSON-LD.
-       * No pintamos el HTML prerenderizado como una UI temporal porque en
-       * conexiones lentas se veía como una segunda página y después desaparecía,
-       * generando FOUC/CLS fuerte en home, colección y PDP.
+       * El servidor entrega una capa prerenderizada liviana con header,
+       * marquee y contenido principal. La dejamos visible hasta que el runtime
+       * termina de hidratar para evitar el flash crema/blanco en redes lentas.
        */
+      display: block !important;
+    }
+    html[data-page-builder-ready="true"] .hf-prerender {
       display: none !important;
+    }
+    html[data-page-builder-ready="error"] #hfPageBuilderRoot > :not([data-hf-prerender]) {
+      visibility: visible !important;
     }
     .hf-prerender__chrome {
       position: absolute;
@@ -442,7 +444,7 @@
   <link rel="stylesheet" href="/design-system/components/trust-bar/trust-bar.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/sections/account.css?v=20260619" />
   <link rel="stylesheet" href="/design-system/components/sections/lost-password.css?v=20260619" />
-  <link rel="stylesheet" href="/design-system/components/sections/checkout.css?v=checkout-back-button-v25-20260814" />
+  <link rel="stylesheet" href="/design-system/components/sections/checkout.css?v=checkout-trust-icons-v26-20260814" />
 
   <style>
     /******************************************************************
@@ -5428,7 +5430,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=checkout-nav-perf-v45-20260814"></script>
+  <script src="/design-system/page-builder.js?v=checkout-trust-icons-v46-20260814"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

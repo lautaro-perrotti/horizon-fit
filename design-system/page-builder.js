@@ -4100,6 +4100,25 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
   const isMercadoPagoGatewayId = (methodId) => /mercado|meli|mpago|mp_/i.test(`${methodId || ''}`);
 
+  const checkoutIconSvg = (name) => {
+    const icons = {
+      lock: '<rect x="5" y="10" width="14" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path>',
+      card: '<rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 10h18"></path><path d="M7 15h3"></path>',
+      shield: '<path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-3z"></path><path d="M9 12l2 2 4-4"></path>',
+      bank: '<path d="M4 10h16"></path><path d="M6 10v8"></path><path d="M10 10v8"></path><path d="M14 10v8"></path><path d="M18 10v8"></path><path d="M3 18h18"></path><path d="M12 4l8 4H4l8-4z"></path>',
+      wallet: '<path d="M4 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12"></path><path d="M16 13h4"></path>',
+      check: '<path d="M20 6L9 17l-5-5"></path>'
+    };
+    return `<svg class="hf-checkout-view__trust-icon hf-checkout-view__trust-icon--${escapeHtml(name)}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.shield}</svg>`;
+  };
+
+  const checkoutPaymentIcon = (methodId) => {
+    if (methodId === PAYWAY_GATEWAY_ID) return checkoutIconSvg('card');
+    if (methodId === 'bacs') return checkoutIconSvg('bank');
+    if (isMercadoPagoGatewayId(methodId)) return checkoutIconSvg('wallet');
+    return checkoutIconSvg('shield');
+  };
+
   const buildBankTransferMarkup = (bankTransfer = {}, cart = null, orderNumber = '') => {
     const accounts = Array.isArray(bankTransfer?.accounts) ? bankTransfer.accounts : [];
     const currency = getCartCurrency(cart);
@@ -4613,7 +4632,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
       return `
         <div class="hf-checkout-view__payway" data-payway-form>
-          <p class="hf-checkout-view__payway-security">Tus datos se tokenizan de forma segura en Payway y no se guardan en Horizon Fit.</p>
+          <div class="hf-checkout-view__secure-note">
+            ${checkoutIconSvg('lock')}
+            <span>
+              <strong>Pago seguro encriptado</strong>
+              <small>Tus datos se tokenizan de forma segura en Payway y no se guardan en Horizon Fit.</small>
+            </span>
+          </div>
           <input data-payway-field="bank" type="hidden">
           <input data-payway-field="card-type" type="hidden">
           <div class="hf-checkout-view__payway-fields">
@@ -4653,6 +4678,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
               </label>
             </div>
             <input data-payway-field="door-number" type="hidden">
+          </div>
+          <div class="hf-checkout-view__trust-row" aria-label="Seguridad del pago">
+            <span>${checkoutIconSvg('shield')} No guardamos tu tarjeta</span>
+            <span>${checkoutIconSvg('lock')} Tokenización Payway</span>
+            <span>${checkoutIconSvg('check')} 3 y 6 cuotas sin interés</span>
           </div>
           <p class="hf-checkout-view__payway-brands">Payway acepta tarjetas de débito, crédito y prepagas de las principales marcas como Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.</p>
         </div>
@@ -4894,8 +4924,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
         return `
           <label class="hf-checkout-view__payment">
             <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''} required>
-            <span>
-              <strong>${escapeHtml(title)}</strong>
+            <span class="hf-checkout-view__payment-copy">
+              <span class="hf-checkout-view__payment-title">
+                ${checkoutPaymentIcon(method.id)}
+                <strong>${escapeHtml(title)}</strong>
+              </span>
               ${description ? `<small>${escapeHtml(description)}</small>` : ''}
             </span>
           </label>
