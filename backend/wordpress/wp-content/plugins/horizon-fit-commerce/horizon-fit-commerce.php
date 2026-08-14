@@ -306,12 +306,16 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
     $frontend_origin = hf_commerce_frontend_origin_from_request();
     $methods = array();
     $method_ids = array();
+    $default_method_id = '';
     $payway = null;
     if (function_exists('WC') && WC()->payment_gateways()) {
         $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
         foreach ($available_gateways as $gateway) {
             $methods[] = hf_commerce_checkout_method_payload($gateway, true);
             $method_ids[(string) $gateway->id] = true;
+            if (! $default_method_id && hf_commerce_is_mercado_pago_gateway($gateway)) {
+                $default_method_id = (string) $gateway->id;
+            }
 
             if (
                 'payway_gateway' === (string) $gateway->id
@@ -362,6 +366,9 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
             ) {
                 $methods[] = hf_commerce_checkout_method_payload($gateway, false);
                 $method_ids[$gateway_id] = true;
+                if (! $default_method_id) {
+                    $default_method_id = $gateway_id;
+                }
             }
         }
     }
@@ -375,7 +382,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
         'registrationEnabled'  => $checkout ? (bool) $checkout->is_registration_enabled() : false,
         'registrationRequired' => $checkout ? (bool) $checkout->is_registration_required() : false,
         'paymentMethods'   => $methods,
-        'defaultMethodId'  => '',
+        'defaultMethodId'  => $default_method_id,
         'payway'           => $payway,
         'bankTransfer'     => hf_commerce_get_bank_transfer_details(),
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',

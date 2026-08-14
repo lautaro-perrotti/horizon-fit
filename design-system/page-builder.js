@@ -4941,8 +4941,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
       if (!paymentList) return;
       const paymentOrder = (method) => {
         const id = `${method?.id || ''}`;
-        if (id === PAYWAY_GATEWAY_ID) return 0;
-        if (isMercadoPagoGatewayId(id)) return 1;
+        if (isMercadoPagoGatewayId(id)) return 0;
+        if (id === PAYWAY_GATEWAY_ID) return 1;
         return 2;
       };
       const visibleMethods = methods
@@ -4953,7 +4953,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
       }
-      const selectedId = '';
+      const selectedId = `${defaultId || ''}`;
       paymentList.innerHTML = visibleMethods.map((method) => {
         const checked = method.id === selectedId;
         const paymentCopy = {
