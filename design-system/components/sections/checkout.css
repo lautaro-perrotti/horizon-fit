@@ -616,10 +616,12 @@ body.hf-checkout-mode .nav {
 @media (max-width: 520px) {
   .hf-checkout-view__payway {
     padding: 14px;
+    overflow: hidden;
   }
 
   .hf-checkout-view__payway-fields {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 10px;
   }
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--full,
@@ -628,27 +630,37 @@ body.hf-checkout-mode .nav {
   }
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--third {
-    grid-column: span 1;
-  }
-
-  .hf-checkout-view__payway-fields .hf-checkout-view__field--document-number {
     grid-column: 1 / -1;
   }
 
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--document-number,
   .hf-checkout-view__payway-fields .hf-checkout-view__field--card-holder {
-    grid-column: span 3;
+    grid-column: 1 / -1;
   }
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration {
-    grid-column: span 2;
+    grid-column: 1 / 2;
   }
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code {
-    grid-column: span 1;
+    grid-column: 2 / 3;
   }
 
   .hf-checkout-view__payway-fields .hf-checkout-view__field--document-type {
-    grid-column: span 2;
+    grid-column: 1 / 2;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--expiration span,
+  .hf-checkout-view__payway-fields .hf-checkout-view__field--security-code span {
+    min-height: 28px;
+    display: flex;
+    align-items: flex-end;
+    line-height: 1.12;
   }
 
   .hf-checkout-view__confirmation-details {
