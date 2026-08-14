@@ -302,7 +302,7 @@ body.hf-account-signed-out .hf-account-view__orders {
 @media (max-width: 900px) {
   .hf-account-view {
     min-height: auto;
-    padding: 28px 0 36px;
+    padding: 76px 0 36px;
   }
 
   .hf-account-view__grid {
@@ -311,6 +311,17 @@ body.hf-account-signed-out .hf-account-view__orders {
 
   .hf-account-view__intro {
     padding-inline: 14px;
+  }
+
+  .hf-account-view__title {
+    margin: 4px 0 10px;
+    font-size: clamp(24px, 8vw, 34px);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .hf-account-view__lead {
+    font-size: 13px;
   }
 
   .hf-account-view__panel {
