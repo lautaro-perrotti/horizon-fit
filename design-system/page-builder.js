@@ -4761,7 +4761,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     const renderPaymentMethods = (methods = [], defaultId = '', paywayConfig = null, cart = null) => {
       if (!paymentList) return;
-      const visibleMethods = methods.filter(method => method?.id !== 'cod');
+      const paymentOrder = (method) => {
+        const id = `${method?.id || ''}`;
+        if (id === PAYWAY_GATEWAY_ID) return 0;
+        if (isMercadoPagoGatewayId(id)) return 1;
+        return 2;
+      };
+      const visibleMethods = methods
+        .filter(method => method?.id !== 'cod')
+        .slice()
+        .sort((a, b) => paymentOrder(a) - paymentOrder(b));
       if (!visibleMethods.length) {
         paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
@@ -4770,6 +4779,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
       paymentList.innerHTML = visibleMethods.map((method) => {
         const checked = method.id === selectedId;
         const paymentCopy = {
+          [PAYWAY_GATEWAY_ID]: {
+            title: 'Tarjeta de crédito o débito',
+            description: 'Pagá con tarjeta de crédito o débito. Incluye 3 y 6 cuotas sin interés.'
+          },
           bacs: {
             title: 'Transferencia bancaria directa',
             description: 'Realizá el pago directamente a nuestra cuenta bancaria. Usá el número de pedido como referencia. El pedido se procesará cuando se acredite la transferencia.'
