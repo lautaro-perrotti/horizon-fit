@@ -200,6 +200,43 @@ function hf_commerce_checkout_method_payload($gateway, $available = true) {
     );
 }
 
+function hf_commerce_get_bank_transfer_details() {
+    $gateway = null;
+    if (function_exists('WC') && WC()->payment_gateways()) {
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        $gateway = isset($gateways['bacs']) ? $gateways['bacs'] : null;
+    }
+
+    $accounts = get_option('woocommerce_bacs_accounts', array());
+    $accounts_payload = array();
+    if (is_array($accounts)) {
+        foreach ($accounts as $account) {
+            if (! is_array($account)) {
+                continue;
+            }
+            $payload = array(
+                'accountName'   => isset($account['account_name']) ? sanitize_text_field((string) $account['account_name']) : '',
+                'bankName'      => isset($account['bank_name']) ? sanitize_text_field((string) $account['bank_name']) : '',
+                'accountNumber' => isset($account['account_number']) ? sanitize_text_field((string) $account['account_number']) : '',
+                'sortCode'      => isset($account['sort_code']) ? sanitize_text_field((string) $account['sort_code']) : '',
+                'iban'          => isset($account['iban']) ? sanitize_text_field((string) $account['iban']) : '',
+                'bic'           => isset($account['bic']) ? sanitize_text_field((string) $account['bic']) : '',
+            );
+            if (implode('', $payload) !== '') {
+                $accounts_payload[] = $payload;
+            }
+        }
+    }
+
+    return array(
+        'title'        => $gateway ? sanitize_text_field((string) $gateway->get_title()) : 'Transferencia bancaria directa',
+        'description'  => $gateway ? wp_strip_all_tags((string) $gateway->get_description()) : '',
+        'instructions' => $gateway && isset($gateway->instructions) ? wp_strip_all_tags((string) $gateway->instructions) : '',
+        'accounts'     => $accounts_payload,
+        'whatsapp'     => '541131150999',
+    );
+}
+
 function hf_commerce_get_checkout_options(WP_REST_Request $request) {
     if (! function_exists('WC')) {
         return new WP_Error('hf_woocommerce_unavailable', __('WooCommerce is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
@@ -279,6 +316,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
         'paymentMethods'   => $methods,
         'defaultMethodId'  => '',
         'payway'           => $payway,
+        'bankTransfer'     => hf_commerce_get_bank_transfer_details(),
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
     ));
 }

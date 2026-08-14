@@ -355,6 +355,65 @@ body.hf-checkout-mode .nav {
   margin-top: 2px;
 }
 
+.hf-checkout-view__bank-transfer {
+  width: 100%;
+}
+
+.hf-checkout-view__bank-transfer-box {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(53, 0, 109, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--hf-ink, #1d1a1f);
+}
+
+.hf-checkout-view__bank-transfer-box > strong {
+  color: #222222;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hf-checkout-view__bank-transfer-box p {
+  margin: 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.hf-checkout-view__bank-account {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(53, 0, 109, 0.10);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.70);
+  text-align: left;
+}
+
+.hf-checkout-view__bank-account > div {
+  display: grid;
+  gap: 2px;
+}
+
+.hf-checkout-view__bank-account span {
+  color: var(--hf-muted, #64596f);
+  font-size: 11px;
+}
+
+.hf-checkout-view__bank-account b {
+  color: #222222;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.hf-checkout-view__bank-whatsapp {
+  width: fit-content;
+}
+
 [data-payment-details][hidden] {
   display: none !important;
 }

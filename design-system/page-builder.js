@@ -4065,6 +4065,48 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
   const isMercadoPagoGatewayId = (methodId) => /mercado|meli|mpago|mp_/i.test(`${methodId || ''}`);
 
+  const buildBankTransferMarkup = (bankTransfer = {}, cart = null, orderNumber = '') => {
+    const accounts = Array.isArray(bankTransfer?.accounts) ? bankTransfer.accounts : [];
+    const currency = getCartCurrency(cart);
+    const totalRaw = cart?.totals?.total_price ?? 0;
+    const totalLabel = totalRaw ? formatStoreMoney(totalRaw, currency) : '';
+    const whatsapp = `${bankTransfer?.whatsapp || '541131150999'}`.replace(/\D/g, '') || '541131150999';
+    const messageParts = [
+      'Hola Horizon Fit, quiero enviar el comprobante de transferencia.',
+      orderNumber ? `Pedido: #${orderNumber}` : '',
+      totalLabel ? `Monto: ${totalLabel}` : ''
+    ].filter(Boolean);
+    const whatsappHref = `https://wa.me/${whatsapp}?text=${encodeURIComponent(messageParts.join('\n'))}`;
+    const accountMarkup = accounts.length
+      ? accounts.map((account, index) => {
+          const rows = [
+            ['Titular', account.accountName],
+            ['Banco / billetera', account.bankName],
+            ['CBU / CVU / cuenta', account.accountNumber],
+            ['Alias / identificador', account.sortCode],
+            ['IBAN', account.iban],
+            ['BIC / SWIFT', account.bic]
+          ].filter(([, value]) => `${value || ''}`.trim());
+          return `
+            <div class="hf-checkout-view__bank-account">
+              ${accounts.length > 1 ? `<strong>Cuenta ${index + 1}</strong>` : ''}
+              ${rows.map(([label, value]) => `<div><span>${escapeHtml(label)}</span><b>${escapeHtml(value)}</b></div>`).join('')}
+            </div>
+          `;
+        }).join('')
+      : '<p class="hf-checkout-view__bank-empty">Los datos de transferencia se confirman por WhatsApp después de crear el pedido.</p>';
+
+    return `
+      <div class="hf-checkout-view__bank-transfer-box">
+        <strong>Datos para transferencia</strong>
+        ${totalLabel ? `<p>Transferí exactamente <b>${escapeHtml(totalLabel)}</b> y usá el número de pedido como referencia.</p>` : '<p>Usá el número de pedido como referencia al transferir.</p>'}
+        ${accountMarkup}
+        <p class="hf-checkout-view__bank-note">El pedido se prepara cuando se acredita el pago. También podés enviar el comprobante por WhatsApp para agilizar la revisión.</p>
+        <a class="btn btn--secondary hf-checkout-view__bank-whatsapp" href="${escapeHtml(whatsappHref)}" target="_blank" rel="noopener noreferrer">Enviar comprobante por WhatsApp</a>
+      </div>
+    `;
+  };
+
   const loadPaywaySdk = (sdkUrl) => {
     if (window.Decidir) return Promise.resolve(window.Decidir);
     if (paywaySdkPromise) return paywaySdkPromise;
@@ -4385,6 +4427,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const paymentEl = confirmationEl.querySelector('[data-checkout-confirmation-payment]');
     const totalEl = confirmationEl.querySelector('[data-checkout-confirmation-total]');
     const messageEl = confirmationEl.querySelector('[data-checkout-confirmation-message]');
+    const bankTransferEl = confirmationEl.querySelector('[data-checkout-confirmation-bank-transfer]');
     const accountEl = confirmationEl.querySelector('[data-checkout-confirmation-account]');
     const accountLink = confirmationEl.querySelector('[data-checkout-confirmation-account-link]');
     const errorEl = confirmationEl.querySelector('[data-checkout-confirmation-error]');
@@ -4396,8 +4439,20 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     if (messageEl) {
       messageEl.textContent = paymentMethod === 'bacs'
-        ? `Recibimos tu pedido. Te enviamos a ${billingEmail || 'tu correo'} los datos para completar la transferencia; la preparación comienza cuando se acredita el pago.`
+        ? `Recibimos tu pedido. Completá la transferencia por el total indicado y usá el pedido #${orderNumber} como referencia. La preparación comienza cuando se acredita el pago.`
         : `Recibimos tu pedido y enviamos el detalle a ${billingEmail || 'tu correo electrónico'}.`;
+    }
+
+    if (paymentMethod === 'bacs' && bankTransferEl) {
+      let bankTransfer = null;
+      try {
+        const options = await hfRestFetch('/checkout/options', null, { method: 'GET' });
+        bankTransfer = options?.bankTransfer || null;
+      } catch (error) {
+        console.warn('[HF PB] Bank transfer details unavailable:', error.message);
+      }
+      bankTransferEl.innerHTML = buildBankTransferMarkup(bankTransfer || {}, cart, orderNumber);
+      bankTransferEl.hidden = false;
     }
 
     if (snapshot?.customerId > 0 && accountEl) {
@@ -4461,6 +4516,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
     let currentPaywayConfig = null;
+    let currentBankTransferConfig = null;
     backButton?.addEventListener('click', () => {
       if (window.history.length > 1) {
         window.history.back();
@@ -4797,7 +4853,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const description = paymentCopy.description || (isMercadoPago ? 'Pagá con Mercado Pago. Te vamos a redirigir a una pantalla segura para completar el pago.' : method.description) || '';
         const details = method.id === PAYWAY_GATEWAY_ID
           ? `<div data-payment-details="${PAYWAY_GATEWAY_ID}">${buildPaywayFormMarkup(paywayConfig)}</div>`
-          : '';
+          : (method.id === 'bacs'
+              ? `<div data-payment-details="bacs">${buildBankTransferMarkup(currentBankTransferConfig || {}, cart)}</div>`
+              : '');
         return `
           <label class="hf-checkout-view__payment">
             <input type="radio" name="payment_method" value="${escapeHtml(method.id || '')}" ${checked ? 'checked' : ''} required>
@@ -4877,6 +4935,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
       updateOrderSummary(cart);
       currentPaywayConfig = options.payway || null;
+      currentBankTransferConfig = options.bankTransfer || null;
       renderPaymentMethods(options.paymentMethods || [], options.defaultMethodId || '', options.payway || null, cart);
 
       const registrationRequired = Boolean(options.registrationRequired);
