@@ -4061,7 +4061,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
     bacs: 'Transferencia bancaria directa',
     cod: 'Pago contra entrega',
     [PAYWAY_GATEWAY_ID]: 'Tarjeta de crédito o débito'
-  }[`${method || ''}`] || `${method || 'A confirmar'}`);
+  }[`${method || ''}`] || (isMercadoPagoGatewayId(method) ? 'Mercado Pago' : `${method || 'A confirmar'}`));
+
+  const isMercadoPagoGatewayId = (methodId) => /mercado|meli|mpago|mp_/i.test(`${methodId || ''}`);
 
   const loadPaywaySdk = (sdkUrl) => {
     if (window.Decidir) return Promise.resolve(window.Decidir);
@@ -4763,10 +4765,15 @@ ${renderFeaturedSetPriceHtml(pricing)}
           bacs: {
             title: 'Transferencia bancaria directa',
             description: 'Realizá el pago directamente a nuestra cuenta bancaria. Usá el número de pedido como referencia. El pedido se procesará cuando se acredite la transferencia.'
+          },
+          mercado_pago: {
+            title: 'Mercado Pago',
+            description: 'Pagá con Mercado Pago. Te vamos a redirigir a una pantalla segura para completar el pago.'
           }
         }[method.id] || {};
-        const title = paymentCopy.title || method.title || method.id || 'Pago';
-        const description = paymentCopy.description || method.description || '';
+        const isMercadoPago = isMercadoPagoGatewayId(method.id);
+        const title = paymentCopy.title || (isMercadoPago ? 'Mercado Pago' : method.title) || method.id || 'Pago';
+        const description = paymentCopy.description || (isMercadoPago ? 'Pagá con Mercado Pago. Te vamos a redirigir a una pantalla segura para completar el pago.' : method.description) || '';
         const details = method.id === PAYWAY_GATEWAY_ID
           ? `<div data-payment-details="${PAYWAY_GATEWAY_ID}">${buildPaywayFormMarkup(paywayConfig)}</div>`
           : '';
@@ -4946,6 +4953,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
               { key: 'payway_gateway_cc_holder_door_number', value: paywayValue('door-number').replace(/\D/g, '') }
             ];
             if (statusEl) statusEl.textContent = 'Procesando el pago...';
+          } else if (isMercadoPagoGatewayId(paymentMethod)) {
+            if (statusEl) statusEl.textContent = 'Preparando el pago con Mercado Pago...';
           }
         } catch (error) {
           if (statusEl) statusEl.textContent = error.message || 'No pudimos validar la tarjeta.';
