@@ -3856,14 +3856,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const titleEl = sectionEl.querySelector('[data-info-title]');
     if (titleEl) titleEl.textContent = page.title || '';
 
-    const kickerEl = sectionEl.querySelector('[data-info-kicker]');
-    if (kickerEl) {
-      const legalPaths = ['/terminos', '/privacidad', '/defensa-al-consumidor'];
-      kickerEl.textContent = legalPaths.includes(page.path) ? 'Información legal' : 'Horizon Fit';
-    }
-
     const contentEl = sectionEl.querySelector('[data-info-content]');
-    if (contentEl && page.content) contentEl.innerHTML = page.content;
+    if (contentEl && page.content) {
+      const contentWrapper = document.createElement('div');
+      contentWrapper.innerHTML = page.content;
+      contentWrapper.querySelectorAll('h2, h3, h4, h5, h6').forEach((heading) => heading.remove());
+      contentWrapper.querySelectorAll('p, li').forEach((node) => {
+        node.innerHTML = node.innerHTML.replace(/\s+/g, ' ').trim();
+      });
+      contentEl.innerHTML = contentWrapper.innerHTML;
+    }
   };
 
   // Renderiza la pÃ¡gina de colecciÃ³n: tÃ­tulo centrado + grid de TODOS los
