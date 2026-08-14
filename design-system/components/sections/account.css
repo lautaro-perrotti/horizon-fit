@@ -34,12 +34,12 @@
 }
 
 .hf-account-view__title {
-  margin: 6px 0 8px;
+  margin: 0 0 8px;
   color: #222222;
-  font-size: clamp(34px, 4vw, 56px);
+  font-size: clamp(28px, 3vw, 42px);
   font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
+  letter-spacing: -0.025em;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -90,7 +90,7 @@ body.hf-account-signed-in .hf-account-view__grid {
 
 .hf-account-view__panel-title {
   color: #222222;
-  font-size: clamp(22px, 2vw, 30px);
+  font-size: clamp(20px, 1.8vw, 26px);
   font-weight: 800;
   line-height: 1.1;
   word-break: break-word;
@@ -172,6 +172,18 @@ body.hf-account-signed-out .hf-account-view__session {
   grid-template-columns: 64px minmax(0, 1fr);
   align-items: center;
   gap: 18px;
+}
+
+.hf-account-view__session-hero .hf-account-view__panel-head {
+  margin-bottom: 0;
+}
+
+.hf-account-view__session-email {
+  margin: 4px 0 0;
+  color: var(--hf-muted, #64596f);
+  font-size: 15px;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .hf-account-view__avatar {
@@ -314,8 +326,8 @@ body.hf-account-signed-out .hf-account-view__orders {
   }
 
   .hf-account-view__title {
-    margin: 4px 0 10px;
-    font-size: clamp(24px, 8vw, 34px);
+    margin: 0 0 10px;
+    font-size: clamp(24px, 7vw, 30px);
     letter-spacing: -0.02em;
     line-height: 1;
   }
