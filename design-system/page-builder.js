@@ -10,7 +10,7 @@
   async function fetchText(url) {
     url = rootUrl(url);
     if (textCache.has(url)) return textCache.get(url);
-    const promise = fetch(url, { cache: 'no-store' }).then(r => {
+    const promise = fetch(url).then(r => {
       if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
       return r.text();
     });
@@ -21,13 +21,28 @@
   async function fetchJson(url) {
     url = rootUrl(url);
     if (jsonCache.has(url)) return jsonCache.get(url);
-    const promise = fetch(url, { cache: 'no-store' }).then(r => {
+    const promise = fetch(url).then(r => {
       if (!r.ok) throw new Error(`Fetch failed: ${url} ${r.status}`);
       return r.json();
     });
     jsonCache.set(url, promise);
     return promise;
   }
+
+  const PAGE_BUILDER_VERSION = (() => {
+    try {
+      const src = document.currentScript?.getAttribute('src') || '';
+      return new URL(src, window.location.origin).searchParams.get('v') || '1';
+    } catch (_) {
+      return '1';
+    }
+  })();
+
+  const versionedLocalAsset = (url) => {
+    if (!url || /^(https?:)?\/\//.test(url)) return url;
+    const glue = url.includes('?') ? '&' : '?';
+    return `${url}${glue}v=${encodeURIComponent(PAGE_BUILDER_VERSION)}`;
+  };
 
   // En local/VPS por IP, WordPress usa el mismo host en el puerto 8089.
   // En el dominio pÃºblico usa el subdominio HTTPS de la API.
@@ -54,11 +69,11 @@
   // Fallback al REST solo si el archivo no estuviera disponible.
   const PRODUCT_DATA_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/featured-products.json`;
   const PRODUCT_DATA_FALLBACK_SRC = `${WP_BASE_URL}/wp-json/wp/v2/pages/home/products`;
-  const PRODUCT_DETAIL_COMPONENT = '/design-system/components/sections/product-detail.html';
-  const ACCOUNT_COMPONENT = '/design-system/components/sections/account.html';
-  const CHECKOUT_COMPONENT = '/design-system/components/sections/checkout.html';
-  const LOST_PASSWORD_COMPONENT = '/design-system/components/sections/lost-password.html';
-  const INFO_PAGE_COMPONENT = '/design-system/components/sections/info-page.html';
+  const PRODUCT_DETAIL_COMPONENT = versionedLocalAsset('/design-system/components/sections/product-detail.html');
+  const ACCOUNT_COMPONENT = versionedLocalAsset('/design-system/components/sections/account.html');
+  const CHECKOUT_COMPONENT = versionedLocalAsset('/design-system/components/sections/checkout.html');
+  const LOST_PASSWORD_COMPONENT = versionedLocalAsset('/design-system/components/sections/lost-password.html');
+  const INFO_PAGE_COMPONENT = versionedLocalAsset('/design-system/components/sections/info-page.html');
 
   // Cache de una colecciÃ³n concreta (featured-row-1, featured-row-2, ...).
   const productCollectionSrc = (slug) =>
@@ -3082,6 +3097,25 @@
     const userButton = document.querySelector('#userBtn');
     let searchTimer = null;
     let searchRunToken = 0;
+    let checkoutPrefetchStarted = false;
+
+    const prefetchCheckoutResources = () => {
+      if (checkoutPrefetchStarted) return;
+      checkoutPrefetchStarted = true;
+      fetchText(CHECKOUT_COMPONENT).catch(() => {});
+      if (cartHasItems()) {
+        hfRestFetch('/checkout/options', null, { method: 'GET' }).catch(() => {});
+      }
+    };
+
+    const scheduleCheckoutPrefetch = () => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(prefetchCheckoutResources, { timeout: 1800 });
+      } else {
+        window.setTimeout(prefetchCheckoutResources, 1200);
+      }
+    };
+    scheduleCheckoutPrefetch();
 
     if (drawer) {
       drawer.addEventListener('click', async (event) => {
@@ -3127,6 +3161,7 @@
         renderCartDrawer(commerceState.cart, 'Agrega un producto para ir al checkout.');
         return;
       }
+      prefetchCheckoutResources();
       setCartBusy(true);
       try {
         const checkoutUrl = await syncCartForCheckout();
