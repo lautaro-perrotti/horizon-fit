@@ -170,6 +170,36 @@ function hf_commerce_get_account_session(WP_REST_Request $request) {
     ));
 }
 
+function hf_commerce_is_mercado_pago_gateway($gateway) {
+    if (! is_object($gateway)) {
+        return false;
+    }
+
+    $id = isset($gateway->id) ? (string) $gateway->id : '';
+    $class = get_class($gateway);
+    $title = method_exists($gateway, 'get_title') ? (string) $gateway->get_title() : '';
+    $description = method_exists($gateway, 'get_description') ? (string) $gateway->get_description() : '';
+    $haystack = strtolower(remove_accents($id . ' ' . $class . ' ' . $title . ' ' . $description));
+
+    return false !== strpos($haystack, 'mercado')
+        || false !== strpos($haystack, 'mercadopago')
+        || false !== strpos($haystack, 'mp_')
+        || false !== strpos($haystack, 'woo-mercado');
+}
+
+function hf_commerce_checkout_method_payload($gateway, $available = true) {
+    $is_mercado_pago = hf_commerce_is_mercado_pago_gateway($gateway);
+    return array(
+        'id'          => (string) $gateway->id,
+        'title'       => $is_mercado_pago ? 'Mercado Pago' : (string) $gateway->get_title(),
+        'description' => $is_mercado_pago
+            ? 'Pagá con Mercado Pago. Te vamos a redirigir a una pantalla segura para completar el pago.'
+            : (string) $gateway->get_description(),
+        'available'   => (bool) $available,
+        'external'    => $is_mercado_pago,
+    );
+}
+
 function hf_commerce_get_checkout_options(WP_REST_Request $request) {
     if (! function_exists('WC')) {
         return new WP_Error('hf_woocommerce_unavailable', __('WooCommerce is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
@@ -177,14 +207,13 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
 
     $frontend_origin = hf_commerce_frontend_origin_from_request();
     $methods = array();
+    $method_ids = array();
     $payway = null;
     if (function_exists('WC') && WC()->payment_gateways()) {
-        foreach (WC()->payment_gateways()->get_available_payment_gateways() as $gateway) {
-            $methods[] = array(
-                'id'          => (string) $gateway->id,
-                'title'       => (string) $gateway->get_title(),
-                'description' => (string) $gateway->get_description(),
-            );
+        $available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+        foreach ($available_gateways as $gateway) {
+            $methods[] = hf_commerce_checkout_method_payload($gateway, true);
+            $method_ids[(string) $gateway->id] = true;
 
             if (
                 'payway_gateway' === (string) $gateway->id
@@ -217,6 +246,24 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
                         'promotions'  => wc_payway_checkout_promotions(),
                     );
                 }
+            }
+        }
+
+        // Mercado Pago a veces no aparece en `get_available_payment_gateways()` si el
+        // plugin necesita redirección externa o todavía no inicializó toda la sesión
+        // del checkout headless. Si está habilitado en WooCommerce, lo exponemos igual
+        // para que Store API pueda procesarlo y devolver su redirect_url.
+        foreach (WC()->payment_gateways()->payment_gateways() as $gateway) {
+            $gateway_id = isset($gateway->id) ? (string) $gateway->id : '';
+            if (
+                $gateway_id
+                && empty($method_ids[$gateway_id])
+                && hf_commerce_is_mercado_pago_gateway($gateway)
+                && isset($gateway->enabled)
+                && 'yes' === (string) $gateway->enabled
+            ) {
+                $methods[] = hf_commerce_checkout_method_payload($gateway, false);
+                $method_ids[$gateway_id] = true;
             }
         }
     }
