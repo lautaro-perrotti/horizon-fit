@@ -29,6 +29,32 @@ body.hf-checkout-mode .nav {
   text-align: center;
 }
 
+.hf-checkout-view__back {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--hf-primary, #35006d);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.hf-checkout-view__back:hover {
+  color: #222222;
+}
+
+.hf-checkout-view__back:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: 999px;
+}
+
 .hf-checkout-view__kicker {
   margin: 0;
   color: var(--hf-primary, #35006d);

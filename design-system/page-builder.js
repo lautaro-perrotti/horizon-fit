@@ -4457,9 +4457,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const accountPasswordRow = sectionEl.querySelector('[data-checkout-account-password-row]');
     const accountPasswordInput = sectionEl.querySelector('[data-checkout-account-password]');
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
+    const backButton = sectionEl.querySelector('[data-checkout-back]');
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
     let currentPaywayConfig = null;
+    backButton?.addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.assign(routeBaseUrl('/'));
+    });
     const syncAccountPasswordVisibility = () => {
       const needsPassword = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
       if (accountPasswordRow) accountPasswordRow.hidden = !needsPassword;
