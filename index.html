@@ -4554,14 +4554,25 @@
         height: 40px;
       }
 
-      /* Antes forzaba una grilla rígida de 6 columnas iguales en desktop,
-         lo que achicaba las cards para que entraran las 6 sin scroll.
-         Ahora mantiene el mismo carousel de scroll horizontal que
-         tablet/mobile, con cards más grandes (320px) y las que no entran
-         quedan accesibles scrolleando. */
+      /* Desktop: siempre las 6 visibles (sin scroll), en grilla de 6
+         columnas iguales que ocupan todo el ancho disponible — el tamaño
+         de cada card es simplemente ancho-del-contenedor/6. */
       @media (min-width: 1025px) {
+        .hf-social-strip__viewport {
+          overflow: visible;
+          padding-bottom: 0;
+        }
+
         .hf-social-strip__track {
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
           gap: 20px;
+        }
+
+        .hf-social-strip__card {
+          flex: none;
+          width: 100%;
         }
       }
 
