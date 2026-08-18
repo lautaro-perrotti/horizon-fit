@@ -494,6 +494,17 @@
       font-display: swap;
     }
 
+    /* Variable font: un solo archivo cubre todo el rango de pesos
+       (thin 100 a black 900) vía el eje "wght". Subseteado a Latin/Latin
+       Extended (22KB) desde el original de Google Fonts (94KB TTF). */
+    @font-face {
+      font-family: 'LeagueSpartan';
+      src: url('./TIPOGRAFIAS/LEAGUESPARTAN-VARIABLE.woff2') format('woff2-variations');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     /* -----------------------------
         1) TOKENS (desde Identikit)
         Paleta: #F1F2F6 #758AFD #FEECD4 #FF5E32 #CB4A00 #B6CF50 #406915 #4B0E26 #4561FC #27187D #000000 #D5C5B5
