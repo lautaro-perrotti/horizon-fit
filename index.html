@@ -4413,7 +4413,11 @@
       .hf-social-strip__card {
         position: relative;
         flex: 0 0 220px;
-        aspect-ratio: 4 / 5.8;
+        /* Las fotos vienen de la preview cuadrada que sirve Instagram
+           (no hay forma de conseguir la imagen completa sin login) —
+           1/1 evita que el object-fit:cover recorte de más sobre una
+           imagen que ya es cuadrada. */
+        aspect-ratio: 1 / 1;
         overflow: hidden;
         border-radius: 18px;
         background: #d9d9d9;
