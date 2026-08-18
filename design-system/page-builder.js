@@ -3377,15 +3377,19 @@ ${renderFeaturedSetPriceHtml(pricing)}
     .replace(/\s+/g, ' ')
     .trim();
 
+  // Los nombres de colección pueden estar en español o en inglés (algunos
+  // conjuntos se cargaron como "Conjunto Dynamic black", "Conjunto Zenith
+  // wine", etc.) — por eso cada patrón cubre ambos idiomas. "sky blue" va
+  // antes que "blue" para no matchear Azul primero.
   const SET_COLOR_PATTERNS = [
-    { label: 'Bordeaux', regex: /\b(bordeaux|bordo|bordó|bor)\b/i },
-    { label: 'Azul', regex: /\b(azul|azu)\b/i },
-    { label: 'Negro', regex: /\b(negro|negra|neg)\b/i },
-    { label: 'Blanco', regex: /\b(blanco|blanca|bla)\b/i },
-    { label: 'Celeste', regex: /\b(celeste|cel)\b/i },
-    { label: 'Rosa', regex: /\b(rosa|ros)\b/i },
-    { label: 'Rojo', regex: /\b(rojo|roja|roj)\b/i },
-    { label: 'Verde', regex: /\b(verde|ver)\b/i }
+    { label: 'Bordeaux', regex: /\b(bordeaux|bordo|bordó|bor|wine)\b/i },
+    { label: 'Celeste', regex: /\b(celeste|cel|sky ?blue)\b/i },
+    { label: 'Azul', regex: /\b(azul|azu|blue)\b/i },
+    { label: 'Negro', regex: /\b(negro|negra|neg|black)\b/i },
+    { label: 'Blanco', regex: /\b(blanco|blanca|bla|white)\b/i },
+    { label: 'Rosa', regex: /\b(rosa|ros|pink)\b/i },
+    { label: 'Rojo', regex: /\b(rojo|roja|roj|red)\b/i },
+    { label: 'Verde', regex: /\b(verde|ver|green)\b/i }
   ];
 
   const getSetColorLabel = (set) => {
