@@ -3619,7 +3619,10 @@
       .hf-pdp-set-line__shell {
         min-width: 0;
         max-width: 100%;
-        padding-inline: 28px;
+        /* Sin padding propio: .hf-pdp-view (el contenedor de toda la PDP) ya
+           aporta el margen lateral de la página (var(--page-gutter)). Sumar
+           28px acá duplicaba el margen solo en esta sección. */
+        padding-inline: 0;
       }
 
       .hf-pdp-set-line__shell + .hf-pdp-set-line__shell {
