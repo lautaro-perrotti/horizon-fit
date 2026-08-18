@@ -680,11 +680,19 @@ function hf_regenerate_product_cat_cache($cat_slug) {
     return;
   }
 
+  // Las categorías "estilo" (Básicos, Diseño, ...) agrupan varios conjuntos
+  // completos y necesitan mantener ese orden (conjunto por conjunto), no el
+  // orden por fecha de publicación. Se ordenan por menu_order (asignado al
+  // armar la categoría) en vez de por fecha.
+  $manual_order_cats = ['basicos', 'diseno', 'urbano', 'prints'];
+  $orderby = in_array($cat_slug, $manual_order_cats, true) ? 'menu_order' : 'date';
+  $order   = in_array($cat_slug, $manual_order_cats, true) ? 'ASC' : 'DESC';
+
   $products = wc_get_products([
     'status'    => 'publish',
     'limit'     => -1,
-    'orderby'   => 'date',
-    'order'     => 'DESC',
+    'orderby'   => $orderby,
+    'order'     => $order,
     'tax_query' => [[
       'taxonomy' => 'product_cat',
       'field'    => 'slug',
