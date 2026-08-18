@@ -4427,7 +4427,7 @@
 
       .hf-social-strip__card {
         position: relative;
-        flex: 0 0 220px;
+        flex: 0 0 320px;
         aspect-ratio: 4 / 5.8;
         overflow: hidden;
         border-radius: 18px;
@@ -4554,22 +4554,14 @@
         height: 40px;
       }
 
+      /* Antes forzaba una grilla rígida de 6 columnas iguales en desktop,
+         lo que achicaba las cards para que entraran las 6 sin scroll.
+         Ahora mantiene el mismo carousel de scroll horizontal que
+         tablet/mobile, con cards más grandes (320px) y las que no entran
+         quedan accesibles scrolleando. */
       @media (min-width: 1025px) {
-        .hf-social-strip__viewport {
-          overflow: visible;
-          padding-bottom: 0;
-        }
-
         .hf-social-strip__track {
-          width: 100%;
-          display: grid;
-          grid-template-columns: repeat(6, minmax(0, 1fr));
-          gap: 16px;
-        }
-
-        .hf-social-strip__card {
-          flex: none;
-          width: 100%;
+          gap: 20px;
         }
       }
 
