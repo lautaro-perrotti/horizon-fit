@@ -3392,8 +3392,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     { label: 'Verde', regex: /\b(verde|ver|green)\b/i }
   ];
 
+  // El slug es la fuente confiable: sigue siempre el patrón en español
+  // "conjunto-tipo-color" (ej. conjunto-liso-negro), a diferencia del name
+  // que puede tener codenames en inglés cargados a mano (Conjunto Dynamic
+  // black). Se prioriza el slug y el name queda como respaldo.
   const getSetColorLabel = (set) => {
-    const haystack = `${set?.name || ''} ${set?.slug || ''}`;
+    const haystack = `${set?.slug || ''} ${set?.name || ''}`.replace(/-/g, ' ');
     const match = SET_COLOR_PATTERNS.find(item => item.regex.test(haystack));
     return match?.label || set?.name || 'Color';
   };
@@ -3413,13 +3417,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
   const getSetColorHex = (set) => SET_COLOR_HEX[getSetColorLabel(set)] || '#cccccc';
 
   const getSetFamilyKey = (set) => {
-    const base = normalizeSetText(set?.name || set?.slug || '');
+    const base = normalizeSetText((set?.slug || set?.name || '').replace(/-/g, ' '));
     const withoutColors = SET_COLOR_PATTERNS
       .reduce((text, item) => text.replace(item.regex, ' '), base)
       .replace(/\b(conjunto|set)\b/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-    return withoutColors || normalizeSetText(set?.copy || set?.name || set?.slug);
+    return withoutColors || normalizeSetText(set?.copy || set?.slug || set?.name);
   };
 
   const getSetPreviewImage = (set) => {
