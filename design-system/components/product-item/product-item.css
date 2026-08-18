@@ -493,9 +493,12 @@
    PRODUCT GRID HORIZONTAL SCROLL (2 col)
 ======================================== */
 
+/* Gap igualado al column-gap de la página de colección
+   (.hf-collection-view__grid: 2rem desktop / 1rem mobile) para que la
+   distancia entre cards se vea igual en destacados/relacionados. */
 .hf-product-grid--h-scroll {
   display: flex;
-  gap: 22px;
+  gap: 2rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -508,27 +511,23 @@
 }
 
 .hf-product-grid--h-scroll .hf-product-item {
-  flex: 0 0 calc((100% - 66px) / 4);
+  flex: 0 0 calc((100% - 3 * 2rem) / 4);
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 
 @media (max-width: 1024px) {
   .hf-product-grid--h-scroll .hf-product-item {
-    flex: 0 0 calc(33.333% - 11px);
+    flex: 0 0 calc((100% - 2 * 2rem) / 3);
   }
 }
 
 @media (max-width: 768px) {
   .hf-product-grid--h-scroll {
-    gap: 12px;
+    gap: 1rem;
   }
   .hf-product-grid--h-scroll .hf-product-item {
-    flex: 0 0 calc(50% - 6px);
-  }
-
-  .hf-product-grid--h-scroll .hf-product-item {
-    flex: 0 0 calc(50% - 6px);
+    flex: 0 0 calc(50% - 0.5rem);
   }
 
   /* Ocultar botones de talle en mobile */

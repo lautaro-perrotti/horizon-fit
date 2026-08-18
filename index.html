@@ -2634,8 +2634,11 @@
     }
 
     @media (min-width: 1024px) {
+      /* Igualado al padding lateral de la página de colección
+         (.hf-collection-view en ≥1380px: 2.125rem) para que destacados/
+         relacionados tengan el mismo margen que la grilla de colección. */
       .hf-product-scroll-shell>div {
-        padding-inline: 56px !important;
+        padding-inline: 2.125rem !important;
       }
 
       .hf-categories .container {
