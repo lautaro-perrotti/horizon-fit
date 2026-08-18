@@ -3675,6 +3675,15 @@
           grid-row: 3;
           margin-top: 40px;
           padding-top: 56px;
+          /* Full-bleed: .hf-pdp-view queda acotado a max-width:1200px acá,
+             así que esta sección heredaba ese ancho angosto de lectura de la
+             PDP. La rompemos hasta el ancho completo del viewport (como
+             "productos destacados" en la home) y le damos su propio padding
+             lateral en vez de depender del contenedor padre. */
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
+          margin-right: calc(-50vw + 50%);
+          padding-inline: 2.125rem;
         }
 
         .hf-pdp-set-line__grid.hf-product-grid--h-scroll .hf-product-item {
