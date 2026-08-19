@@ -4983,7 +4983,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         paymentList.innerHTML = '<p class="hf-checkout-view__empty-note">No hay métodos de pago disponibles.</p>';
         return;
       }
-      const selectedId = `${defaultId || ''}`;
+      const selectedId = '';
       paymentList.innerHTML = visibleMethods.map((method) => {
         const checked = method.id === selectedId;
         const paymentCopy = {

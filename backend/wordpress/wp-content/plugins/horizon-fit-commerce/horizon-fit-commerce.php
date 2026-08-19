@@ -382,7 +382,7 @@ function hf_commerce_get_checkout_options(WP_REST_Request $request) {
         'registrationEnabled'  => $checkout ? (bool) $checkout->is_registration_enabled() : false,
         'registrationRequired' => $checkout ? (bool) $checkout->is_registration_required() : false,
         'paymentMethods'   => $methods,
-        'defaultMethodId'  => $default_method_id,
+        'defaultMethodId'  => '',
         'payway'           => $payway,
         'bankTransfer'     => hf_commerce_get_bank_transfer_details(),
         'checkoutUrl'      => trailingslashit($frontend_origin) . 'checkout/',
