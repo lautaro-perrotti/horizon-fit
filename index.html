@@ -2780,7 +2780,7 @@
           grid-row: 1;
           grid-template-columns: minmax(0, 36rem) 1fr;
           column-gap: 2rem;
-          min-height: var(--hf-pdp-top-band, 44rem);
+          min-height: 0;
         }
 
         .hf-pdp-view__media {
@@ -3777,7 +3777,7 @@
           --pdp-main-width: calc(var(--pdp-gallery-width) - var(--pdp-thumb-width) - var(--pdp-thumb-main-gap));
 
           grid-template-columns: minmax(0, var(--pdp-gallery-width)) minmax(22.5rem, 1fr);
-          grid-template-rows: auto minmax(0, 1fr);
+          grid-template-rows: auto auto auto;
           column-gap: 3.5rem;
           row-gap: 1rem;
           align-items: start;
