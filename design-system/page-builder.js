@@ -2410,7 +2410,10 @@
     .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
 
   const renderRichParagraphs = (value, fallback = '') => {
-    const raw = decodeEntities(value || '');
+    let raw = decodeEntities(value || '');
+    raw = raw
+      .replace(/\\n/g, '\n')
+      .replace(/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/g, '$1\n\n');
     const wrapper = document.createElement('div');
     wrapper.innerHTML = raw;
     const existingParagraphs = Array.from(wrapper.querySelectorAll('p'))

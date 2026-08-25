@@ -120,7 +120,7 @@ foreach ($products as $product) {
     'ID' => $product_id,
     'post_content' => $description_html,
   ]);
-  update_post_meta($product_id, '_hf_care_json', $care_json);
+  update_post_meta($product_id, '_hf_care_json', wp_slash($care_json));
 }
 
 if (!$dry_run) {
