@@ -2409,41 +2409,70 @@
     .trim()
     .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
 
-  const productDescriptionHtml = (value) => {
-    const text = plainTextFromHtml(value)
+  const renderRichParagraphs = (value, fallback = '') => {
+    const raw = decodeEntities(value || '');
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = raw;
+    const existingParagraphs = Array.from(wrapper.querySelectorAll('p'))
+      .map(p => p.textContent.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    if (existingParagraphs.length) {
+      return existingParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+    }
+
+    const newlineParagraphs = raw
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]*>/g, ' ')
+      .split(/\n{2,}/)
+      .map(paragraph => plainTextFromHtml(paragraph).replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    if (newlineParagraphs.length > 1) {
+      return newlineParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+    }
+
+    const text = plainTextFromHtml(raw)
       .replace(/\s+/g, ' ')
       .trim();
 
     if (!text) {
-      return '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.</p>';
+      return fallback;
     }
 
     const sentences = splitSentences(text)
       .map(sentence => sentence.trim())
       .filter(Boolean);
-    const selected = sentences.slice(0, 4);
 
-    if (!selected.length) {
+    if (sentences.length < 2) {
       return `<p>${escapeHtml(text)}</p>`;
     }
 
+    const firstCut = Math.max(1, Math.ceil(sentences.length / 3));
+    const secondCut = Math.max(firstCut + 1, Math.ceil((sentences.length * 2) / 3));
     const paragraphs = [
-      selected.slice(0, 1).join(' '),
-      selected.slice(1, 3).join(' '),
-      selected.slice(3, 4).join(' ')
+      sentences.slice(0, firstCut).join(' '),
+      sentences.slice(firstCut, secondCut).join(' '),
+      sentences.slice(secondCut).join(' ')
     ].filter(Boolean);
 
     return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
   };
 
-  const careDescriptionHtml = () => {
-    const paragraphs = [
+  const productDescriptionHtml = (value) => renderRichParagraphs(
+    value,
+    '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.</p>'
+  );
+
+  const careDescriptionHtml = (care = {}) => {
+    const defaultParagraphs = [
       'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
       'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
       'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.'
     ];
 
-    return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+    const fallback = defaultParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+    return renderRichParagraphs(care.text || defaultParagraphs.join('\n\n'), fallback);
   };
 
   const normalizeSearchText = (value) => decodeEntities(value)
@@ -5374,7 +5403,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const transferEl = $('[data-product-transfer]');
     if (transferEl) transferEl.hidden = true;
     $$('[data-product-description-title]').forEach(el => { el.textContent = product.descriptionTitle || 'Descripción'; });
-    setHtml('[data-product-description]', productDescriptionHtml(product.description || product.shortDescription));
+    setHtml('[data-product-description]', productDescriptionHtml(product.descriptionHtml || product.description || product.shortDescription));
 
     const care = normalizeCare(product);
     $$('[data-product-care-title]').forEach(el => { el.textContent = care.title; });

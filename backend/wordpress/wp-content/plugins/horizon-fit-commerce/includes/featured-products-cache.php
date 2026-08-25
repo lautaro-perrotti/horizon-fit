@@ -294,6 +294,7 @@ function hf_featured_products_copy_data($product) {
 
   return array(
     'description' => trim(wp_strip_all_tags(html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8'))),
+    'descriptionHtml' => hf_featured_products_description_html($content),
     'shortDescription' => trim(wp_strip_all_tags(html_entity_decode($excerpt, ENT_QUOTES | ENT_HTML5, 'UTF-8'))),
     'descriptionTitle' => 'Descripción',
     'care' => array(
@@ -307,6 +308,19 @@ function hf_featured_products_copy_data($product) {
       'rows' => isset($size_table['rows']) && is_array($size_table['rows']) ? array_values(array_filter($size_table['rows'])) : array(),
     ),
   );
+}
+
+function hf_featured_products_description_html($content) {
+  $content = trim((string) $content);
+  if ($content === '') {
+    return '';
+  }
+
+  if (stripos($content, '<p') === false && stripos($content, '<br') === false) {
+    $content = wpautop($content);
+  }
+
+  return trim(wp_kses_post($content));
 }
 
 function hf_featured_products_rest_response() {
@@ -573,6 +587,7 @@ function hf_featured_products_serialize_product($product) {
     'transferText' => hf_featured_products_get_transfer_text($price_data['price'], $product->get_id()),
     'badge' => hf_featured_products_get_badge($product, $price_data),
     'description' => $copy['description'],
+    'descriptionHtml' => $copy['descriptionHtml'],
     'shortDescription' => $copy['shortDescription'],
     'descriptionTitle' => $copy['descriptionTitle'],
     'care' => $copy['care'],
