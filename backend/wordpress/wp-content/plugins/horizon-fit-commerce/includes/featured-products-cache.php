@@ -5,11 +5,15 @@
  * Frontend fetcha SOLO ese archivo (sin PHP, sin REST, sin queries en runtime)
  */
 
-add_action('save_post_product', 'hf_regenerate_featured_products_cache', 30);
+add_action('save_post_product', 'hf_schedule_featured_products_cache_regeneration', 90, 2);
+add_action('save_post_product_variation', 'hf_schedule_featured_products_cache_regeneration', 90, 2);
+add_action('woocommerce_update_product', 'hf_schedule_featured_products_cache_regeneration', 90, 1);
+add_action('woocommerce_update_product_variation', 'hf_schedule_featured_products_cache_regeneration', 90, 1);
+add_action('woocommerce_after_product_object_save', 'hf_schedule_featured_products_cache_regeneration', 90, 1);
 add_action('deleted_post', function($post_id) {
   $post = get_post($post_id);
-  if ($post && $post->post_type === 'product') {
-    hf_regenerate_featured_products_cache();
+  if ($post && in_array($post->post_type, ['product', 'product_variation'], true)) {
+    hf_schedule_featured_products_cache_regeneration($post_id, $post);
   }
 }, 10);
 
@@ -17,12 +21,72 @@ add_action('deleted_post', function($post_id) {
 // (asignar/quitar de Featured Row 1/2 desde wp-admin) o cuando se edita la
 // taxonomía. Así la fila correspondiente se actualiza sola.
 add_action('set_object_terms', function($object_id, $terms, $tt_ids, $taxonomy) {
-  if ($taxonomy === 'hf_collection') {
-    hf_regenerate_featured_products_cache();
+  if (in_array($taxonomy, ['hf_collection', 'product_cat'], true)) {
+    hf_schedule_featured_products_cache_regeneration($object_id);
   }
 }, 10, 4);
-add_action('edited_hf_collection', 'hf_regenerate_featured_products_cache', 10);
-add_action('created_hf_collection', 'hf_regenerate_featured_products_cache', 10);
+add_action('edited_hf_collection', 'hf_schedule_featured_products_cache_regeneration', 10);
+add_action('created_hf_collection', 'hf_schedule_featured_products_cache_regeneration', 10);
+
+add_action('added_post_meta', 'hf_schedule_featured_products_cache_regeneration_from_meta', 90, 4);
+add_action('updated_post_meta', 'hf_schedule_featured_products_cache_regeneration_from_meta', 90, 4);
+add_action('deleted_post_meta', 'hf_schedule_featured_products_cache_regeneration_from_meta', 90, 4);
+
+function hf_schedule_featured_products_cache_regeneration($product = 0, $post = null) {
+  $post_id = is_object($product) && method_exists($product, 'get_id') ? (int) $product->get_id() : (int) $product;
+
+  if ($post_id > 0) {
+    if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
+      return;
+    }
+
+    $post_type = $post && isset($post->post_type) ? $post->post_type : get_post_type($post_id);
+    if ($post_type && !in_array($post_type, ['product', 'product_variation'], true)) {
+      return;
+    }
+  }
+
+  $GLOBALS['hf_featured_products_cache_regeneration_scheduled'] = true;
+
+  static $shutdown_registered = false;
+  if (!$shutdown_registered) {
+    $shutdown_registered = true;
+    add_action('shutdown', 'hf_run_scheduled_featured_products_cache_regeneration', 999);
+  }
+}
+
+function hf_schedule_featured_products_cache_regeneration_from_meta($meta_id, $object_id, $meta_key, $_meta_value = null) {
+  $relevant_meta_keys = [
+    '_thumbnail_id',
+    '_product_image_gallery',
+    '_regular_price',
+    '_sale_price',
+    '_price',
+    '_stock',
+    '_stock_status',
+    '_sku',
+    '_hf_installments_text',
+    '_hf_transfer_text',
+    '_hf_installments_count',
+    '_hf_transfer_discount_percent',
+    '_hf_care_json',
+    '_hf_size_table_json',
+  ];
+
+  if (!in_array((string) $meta_key, $relevant_meta_keys, true) && strpos((string) $meta_key, '_hf_') !== 0) {
+    return;
+  }
+
+  hf_schedule_featured_products_cache_regeneration((int) $object_id);
+}
+
+function hf_run_scheduled_featured_products_cache_regeneration() {
+  if (empty($GLOBALS['hf_featured_products_cache_regeneration_scheduled'])) {
+    return;
+  }
+
+  hf_regenerate_featured_products_cache();
+}
 
 add_action('init', function() {
   if (get_transient('hf_cron_scheduled')) {
