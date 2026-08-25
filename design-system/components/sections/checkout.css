@@ -326,6 +326,10 @@ body.hf-checkout-mode .nav {
   min-height: 24px;
 }
 
+.hf-checkout-view input[type="checkbox"] {
+  accent-color: #222222;
+}
+
 .hf-checkout-view__toggle:has(input[data-checkout-same-address]) span {
   font-size: 16px;
   line-height: 1.35;

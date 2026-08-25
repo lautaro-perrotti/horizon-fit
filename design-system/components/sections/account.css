@@ -135,6 +135,10 @@ body.hf-account-signed-in .hf-account-view__grid {
   font-size: 14px;
 }
 
+.hf-account-view input[type="checkbox"] {
+  accent-color: #222222;
+}
+
 .hf-account-view__forgot,
 .hf-account-view__back,
 .hf-account-view__logout,
