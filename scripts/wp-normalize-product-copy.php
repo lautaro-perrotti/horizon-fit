@@ -42,7 +42,7 @@ function hf_normalize_copy_html_with_breaks($paragraph, $sentences_per_block = 3
     $blocks[] = implode(' ', array_slice($sentences, $index, $sentences_per_block));
   }
 
-  return '<p>' . implode('<br><br>', array_map('esc_html', $blocks)) . '</p>';
+  return '<p>' . implode("\n\n", array_map('esc_html', $blocks)) . '</p>';
 }
 
 $care_text = implode(' ', [

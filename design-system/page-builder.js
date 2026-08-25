@@ -2438,7 +2438,7 @@
       blocks.push(sentences.slice(i, i + sentencesPerBlock).join(' '));
     }
 
-    return `<p>${blocks.map(block => escapeHtml(block)).join('<br><br>')}</p>`;
+    return `<p>${blocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
   };
 
   const productDescriptionHtml = (value) => renderSingleParagraphWithBreaks(
