@@ -2404,78 +2404,35 @@
     return wrapper.textContent || wrapper.innerText || '';
   };
 
-  const splitSentences = (value) => String(value || '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [];
-
-  const renderRichParagraphs = (value, fallback = '') => {
+  const renderSingleParagraph = (value, fallbackText = '') => {
     let raw = decodeEntities(value || '');
     raw = raw
-      .replace(/\\n/g, '\n')
-      .replace(/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/g, '$1\n\n');
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = raw;
-    const existingParagraphs = Array.from(wrapper.querySelectorAll('p'))
-      .map(p => p.textContent.replace(/\s+/g, ' ').trim())
-      .filter(Boolean);
-
-    if (existingParagraphs.length) {
-      return existingParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
-    }
-
-    const newlineParagraphs = raw
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<[^>]*>/g, ' ')
-      .split(/\n{2,}/)
-      .map(paragraph => plainTextFromHtml(paragraph).replace(/\s+/g, ' ').trim())
-      .filter(Boolean);
-
-    if (newlineParagraphs.length > 1) {
-      return newlineParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
-    }
+      .replace(/\\n/g, ' ')
+      .replace(/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/g, '$1 ')
+      .replace(/<\/?(p|div|li|ul|ol)[^>]*>/gi, ' ')
+      .replace(/<br\s*\/?>/gi, ' ');
 
     const text = plainTextFromHtml(raw)
       .replace(/\s+/g, ' ')
       .trim();
+    const finalText = text || fallbackText;
 
-    if (!text) {
-      return fallback;
-    }
-
-    const sentences = splitSentences(text)
-      .map(sentence => sentence.trim())
-      .filter(Boolean);
-
-    if (sentences.length < 2) {
-      return `<p>${escapeHtml(text)}</p>`;
-    }
-
-    const firstCut = Math.max(1, Math.ceil(sentences.length / 3));
-    const secondCut = Math.max(firstCut + 1, Math.ceil((sentences.length * 2) / 3));
-    const paragraphs = [
-      sentences.slice(0, firstCut).join(' '),
-      sentences.slice(firstCut, secondCut).join(' '),
-      sentences.slice(secondCut).join(' ')
-    ].filter(Boolean);
-
-    return paragraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
+    return finalText ? `<p>${escapeHtml(finalText)}</p>` : '';
   };
 
-  const productDescriptionHtml = (value) => renderRichParagraphs(
+  const productDescriptionHtml = (value) => renderSingleParagraph(
     value,
-    '<p>Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.</p>'
+    'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.'
   );
 
   const careDescriptionHtml = (care = {}) => {
-    const defaultParagraphs = [
+    const defaultText = [
       'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
       'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
       'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.'
-    ];
+    ].join(' ');
 
-    const fallback = defaultParagraphs.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join('');
-    return renderRichParagraphs(care.text || defaultParagraphs.join('\n\n'), fallback);
+    return renderSingleParagraph(care.text || defaultText, defaultText);
   };
 
   const normalizeSearchText = (value) => decodeEntities(value)

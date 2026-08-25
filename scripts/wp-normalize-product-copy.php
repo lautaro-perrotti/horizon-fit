@@ -2,6 +2,8 @@
 /**
  * Normaliza descripciones y lavado/cuidado de productos Horizon Fit.
  *
+ * Deja SIEMPRE un único párrafo en descripción y un único párrafo en lavado.
+ *
  * Uso:
  *   docker cp scripts/wp-normalize-product-copy.php horizon-fit-wpcli:/tmp/wp-normalize-product-copy.php
  *   docker exec -e HF_DRY_RUN=1 horizon-fit-wpcli wp eval-file /tmp/wp-normalize-product-copy.php
@@ -12,71 +14,23 @@ $dry_run = getenv('HF_DRY_RUN') !== '0';
 
 function hf_normalize_copy_plain_text($value) {
   $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+  $value = str_replace(['<br>', '<br/>', '<br />', "\r", "\n", '\\n'], ' ', $value);
+  $value = preg_replace('/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/u', '$1 ', $value);
+  $value = preg_replace('/<\/?(p|div|li|ul|ol)[^>]*>/i', ' ', $value);
   $value = wp_strip_all_tags($value);
   $value = preg_replace('/\s+/u', ' ', $value);
   return trim($value);
 }
 
-function hf_normalize_copy_sentences($value) {
-  $text = hf_normalize_copy_plain_text($value);
-  if ($text === '') {
-    return [];
-  }
-
-  preg_match_all('/[^.!?]+[.!?]+|[^.!?]+$/u', $text, $matches);
-  return array_values(array_filter(array_map('trim', $matches[0] ?? [])));
+function hf_normalize_copy_html($paragraph) {
+  return '<p>' . esc_html($paragraph) . '</p>';
 }
 
-function hf_normalize_copy_paragraphs($value) {
-  $value = trim((string) $value);
-  if ($value === '') {
-    return [];
-  }
-
-  if (preg_match_all('/<p\b[^>]*>(.*?)<\/p>/is', $value, $matches) && !empty($matches[1])) {
-    $paragraphs = array_map('hf_normalize_copy_plain_text', $matches[1]);
-    $paragraphs = array_values(array_filter($paragraphs));
-    if (count($paragraphs) > 1) {
-      return $paragraphs;
-    }
-  }
-
-  $parts = preg_split('/\R{2,}/u', wp_strip_all_tags(str_replace(['<br>', '<br/>', '<br />'], "\n", $value)));
-  $paragraphs = array_values(array_filter(array_map('hf_normalize_copy_plain_text', $parts ?: [])));
-  if (count($paragraphs) > 1) {
-    return $paragraphs;
-  }
-
-  $sentences = hf_normalize_copy_sentences($value);
-  if (!$sentences) {
-    return [];
-  }
-
-  if (count($sentences) < 3) {
-    return [implode(' ', $sentences)];
-  }
-
-  $first_cut = max(1, (int) ceil(count($sentences) / 3));
-  $second_cut = max($first_cut + 1, (int) ceil((count($sentences) * 2) / 3));
-
-  return array_values(array_filter([
-    implode(' ', array_slice($sentences, 0, $first_cut)),
-    implode(' ', array_slice($sentences, $first_cut, $second_cut - $first_cut)),
-    implode(' ', array_slice($sentences, $second_cut)),
-  ]));
-}
-
-function hf_normalize_copy_html($paragraphs) {
-  return implode("\n\n", array_map(static function($paragraph) {
-    return '<p>' . esc_html($paragraph) . '</p>';
-  }, $paragraphs));
-}
-
-$care_paragraphs = [
+$care_text = implode(' ', [
   'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
   'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
   'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.',
-];
+]);
 
 $products = wc_get_products([
   'status' => 'publish',
@@ -96,21 +50,21 @@ foreach ($products as $product) {
   }
 
   $content = (string) get_post_field('post_content', $product_id, 'raw');
-  $paragraphs = hf_normalize_copy_paragraphs($content);
+  $description = hf_normalize_copy_plain_text($content);
 
-  if (!$paragraphs) {
+  if ($description === '') {
     echo "Sin descripción para normalizar: {$product_id} | " . $product->get_name() . "\n";
     continue;
   }
 
-  $description_html = hf_normalize_copy_html($paragraphs);
+  $description_html = hf_normalize_copy_html($description);
   $care_json = wp_json_encode([
     'title' => 'Lavado y cuidado',
-    'text' => implode("\n\n", $care_paragraphs),
+    'text' => $care_text,
     'bullets' => [],
   ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-  echo "Normalizado: {$product_id} | " . $product->get_name() . ' | párrafos descripción: ' . count($paragraphs) . "\n";
+  echo "Normalizado: {$product_id} | " . $product->get_name() . " | párrafos descripción: 1 | párrafos lavado: 1\n";
 
   if ($dry_run) {
     continue;
