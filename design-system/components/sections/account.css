@@ -136,7 +136,7 @@ body.hf-account-signed-in .hf-account-view__grid {
 }
 
 .hf-account-view input[type="checkbox"] {
-  accent-color: #222222;
+  accent-color: #0d6efd;
 }
 
 .hf-account-view__forgot,

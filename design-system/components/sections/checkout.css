@@ -327,7 +327,7 @@ body.hf-checkout-mode .nav {
 }
 
 .hf-checkout-view input[type="checkbox"] {
-  accent-color: #222222;
+  accent-color: #0d6efd;
 }
 
 .hf-checkout-view__toggle:has(input[data-checkout-same-address]) span {
