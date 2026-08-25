@@ -26,6 +26,25 @@ function hf_normalize_copy_html($paragraph) {
   return '<p>' . esc_html($paragraph) . '</p>';
 }
 
+function hf_normalize_copy_sentences($value) {
+  preg_match_all('/[^.!?]+[.!?]+|[^.!?]+$/u', $value, $matches);
+  return array_values(array_filter(array_map('trim', $matches[0] ?? [])));
+}
+
+function hf_normalize_copy_html_with_breaks($paragraph, $sentences_per_block = 3) {
+  $sentences = hf_normalize_copy_sentences($paragraph);
+  if (count($sentences) <= $sentences_per_block) {
+    return hf_normalize_copy_html($paragraph);
+  }
+
+  $blocks = [];
+  for ($index = 0; $index < count($sentences); $index += $sentences_per_block) {
+    $blocks[] = implode(' ', array_slice($sentences, $index, $sentences_per_block));
+  }
+
+  return '<p>' . implode('<br><br>', array_map('esc_html', $blocks)) . '</p>';
+}
+
 $care_text = implode(' ', [
   'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
   'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
@@ -57,7 +76,7 @@ foreach ($products as $product) {
     continue;
   }
 
-  $description_html = hf_normalize_copy_html($description);
+  $description_html = hf_normalize_copy_html_with_breaks($description, 3);
   $care_json = wp_json_encode([
     'title' => 'Lavado y cuidado',
     'text' => $care_text,

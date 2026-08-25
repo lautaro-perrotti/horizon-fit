@@ -2420,9 +2420,31 @@
     return finalText ? `<p>${escapeHtml(finalText)}</p>` : '';
   };
 
-  const productDescriptionHtml = (value) => renderSingleParagraph(
+  const renderSingleParagraphWithBreaks = (value, fallbackText = '', sentencesPerBlock = 3) => {
+    const html = renderSingleParagraph(value, fallbackText);
+    const text = plainTextFromHtml(html).replace(/\s+/g, ' ').trim();
+    if (!text) return '';
+
+    const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)
+      ?.map(sentence => sentence.trim())
+      .filter(Boolean) || [];
+
+    if (sentences.length <= sentencesPerBlock) {
+      return `<p>${escapeHtml(text)}</p>`;
+    }
+
+    const blocks = [];
+    for (let i = 0; i < sentences.length; i += sentencesPerBlock) {
+      blocks.push(sentences.slice(i, i + sentencesPerBlock).join(' '));
+    }
+
+    return `<p>${blocks.map(block => escapeHtml(block)).join('<br><br>')}</p>`;
+  };
+
+  const productDescriptionHtml = (value) => renderSingleParagraphWithBreaks(
     value,
-    'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.'
+    'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.',
+    3
   );
 
   const careDescriptionHtml = (care = {}) => {
@@ -2432,7 +2454,7 @@
       'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.'
     ].join(' ');
 
-    return renderSingleParagraph(care.text || defaultText, defaultText);
+    return renderSingleParagraphWithBreaks(care.text || defaultText, defaultText, 1);
   };
 
   const normalizeSearchText = (value) => decodeEntities(value)
