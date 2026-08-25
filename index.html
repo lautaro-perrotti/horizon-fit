@@ -2796,10 +2796,9 @@
         .hf-pdp-view__details {
           grid-column: 1;
           grid-row: 2;
-          height: 28rem;
           margin-top: 42px;
           display: grid;
-          grid-template-rows: auto minmax(0, 1fr);
+          grid-template-rows: auto 1fr;
         }
 
         .hf-pdp-view__details--side {
@@ -3247,15 +3246,15 @@
       @media (min-width: 768px) {
         .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) {
           min-height: 377px !important;
-          height: 377px !important;
-          overflow: hidden;
+          height: auto !important;
+          overflow: visible;
           display: grid;
-          grid-template-rows: auto minmax(0, 1fr);
+          grid-template-rows: auto 1fr;
         }
 
         .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) .hf-pdp-view__panel {
           min-height: 0;
-          overflow: hidden;
+          overflow: visible;
         }
 
         .hf-pdp-view__details:not(.hf-pdp-view__details--mobile-tabs) .hf-pdp-view__panel p {
@@ -3812,10 +3811,10 @@
           grid-row: 2;
           margin-top: 42px;
           min-height: 350px;
-          height: 28rem;
-          overflow: hidden;
+          height: auto;
+          overflow: visible;
           display: grid;
-          grid-template-rows: auto minmax(0, 1fr);
+          grid-template-rows: auto 1fr;
         }
 
         .hf-pdp-view__details--side {
@@ -3883,7 +3882,7 @@
         .hf-pdp-view__panel {
           grid-row: 2;
           min-height: 0;
-          overflow-y: auto;
+          overflow-y: visible;
           padding: 1.5rem 0.875rem 0.5rem 0;
           scrollbar-width: none;
           /* Firefox */
