@@ -87,6 +87,13 @@ add_filter('rest_exposed_cors_headers', function($headers) {
     ))));
 });
 
+add_filter('allowed_redirect_hosts', function($hosts) {
+    $hosts[] = 'horizonfit.com.ar';
+    $hosts[] = 'www.horizonfit.com.ar';
+    $hosts[] = 'api.horizonfit.com.ar';
+    return array_values(array_unique($hosts));
+});
+
 add_filter('rest_pre_serve_request', function($served, $result, $request, $server) {
     $origin = isset($_SERVER['HTTP_ORIGIN']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_ORIGIN'])) : '';
     if ($origin) {
@@ -143,8 +150,83 @@ function hf_commerce_frontend_origin_from_request() {
         }
     }
 
-    return home_url();
+    return hf_commerce_public_frontend_origin();
 }
+
+function hf_commerce_public_frontend_origin() {
+    $scheme = getenv('HF_FRONTEND_SCHEME') ?: 'https';
+    $host = getenv('HF_FRONTEND_HOST') ?: '';
+
+    if (! $host) {
+        $wp_host = wp_parse_url(home_url('/'), PHP_URL_HOST);
+        $wp_port = wp_parse_url(home_url('/'), PHP_URL_PORT);
+        if (in_array($wp_host, array('localhost', '127.0.0.1'), true)) {
+            $scheme = 'http';
+            $host = 'localhost:8088';
+        } elseif ('api.horizonfit.com.ar' === $wp_host) {
+            $scheme = 'https';
+            $host = 'horizonfit.com.ar';
+        } else {
+            $host = $wp_host . ($wp_port ? ':' . (int) $wp_port : '');
+        }
+    }
+
+    return rtrim($scheme . '://' . $host, '/');
+}
+
+function hf_commerce_frontend_order_received_url($order) {
+    if (! $order instanceof WC_Order) {
+        return trailingslashit(hf_commerce_public_frontend_origin()) . 'checkout/';
+    }
+
+    $url = trailingslashit(hf_commerce_public_frontend_origin()) . 'checkout/pedido-recibido/';
+    $url = add_query_arg(array(
+        'order' => $order->get_id(),
+        'key'   => $order->get_order_key(),
+    ), $url);
+
+    return $url;
+}
+
+add_filter('woocommerce_get_return_url', function($return_url, $order) {
+    return hf_commerce_frontend_order_received_url($order);
+}, 20, 2);
+
+add_filter('woocommerce_get_checkout_order_received_url', function($url, $order) {
+    return hf_commerce_frontend_order_received_url($order);
+}, 20, 2);
+
+add_action('template_redirect', function() {
+    if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        return;
+    }
+
+    $host = isset($_SERVER['HTTP_HOST']) ? explode(':', sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])))[0] : '';
+    if ('api.horizonfit.com.ar' !== $host) {
+        return;
+    }
+
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+    $order_id = 0;
+    if (preg_match('#/order-received/([0-9]+)#', $request_uri, $matches)) {
+        $order_id = absint($matches[1]);
+    } elseif (isset($_GET['order'])) {
+        $order_id = absint(wp_unslash($_GET['order']));
+    } elseif (isset($_GET['external_reference'])) {
+        $order_id = absint(wp_unslash($_GET['external_reference']));
+    }
+
+    if ($order_id && function_exists('wc_get_order')) {
+        $order = wc_get_order($order_id);
+        if ($order instanceof WC_Order) {
+            wp_safe_redirect(hf_commerce_frontend_order_received_url($order), 302);
+            exit;
+        }
+    }
+
+    wp_safe_redirect(trailingslashit(hf_commerce_public_frontend_origin()) . 'checkout/', 302);
+    exit;
+});
 
 function hf_commerce_get_account_session(WP_REST_Request $request) {
     $user = wp_get_current_user();
