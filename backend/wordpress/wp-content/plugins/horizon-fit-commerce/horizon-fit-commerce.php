@@ -128,6 +128,12 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true',
     ));
 
+    register_rest_route('hf/v1', '/checkout/order/(?P<id>\d+)', array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'hf_commerce_get_checkout_order_summary',
+        'permission_callback' => '__return_true',
+    ));
+
     register_rest_route('hf/v1', '/account/lost-password', array(
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'hf_commerce_request_password_reset',
@@ -343,7 +349,47 @@ function hf_commerce_get_order_payment_label($order) {
     $method_id = (string) $order->get_payment_method();
     $base_label = wp_strip_all_tags((string) $order->get_payment_method_title());
 
-    if ('payway_gateway' !== $method_id) {
+    if ('payway_gateway' === $method_id) {
+        $payment_data = get_post_meta($order->get_id(), '_payway_payment_data', true);
+        $payment_data = is_array($payment_data) ? $payment_data : array();
+        $installments = isset($payment_data['installments']) ? absint($payment_data['installments']) : 0;
+        $payment_method_id = isset($payment_data['payment_method_id']) ? absint($payment_data['payment_method_id']) : 0;
+        $debit_method_ids = array(31, 66, 67);
+
+        if ($installments <= 0) {
+            return $base_label;
+        }
+
+        if (1 === $installments) {
+            $card_label = in_array($payment_method_id, $debit_method_ids, true) ? 'Tarjeta de débito' : $base_label;
+            return trim($card_label . ' · 1 pago');
+        }
+
+        return trim($base_label . ' · ' . $installments . ' cuotas');
+    }
+
+    if (hf_commerce_is_mercado_pago_order($order)) {
+        $installments = hf_commerce_get_mercado_pago_installments($order);
+        if ($installments > 1) {
+            return trim($base_label . ' · ' . $installments . ' cuotas');
+        }
+        if (1 === $installments) {
+            return trim($base_label . ' · 1 pago');
+        }
+    }
+
+    return $base_label;
+}
+
+function hf_commerce_get_order_payment_label_legacy($order) {
+    if (! $order instanceof WC_Order) {
+        return '';
+    }
+
+    $method_id = (string) $order->get_payment_method();
+    $base_label = wp_strip_all_tags((string) $order->get_payment_method_title());
+
+    if ('payway_gateway' === $method_id) {
         return $base_label;
     }
 
@@ -363,6 +409,106 @@ function hf_commerce_get_order_payment_label($order) {
     }
 
     return trim($base_label . ' · ' . $installments . ' cuotas');
+}
+
+function hf_commerce_is_mercado_pago_order($order) {
+    if (! $order instanceof WC_Order) {
+        return false;
+    }
+
+    $method_id = strtolower(remove_accents((string) $order->get_payment_method()));
+    $method_title = strtolower(remove_accents(wp_strip_all_tags((string) $order->get_payment_method_title())));
+
+    return false !== strpos($method_id, 'mercado')
+        || false !== strpos($method_title, 'mercado pago');
+}
+
+function hf_commerce_get_mercado_pago_installments($order) {
+    if (! $order instanceof WC_Order) {
+        return 0;
+    }
+
+    $direct_keys = array(
+        'mp_installments',
+        '_mp_installments',
+        'installments',
+        '_installments',
+    );
+
+    foreach ($direct_keys as $key) {
+        $value = $order->get_meta($key, true);
+        if (is_numeric($value) && absint($value) > 0) {
+            return absint($value);
+        }
+    }
+
+    foreach ($order->get_meta_data() as $meta) {
+        $key = isset($meta->key) ? (string) $meta->key : '';
+        $value = isset($meta->value) ? $meta->value : null;
+
+        if (! preg_match('/mercado\s*pago.*installments|mp.*installments|installments/i', $key)) {
+            continue;
+        }
+
+        if (is_numeric($value) && absint($value) > 0) {
+            return absint($value);
+        }
+
+        if (is_array($value)) {
+            foreach (array('installments', 'installment') as $nested_key) {
+                if (isset($value[$nested_key]) && is_numeric($value[$nested_key]) && absint($value[$nested_key]) > 0) {
+                    return absint($value[$nested_key]);
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+function hf_commerce_get_checkout_order_summary(WP_REST_Request $request) {
+    if (! function_exists('wc_get_order')) {
+        return new WP_Error('hf_woocommerce_unavailable', __('WooCommerce is unavailable.', 'horizon-fit-commerce'), array('status' => 503));
+    }
+
+    $order_id = absint($request['id']);
+    $order = wc_get_order($order_id);
+    if (! $order) {
+        return new WP_Error('hf_order_not_found', __('Order not found.', 'horizon-fit-commerce'), array('status' => 404));
+    }
+
+    $key = sanitize_text_field((string) $request->get_param('key'));
+    $current_user_id = get_current_user_id();
+    $is_order_owner = $current_user_id && (int) $order->get_customer_id() === (int) $current_user_id;
+    $can_manage_orders = current_user_can('manage_woocommerce');
+
+    if (! $key && ! $is_order_owner && ! $can_manage_orders) {
+        return new WP_Error('hf_order_forbidden', __('Invalid order key.', 'horizon-fit-commerce'), array('status' => 403));
+    }
+
+    if ($key && ! hash_equals((string) $order->get_order_key(), $key)) {
+        return new WP_Error('hf_order_forbidden', __('Invalid order key.', 'horizon-fit-commerce'), array('status' => 403));
+    }
+
+    $currency_code = $order->get_currency() ?: get_woocommerce_currency();
+    $currency_symbol = html_entity_decode(get_woocommerce_currency_symbol($currency_code), ENT_QUOTES, 'UTF-8');
+
+    return rest_ensure_response(array(
+        'id'            => (int) $order->get_id(),
+        'number'        => (string) $order->get_order_number(),
+        'status'        => (string) $order->get_status(),
+        'paymentMethod' => (string) $order->get_payment_method(),
+        'paymentLabel'  => hf_commerce_get_order_payment_label($order),
+        'billingEmail'  => (string) $order->get_billing_email(),
+        'totals'        => array(
+            'currency_code'       => $currency_code,
+            'currency_symbol'     => $currency_symbol,
+            'currency_prefix'     => $currency_symbol . ' ',
+            'currency_suffix'     => '',
+            'currency_minor_unit' => 2,
+            'total_price'         => (string) round((float) $order->get_total() * 100),
+        ),
+    ));
 }
 
 function hf_commerce_is_mercado_pago_gateway($gateway) {

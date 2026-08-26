@@ -4618,9 +4618,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
     confirmationEl.hidden = false;
 
     const snapshot = readCheckoutOrder(confirmationParams.orderId, confirmationParams.orderKey);
-    const billingEmail = `${snapshot?.billingEmail || ''}`.trim();
+    let billingEmail = `${snapshot?.billingEmail || ''}`.trim();
     const query = new URLSearchParams({ key: confirmationParams.orderKey });
     if (billingEmail) query.set('billing_email', billingEmail);
+
+    let orderSummary = null;
+    try {
+      orderSummary = await hfRestFetch(`/checkout/order/${confirmationParams.orderId}?${query.toString()}`, null, { method: 'GET' });
+    } catch (error) {
+      console.warn('[HF PB] Order summary lookup unavailable:', error.message);
+    }
 
     let order = null;
     try {
@@ -4629,13 +4636,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
       console.warn('[HF PB] Order confirmation lookup unavailable:', error.message);
     }
 
-    const cart = order || snapshot?.cart || {};
+    if (!billingEmail) billingEmail = `${orderSummary?.billingEmail || ''}`.trim();
+
+    const cart = order || orderSummary || snapshot?.cart || {};
     const currency = getCartCurrency(cart);
-    const orderNumber = snapshot?.orderNumber || confirmationParams.orderId;
-    const status = order?.status || snapshot?.status || '';
-    const paymentMethod = snapshot?.paymentMethod || '';
-    const paymentDetail = snapshot?.paymentDetail || '';
-    const totalRaw = order?.totals?.total_price ?? snapshot?.cart?.totals?.total_price ?? 0;
+    const orderNumber = orderSummary?.number || snapshot?.orderNumber || confirmationParams.orderId;
+    const status = orderSummary?.status || order?.status || snapshot?.status || '';
+    const paymentMethod = orderSummary?.paymentMethod || snapshot?.paymentMethod || '';
+    const paymentLabel = `${orderSummary?.paymentLabel || ''}`.trim();
+    const paymentDetail = paymentLabel ? '' : (snapshot?.paymentDetail || '');
+    const totalRaw = orderSummary?.totals?.total_price ?? order?.totals?.total_price ?? snapshot?.cart?.totals?.total_price ?? 0;
 
     const numberEl = confirmationEl.querySelector('[data-checkout-confirmation-number]');
     const statusValueEl = confirmationEl.querySelector('[data-checkout-confirmation-status]');
@@ -4651,7 +4661,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     if (numberEl) numberEl.textContent = `#${orderNumber}`;
     if (statusValueEl) statusValueEl.textContent = checkoutStatusLabel(status);
-    if (paymentEl) paymentEl.textContent = checkoutPaymentLabel(paymentMethod, paymentDetail);
+    if (paymentEl) paymentEl.textContent = paymentLabel || checkoutPaymentLabel(paymentMethod, paymentDetail);
     if (totalEl) totalEl.textContent = formatStoreMoney(totalRaw, currency);
 
     if (paymentMethod === 'bacs') {
