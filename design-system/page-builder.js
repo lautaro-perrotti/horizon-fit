@@ -57,6 +57,7 @@
   const STORE_ACCOUNT_URL = `${window.location.origin}/mi-cuenta/`;
   const CART_TOKEN_STORAGE_KEY = 'hf-woo-cart-token';
   const CHECKOUT_ORDER_STORAGE_KEY = 'hf-checkout-last-order';
+  const CHECKOUT_DRAFT_STORAGE_KEY = 'hf-checkout-draft';
   const PAYWAY_GATEWAY_ID = 'payway_gateway';
   let paywaySdkPromise = null;
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
@@ -4197,6 +4198,30 @@ ${renderFeaturedSetPriceHtml(pricing)}
     return detail ? `${base} · ${detail}` : base;
   };
 
+  const readCheckoutDraft = () => {
+    try {
+      return JSON.parse(window.localStorage.getItem(CHECKOUT_DRAFT_STORAGE_KEY) || 'null') || {};
+    } catch (error) {
+      return {};
+    }
+  };
+
+  const writeCheckoutDraft = (draft = {}) => {
+    try {
+      window.localStorage.setItem(CHECKOUT_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    } catch (error) {
+      // Si el navegador bloquea storage, el checkout sigue funcionando sin persistencia local.
+    }
+  };
+
+  const clearCheckoutDraft = () => {
+    try {
+      window.localStorage.removeItem(CHECKOUT_DRAFT_STORAGE_KEY);
+    } catch (error) {
+      // No es crítico.
+    }
+  };
+
   const checkoutPaywayInstallmentsLabel = (installmentsValue = '') => {
     const parts = `${installmentsValue || ''}`.split('-');
     const installments = Number(parts[2] || 0);
@@ -4680,6 +4705,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     const confirmationParams = getCheckoutConfirmationParams();
     if (confirmationParams) {
+      clearCheckoutDraft();
       await renderCheckoutConfirmation(sectionEl, confirmationParams);
       return;
     }
@@ -4712,6 +4738,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const accountPasswordRow = sectionEl.querySelector('[data-checkout-account-password-row]');
     const accountPasswordInput = sectionEl.querySelector('[data-checkout-account-password]');
     const paymentMethodInput = sectionEl.querySelector('[data-checkout-payment-method]');
+    const orderNotesInput = sectionEl.querySelector('[name="order_notes"]');
     const backButton = sectionEl.querySelector('[data-checkout-back]');
     const mobileSummaryToggle = sectionEl.querySelector('[data-checkout-summary-toggle]');
     const mobileSummaryPanel = sectionEl.querySelector('[data-checkout-mobile-summary-panel]');
@@ -4736,6 +4763,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
     createAccountToggle?.addEventListener('change', syncAccountPasswordVisibility);
     createAccountToggle?.addEventListener('input', syncAccountPasswordVisibility);
     syncAccountPasswordVisibility();
+
+    const checkoutDraft = readCheckoutDraft();
+    if (orderNotesInput && checkoutDraft.orderNotes && !orderNotesInput.value) {
+      orderNotesInput.value = checkoutDraft.orderNotes;
+    }
+    orderNotesInput?.addEventListener('input', () => {
+      writeCheckoutDraft({
+        ...readCheckoutDraft(),
+        orderNotes: orderNotesInput.value
+      });
+    });
+
     const fields = new Map();
     sectionEl.querySelectorAll('[data-checkout-field]').forEach(input => {
       const key = input.getAttribute('data-checkout-field');
@@ -5262,12 +5301,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
           return;
         }
 
+        const customerNote = `${orderNotesInput?.value || ''}`.trim();
+        writeCheckoutDraft({
+          ...readCheckoutDraft(),
+          orderNotes: customerNote
+        });
+
         const body = {
           billing_address,
           shipping_address,
           payment_method: paymentMethod,
           payment_data: paymentData,
-          customer_note: `${sectionEl.querySelector('[name="order_notes"]')?.value || ''}`.trim(),
+          customer_note: customerNote,
           create_account: createAccount,
           customer_password: createAccount ? customerPassword : '',
           additional_fields: {
