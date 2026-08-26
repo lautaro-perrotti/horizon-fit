@@ -141,6 +141,24 @@ function hf_storefront_display_name($product) {
         : $product->get_name();
 }
 
+function hf_storefront_is_duplicate_copy_product($product) {
+    if (! $product instanceof WC_Product) {
+        return false;
+    }
+
+    if (function_exists('hf_featured_products_is_duplicate_copy_product')) {
+        return hf_featured_products_is_duplicate_copy_product($product);
+    }
+
+    $name = (string) $product->get_name();
+    $slug = (string) $product->get_slug();
+
+    return (bool) (
+        preg_match('/\s*\(\s*(?:copia|copy)(?:\s*\d+)?\s*\)\s*$/iu', $name)
+        || preg_match('/(?:^|[._\-\s])(?:copia|copy)(?:[._\-\s]*\d+)?$/iu', $slug)
+    );
+}
+
 function hf_storefront_product_image_id($product) {
     if (! $product instanceof WC_Product) {
         return 0;
@@ -540,7 +558,7 @@ function hf_storefront_term_seo($term) {
         $position = 1;
         foreach (array_unique(array_map('intval', $product_ids)) as $product_id) {
             $product = wc_get_product($product_id);
-            if (! $product || 'publish' !== $product->get_status()) {
+            if (! $product || 'publish' !== $product->get_status() || hf_storefront_is_duplicate_copy_product($product)) {
                 continue;
             }
             $products[] = $product;
@@ -622,6 +640,9 @@ function hf_regenerate_storefront_seo_cache() {
     ));
     $sitemap_images[hf_storefront_public_url('/')] = $home_image;
     foreach ($products as $product) {
+        if (hf_storefront_is_duplicate_copy_product($product)) {
+            continue;
+        }
         // Si el producto tiene galería pero perdió la imagen destacada,
         // promovemos la primera foto existente. No crea ni borra medios.
         if (! $product->get_image_id()) {

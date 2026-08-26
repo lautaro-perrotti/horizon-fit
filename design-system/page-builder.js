@@ -48,6 +48,9 @@
   // En el dominio pÃºblico usa el subdominio HTTPS de la API.
   const WP_PORT = '8089';
   const isProductionDomain = /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname);
+  const CANONICAL_STOREFRONT_ORIGIN = isProductionDomain
+    ? 'https://horizonfit.com.ar'
+    : window.location.origin;
   const WP_BASE_URL = window.HF_WP_BASE_URL || (isProductionDomain
     ? 'https://api.horizonfit.com.ar'
     : `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`);
@@ -214,7 +217,7 @@
   };
 
   const routeBaseUrl = (pathname, search = '') => {
-    const url = new URL(window.location.href);
+    const url = new URL(CANONICAL_STOREFRONT_ORIGIN);
     const [cleanPathname, fragment = ''] = `${pathname || '/'}`.split('#', 2);
     url.pathname = cleanPathname || '/';
     url.search = search;
@@ -679,12 +682,31 @@
     .replace(/(?:[._\-\s]*(?:copia|copy)(?:[._\-\s]*\d+)?)$/i, '')
     .trim();
 
-  const slugifyText = (value) => stripDuplicateSlugSuffix(decodeEntities(value))
+  const slugifyRawText = (value) => decodeEntities(value)
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+  const slugifyText = (value) => slugifyRawText(stripDuplicateSlugSuffix(value));
+
+  const isDuplicateProductCopyValue = (value) => {
+    const raw = String(value || '').trim();
+    return /\s*\(\s*(?:copia|copy)(?:\s*\d+)?\s*\)\s*$/i.test(raw)
+      || /(?:^|[._\-\s])(?:copia|copy)(?:[._\-\s]*\d+)?$/i.test(raw);
+  };
+
+  const isDuplicateProductCopy = (product) => {
+    if (!product || typeof product !== 'object') return false;
+    return [
+      product.slug,
+      product.post_name,
+      product.handle,
+      getProductPermalinkSlug(product),
+      product.name
+    ].some(isDuplicateProductCopyValue);
+  };
 
   const getProductPermalinkSlug = (product) => {
     let permalinkSlug = '';
@@ -698,6 +720,7 @@
   };
 
   const normalizeProductSlug = (value) => slugifyText(value);
+  const normalizeProductSlugExact = (value) => slugifyRawText(value);
 
   const getProductCanonicalSlug = (product) => {
     const candidates = [
@@ -2377,9 +2400,18 @@
   };
 
   const productMatchesSlug = (product, slug) => {
-    const targetSlug = normalizeProductSlug(slug);
+    const targetSlug = normalizeProductSlugExact(slug);
     if (!targetSlug) return false;
-    return [product?.slug, product?.post_name, product?.handle, getProductPermalinkSlug(product), product?.name]
+
+    const exactMatch = [product?.slug, product?.post_name, product?.handle, getProductPermalinkSlug(product)]
+      .map(normalizeProductSlugExact)
+      .filter(Boolean)
+      .some(value => value === targetSlug);
+    if (exactMatch) return true;
+
+    if (isDuplicateProductCopy(product)) return false;
+
+    return [product?.name]
       .map(normalizeProductSlug)
       .filter(Boolean)
       .some(value => value === targetSlug);
@@ -2701,7 +2733,7 @@
   };
 
   const filterVisibleProducts = (items) => Array.isArray(items)
-    ? items.filter(product => product && typeof product === 'object' && getVisibleProductAvailability(product).isVisible)
+    ? items.filter(product => product && typeof product === 'object' && !isDuplicateProductCopy(product) && getVisibleProductAvailability(product).isVisible)
     : [];
 
   const commerceState = {

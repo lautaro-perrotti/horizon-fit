@@ -181,6 +181,20 @@ function hf_catalog_display_name($name) {
   return trim($name);
 }
 
+function hf_featured_products_is_duplicate_copy_product($product) {
+  if (!$product || !is_object($product)) {
+    return false;
+  }
+
+  $name = method_exists($product, 'get_name') ? (string) $product->get_name() : '';
+  $slug = method_exists($product, 'get_slug') ? (string) $product->get_slug() : '';
+
+  return (bool) (
+    preg_match('/\s*\(\s*(?:copia|copy)(?:\s*\d+)?\s*\)\s*$/iu', $name)
+    || preg_match('/(?:^|[._\-\s])(?:copia|copy)(?:[._\-\s]*\d+)?$/iu', $slug)
+  );
+}
+
 function hf_featured_products_default_transfer_discount_percent() {
   return 10;
 }
@@ -642,7 +656,7 @@ function hf_featured_products_from_manual_ids($ids) {
   $products = [];
   foreach ($ids as $id) {
     $product = wc_get_product($id);
-    if (!$product || $product->get_status() !== 'publish') {
+    if (!$product || $product->get_status() !== 'publish' || hf_featured_products_is_duplicate_copy_product($product)) {
       continue;
     }
     $products[] = $product;
@@ -676,6 +690,9 @@ function hf_regenerate_collection_cache($collection_slug) {
 
   $result = [];
   foreach ($products as $product) {
+    if (hf_featured_products_is_duplicate_copy_product($product)) {
+      continue;
+    }
     $result[] = hf_featured_products_serialize_product($product);
   }
 
@@ -703,6 +720,9 @@ function hf_regenerate_featured_products_cache() {
 
   $result = [];
   foreach ($products as $product) {
+    if (hf_featured_products_is_duplicate_copy_product($product)) {
+      continue;
+    }
     $result[] = hf_featured_products_serialize_product($product);
   }
   hf_featured_products_write_cache(hf_featured_products_cache_path(), $result);
@@ -781,6 +801,9 @@ function hf_regenerate_product_cat_cache($cat_slug) {
 
   $result = [];
   foreach ($products as $product) {
+    if (hf_featured_products_is_duplicate_copy_product($product)) {
+      continue;
+    }
     $result[] = hf_featured_products_serialize_product($product);
   }
 
@@ -908,6 +931,9 @@ function hf_serialize_collection_set($term) {
 
   $serialized = [];
   foreach ($products as $product) {
+    if (hf_featured_products_is_duplicate_copy_product($product)) {
+      continue;
+    }
     $serialized[] = hf_featured_products_serialize_product($product);
   }
 
