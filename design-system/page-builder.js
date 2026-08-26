@@ -2818,10 +2818,13 @@
 
   const getCartItemDetails = (item) => {
     const variation = Array.isArray(item?.variation) ? item.variation : [];
-    return variation
+    const details = variation
       .map(entry => [entry.attribute, entry.value].filter(Boolean).join(': '))
       .filter(Boolean)
       .join(' / ');
+    const quantity = Math.max(1, Number(item?.quantity || 1));
+    const quantityText = `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'}`;
+    return [details, quantityText].filter(Boolean).join(' / ');
   };
 
   const cartHasItems = (cart = commerceState.cart) => {
