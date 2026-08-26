@@ -1,0 +1,14 @@
+[Unit]
+Description=Auditoria SEO semanal de Horizon Fit
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=HF_REPO_DIR=/root/horizon-fit
+Environment=HF_SEO_AUDIT_URL=https://horizonfit.com.ar
+ExecStart=/usr/bin/bash /root/horizon-fit/scripts/run-seo-audit-vps.sh
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

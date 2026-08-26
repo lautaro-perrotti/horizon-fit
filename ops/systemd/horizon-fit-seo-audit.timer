@@ -1,0 +1,11 @@
+[Unit]
+Description=Ejecutar auditoria SEO de Horizon Fit una vez por semana
+
+[Timer]
+OnCalendar=Mon *-*-* 09:00:00
+RandomizedDelaySec=15m
+Persistent=true
+Unit=horizon-fit-seo-audit.service
+
+[Install]
+WantedBy=timers.target

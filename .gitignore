@@ -22,3 +22,6 @@ Thumbs.db
 # Temporary
 *.tmp
 .cache/
+
+# Generated audit reports
+reports/
