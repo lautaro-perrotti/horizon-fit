@@ -2422,7 +2422,10 @@
 
   const renderSingleParagraphWithBreaks = (value, fallbackText = '', sentencesPerBlock = 3) => {
     const html = renderSingleParagraph(value, fallbackText);
-    const text = plainTextFromHtml(html).replace(/\s+/g, ' ').trim();
+    const text = plainTextFromHtml(html)
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
     if (!text) return '';
 
     const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)
@@ -2452,7 +2455,7 @@
       'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
       'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
       'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.'
-    ].join(' ');
+    ].join('\n\n');
 
     return renderSingleParagraphWithBreaks(care.text || defaultText, defaultText, 1);
   };

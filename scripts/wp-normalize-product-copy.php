@@ -45,7 +45,7 @@ function hf_normalize_copy_html_with_breaks($paragraph, $sentences_per_block = 3
   return '<p>' . implode("\n\n", array_map('esc_html', $blocks)) . '</p>';
 }
 
-$care_text = implode(' ', [
+$care_text = implode("\n\n", [
   'Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso.',
   'Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación.',
   'Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.',
