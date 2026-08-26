@@ -3799,6 +3799,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const track = sectionEl.querySelector('.hf-carousel__track');
     if (!track) return;
 
+    if (variant === 'desktop') {
+      const heading = sectionEl.querySelector('.hf-pdp-look-desktop-title');
+      if (heading) {
+        heading.style.paddingTop = '32px';
+        heading.style.marginBottom = '32px';
+      }
+    }
+
     if (!Array.isArray(sets) || sets.length === 0) {
       sectionEl.style.display = 'none';
       return;
