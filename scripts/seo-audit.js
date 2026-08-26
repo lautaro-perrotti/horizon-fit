@@ -107,14 +107,19 @@ function extractJsonLd(html) {
   return blocks;
 }
 
-function flattenSchema(node, out = []) {
-  if (!node || typeof node !== 'object') return out;
+function flattenSchema(node, out = [], seen = new Set()) {
+  if (!node || typeof node !== 'object' || seen.has(node)) return out;
+  seen.add(node);
+
   if (Array.isArray(node)) {
-    node.forEach((item) => flattenSchema(item, out));
+    node.forEach((item) => flattenSchema(item, out, seen));
     return out;
   }
+
   out.push(node);
-  if (Array.isArray(node['@graph'])) flattenSchema(node['@graph'], out);
+  Object.values(node).forEach((value) => {
+    if (value && typeof value === 'object') flattenSchema(value, out, seen);
+  });
   return out;
 }
 
