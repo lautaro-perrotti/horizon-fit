@@ -12,7 +12,7 @@ function hf_trust_defaults() {
     return [
         'items' => [
             ['title' => 'Envíos gratis a todo el país', 'description' => 'Con opciones disponibles en checkout'],
-            ['title' => '3 Y 6 CUOTAS SIN INTERÉS', 'description' => 'Con tarjetas habilitadas'],
+            ['title' => '3 CUOTAS SIN INTERÉS', 'description' => '6 cuotas sin interés desde $150.000'],
             ['title' => 'Cambios fáciles', 'description' => 'Tenés 6 meses para cambios y 15 días para devoluciones'],
             ['title' => 'Atención personalizada', 'description' => 'Te acompañamos antes y después de tu compra'],
         ],
@@ -134,7 +134,11 @@ function hf_trust_get_settings() {
     if (isset($items[0]) && (stripos((string) ($items[0]['title'] ?? ''), '$150.000') !== false || stripos((string) ($items[0]['description'] ?? ''), '$150.000') !== false)) {
         $items[0] = $defaults['items'][0];
     }
-    if (isset($items[1]) && (stripos((string) ($items[1]['title'] ?? ''), '$60.000') !== false || stripos((string) ($items[1]['title'] ?? ''), '$150.000') !== false)) {
+    if (isset($items[1]) && (
+        stripos((string) ($items[1]['title'] ?? ''), '3 Y 6 CUOTAS') !== false
+        || stripos((string) ($items[1]['title'] ?? ''), '$60.000') !== false
+        || stripos((string) ($items[1]['description'] ?? ''), 'tarjetas habilitadas') !== false
+    )) {
         $items[1] = $defaults['items'][1];
     }
     if (isset($items[2]) && stripos((string) ($items[2]['description'] ?? ''), '6 meses') === false) {
