@@ -351,8 +351,8 @@ function hf_storefront_home_body() {
     return '<div class="hf-prerender hf-prerender--home" data-hf-prerender>' .
         hf_storefront_prerender_chrome() .
         '<section class="hf-prerender__hero">' .
-        '<div class="hf-seo-only"><h1>Horizon Fit: activewear para entrenar y vivir en movimiento</h1>' .
-        '<p>Descubrí tops, calzas, shorts, camperas y conjuntos Horizon Fit pensados para combinar comodidad, diseño y movimiento todos los días.</p></div>' .
+        '<div style="position:absolute;z-index:2;left:clamp(24px,5vw,72px);right:clamp(24px,5vw,72px);bottom:clamp(32px,7vh,88px);max-width:760px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.35)"><h1>Horizon Fit: activewear para entrenar y vivir en movimiento</h1>' .
+        '<p style="max-width:620px;font-size:clamp(16px,2vw,20px)">Descubrí tops, calzas, shorts, camperas y conjuntos Horizon Fit pensados para combinar comodidad, diseño y movimiento todos los días.</p></div>' .
         '<picture><source media="(max-width: 768px)" srcset="' . esc_url(hf_storefront_public_url('assets/hero-poster-mobile.jpg')) . '">' .
         '<img class="hf-prerender__image" src="' . esc_url(hf_storefront_public_url('assets/hero-poster-desktop.jpg')) . '" alt="Activewear Horizon Fit" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async"></picture></section>' .
         '</div>';
@@ -360,6 +360,21 @@ function hf_storefront_home_body() {
 
 function hf_storefront_replace_head_node($html, $pattern, $replacement) {
     return preg_replace($pattern, $replacement, $html, 1);
+}
+
+function hf_storefront_inject_prerender_body($html, $body) {
+    if (! is_string($body) || trim($body) === '') {
+        return $html;
+    }
+
+    return preg_replace_callback(
+        '/(<main\b[^>]*id=["\']hfPageBuilderRoot["\'][^>]*>)([\s\S]*?)(<\/main>)/i',
+        static function ($matches) use ($body) {
+            return $matches[1] . $body . $matches[3];
+        },
+        $html,
+        1
+    );
 }
 
 function hf_storefront_render_seo_html($template, $seo) {
@@ -415,6 +430,7 @@ function hf_storefront_render_seo_html($template, $seo) {
     $html = hf_storefront_replace_head_node($html, '/<meta\s+id="hfTwitterDescription"[^>]*>/i', '<meta id="hfTwitterDescription" name="twitter:description" content="' . $description . '" />');
     $html = hf_storefront_replace_head_node($html, '/<meta\s+id="hfTwitterImage"[^>]*>/i', '<meta id="hfTwitterImage" name="twitter:image" content="' . $image . '" />');
     $html = hf_storefront_replace_head_node($html, '/<script\s+id="hfSeoJsonLd"[^>]*>.*?<\/script>/is', '<script id="hfSeoJsonLd" type="application/ld+json">' . $schema . '</script>');
+    $html = hf_storefront_inject_prerender_body($html, $seo['body'] ?? '');
     return $html;
 }
 
@@ -643,8 +659,6 @@ function hf_regenerate_storefront_seo_cache() {
         if (hf_storefront_is_duplicate_copy_product($product)) {
             continue;
         }
-        // Si el producto tiene galería pero perdió la imagen destacada,
-        // promovemos la primera foto existente. No crea ni borra medios.
         if (! $product->get_image_id()) {
             $fallback_image_id = hf_storefront_product_image_id($product);
             if ($fallback_image_id) {
@@ -653,8 +667,6 @@ function hf_regenerate_storefront_seo_cache() {
         }
         $seo = hf_storefront_product_seo($product);
         hf_storefront_write_route($template, $seo['route'], $seo);
-        // Los productos sin imagen permanecen accesibles, pero no se envían a
-        // Google hasta que el catálogo tenga una fotografía real.
         if (! empty($seo['image'])) {
             $urls[] = $seo['canonical'];
             $sitemap_images[$seo['canonical']] = $seo['image'];
@@ -740,7 +752,7 @@ function hf_regenerate_storefront_seo_cache() {
         }
     }
 
-    foreach (array('checkout', 'mi-cuenta', 'recuperar-contrasena') as $slug) {
+    foreach (array('cart', 'my-account', 'checkout', 'mi-cuenta', 'recuperar-contrasena') as $slug) {
         $canonical = hf_storefront_public_url($slug . '/');
         hf_storefront_write_route($template, $slug . '/', array(
             'title' => 'Horizon Fit',
