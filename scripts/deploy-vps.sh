@@ -46,6 +46,12 @@ if (function_exists("hf_regenerate_featured_products_cache")) { hf_regenerate_fe
 if (function_exists("hf_regenerate_sections_cache")) { hf_regenerate_sections_cache(); }
 if (function_exists("hf_regenerate_menu_cache")) { hf_regenerate_menu_cache(); }
 if (function_exists("hf_regenerate_storefront_seo_cache")) { hf_regenerate_storefront_seo_cache(); }
+if (function_exists("hf_search_regenerate_commerce_artifacts")) {
+    $merchant_report = hf_search_regenerate_commerce_artifacts();
+    if (is_array($merchant_report)) {
+        echo "Search/Merchant: " . (int) $merchant_report["ready"] . " listos, " . (int) $merchant_report["blocked"] . " bloqueados.\n";
+    }
+}
 echo "Horizon Fit actualizado y caches regeneradas.\n";
 '
 
