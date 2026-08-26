@@ -37,6 +37,9 @@ require_once HF_COMMERCE_DIR . 'includes/admin-panel.php';
 // en el formulario. No enviar el email automático de configuración de contraseña.
 add_filter('woocommerce_email_enabled_customer_new_account', '__return_false');
 
+add_action('woocommerce_store_api_checkout_order_processed', 'hf_commerce_mark_order_origin_direct', 20);
+add_action('woocommerce_checkout_order_created', 'hf_commerce_mark_order_origin_direct', 20);
+
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
 
@@ -102,6 +105,30 @@ add_filter('rest_pre_serve_request', function($served, $result, $request, $serve
     }
     return $served;
 }, 10, 4);
+
+function hf_commerce_mark_order_origin_direct($order) {
+    if (! $order instanceof WC_Order) {
+        return;
+    }
+
+    if (! $order->get_created_via()) {
+        $order->set_created_via('store-api');
+    }
+
+    if (! $order->get_meta('_wc_order_attribution_source_type', true)) {
+        $order->update_meta_data('_wc_order_attribution_source_type', 'typein');
+    }
+
+    if (! $order->get_meta('_wc_order_attribution_session_entry', true)) {
+        $order->update_meta_data('_wc_order_attribution_session_entry', hf_commerce_frontend_url('/'));
+    }
+
+    if (! $order->get_meta('_wc_order_attribution_session_pages', true)) {
+        $order->update_meta_data('_wc_order_attribution_session_pages', '1');
+    }
+
+    $order->save();
+}
 
 add_action('rest_api_init', function() {
     register_rest_route('hf/v1', '/checkout/sync', array(
