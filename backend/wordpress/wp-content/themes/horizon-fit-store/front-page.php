@@ -6464,6 +6464,14 @@
         display: grid !important;
       }
 
+      #home-pdp-look .hf-pdp-look-desktop-title {
+        display: grid !important;
+        grid-template-columns: 1fr auto 1fr !important;
+        align-items: center !important;
+        padding-top: 32px !important;
+        margin-bottom: 32px !important;
+      }
+
       #home-pdp-look {
         position: relative;
         padding-inline: 56px !important;
