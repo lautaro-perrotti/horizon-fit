@@ -4154,6 +4154,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       status: `${response.status || ''}`,
       customerId: Number(response.customer_id || 0),
       paymentMethod: `${response.payment_method || context.paymentMethod || ''}`,
+      paymentDetail: `${context.paymentDetail || ''}`,
       billingEmail: `${response.billing_address?.email || context.billingEmail || ''}`,
       createAccount: Boolean(context.createAccount),
       cart: response.__experimentalCart || null
@@ -4187,11 +4188,21 @@ ${renderFeaturedSetPriceHtml(pricing)}
     failed: 'Pago fallido'
   }[`${status || ''}`] || 'Pedido recibido');
 
-  const checkoutPaymentLabel = (method) => ({
-    bacs: 'Transferencia bancaria directa',
-    cod: 'Pago contra entrega',
-    [PAYWAY_GATEWAY_ID]: 'Tarjeta de crédito o débito'
-  }[`${method || ''}`] || (isMercadoPagoGatewayId(method) ? 'Mercado Pago' : `${method || 'A confirmar'}`));
+  const checkoutPaymentLabel = (method, detail = '') => {
+    const base = ({
+      bacs: 'Transferencia bancaria directa',
+      cod: 'Pago contra entrega',
+      [PAYWAY_GATEWAY_ID]: 'Tarjeta de crédito o débito'
+    }[`${method || ''}`] || (isMercadoPagoGatewayId(method) ? 'Mercado Pago' : `${method || 'A confirmar'}`));
+    return detail ? `${base} · ${detail}` : base;
+  };
+
+  const checkoutPaywayInstallmentsLabel = (installmentsValue = '') => {
+    const parts = `${installmentsValue || ''}`.split('-');
+    const installments = Number(parts[2] || 0);
+    if (!installments) return '';
+    return installments === 1 ? '1 pago' : `${installments} cuotas`;
+  };
 
   const isMercadoPagoGatewayId = (methodId) => /mercado|meli|mpago|mp_/i.test(`${methodId || ''}`);
 
@@ -4598,6 +4609,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const orderNumber = snapshot?.orderNumber || confirmationParams.orderId;
     const status = order?.status || snapshot?.status || '';
     const paymentMethod = snapshot?.paymentMethod || '';
+    const paymentDetail = snapshot?.paymentDetail || '';
     const totalRaw = order?.totals?.total_price ?? snapshot?.cart?.totals?.total_price ?? 0;
 
     const numberEl = confirmationEl.querySelector('[data-checkout-confirmation-number]');
@@ -4614,7 +4626,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     if (numberEl) numberEl.textContent = `#${orderNumber}`;
     if (statusValueEl) statusValueEl.textContent = checkoutStatusLabel(status);
-    if (paymentEl) paymentEl.textContent = checkoutPaymentLabel(paymentMethod);
+    if (paymentEl) paymentEl.textContent = checkoutPaymentLabel(paymentMethod, paymentDetail);
     if (totalEl) totalEl.textContent = formatStoreMoney(totalRaw, currency);
 
     if (paymentMethod === 'bacs') {
@@ -5206,6 +5218,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const createAccount = Boolean(createAccountToggle?.checked && !createAccountToggle?.disabled);
         const customerPassword = `${accountPasswordInput?.value || ''}`;
         let paymentData = [];
+        let paymentDetail = '';
 
         try {
           if (createAccount && customerPassword.length < 8) {
@@ -5221,8 +5234,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
               doorNumberInput.value = addressNumbers[addressNumbers.length - 1] || '';
             }
             if (!paywayValue('installments')) {
-              throw new Error('Ingresá una tarjeta válida y seleccioná 3 o 6 cuotas.');
+              throw new Error('Ingresá una tarjeta válida y seleccioná la cantidad de cuotas.');
             }
+            paymentDetail = checkoutPaywayInstallmentsLabel(paywayValue('installments'));
             if (statusEl) statusEl.textContent = 'Validando la tarjeta de forma segura...';
             const token = await tokenizePaywayCard(paywayForm, currentPaywayConfig);
             const paymentMethodId = Number(token.paymentMethodId || paywayValue('card-type') || 0);
@@ -5274,7 +5288,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
           rememberCheckoutOrder(response, {
             billingEmail: contactEmail,
             createAccount,
-            paymentMethod
+            paymentMethod,
+            paymentDetail
           });
           const redirectUrl = response?.payment_result?.redirect_url || '';
           if (redirectUrl && !isInternalOrderReceivedUrl(redirectUrl)) {

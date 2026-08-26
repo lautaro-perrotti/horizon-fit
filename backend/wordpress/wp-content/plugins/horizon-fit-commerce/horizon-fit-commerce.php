@@ -189,7 +189,7 @@ function hf_commerce_get_account_orders(WP_REST_Request $request) {
         'limit'       => 8,
         'orderby'     => 'date',
         'order'       => 'DESC',
-        'status'      => array_keys(wc_get_order_statuses()),
+        'status'      => array('pending', 'processing', 'on-hold', 'completed', 'refunded'),
     ));
 
     $payload = array();
@@ -219,7 +219,7 @@ function hf_commerce_get_account_orders(WP_REST_Request $request) {
             'date'        => $date_created ? wp_date('d/m/Y', $date_created->getTimestamp()) : '',
             'status'      => wc_get_order_status_name($order->get_status()),
             'total'       => html_entity_decode(wp_strip_all_tags($order->get_formatted_order_total()), ENT_QUOTES, 'UTF-8'),
-            'payment'     => wp_strip_all_tags((string) $order->get_payment_method_title()),
+            'payment'     => hf_commerce_get_order_payment_label($order),
             'items'       => $items,
             'itemsCount'  => (int) $order->get_item_count(),
         );
@@ -229,6 +229,36 @@ function hf_commerce_get_account_orders(WP_REST_Request $request) {
         'loggedIn' => true,
         'orders'   => $payload,
     ));
+}
+
+function hf_commerce_get_order_payment_label($order) {
+    if (! $order instanceof WC_Order) {
+        return '';
+    }
+
+    $method_id = (string) $order->get_payment_method();
+    $base_label = wp_strip_all_tags((string) $order->get_payment_method_title());
+
+    if ('payway_gateway' !== $method_id) {
+        return $base_label;
+    }
+
+    $payment_data = get_post_meta($order->get_id(), '_payway_payment_data', true);
+    $payment_data = is_array($payment_data) ? $payment_data : array();
+    $installments = isset($payment_data['installments']) ? absint($payment_data['installments']) : 0;
+    $payment_method_id = isset($payment_data['payment_method_id']) ? absint($payment_data['payment_method_id']) : 0;
+    $debit_method_ids = array(31, 66, 67);
+
+    if ($installments <= 0) {
+        return $base_label;
+    }
+
+    if (1 === $installments) {
+        $card_label = in_array($payment_method_id, $debit_method_ids, true) ? 'Tarjeta de débito' : $base_label;
+        return trim($card_label . ' · 1 pago');
+    }
+
+    return trim($base_label . ' · ' . $installments . ' cuotas');
 }
 
 function hf_commerce_is_mercado_pago_gateway($gateway) {
