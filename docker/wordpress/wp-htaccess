@@ -12,6 +12,12 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
+  # Mercado Pago vuelve a veces a /cart/?order_id=... en el host de WordPress.
+  # Dejarlo pasar para que el plugin Horizon Fit lo redirija al storefront.
+  RewriteCond %{REQUEST_URI} ^/cart/?$ [NC]
+  RewriteCond %{QUERY_STRING} (^|&)order_id= [NC]
+  RewriteRule ^cart/?$ /index.php [QSA,L]
+
   # Horizon Fit: block temporary routes before WordPress routing
   RewriteRule ^(cart|diplomatura|curso|modulo/asesoramiento-de-imagen)(/.*)?$ - [F,L]
 

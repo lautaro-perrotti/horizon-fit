@@ -210,10 +210,15 @@ add_action('template_redirect', function() {
     $order_id = 0;
     if (preg_match('#/order-received/([0-9]+)#', $request_uri, $matches)) {
         $order_id = absint($matches[1]);
+    } elseif (isset($_GET['order_id'])) {
+        $order_id = absint(wp_unslash($_GET['order_id']));
     } elseif (isset($_GET['order'])) {
         $order_id = absint(wp_unslash($_GET['order']));
     } elseif (isset($_GET['external_reference'])) {
-        $order_id = absint(wp_unslash($_GET['external_reference']));
+        $external_reference = sanitize_text_field(wp_unslash($_GET['external_reference']));
+        if (preg_match('/([0-9]+)/', $external_reference, $matches)) {
+            $order_id = absint($matches[1]);
+        }
     }
 
     if ($order_id && function_exists('wc_get_order')) {
