@@ -196,7 +196,7 @@ add_filter('woocommerce_get_checkout_order_received_url', function($url, $order)
     return hf_commerce_frontend_order_received_url($order);
 }, 20, 2);
 
-add_action('template_redirect', function() {
+function hf_commerce_maybe_redirect_api_payment_return() {
     if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
         return;
     }
@@ -207,6 +207,11 @@ add_action('template_redirect', function() {
     }
 
     $request_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+    $path = wp_parse_url($request_uri, PHP_URL_PATH) ?: '/';
+    if (! preg_match('#^/(cart|checkout|order-received)(/|$)#i', $path)) {
+        return;
+    }
+
     $order_id = 0;
     if (preg_match('#/order-received/([0-9]+)#', $request_uri, $matches)) {
         $order_id = absint($matches[1]);
@@ -221,6 +226,16 @@ add_action('template_redirect', function() {
         }
     }
 
+    $is_cancel = isset($_GET['cancel_order']) && wc_string_to_bool(wp_unslash($_GET['cancel_order']));
+    if ($is_cancel) {
+        $url = add_query_arg(
+            array('payment_cancelled' => '1'),
+            trailingslashit(hf_commerce_public_frontend_origin()) . 'checkout/'
+        );
+        wp_safe_redirect($url, 302);
+        exit;
+    }
+
     if ($order_id && function_exists('wc_get_order')) {
         $order = wc_get_order($order_id);
         if ($order instanceof WC_Order) {
@@ -231,7 +246,10 @@ add_action('template_redirect', function() {
 
     wp_safe_redirect(trailingslashit(hf_commerce_public_frontend_origin()) . 'checkout/', 302);
     exit;
-});
+}
+
+add_action('init', 'hf_commerce_maybe_redirect_api_payment_return', 1);
+add_action('template_redirect', 'hf_commerce_maybe_redirect_api_payment_return', 1);
 
 function hf_commerce_get_account_session(WP_REST_Request $request) {
     $user = wp_get_current_user();
