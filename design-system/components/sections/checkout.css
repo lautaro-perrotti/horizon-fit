@@ -681,9 +681,22 @@ body.hf-checkout-mode .nav {
   font-size: 14px;
 }
 
+.hf-checkout-view__order-body strong {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .hf-checkout-view__order-body span {
   color: var(--hf-muted, #64596f);
   font-size: 12px;
+}
+
+.hf-checkout-view__order-body .hf-checkout-view__order-quantity {
+  color: var(--hf-ink, #1d1a1f);
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .hf-checkout-view__totals {

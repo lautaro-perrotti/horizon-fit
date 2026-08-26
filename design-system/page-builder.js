@@ -2818,13 +2818,15 @@
 
   const getCartItemDetails = (item) => {
     const variation = Array.isArray(item?.variation) ? item.variation : [];
-    const details = variation
+    return variation
       .map(entry => [entry.attribute, entry.value].filter(Boolean).join(': '))
       .filter(Boolean)
       .join(' / ');
+  };
+
+  const getCartItemQuantityLabel = (item) => {
     const quantity = Math.max(1, Number(item?.quantity || 1));
-    const quantityText = `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'}`;
-    return [details, quantityText].filter(Boolean).join(' / ');
+    return `${quantity} ${quantity === 1 ? 'unidad' : 'unidades'}`;
   };
 
   const cartHasItems = (cart = commerceState.cart) => {
@@ -5090,12 +5092,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
       } else {
         const orderMarkup = items.map(item => {
           const image = getCartItemImage(item);
+          const details = getCartItemDetails(item);
+          const quantityLabel = getCartItemQuantityLabel(item);
           return `
             <div class="hf-checkout-view__order-item">
               <div class="hf-checkout-view__order-media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(decodeEntities(item.name || 'Producto Horizon Fit'))}" width="56" height="56" loading="eager" decoding="async">` : ''}</div>
               <div class="hf-checkout-view__order-body">
-                <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))}</strong>
-                <span>${escapeHtml(getCartItemDetails(item) || `Cantidad: ${item.quantity || 1}`)}</span>
+                <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))} <span class="hf-checkout-view__order-quantity">${escapeHtml(quantityLabel)}</span></strong>
+                ${details ? `<span>${escapeHtml(details)}</span>` : ''}
               </div>
               <strong class="hf-checkout-view__order-price">${escapeHtml(formatStoreMoney(item?.totals?.line_total || 0, currency))}</strong>
             </div>
