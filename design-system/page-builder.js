@@ -2404,28 +2404,48 @@
     return wrapper.textContent || wrapper.innerText || '';
   };
 
-  const renderSingleParagraph = (value, fallbackText = '') => {
-    let raw = decodeEntities(value || '');
+  const normalizeCopyText = (value, fallbackText = '', preserveBreaks = false) => {
+    let raw = decodeEntities(value || fallbackText || '');
     raw = raw
-      .replace(/\\n/g, ' ')
-      .replace(/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/g, '$1 ')
-      .replace(/<\/?(p|div|li|ul|ol)[^>]*>/gi, ' ')
-      .replace(/<br\s*\/?>/gi, ' ');
+      .replace(/\\n/g, preserveBreaks ? '\n' : ' ')
+      .replace(/([.!?])n{2,}(?=[A-ZÁÉÍÓÚÑ])/g, preserveBreaks ? '$1\n\n' : '$1 ')
+      .replace(/<br\s*\/?>/gi, preserveBreaks ? '\n' : ' ')
+      .replace(/<\/p>\s*<p\b[^>]*>/gi, preserveBreaks ? '\n\n' : ' ')
+      .replace(/<\/?(p|div|li|ul|ol)[^>]*>/gi, preserveBreaks ? '\n' : ' ');
 
-    const text = plainTextFromHtml(raw)
-      .replace(/\s+/g, ' ')
+    const text = plainTextFromHtml(raw);
+
+    if (!preserveBreaks) {
+      return text.replace(/\s+/g, ' ').trim();
+    }
+
+    return text
+      .replace(/\r\n?/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n[ \t]+/g, '\n')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
-    const finalText = text || fallbackText;
+  };
 
-    return finalText ? `<p>${escapeHtml(finalText)}</p>` : '';
+  const renderSingleParagraph = (value, fallbackText = '') => {
+    const text = normalizeCopyText(value, fallbackText);
+
+    return text ? `<p style="white-space: pre-line;">${escapeHtml(text)}</p>` : '';
   };
 
   const renderSingleParagraphWithBreaks = (value, fallbackText = '', sentencesPerBlock = 3) => {
-    const html = renderSingleParagraph(value, fallbackText);
-    const text = plainTextFromHtml(html)
-      .replace(/[ \t]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const preservedText = normalizeCopyText(value, fallbackText, true);
+    const preservedBlocks = preservedText
+      .split(/\n{2,}/)
+      .map(block => block.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    if (preservedBlocks.length > 1) {
+      return `<p style="white-space: pre-line;">${preservedBlocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
+    }
+
+    const text = normalizeCopyText(value, fallbackText);
     if (!text) return '';
 
     const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)
@@ -2433,7 +2453,7 @@
       .filter(Boolean) || [];
 
     if (sentences.length <= sentencesPerBlock) {
-      return `<p>${escapeHtml(text)}</p>`;
+      return `<p style="white-space: pre-line;">${escapeHtml(text)}</p>`;
     }
 
     const blocks = [];
@@ -2441,7 +2461,7 @@
       blocks.push(sentences.slice(i, i + sentencesPerBlock).join(' '));
     }
 
-    return `<p>${blocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
+    return `<p style="white-space: pre-line;">${blocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
   };
 
   const productDescriptionHtml = (value) => renderSingleParagraphWithBreaks(
