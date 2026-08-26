@@ -5098,7 +5098,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
             <div class="hf-checkout-view__order-item">
               <div class="hf-checkout-view__order-media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(decodeEntities(item.name || 'Producto Horizon Fit'))}" width="56" height="56" loading="eager" decoding="async">` : ''}</div>
               <div class="hf-checkout-view__order-body">
-                <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))} <span class="hf-checkout-view__order-quantity">${escapeHtml(quantityLabel)}</span></strong>
+                <strong>${escapeHtml(decodeEntities(item.name || 'Producto'))} <span class="hf-checkout-view__order-quantity">/ ${escapeHtml(quantityLabel)}</span></strong>
                 ${details ? `<span>${escapeHtml(details)}</span>` : ''}
               </div>
               <strong class="hf-checkout-view__order-price">${escapeHtml(formatStoreMoney(item?.totals?.line_total || 0, currency))}</strong>
