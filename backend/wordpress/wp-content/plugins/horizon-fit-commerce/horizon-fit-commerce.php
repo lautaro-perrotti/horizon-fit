@@ -248,7 +248,6 @@ function hf_commerce_maybe_redirect_api_payment_return() {
     exit;
 }
 
-add_action('init', 'hf_commerce_maybe_redirect_api_payment_return', 1);
 add_action('template_redirect', 'hf_commerce_maybe_redirect_api_payment_return', 1);
 
 function hf_commerce_get_account_session(WP_REST_Request $request) {
