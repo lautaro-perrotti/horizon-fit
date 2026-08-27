@@ -14,6 +14,7 @@ import type { GitAdapter } from "../src/adapters/git.js";
 
 export const ISSUER = "https://horizon-fit.test.auth0.com/";
 export const AUDIENCE = "https://horizon-control";
+export const RESOURCE_URL = "http://127.0.0.1:8787/mcp";
 
 export async function createTestKeys() {
   const pair: GenerateKeyPairResult = await generateKeyPair("RS256", { extractable: true });

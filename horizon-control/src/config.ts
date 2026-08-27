@@ -39,6 +39,7 @@ const envSchema = z.object({
 export type Config = z.infer<typeof envSchema> & {
   publicUrl: string;
   resourceUrl: string;
+  allowedAudiences: string[];
   jwksUrl: string;
   repoPath: string;
   wooBaseUrl: string;
@@ -56,6 +57,28 @@ export const SEO_AUDIT_ALLOWLIST = ["https://horizonfit.com.ar", "https://www.ho
 
 function firstNonEmpty(...values: Array<string | undefined>): string {
   return values.find((value) => value && value.trim())?.trim() ?? "";
+}
+
+/** Historic Auth0 API identifier. Still accepted as JWT `aud` after the MCP-URL API is created. */
+export const LEGACY_OIDC_AUDIENCE = "https://horizon-control";
+
+function parseAudienceList(raw: string): string[] {
+  return raw
+    .split(/[,;]+/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function dedupeAudiences(values: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const value of values) {
+    const key = value.replace(/\/$/, "");
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(key);
+  }
+  return out;
 }
 
 function parseClientAliases(raw: string): Record<string, string> {
@@ -98,6 +121,11 @@ export function loadConfig(overrides: Record<string, string | number | undefined
   const publicUrl =
     parsed.HORIZON_PUBLIC_URL ?? `http://${parsed.HORIZON_BIND}:${parsed.HORIZON_PORT}`;
   const resourceUrl = `${publicUrl.replace(/\/$/, "")}/mcp`;
+  const allowedAudiences = dedupeAudiences([
+    ...parseAudienceList(parsed.HORIZON_OIDC_AUDIENCE),
+    LEGACY_OIDC_AUDIENCE,
+    resourceUrl,
+  ]);
   const issuer = parsed.HORIZON_OIDC_ISSUER.endsWith("/")
     ? parsed.HORIZON_OIDC_ISSUER
     : `${parsed.HORIZON_OIDC_ISSUER}/`;
@@ -120,6 +148,7 @@ export function loadConfig(overrides: Record<string, string | number | undefined
     HORIZON_OIDC_ISSUER: issuer,
     publicUrl,
     resourceUrl,
+    allowedAudiences,
     jwksUrl,
     repoPath,
     wooBaseUrl,

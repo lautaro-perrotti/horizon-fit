@@ -70,7 +70,7 @@ export function createResourceServer(options: ResourceServerOptions) {
     }
 
     const audiences = asStringArray(payload.aud);
-    if (!audienceMatches(audiences, config.HORIZON_OIDC_AUDIENCE) && !audienceMatches(audiences, config.resourceUrl)) {
+    if (!config.allowedAudiences.some((expected) => audienceMatches(audiences, expected))) {
       throw new AuthError("invalid_audience");
     }
     if (!payload.exp) {
