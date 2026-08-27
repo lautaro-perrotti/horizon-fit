@@ -81,7 +81,9 @@ CP validates Bearer tokens only:
 
 **Tests** never call a live IdP. They sign JWTs with a local RSA key and validate against a test JWKS. In-process JWKS is rejected unless `NODE_ENV=test`.
 
-## Scopes and tools (MVP — 12 tools)
+## Scopes and tools (read-only + dashboard consult)
+
+Dashboard SPA is another `/v1` client (`/app`). It does **not** talk to Woo/GA from the browser. See `docs/DASHBOARD.md`.
 
 Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`, `merchant.execute`→`merchant.audit`):
 
@@ -98,6 +100,9 @@ Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`,
 | `tests.execute` | `tests.run` (enqueue existing PHP/node validators) |
 | `jobs.read` | `jobs.get` |
 | `audit.read` | `audit.history` |
+| `commerce.read` | `commerce.sales`, `commerce.settings` (Woo REST; `configured:false` without keys) |
+| `metrics.read` | `metrics.snapshots` |
+| `alerts.read` | `alerts.list`, `alerts.evaluate`, `assistant.ask` |
 
 MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so Cursor can list and call them. HTTP `/v1` still uses the dotted command names above.
 
@@ -108,7 +113,8 @@ MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so
 | **Claude** | health, catalog.*, storefront.get_config, seo.*, merchant.*, jobs.get, audit.history | `repo.status`, `tests.run` |
 | **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.audit`, `merchant.audit` (and seo.read / merchant.read) |
 | **Codex** | same as Cursor | `seo.audit`, `merchant.audit` |
-| **Admin** | all 12 | writes (not registered) |
+| **Admin** | all registered read tools | writes (not registered) |
+| **Dashboard** | health, catalog, storefront, commerce, metrics, alerts/assistant | seo, merchant, repo, tests |
 
 ### Hard deny list (must never be registered)
 
@@ -124,14 +130,17 @@ MCP tools / HTTP /v1 / CLI
    core/commands   ← only place with business rules
         ↓
    adapters: catalog (Woo Store API GET, no credentials)
+             commerce (Woo REST v3 sales/orders; keys in env only)
              storefront (cache JSON + public REST)
              merchant (existing artifacts only)
              git (read-only status)
              health (HTTP storefront + API + local repo)
+             warehouse (metric_snapshots + deterministic alerts)
+             assistant (deterministic consult, no LLM)
              process (allowlisted job argv)
              github (stub)
         ↓
-   SQLite: jobs, audit_events, idempotency_keys
+   SQLite: jobs, audit_events, idempotency_keys, stores, metric_snapshots, alerts
            (NO oauth client/token tables)
 ```
 
@@ -184,6 +193,11 @@ HORIZON_CACHE_DIR=.../uploads/horizon-fit-cache
 HORIZON_MERCHANT_DIAGNOSTICS_PATH=.../uploads/horizon-fit-merchant
 HORIZON_DATA_DIR=/var/lib/horizon-control
 HORIZON_SQLITE_PATH=/var/lib/horizon-control/horizon-control.sqlite
+# optional Woo REST (dashboard sales; never invent numbers if unset)
+# HORIZON_WOO_KEY=
+# HORIZON_WOO_SECRET=
+# public Auth0 SPA client id for /app
+# HORIZON_DASHBOARD_CLIENT_ID=
 ```
 
 Phase 2 catalog uses the **public Store API** (no Woo application password). Optional `HORIZON_MERCHANT_DIAGNOSTICS_URL` is an allowlisted HTTP fallback. `HORIZON_GIT_FETCH` defaults off.

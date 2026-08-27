@@ -14,6 +14,7 @@ server.listen(port, bind, () => {
   console.log(`  /healthz  liveness (no auth)`);
   console.log(`  /v1       HTTP commands (Bearer JWT)`);
   console.log(`  /mcp      Streamable HTTP MCP (Resource Server)`);
+  console.log(`  /app      dashboard SPA (Tailscale; Auth0 PKCE)`);
   console.log(`  sqlite    ${services.config.sqlitePath}`);
 });
 

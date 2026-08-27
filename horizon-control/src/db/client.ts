@@ -51,6 +51,40 @@ CREATE TABLE IF NOT EXISTS idempotency_keys (
   response_json TEXT NOT NULL,
   created_at INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS stores (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  storefront_url TEXT,
+  api_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS metric_snapshots (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  period TEXT NOT NULL,
+  kpi TEXT NOT NULL,
+  value INTEGER,
+  unit TEXT,
+  payload_json TEXT,
+  at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS metric_snapshots_at_idx ON metric_snapshots(at);
+
+CREATE TABLE IF NOT EXISTS alerts (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  rule_id TEXT NOT NULL,
+  severity TEXT NOT NULL,
+  status TEXT NOT NULL,
+  title TEXT NOT NULL,
+  payload_json TEXT,
+  opened_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS alerts_status_idx ON alerts(status);
+CREATE UNIQUE INDEX IF NOT EXISTS alerts_store_rule_idx ON alerts(store_id, rule_id);
 `;
 
 function addColumn(sqlite: Database.Database, table: string, column: string, definition: string) {
@@ -68,6 +102,10 @@ export function createDb(sqlitePath: string): { sqlite: Database.Database; db: H
   sqlite.pragma("journal_mode = WAL");
   sqlite.pragma("foreign_keys = ON");
   sqlite.exec(DDL);
+  sqlite.prepare(
+    `INSERT OR IGNORE INTO stores (id, name, slug, storefront_url, api_url)
+     VALUES ('horizon-fit', 'Horizon Fit', 'horizon-fit', 'https://horizonfit.com.ar', 'https://api.horizonfit.com.ar')`,
+  ).run();
   addColumn(sqlite, "jobs", "attempt", "INTEGER NOT NULL DEFAULT 0");
   addColumn(sqlite, "jobs", "max_attempts", "INTEGER NOT NULL DEFAULT 1");
   addColumn(sqlite, "jobs", "timeout_ms", "INTEGER NOT NULL DEFAULT 120000");

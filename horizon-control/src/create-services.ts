@@ -3,6 +3,9 @@ import { extraAllowedHosts } from "./http/allowlist.js";
 import { loadConfig, type Config } from "./config.js";
 import { createResourceServer, type ResourceServerOptions } from "./auth/resource-server.js";
 import { createCatalogAdapter, type CatalogAdapter } from "./adapters/woo.js";
+import { createCommerceAdapter, type CommerceAdapter } from "./adapters/commerce.js";
+import { createWarehouse, type Warehouse } from "./adapters/warehouse.js";
+import { createAssistantAdapter } from "./adapters/assistant.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
 import { createHealthAdapter } from "./adapters/health.js";
@@ -20,6 +23,8 @@ export type CreateServicesOptions = {
   clockToleranceSec?: number;
   catalog?: CatalogAdapter;
   woo?: CatalogAdapter;
+  commerce?: CommerceAdapter;
+  warehouse?: Warehouse;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
   git?: GitAdapter;
@@ -43,6 +48,18 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     options.woo ??
     createCatalogAdapter({
       baseUrl: config.wooBaseUrl,
+      extraHosts,
+      fetchImpl: options.fetchImpl,
+    });
+  const commerce =
+    options.commerce ??
+    createCommerceAdapter({
+      baseUrl: config.wooBaseUrl,
+      storefrontUrl: config.storefrontUrl,
+      key: config.HORIZON_WOO_KEY,
+      secret: config.HORIZON_WOO_SECRET,
+      user: config.WOO_USER,
+      appPassword: config.WOO_APP_PASSWORD,
       extraHosts,
       fetchImpl: options.fetchImpl,
     });
@@ -98,6 +115,27 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     worker,
     startedAt,
   });
+  const warehouse =
+    options.warehouse ??
+    createWarehouse({
+      db,
+      health,
+      catalog,
+      commerce,
+      jobs,
+    });
+  const assistant = createAssistantAdapter({
+    health,
+    catalog,
+    commerce,
+    warehouse,
+  });
+  if (options.startWorker !== false) {
+    const timer = setInterval(() => {
+      void warehouse.evaluate().catch(() => undefined);
+    }, 60_000);
+    timer.unref?.();
+  }
   return {
     config,
     db,
@@ -105,6 +143,9 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     auth,
     catalog,
     woo: catalog,
+    commerce,
+    warehouse,
+    assistant,
     storefront,
     merchant,
     health,

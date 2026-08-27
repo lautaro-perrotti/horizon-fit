@@ -28,6 +28,12 @@ const historySchema = z.object({
   limit: z.number().int().min(1).max(200).optional(),
 });
 const emptySchema = z.object({}).passthrough();
+const askSchema = z.object({
+  question: z.string().min(1).max(500),
+});
+const snapshotsSchema = z.object({
+  limit: z.number().int().min(1).max(50).optional(),
+});
 
 export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "ops.health": emptySchema,
@@ -42,6 +48,12 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "tests.run": emptySchema,
   "jobs.get": jobIdSchema,
   "audit.history": historySchema,
+  "commerce.sales": emptySchema,
+  "commerce.settings": emptySchema,
+  "metrics.snapshots": snapshotsSchema,
+  "alerts.list": emptySchema,
+  "alerts.evaluate": emptySchema,
+  "assistant.ask": askSchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -57,6 +69,12 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "tests.run": "Enqueue existing PHP search-merchant tests and node validators.",
   "jobs.get": "Get a previously enqueued operational job by id.",
   "audit.history": "Read redacted command audit history.",
+  "commerce.sales": "Read Woo REST sales/orders snapshots. Returns configured:false if keys are missing.",
+  "commerce.settings": "Read allowlisted Woo general settings and payment gateways. No secrets.",
+  "metrics.snapshots": "List recent metric snapshots from the local warehouse.",
+  "alerts.list": "List warehouse alerts (open and resolved).",
+  "alerts.evaluate": "Run deterministic alert rules (storefront, stock sample, failed jobs).",
+  "assistant.ask": "Deterministic consult over health, catalog (max 10), sales, Woo settings, or alerts. No LLM.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -124,6 +142,25 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
     case "audit.history": {
       const parsed = historySchema.parse(args);
       return { events: await services.audit.history(parsed.limit) };
+    }
+    case "commerce.sales": {
+      const sales = await services.commerce.sales();
+      services.warehouse.recordSales(sales);
+      return sales;
+    }
+    case "commerce.settings":
+      return services.commerce.settings();
+    case "metrics.snapshots": {
+      const parsed = snapshotsSchema.parse(args);
+      return { snapshots: services.warehouse.snapshots(parsed.limit) };
+    }
+    case "alerts.list":
+      return { alerts: services.warehouse.listAlerts() };
+    case "alerts.evaluate":
+      return services.warehouse.evaluate();
+    case "assistant.ask": {
+      const parsed = askSchema.parse(args);
+      return services.assistant.ask(parsed.question);
     }
     default: {
       const exhaustive: never = tool;

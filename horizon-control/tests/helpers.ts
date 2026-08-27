@@ -123,6 +123,7 @@ export function mockWoo(): CatalogAdapter {
         }
         if (sku && item.sku.toLowerCase() !== sku && item.parent_sku.toLowerCase() !== sku) return false;
         if (filters.category && !item.categories.some((category: { slug: string }) => category.slug === filters.category)) return false;
+        if (filters.stock_status && item.stock_status !== filters.stock_status) return false;
         return true;
       });
       return { products, page: filters.page ?? 1, limit: filters.limit ?? 20 };

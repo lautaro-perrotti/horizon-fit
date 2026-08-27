@@ -70,11 +70,23 @@ describe("scope matrix", () => {
     expect(response.headers.get("www-authenticate") ?? "").toMatch(/insufficient_scope/);
   });
 
-  it("admin can call all twelve tools", async () => {
+  it("admin can call all registered tools", async () => {
     const { app, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const listed = await request(app, "/v1/tools", { token });
     const body = await listed.json();
-    expect(body.tools).toHaveLength(12);
+    expect(body.tools).toHaveLength(18);
+  });
+
+  it("dashboard client can call health, catalog, commerce, alerts; not seo", async () => {
+    const { app, keys } = await buildTestApp();
+    const token = await signToken(keys.privateKey, { client: "dashboard", scopes: CLIENT_SCOPES.dashboard });
+    expect((await request(app, "/v1/health", { token })).status).toBe(200);
+    expect((await request(app, "/v1/catalog/products?q=top", { token })).status).toBe(200);
+    expect((await request(app, "/v1/commerce/sales", { token })).status).toBe(200);
+    expect((await request(app, "/v1/commerce/settings", { token })).status).toBe(200);
+    expect((await request(app, "/v1/alerts", { token })).status).toBe(200);
+    expect((await request(app, "/v1/seo/audit", { method: "POST", token, body: {} })).status).toBe(403);
+    expect((await request(app, "/v1/repo/status", { token })).status).toBe(403);
   });
 });

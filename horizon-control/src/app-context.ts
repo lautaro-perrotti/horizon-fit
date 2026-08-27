@@ -10,6 +10,9 @@ import type { AuditLog } from "./audit/log.js";
 import type { JobQueue } from "./jobs/queue.js";
 import type { JobRunner } from "./jobs/runner.js";
 import type { ResourceServer } from "./auth/resource-server.js";
+import type { CommerceAdapter } from "./adapters/commerce.js";
+import type { Warehouse } from "./adapters/warehouse.js";
+import type { AssistantAdapter } from "./adapters/assistant.js";
 import type Database from "better-sqlite3";
 
 export type AppServices = {
@@ -19,6 +22,9 @@ export type AppServices = {
   auth: ResourceServer;
   catalog: CatalogAdapter;
   woo: CatalogAdapter;
+  commerce: CommerceAdapter;
+  warehouse: Warehouse;
+  assistant: AssistantAdapter;
   storefront: StorefrontAdapter;
   merchant: MerchantAdapter;
   health: HealthAdapter;

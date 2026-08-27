@@ -32,6 +32,9 @@ const envSchema = z.object({
   WOO_BASE_URL: z.string().default(""),
   WOO_USER: z.string().default(""),
   WOO_APP_PASSWORD: z.string().default(""),
+  HORIZON_WOO_KEY: z.string().default(""),
+  HORIZON_WOO_SECRET: z.string().default(""),
+  HORIZON_DASHBOARD_CLIENT_ID: z.string().default(""),
   PHP_BIN: z.string().default("php"),
   NODE_BIN: z.string().default("node"),
 });
@@ -175,6 +178,9 @@ export const ALL_SCOPES: ScopeName[] = [
   "tests.execute",
   "jobs.read",
   "audit.read",
+  "commerce.read",
+  "metrics.read",
+  "alerts.read",
 ];
 
 /** Historic Auth0 names accepted on inbound JWTs and canonicalized. */
@@ -216,6 +222,12 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "tests.run": "tests.execute",
   "jobs.get": "jobs.read",
   "audit.history": "audit.read",
+  "commerce.sales": "commerce.read",
+  "commerce.settings": "commerce.read",
+  "metrics.snapshots": "metrics.read",
+  "alerts.list": "alerts.read",
+  "alerts.evaluate": "alerts.read",
+  "assistant.ask": "alerts.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -251,6 +263,14 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "audit.read",
   ],
   admin: [...ALL_SCOPES],
+  dashboard: [
+    "ops.read",
+    "catalog.read",
+    "storefront.read",
+    "commerce.read",
+    "metrics.read",
+    "alerts.read",
+  ],
 };
 
 export const ALLOWED_JOB_SCRIPTS = [

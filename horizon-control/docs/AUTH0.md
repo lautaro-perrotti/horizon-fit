@@ -50,10 +50,15 @@ API → **Permissions**. Add exactly these (name + description), same set as the
 | `tests.execute` | Enqueue existing validators |
 | `jobs.read` | Read jobs |
 | `audit.read` | Read redacted audit history |
+| `commerce.read` | Woo REST sales/orders (keys in env only) |
+| `metrics.read` | Local metric snapshots |
+| `alerts.read` | Alerts + deterministic assistant |
 
 Do **not** create write/deploy/shell scopes.
 
-## 3. Authorize Horizon Cursor (7 of 11)
+Dashboard SPA (Tailscale `/app`): create Auth0 **Single Page Application** “Horizon Dashboard”, callbacks `http://<tailscale-ip>:8787/app` and `/app/callback`, grant `openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read`. Set `HORIZON_DASHBOARD_CLIENT_ID` in `/etc/horizon-control.env`. Details: `docs/DASHBOARD.md`.
+
+## 3. Authorize Horizon Cursor (7 of 14)
 
 On the new API, authorize application **Horizon Cursor** (Client ID `SI2VlbjDYP7uDaKfPixF4iXoQCIwk5ID`) and grant **only** these permissions:
 

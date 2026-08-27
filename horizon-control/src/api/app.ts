@@ -1,4 +1,7 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { AppServices } from "../app-context.js";
 import { ALL_SCOPES, ALL_TOOLS } from "../config.js";
 import { AuthError } from "../auth/resource-server.js";
@@ -105,6 +108,15 @@ export function createHttpApp(services: AppServices) {
     const limit = c.req.query("limit");
     return invoke(c, "audit.history", { limit: limit ? Number(limit) : undefined });
   });
+  app.get("/v1/commerce/sales", (c) => invoke(c, "commerce.sales", {}));
+  app.get("/v1/commerce/settings", (c) => invoke(c, "commerce.settings", {}));
+  app.get("/v1/metrics/snapshots", (c) => {
+    const limit = c.req.query("limit");
+    return invoke(c, "metrics.snapshots", { limit: limit ? Number(limit) : undefined });
+  });
+  app.get("/v1/alerts", (c) => invoke(c, "alerts.list", {}));
+  app.post("/v1/alerts/evaluate", (c) => invoke(c, "alerts.evaluate", {}));
+  app.post("/v1/assistant/ask", async (c) => invoke(c, "assistant.ask", await c.req.json().catch(() => ({}))));
   app.get("/v1/tools", (c) =>
     c.json({
       tools: toolsForPrincipal(c.get("principal")),
@@ -112,5 +124,55 @@ export function createHttpApp(services: AppServices) {
     }),
   );
 
+  mountDashboard(app, config);
   return app;
+}
+
+const DASHBOARD_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../dashboard");
+const DASHBOARD_MIME: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".json": "application/json",
+};
+
+function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices["config"]) {
+  app.get("/app/config.json", (c) =>
+    c.json({
+      issuer: config.HORIZON_OIDC_ISSUER,
+      audience: config.HORIZON_OIDC_AUDIENCE.split(/[,;]+/)[0]?.trim() || config.resourceUrl,
+      resource: config.resourceUrl,
+      clientId: config.HORIZON_DASHBOARD_CLIENT_ID,
+      redirectUri: `${config.publicUrl.replace(/\/$/, "")}/app/callback`,
+      apiBase: "/v1",
+      storefrontUrl: config.storefrontUrl,
+      apiUrl: config.wooBaseUrl,
+      wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
+      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read",
+    }),
+  );
+  app.get("/app", (c) => c.redirect("/app/"));
+  app.get("/app/", (c) => dashboardFile(c, "index.html"));
+  app.get("/app/callback", (c) => dashboardFile(c, "index.html"));
+  app.get("/app/:file", (c) => dashboardFile(c, c.req.param("file")));
+}
+
+function dashboardFile(c: Context, name: string) {
+  const file = name === "callback" || name === "" ? "index.html" : path.basename(name);
+  if (!file || file.includes("..")) return c.json({ error: "not_found" }, 404);
+  const root = path.resolve(DASHBOARD_DIR);
+  const resolved = path.resolve(root, file);
+  if (resolved !== root && !resolved.startsWith(root + path.sep)) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  const ext = path.extname(resolved);
+  const text = fs.readFileSync(resolved, "utf8");
+  if (ext === ".html") return c.html(text);
+  if (ext === ".css") return c.text(text, 200, { "content-type": "text/css; charset=utf-8" });
+  if (ext === ".js") return c.text(text, 200, { "content-type": "text/javascript; charset=utf-8" });
+  return c.text(text, 200, { "content-type": DASHBOARD_MIME[ext] ?? "text/plain; charset=utf-8" });
 }

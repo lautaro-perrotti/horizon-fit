@@ -42,4 +42,35 @@ export const idempotencyKeys = sqliteTable("idempotency_keys", {
   createdAt: integer("created_at").notNull(),
 });
 
-export const schema = { jobs, auditEvents, idempotencyKeys };
+export const stores = sqliteTable("stores", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
+  storefrontUrl: text("storefront_url"),
+  apiUrl: text("api_url"),
+});
+
+export const metricSnapshots = sqliteTable("metric_snapshots", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  period: text("period").notNull(),
+  kpi: text("kpi").notNull(),
+  value: integer("value"),
+  unit: text("unit"),
+  payloadJson: text("payload_json"),
+  at: integer("at").notNull(),
+});
+
+export const alerts = sqliteTable("alerts", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  ruleId: text("rule_id").notNull(),
+  severity: text("severity").notNull(),
+  status: text("status").notNull(),
+  title: text("title").notNull(),
+  payloadJson: text("payload_json"),
+  openedAt: integer("opened_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
+
+export const schema = { jobs, auditEvents, idempotencyKeys, stores, metricSnapshots, alerts };

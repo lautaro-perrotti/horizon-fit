@@ -88,7 +88,8 @@ Same Tailscale MCP URL and the same audience / resource `http://100.123.37.74:87
 | --- | --- | --- |
 | Claude | catalog, storefront, seo_*, merchant_*, jobs, audit, ops_health | `repo_status`, `tests_run` |
 | Cursor / Codex | catalog, storefront, repo_status, tests_run, jobs, audit, ops_health | `seo_audit`, `merchant_audit` |
-| Admin | all 12 tools | writes (not registered) |
+| Admin | all registered read tools | writes (not registered) |
+| Dashboard SPA | health, catalog, storefront, commerce, metrics, alerts | seo, merchant, repo, tests |
 
 ## Verify
 

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Horizon Control Admin</title>
+    <link rel="stylesheet" href="/app/app.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div>
+        <p class="eyebrow">Horizon Control</p>
+        <h1>Admin</h1>
+        <label class="store-filter">
+          Tienda
+          <select id="storeFilter" disabled>
+            <option value="horizon-fit" selected>Horizon Fit</option>
+          </select>
+        </label>
+      </div>
+      <div class="top-actions">
+        <span id="authState" class="muted">Sin sesión</span>
+        <button id="loginBtn" type="button">Entrar</button>
+        <button id="logoutBtn" type="button" hidden>Salir</button>
+      </div>
+    </header>
+    <nav class="tabs" aria-label="Secciones">
+      <button type="button" data-tab="site" class="active">Sitio</button>
+      <button type="button" data-tab="health">Salud</button>
+      <button type="button" data-tab="catalog">Catálogo</button>
+      <button type="button" data-tab="sales">Ventas</button>
+      <button type="button" data-tab="woo">Woo</button>
+      <button type="button" data-tab="alerts">Alertas</button>
+    </nav>
+    <p id="banner" class="banner" hidden></p>
+    <div class="workspace">
+      <main>
+        <section id="panel-site" class="panel embed-panel">
+          <div class="row embed-bar">
+            <input id="siteUrl" type="url" spellcheck="false" />
+            <button id="siteGo" type="button">Ir</button>
+            <button id="siteHome" type="button">Home</button>
+            <button id="sitePdp" type="button">Top azul</button>
+            <a id="siteOpen" href="https://horizonfit.com.ar/" target="_blank" rel="noopener">Nueva pestaña</a>
+          </div>
+          <p class="muted embed-note">Vista embebida del storefront público. wp-admin no entra en iframe (abrilo desde Woo).</p>
+          <iframe id="siteFrame" title="Storefront Horizon Fit" src="about:blank"></iframe>
+        </section>
+        <section id="panel-health" class="panel" hidden>
+          <div class="grid" id="healthGrid"></div>
+        </section>
+        <section id="panel-catalog" class="panel" hidden>
+          <form id="catalogForm" class="row">
+            <input name="q" placeholder="SKU o nombre (001-TOP-AZU)" autocomplete="off" />
+            <button type="submit">Buscar</button>
+          </form>
+          <div id="catalogOut" class="stack"></div>
+        </section>
+        <section id="panel-sales" class="panel" hidden>
+          <div id="salesOut" class="grid"></div>
+        </section>
+        <section id="panel-woo" class="panel" hidden>
+          <div id="wooOut" class="stack"></div>
+        </section>
+        <section id="panel-alerts" class="panel" hidden>
+          <div class="row">
+            <button id="evalAlerts" type="button">Evaluar ahora</button>
+          </div>
+          <div id="alertsOut" class="stack"></div>
+        </section>
+      </main>
+      <aside class="chat" aria-label="Consulta">
+        <h2>Consulta</h2>
+        <p class="muted">Preguntá por SKU, salud, ventas, alertas o config Woo. Sin LLM; llama `/v1`.</p>
+        <div id="askLog" class="ask-log"></div>
+        <form id="askForm" class="row">
+          <input name="question" placeholder="¿Cuál es el precio del SKU 001-TOP-AZU?" autocomplete="off" />
+          <button type="submit">Preguntar</button>
+        </form>
+      </aside>
+    </div>
+    <script src="/app/app.js" type="module"></script>
+  </body>
+</html>

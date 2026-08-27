@@ -11,7 +11,10 @@ export type ScopeName =
   | "repo.read"
   | "tests.execute"
   | "jobs.read"
-  | "audit.read";
+  | "audit.read"
+  | "commerce.read"
+  | "metrics.read"
+  | "alerts.read";
 
 export type ToolName =
   | "ops.health"
@@ -25,7 +28,13 @@ export type ToolName =
   | "repo.status"
   | "tests.run"
   | "jobs.get"
-  | "audit.history";
+  | "audit.history"
+  | "commerce.sales"
+  | "commerce.settings"
+  | "metrics.snapshots"
+  | "alerts.list"
+  | "alerts.evaluate"
+  | "assistant.ask";
 
 export type AuthPrincipal = {
   token: string;

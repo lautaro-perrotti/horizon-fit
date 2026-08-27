@@ -9,6 +9,7 @@ Read-only MCP Resource Server for Horizon Fit. Agents (Cursor, Claude, Codex) ta
 | [docs/TAILSCALE.md](./docs/TAILSCALE.md) | VPS + PC tailnet; no public ports |
 | [docs/AUTH0.md](./docs/AUTH0.md) | API Horizon Control (RFC 9068); clients later |
 | [docs/MCP-CLIENTS.md](./docs/MCP-CLIENTS.md) | Cursor / Codex / Claude config |
+| [docs/DASHBOARD.md](./docs/DASHBOARD.md) | Tailscale SPA `/app` (Auth0 PKCE, warehouse, alerts) |
 | [examples/mcp.json.example](./examples/mcp.json.example) | `mcp.json` with env placeholders |
 
 ```bash

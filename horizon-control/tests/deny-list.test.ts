@@ -4,7 +4,7 @@ import { denyList, listRegisteredTools } from "../src/mcp/index.js";
 import { buildTestApp, request, signToken } from "./helpers.js";
 
 describe("deny list / no arbitrary shell", () => {
-  it("registered MCP tools are exactly the 12 MVP tools with Cursor-safe names", () => {
+  it("registered MCP tools use Cursor-safe underscore names", () => {
     expect(listRegisteredTools()).toEqual([
       "ops_health",
       "catalog_search_products",
@@ -18,8 +18,14 @@ describe("deny list / no arbitrary shell", () => {
       "tests_run",
       "jobs_get",
       "audit_history",
+      "commerce_sales",
+      "commerce_settings",
+      "metrics_snapshots",
+      "alerts_list",
+      "alerts_evaluate",
+      "assistant_ask",
     ]);
-    expect(listRegisteredTools()).toHaveLength(12);
+    expect(listRegisteredTools()).toHaveLength(18);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 
@@ -29,7 +35,7 @@ describe("deny list / no arbitrary shell", () => {
       expect(tools).not.toContain(denied);
     }
     const joined = tools.join(" ");
-    expect(joined).not.toMatch(/shell|ssh|eval|docker\.exec|sql|files\.write|cache\.regenerate|deploy|rollback|http\.request/i);
+    expect(joined).not.toMatch(/shell|ssh|\beval\b|docker\.exec|\bsql\b|files\.write|cache\.regenerate|deploy|rollback|http\.request/i);
     expect(denyList()).toEqual(expect.arrayContaining(["shell.execute", "ssh", "wp.eval", "cache.regenerate", "http.request"]));
   });
 
@@ -52,6 +58,9 @@ describe("deny list / no arbitrary shell", () => {
     ]);
     expect(body.tools).not.toContain("seo.audit");
     expect(body.tools).not.toContain("merchant.audit");
+    expect(body.tools).not.toContain("commerce.sales");
+    expect(body.tools).not.toContain("alerts.list");
+    expect(body.tools).not.toContain("assistant.ask");
     expect(body.catalog).not.toContain("cache.regenerate");
     expect(body.catalog).not.toContain("deploy");
     expect(body.catalog).not.toContain("shell.execute");
