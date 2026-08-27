@@ -84,7 +84,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
     servers.push(server);
     const token = await signToken(keys.privateKey, { client: "claude", scopes: ["ops.read"] });
     await mcpInitialize(base, token);
-    const call = await mcpCallTool(base, token, "catalog.get_product", { id: "001-TOP-AZU" });
+    const call = await mcpCallTool(base, token, "catalog_get_product", { id: "001-TOP-AZU" });
     expect(call.isError).toBe(true);
     expect(call.tool?.status).toBe(403);
     expect(String(call.tool?.code ?? call.tool?.error ?? "")).toMatch(/insufficient_scope/);
@@ -96,7 +96,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
     servers.push(server);
     const token = await signToken(keys.privateKey, { client: "cursor", scopes: CLIENT_SCOPES.cursor });
     await mcpInitialize(base, token);
-    const call = await mcpCallTool(base, token, "seo.audit", {});
+    const call = await mcpCallTool(base, token, "seo_audit", {});
     expect(call.isError).toBe(true);
     expect(call.tool?.status).toBe(403);
     expect((await request(app, "/v1/seo/audit", { method: "POST", token, body: {} })).status).toBe(403);
@@ -108,7 +108,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
     servers.push(server);
     const token = await signToken(keys.privateKey, { client: "claude", scopes: CLIENT_SCOPES.claude });
     await mcpInitialize(base, token);
-    const call = await mcpCallTool(base, token, "repo.status", {});
+    const call = await mcpCallTool(base, token, "repo_status", {});
     expect(call.isError).toBe(true);
     expect(call.tool?.status).toBe(403);
   });
@@ -139,7 +139,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
     const { server, base } = await listenHorizon(services);
     servers.push(server);
     await mcpInitialize(base, token);
-    const call = await mcpCallTool(base, token, "catalog.get_product", { id: "../../etc/passwd" });
+    const call = await mcpCallTool(base, token, "catalog_get_product", { id: "../../etc/passwd" });
     expect(call.isError).toBe(true);
     expect(call.tool?.status).toBe(400);
   });

@@ -4,9 +4,23 @@ import { denyList, listRegisteredTools } from "../src/mcp/index.js";
 import { buildTestApp, request, signToken } from "./helpers.js";
 
 describe("deny list / no arbitrary shell", () => {
-  it("registered MCP tools are exactly the 12 MVP tools", () => {
-    expect(listRegisteredTools()).toEqual(ALL_TOOLS);
+  it("registered MCP tools are exactly the 12 MVP tools with Cursor-safe names", () => {
+    expect(listRegisteredTools()).toEqual([
+      "ops_health",
+      "catalog_search_products",
+      "catalog_get_product",
+      "storefront_get_config",
+      "seo_audit",
+      "seo_get_latest_audit",
+      "merchant_audit",
+      "merchant_get_diagnostics",
+      "repo_status",
+      "tests_run",
+      "jobs_get",
+      "audit_history",
+    ]);
     expect(listRegisteredTools()).toHaveLength(12);
+    expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 
   it("tool catalog has no shell, ssh, eval, sql, docker exec, files.write, cache.regenerate, or deploy", () => {

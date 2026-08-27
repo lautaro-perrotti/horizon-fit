@@ -12,6 +12,8 @@ Project: `.cursor/mcp.json` (not committed with secrets). Global: `~/.cursor/mcp
 
 Auth0 app: **Horizon Cursor**, Client ID `SI2VlbjDYP7uDaKfPixF4iXoQCIwk5ID` (not a secret). Grant 7 of 11 API permissions: `ops.read`, `catalog.read`, `storefront.read`, `repo.read`, `tests.execute`, `jobs.read`, `audit.read`. No `seo.*`, no `merchant.*`.
 
+MCP tool names use underscores (`catalog_search_products`, `ops_health`). Cursor/LLM APIs reject dots (`^[a-zA-Z0-9_-]{1,64}$`). HTTP `/v1` command names stay dotted. After a CP restart, **Logout then Connect** so Cursor re-lists tools.
+
 ### Option A — OAuth (preferred)
 
 1. Copy **Client ID** only (above). Never commit a client secret.
@@ -84,8 +86,8 @@ Same Tailscale MCP URL and the same audience / resource `http://100.123.37.74:87
 
 | Client | Allowed | Denied |
 | --- | --- | --- |
-| Claude | catalog, storefront, seo.*, merchant.*, jobs, audit, ops.health | `repo.status`, `tests.run` |
-| Cursor / Codex | catalog, storefront, repo.status, tests.run, jobs, audit, ops.health | `seo.audit`, `merchant.audit` |
+| Claude | catalog, storefront, seo_*, merchant_*, jobs, audit, ops_health | `repo_status`, `tests_run` |
+| Cursor / Codex | catalog, storefront, repo_status, tests_run, jobs, audit, ops_health | `seo_audit`, `merchant_audit` |
 | Admin | all 12 tools | writes (not registered) |
 
 ## Verify

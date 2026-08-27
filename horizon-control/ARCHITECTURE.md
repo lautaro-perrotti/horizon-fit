@@ -99,6 +99,8 @@ Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`,
 | `jobs.read` | `jobs.get` |
 | `audit.read` | `audit.history` |
 
+MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so Cursor can list and call them. HTTP `/v1` still uses the dotted command names above.
+
 ### Client matrix
 
 | Client | Allowed tools | Denied |

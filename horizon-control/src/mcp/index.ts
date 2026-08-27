@@ -8,9 +8,9 @@ import { AuthError } from "../auth/resource-server.js";
 import { wwwAuthenticate } from "../auth/metadata.js";
 import { dispatchCommand, TOOL_ARG_SCHEMAS, TOOL_DESCRIPTIONS } from "../core/commands/index.js";
 import type { AuthPrincipal, ToolName } from "../types.js";
-import { denyList, listRegisteredTools } from "./tools.js";
+import { commandFromMcpName, denyList, listRegisteredTools, MCP_TOOL_NAME_PATTERN, mcpToolName } from "./tools.js";
 
-export { denyList, listRegisteredTools };
+export { commandFromMcpName, denyList, listRegisteredTools, MCP_TOOL_NAME_PATTERN, mcpToolName };
 
 function jsonSchemaShape(tool: ToolName): Record<string, z.ZodType> {
   const schema = TOOL_ARG_SCHEMAS[tool];
@@ -27,10 +27,11 @@ export function createMcpServer(services: AppServices, principal: AuthPrincipal)
   });
 
   for (const tool of ALL_TOOLS) {
+    const name = mcpToolName(tool);
     server.registerTool(
-      tool,
+      name,
       {
-        title: tool,
+        title: name,
         description: TOOL_DESCRIPTIONS[tool],
         inputSchema: jsonSchemaShape(tool),
       },
@@ -68,6 +69,37 @@ async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   return JSON.parse(raw);
 }
 
+function rewriteToolCallName(message: unknown): unknown {
+  if (!message || typeof message !== "object" || Array.isArray(message)) {
+    return message;
+  }
+  const msg = message as { method?: unknown; params?: unknown };
+  if (msg.method !== "tools/call" || !msg.params || typeof msg.params !== "object") {
+    return message;
+  }
+  const params = msg.params as { name?: unknown };
+  if (typeof params.name !== "string") {
+    return message;
+  }
+  const command = commandFromMcpName(params.name);
+  if (!command) {
+    return message;
+  }
+  const canonical = mcpToolName(command);
+  if (canonical === params.name) {
+    return message;
+  }
+  return { ...message, params: { ...params, name: canonical } };
+}
+
+/** Accept historic dotted command names on tools/call without listing them. */
+function rewriteMcpToolCallNames(body: unknown): unknown {
+  if (Array.isArray(body)) {
+    return body.map(rewriteToolCallName);
+  }
+  return rewriteToolCallName(body);
+}
+
 export async function handleMcpRequest(
   services: AppServices,
   req: IncomingMessage,
@@ -100,7 +132,7 @@ export async function handleMcpRequest(
   const server = createMcpServer(services, principal);
   await server.connect(transport);
   try {
-    const body = req.method === "POST" ? await readJsonBody(req) : undefined;
+    const body = req.method === "POST" ? rewriteMcpToolCallNames(await readJsonBody(req)) : undefined;
     await transport.handleRequest(req, res, body);
   } finally {
     await transport.close().catch(() => undefined);

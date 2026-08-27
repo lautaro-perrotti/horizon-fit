@@ -48,41 +48,41 @@ describe.skipIf(!enabled)("live MCP e2e (HORIZON_E2E=1)", () => {
     return { status: response.status, isError: Boolean(rpc.result?.isError), payload, raw: text };
   }
 
-  it("catalog.get_product 001-TOP-AZU", async () => {
-    const result = await mcp("catalog.get_product", { id: "001-TOP-AZU" });
+  it("catalog_get_product 001-TOP-AZU", async () => {
+    const result = await mcp("catalog_get_product", { id: "001-TOP-AZU" });
     expect(result.status).toBe(200);
     expect(result.isError).toBe(false);
     expect(result.payload?.sku ?? result.payload?.parent_sku).toBe("001-TOP-AZU");
   });
 
-  it("ops.health", async () => {
-    const result = await mcp("ops.health");
+  it("ops_health", async () => {
+    const result = await mcp("ops_health");
     expect(result.status).toBe(200);
     expect(["healthy", "degraded", "unavailable"]).toContain(result.payload?.status);
   });
 
-  it("repo.status", async () => {
-    const result = await mcp("repo.status");
+  it("repo_status", async () => {
+    const result = await mcp("repo_status");
     expect(result.status).toBe(200);
     expect(result.payload).toHaveProperty("head");
   });
 
-  it("merchant.get_diagnostics", async () => {
-    const result = await mcp("merchant.get_diagnostics");
+  it("merchant_get_diagnostics", async () => {
+    const result = await mcp("merchant_get_diagnostics");
     expect(result.status).toBe(200);
     expect(["local", "endpoint", "unavailable"]).toContain(result.payload?.source);
   });
 
-  it("seo.audit then jobs.get and audit.history", async () => {
-    const audit = await mcp("seo.audit");
+  it("seo_audit then jobs_get and audit_history", async () => {
+    const audit = await mcp("seo_audit");
     expect(audit.status).toBe(200);
     const jobId = String(audit.payload?.id ?? "");
     if (jobId) {
-      const job = await mcp("jobs.get", { id: jobId });
+      const job = await mcp("jobs_get", { id: jobId });
       expect(job.status).toBe(200);
       expect(job.payload?.id).toBe(jobId);
     }
-    const history = await mcp("audit.history", { limit: 10 });
+    const history = await mcp("audit_history", { limit: 10 });
     expect(history.status).toBe(200);
     expect(JSON.stringify(history.payload)).not.toMatch(/Bearer [A-Za-z0-9._\-]+/);
   });

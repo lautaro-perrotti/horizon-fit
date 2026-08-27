@@ -53,54 +53,54 @@ npm run test:e2e
 Or call MCP by hand (Streamable HTTP). `Accept` must include both `application/json` and `text/event-stream`:
 
 ```bash
-# catalog.get_product 001-TOP-AZU
+# catalog_get_product 001-TOP-AZU
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"catalog.get_product","arguments":{"id":"001-TOP-AZU"}}}'
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"catalog_get_product","arguments":{"id":"001-TOP-AZU"}}}'
 
-# repo.status
+# repo_status
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"repo.status","arguments":{}}}'
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"repo_status","arguments":{}}}'
 
-# ops.health
+# ops_health
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"ops.health","arguments":{}}}'
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"ops_health","arguments":{}}}'
 
-# merchant.get_diagnostics
+# merchant_get_diagnostics
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"merchant.get_diagnostics","arguments":{}}}'
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"merchant_get_diagnostics","arguments":{}}}'
 
-# seo.audit (returns a job; Claude/Admin only)
+# seo_audit (returns a job; Claude/Admin only)
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"seo.audit","arguments":{}}}'
+  -d '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"seo_audit","arguments":{}}}'
 
-# jobs.get — paste the job id from seo.audit
+# jobs_get — paste the job id from seo_audit
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"jobs.get","arguments":{"id":"JOB_ID"}}}'
+  -d '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"jobs_get","arguments":{"id":"JOB_ID"}}}'
 
-# audit.history
+# audit_history
 curl -sS "$HORIZON_CONTROL_URL/mcp" \
   -H "Authorization: Bearer $HORIZON_E2E_TOKEN" \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"audit.history","arguments":{"limit":20}}}'
+  -d '{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"audit_history","arguments":{"limit":20}}}'
 ```
 
 CLI equivalent (HTTP `/v1`, still JWT): `HORIZON_CONTROL_TOKEN=$HORIZON_E2E_TOKEN npm run cli -- catalog get 001-TOP-AZU`
