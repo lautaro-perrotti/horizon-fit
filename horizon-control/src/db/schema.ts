@@ -23,6 +23,7 @@ export const auditEvents = sqliteTable("audit_events", {
   id: text("id").primaryKey(),
   at: integer("at").notNull(),
   actor: text("actor").notNull(),
+  subject: text("subject"),
   clientId: text("client_id").notNull(),
   tool: text("tool").notNull(),
   scope: text("scope"),

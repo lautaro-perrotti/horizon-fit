@@ -1,5 +1,7 @@
+import path from "node:path";
 import { z } from "zod";
 import type { ScopeName, ToolName } from "./types.js";
+import { assertAllowedBind } from "./net/bind.js";
 
 const envSchema = z.object({
   NODE_ENV: z.string().optional(),
@@ -17,7 +19,9 @@ const envSchema = z.object({
   HORIZON_MERCHANT_DIAGNOSTICS_PATH: z.string().default(""),
   HORIZON_MERCHANT_DIAGNOSTICS_URL: z.string().default(""),
   HORIZON_SEO_REPORT_DIR: z.string().default(""),
-  HORIZON_SQLITE_PATH: z.string().default(":memory:"),
+  HORIZON_DATA_DIR: z.string().default(""),
+  HORIZON_SQLITE_PATH: z.string().default(""),
+  HORIZON_OIDC_CLIENT_ALIASES: z.string().default(""),
   HORIZON_STOREFRONT_URL: z.string().default("https://horizonfit.com.ar"),
   HORIZON_WOO_BASE_URL: z.string().default("https://api.horizonfit.com.ar"),
   HORIZON_SPA_URL: z.string().optional(),
@@ -40,7 +44,10 @@ export type Config = z.infer<typeof envSchema> & {
   wooBaseUrl: string;
   storefrontUrl: string;
   merchantDiagnosticsPath: string;
+  sqlitePath: string;
+  dataDir: string;
   allowFetch: boolean;
+  clientAliases: Record<string, string>;
 };
 
 export const PRODUCTION_HOSTS = ["horizonfit.com.ar", "www.horizonfit.com.ar", "api.horizonfit.com.ar"] as const;
@@ -51,9 +58,43 @@ function firstNonEmpty(...values: Array<string | undefined>): string {
   return values.find((value) => value && value.trim())?.trim() ?? "";
 }
 
+function parseClientAliases(raw: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const part of raw.split(/[,;\n]+/)) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const [id, alias] = trimmed.split(":").map((value) => value.trim());
+    if (id && alias) out[id] = alias;
+  }
+  return out;
+}
+
+function joinSqliteFile(dir: string, file: string): string {
+  if (dir.startsWith("/")) {
+    return `${dir.replace(/\/+$/, "")}/${file}`;
+  }
+  return path.join(dir, file);
+}
+
+function resolveSqlitePath(parsed: z.infer<typeof envSchema>): { sqlitePath: string; dataDir: string } {
+  const dataDir =
+    parsed.HORIZON_DATA_DIR.trim() ||
+    (parsed.NODE_ENV === "production" ? "/var/lib/horizon-control" : "");
+  const explicit = parsed.HORIZON_SQLITE_PATH.trim();
+  if (explicit) {
+    return { sqlitePath: explicit, dataDir: dataDir || path.dirname(path.resolve(explicit)) };
+  }
+  if (dataDir) {
+    return { sqlitePath: joinSqliteFile(dataDir, "horizon-control.sqlite"), dataDir };
+  }
+  return { sqlitePath: ":memory:", dataDir: "" };
+}
+
 export function loadConfig(overrides: Record<string, string | number | undefined> = {}): Config {
   const merged: Record<string, unknown> = { ...process.env, ...overrides };
   const parsed = envSchema.parse(merged);
+  assertAllowedBind(parsed.HORIZON_BIND);
+  const { sqlitePath, dataDir } = resolveSqlitePath(parsed);
   const publicUrl =
     parsed.HORIZON_PUBLIC_URL ?? `http://${parsed.HORIZON_BIND}:${parsed.HORIZON_PORT}`;
   const resourceUrl = `${publicUrl.replace(/\/$/, "")}/mcp`;
@@ -84,22 +125,34 @@ export function loadConfig(overrides: Record<string, string | number | undefined
     wooBaseUrl,
     storefrontUrl,
     merchantDiagnosticsPath,
+    sqlitePath,
+    dataDir,
+    HORIZON_SQLITE_PATH: sqlitePath,
+    HORIZON_DATA_DIR: dataDir,
     allowFetch: parsed.HORIZON_GIT_FETCH === "1" || parsed.HORIZON_GIT_FETCH.toLowerCase() === "true",
+    clientAliases: parseClientAliases(parsed.HORIZON_OIDC_CLIENT_ALIASES),
   };
 }
 
 export const ALL_SCOPES: ScopeName[] = [
   "ops.read",
   "catalog.read",
+  "storefront.read",
   "seo.read",
-  "seo.execute",
+  "seo.audit",
   "merchant.read",
-  "merchant.execute",
+  "merchant.audit",
   "repo.read",
   "tests.execute",
   "jobs.read",
   "audit.read",
 ];
+
+/** Historic Auth0 names accepted on inbound JWTs and canonicalized. */
+export const SCOPE_ALIASES: Record<string, ScopeName> = {
+  "seo.execute": "seo.audit",
+  "merchant.execute": "merchant.audit",
+};
 
 export const DENIED_TOOLS = [
   "shell.execute",
@@ -125,10 +178,10 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "ops.health": "ops.read",
   "catalog.search_products": "catalog.read",
   "catalog.get_product": "catalog.read",
-  "storefront.get_config": "catalog.read",
-  "seo.audit": "seo.execute",
+  "storefront.get_config": "storefront.read",
+  "seo.audit": "seo.audit",
   "seo.get_latest_audit": "seo.read",
-  "merchant.audit": "merchant.execute",
+  "merchant.audit": "merchant.audit",
   "merchant.get_diagnostics": "merchant.read",
   "repo.status": "repo.read",
   "tests.run": "tests.execute",
@@ -142,15 +195,32 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
   claude: [
     "ops.read",
     "catalog.read",
+    "storefront.read",
     "seo.read",
-    "seo.execute",
+    "seo.audit",
     "merchant.read",
-    "merchant.execute",
+    "merchant.audit",
     "jobs.read",
     "audit.read",
   ],
-  cursor: ["ops.read", "catalog.read", "repo.read", "tests.execute", "jobs.read", "audit.read"],
-  codex: ["ops.read", "catalog.read", "repo.read", "tests.execute", "jobs.read", "audit.read"],
+  cursor: [
+    "ops.read",
+    "catalog.read",
+    "storefront.read",
+    "repo.read",
+    "tests.execute",
+    "jobs.read",
+    "audit.read",
+  ],
+  codex: [
+    "ops.read",
+    "catalog.read",
+    "storefront.read",
+    "repo.read",
+    "tests.execute",
+    "jobs.read",
+    "audit.read",
+  ],
   admin: [...ALL_SCOPES],
 };
 

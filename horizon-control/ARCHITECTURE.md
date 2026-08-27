@@ -1,8 +1,10 @@
-# Horizon Control Plane — Architecture (Phase 0 + 1 + 2)
+# Horizon Control Plane — Architecture (Phase 0 + 1 + 2 + 2.5)
 
 Horizon Control (`horizon-control`) is the **MCP Resource Server** and HTTP command API for Horizon Fit. It is **not** an Authorization Server: it never logs users in, never stores passwords, never mints or refreshes tokens, and never shows consent screens.
 
-Phase 2 replaces mock/VPS/Woo-application-password adapters with **real read-only** catalog, merchant, SEO, repo, health, and storefront adapters. Agents can ask for SKU `001-TOP-AZU`, Merchant problems, SEO audit, repo HEAD, service health, and home/menu **without any mutation**.
+Phase 2 replaced mock adapters with **real read-only** catalog, merchant, SEO, repo, health, and storefront adapters.
+
+Phase 2.5 adds **live connectivity + security validation**: Tailscale-only bind, Auth0 JWT on `/mcp`, documented Cursor/Codex/Claude clients, systemd/env artifacts (not installed remotely), MCP-layer tests, and a scope matrix with negative cases. **Zero write capability.**
 
 This document records the **approved** MVP decisions. Later phases (cache.regenerate, catalog writes, repo writes, patches, PRs, deploy, rollback, orders, pricing/stock, shell, SSH, generic HTTP) are out of scope.
 
@@ -32,9 +34,9 @@ VPS horizon-control process  (:8787 bind Tailscale IP or 127.0.0.1)
         /v1  +  /mcp  +  in-process job worker
 ```
 
-Bind default: `127.0.0.1`. Production bind: the VPS Tailscale address / MagicDNS name (env `HORIZON_BIND`).
+Bind default: `127.0.0.1`. Production bind: the VPS Tailscale address (`100.64.0.0/10`) or loopback. The process **refuses** `0.0.0.0` / `::` / WAN IPs.
 
-**Explicit later non-goal (do not design now):** SaaS/cloud-hosted agents that cannot join Tailscale would need a public HTTPS endpoint behind OAuth + an identity-aware proxy (e.g. Cloudflare). Out of scope for MVP.
+See `docs/TAILSCALE.md`. **Explicit later non-goal (do not design now):** SaaS/cloud-hosted agents that cannot join Tailscale.
 
 ## Process model
 
@@ -45,7 +47,7 @@ One Node 22 process:
 - In-process SQLite job worker
 - Read-only adapters: Woo Store API, local/HTTP merchant artifacts, local git, HTTP health probes, storefront cache/REST, typed job argv (`scripts/seo-audit.js`, PHP/node validators)
 
-No second microservice. No Kubernetes. **Not** added to the shop `docker-compose.yml`. A systemd unit file exists at `ops/systemd/horizon-control.service` as a **file only** (not installed on the VPS by this branch). Phase 2 does **not** use remote Docker inspect or SSH.
+No second microservice. No Kubernetes. **Not** added to the shop `docker-compose.yml`. A systemd unit file exists at `ops/systemd/horizon-control.service` as a **file only** (not installed on the VPS by this branch). SQLite lives in `HORIZON_DATA_DIR` (default `/var/lib/horizon-control`), outside the git repo. Liveness: `GET /healthz`. Phase 2.5 does **not** SSH, open public nginx ports, or deploy.
 
 ## Identity: Auth0 (hosted OIDC)
 
@@ -61,13 +63,13 @@ Why this and not the rejected options:
 | Minting JWTs inside horizon-control | Rejected: that would make CP an Authorization Server. |
 | GitHub as the only AS | Rejected: GitHub OAuth does not give a clean custom-scope matrix (`catalog.read` vs `seo.execute` vs `tests.execute`) on JWTs meant for *this* resource. |
 
-Auth0 tenant setup (human; see leftover checklist at the end of this file):
+Auth0 tenant setup (human; exact clicks in `docs/AUTH0.md`):
 
 1. Create an **API** (resource server) whose identifier is `HORIZON_OIDC_AUDIENCE` (URI, e.g. `https://horizon-control.tailnet/mcp`).
 2. Enable **Resource Parameter Compatibility Profile** so MCP clients sending RFC 8707 `resource` get a JWT `aud` we can verify.
 3. Token dialect **`rfc9068_profile_authz`** so access tokens include `permissions` (and still a `scope` string).
 4. Pre-register applications: `horizon-claude`, `horizon-cursor`, `horizon-codex`, `horizon-admin`, `horizon-cli`. Do **not** enable DCR. CIMD is the spec’s preferred open registration; our client set is closed, so pre-registration is correct.
-5. Map the scopes below onto those apps / roles.
+5. Map the scopes below onto those apps / roles. Cursor/Codex MCP config: `docs/MCP-CLIENTS.md`.
 
 CP validates Bearer tokens only:
 
@@ -80,18 +82,19 @@ CP validates Bearer tokens only:
 
 **Tests** never call a live IdP. They sign JWTs with a local RSA key and validate against a test JWKS. In-process JWKS is rejected unless `NODE_ENV=test`.
 
-## Scopes and tools (MVP — 12 only)
+## Scopes and tools (MVP — 12 tools)
 
-Scope names (Auth0 API permissions; intent is stable if the IdP maps aliases):
+Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`, `merchant.execute`→`merchant.audit`):
 
 | Scope | Tools |
 | --- | --- |
 | `ops.read` | `ops.health` |
-| `catalog.read` | `catalog.search_products`, `catalog.get_product`, `storefront.get_config` |
+| `catalog.read` | `catalog.search_products`, `catalog.get_product` |
+| `storefront.read` | `storefront.get_config` |
 | `seo.read` | `seo.get_latest_audit` |
-| `seo.execute` | `seo.audit` (enqueue allowlisted crawl; gitignored report) |
+| `seo.audit` | `seo.audit` (enqueue allowlisted crawl; gitignored report) |
 | `merchant.read` | `merchant.get_diagnostics` |
-| `merchant.execute` | `merchant.audit` (read existing artifacts; record a job; **do not regenerate**) |
+| `merchant.audit` | `merchant.audit` (read existing artifacts; record a job; **do not regenerate**) |
 | `repo.read` | `repo.status` |
 | `tests.execute` | `tests.run` (enqueue existing PHP/node validators) |
 | `jobs.read` | `jobs.get` |
@@ -102,9 +105,9 @@ Scope names (Auth0 API permissions; intent is stable if the IdP maps aliases):
 | Client | Allowed tools | Denied |
 | --- | --- | --- |
 | **Claude** | health, catalog.*, storefront.get_config, seo.*, merchant.*, jobs.get, audit.history | `repo.status`, `tests.run` |
-| **Cursor** | health, catalog.read (search/get + storefront), repo.status, tests.run, jobs.get, audit.history | `seo.*`, `merchant.*`, all production mutations |
-| **Codex** | same as Cursor | deploy / writes (not in MVP) |
-| **Admin** | all 12 | — |
+| **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.audit`, `merchant.audit` (and seo.read / merchant.read) |
+| **Codex** | same as Cursor | `seo.audit`, `merchant.audit` |
+| **Admin** | all 12 | writes (not registered) |
 
 ### Hard deny list (must never be registered)
 
@@ -167,9 +170,9 @@ GitHub UI fallback: Repo → Settings → Branches → rule for `main` → Requi
 ## Env (production / VPS)
 
 ```
-HORIZON_BIND=127.0.0.1          # or Tailscale IP
+HORIZON_BIND=127.0.0.1          # or Tailscale IP; never 0.0.0.0
 HORIZON_PORT=8787
-HORIZON_PUBLIC_URL=http://<tailscale-magicdns>:8787
+HORIZON_PUBLIC_URL=http://<tailscale-ip>:8787
 HORIZON_OIDC_ISSUER=https://<tenant>.auth0.com/
 HORIZON_OIDC_AUDIENCE=https://horizon-control.tailnet/mcp
 HORIZON_OIDC_JWKS_URI=https://<tenant>.auth0.com/.well-known/jwks.json
@@ -178,17 +181,19 @@ HORIZON_WOO_BASE_URL=https://api.horizonfit.com.ar
 HORIZON_REPO_PATH=/root/horizon-fit
 HORIZON_CACHE_DIR=.../uploads/horizon-fit-cache
 HORIZON_MERCHANT_DIAGNOSTICS_PATH=.../uploads/horizon-fit-merchant
-HORIZON_SQLITE_PATH=./data/horizon-control.sqlite
+HORIZON_DATA_DIR=/var/lib/horizon-control
+HORIZON_SQLITE_PATH=/var/lib/horizon-control/horizon-control.sqlite
 ```
 
 Phase 2 catalog uses the **public Store API** (no Woo application password). Optional `HORIZON_MERCHANT_DIAGNOSTICS_URL` is an allowlisted HTTP fallback. `HORIZON_GIT_FETCH` defaults off.
 
-Default `npm test` never hits production. `npm run test:integration` is opt-in via `HORIZON_INTEGRATION=1` plus the env vars above. Test JWKS is allowed only when `NODE_ENV=test`.
+Default `npm test` never hits production or Auth0. It exercises `/mcp` Streamable HTTP + JWT (test JWKS) + fixture adapters. `npm run test:integration` is opt-in via `HORIZON_INTEGRATION=1`. `npm run test:e2e` / `test:live` is opt-in via `HORIZON_E2E=1` plus `HORIZON_CONTROL_URL` and `HORIZON_E2E_TOKEN`. Test JWKS is allowed only when `NODE_ENV=test`.
 
 ## Leftover human setup
 
-1. Join the VPS and operator PCs to the same Tailscale tailnet. Bind CP to the Tailscale IP only.
-2. Create the Auth0 tenant, API, scopes, and four+ apps as above. Put issuer/audience/JWKS into VPS env (not into git).
-3. GitHub `main` branch protection was enabled (PR required, no force push, no deletions). Confirm in the UI if you want status checks added later.
-4. Do **not** put `horizon-control` on public nginx.
-5. Install the systemd unit later, by hand, after Tailscale + Auth0 exist. This branch only adds the file.
+1. Join the VPS and operator PCs to the same Tailscale tailnet (`docs/TAILSCALE.md`). Bind CP to loopback or the Tailscale IP only.
+2. Create the Auth0 API, scopes, and apps (`docs/AUTH0.md`). Put issuer/audience/JWKS into `/etc/horizon-control.env` (mode 0600), not git.
+3. Point Cursor (then Codex/Claude) at `/mcp` (`docs/MCP-CLIENTS.md`). Tokens stay in env / client secret storage.
+4. GitHub `main` branch protection was enabled (PR required, no force push, no deletions). Confirm in the UI if you want status checks added later.
+5. Do **not** put `horizon-control` on public nginx or in shop `docker-compose.yml`.
+6. Install the systemd unit later, by hand (`docs/DEPLOY.md`), after Tailscale + Auth0 exist. This branch only adds the file.

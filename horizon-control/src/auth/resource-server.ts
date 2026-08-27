@@ -77,7 +77,8 @@ export function createResourceServer(options: ResourceServerOptions) {
       throw new AuthError("missing_exp");
     }
 
-    const clientId = String(payload.azp ?? payload.client_id ?? payload.sub ?? "unknown");
+    const rawClientId = String(payload.azp ?? payload.client_id ?? payload.sub ?? "unknown");
+    const clientId = config.clientAliases[rawClientId] ?? rawClientId;
     const scopes = [
       ...normalizeScopes(payload.scope),
       ...normalizeScopes(payload.permissions),
@@ -87,7 +88,7 @@ export function createResourceServer(options: ResourceServerOptions) {
     return {
       token,
       clientId,
-      subject: String(payload.sub ?? clientId),
+      subject: String(payload.sub ?? rawClientId),
       scopes: [...new Set(scopes)],
       expiresAt: payload.exp,
       issuer: String(payload.iss ?? ""),

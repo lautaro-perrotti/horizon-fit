@@ -22,6 +22,21 @@ export function createHttpApp(services: AppServices) {
   app.get("/.well-known/oauth-protected-resource", (c) => c.json(protectedResourceMetadata(config)));
   app.get("/.well-known/oauth-protected-resource/mcp", (c) => c.json(protectedResourceMetadata(config)));
 
+  app.get("/healthz", (c) =>
+    c.json({
+      ok: true,
+      service: "horizon-control",
+      bind: config.HORIZON_BIND,
+    }),
+  );
+  app.get("/health", (c) =>
+    c.json({
+      ok: true,
+      service: "horizon-control",
+      bind: config.HORIZON_BIND,
+    }),
+  );
+
   app.onError((error, c) => {
     if (error instanceof AuthError) {
       c.header("WWW-Authenticate", wwwAuthenticate(config, error.code));

@@ -6,4 +6,6 @@ data/
 *.sqlite-wal
 .env
 .env.local
+.env.*
+!.env.example
 coverage/

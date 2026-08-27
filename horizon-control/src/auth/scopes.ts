@@ -1,4 +1,4 @@
-import { ALL_TOOLS, CLIENT_SCOPES, TOOL_SCOPES } from "../config.js";
+import { ALL_TOOLS, CLIENT_SCOPES, SCOPE_ALIASES, TOOL_SCOPES } from "../config.js";
 import type { AuthPrincipal, ToolName } from "../types.js";
 
 export class ScopeError extends Error {
@@ -14,13 +14,16 @@ export class ScopeError extends Error {
 }
 
 export function normalizeScopes(input: unknown): string[] {
-  if (Array.isArray(input)) {
-    return input.map(String).flatMap((value) => value.split(/[,\s]+/)).filter(Boolean);
-  }
-  if (typeof input === "string") {
-    return input.split(/[,\s]+/).filter(Boolean);
-  }
-  return [];
+  const raw = (() => {
+    if (Array.isArray(input)) {
+      return input.map(String).flatMap((value) => value.split(/[,\s]+/)).filter(Boolean);
+    }
+    if (typeof input === "string") {
+      return input.split(/[,\s]+/).filter(Boolean);
+    }
+    return [] as string[];
+  })();
+  return [...new Set(raw.map((scope) => SCOPE_ALIASES[scope] ?? scope))];
 }
 
 export function hasScope(principal: AuthPrincipal, scope: string): boolean {

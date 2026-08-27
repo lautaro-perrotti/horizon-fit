@@ -38,11 +38,17 @@ describe("MVP tools", () => {
     expect((stored?.result as { mocked?: boolean })?.mocked).toBe(true);
   });
 
-  it("seo.audit ignores agent URLs and always stores the allowlisted origin", async () => {
+  it("seo.audit rejects agent URLs (SSRF) and stores only the allowlisted origin when no URL is passed", async () => {
     const { services, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const principal = await services.auth.verifyAccessToken(token);
-    const enqueued = await dispatchCommand(services, "seo.audit", { url: "https://evil.example" }, principal);
+    const rejected = await dispatchCommand(services, "seo.audit", { url: "https://evil.example" }, principal);
+    expect(rejected.ok).toBe(false);
+    if (!rejected.ok) {
+      expect(rejected.status).toBe(400);
+      expect(rejected.code).toBe("unsafe_args");
+    }
+    const enqueued = await dispatchCommand(services, "seo.audit", {}, principal);
     expect(enqueued.ok).toBe(true);
     if (enqueued.ok) {
       const job = enqueued.data as { id: string; args: { target: string } };

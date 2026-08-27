@@ -42,17 +42,18 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/merchant/diagnostics", { token })).status).toBe(403);
   });
 
-  it("Cursor can call health, catalog, repo.status, tests.run", async () => {
+  it("Cursor can call health, catalog, storefront, repo.status, tests.run", async () => {
     const { app, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "cursor", scopes: CLIENT_SCOPES.cursor });
 
     expect((await request(app, "/v1/health", { token })).status).toBe(200);
     expect((await request(app, "/v1/catalog/products?q=top", { token })).status).toBe(200);
+    expect((await request(app, "/v1/storefront/config", { token })).status).toBe(200);
     expect((await request(app, "/v1/repo/status", { token })).status).toBe(200);
     expect((await request(app, "/v1/tests/run", { method: "POST", token })).status).toBe(200);
   });
 
-  it("Codex matches Cursor (tests.run allowed, seo.execute denied)", async () => {
+  it("Codex matches Cursor (tests.run allowed, seo.audit denied)", async () => {
     const { app, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "codex", scopes: CLIENT_SCOPES.codex });
     expect((await request(app, "/v1/tests/run", { method: "POST", token })).status).toBe(200);

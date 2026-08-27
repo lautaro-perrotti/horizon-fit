@@ -3,10 +3,11 @@ export type HorizonClient = "claude" | "cursor" | "codex" | "admin" | "unknown";
 export type ScopeName =
   | "ops.read"
   | "catalog.read"
+  | "storefront.read"
   | "seo.read"
-  | "seo.execute"
+  | "seo.audit"
   | "merchant.read"
-  | "merchant.execute"
+  | "merchant.audit"
   | "repo.read"
   | "tests.execute"
   | "jobs.read"
@@ -69,13 +70,16 @@ export type JobRecord = {
 export type AuditEvent = {
   id: string;
   at: number;
+  timestamp: number;
   actor: string;
+  subject: string;
   clientId: string;
   tool: string;
   scope: string | null;
   argsRedacted: Record<string, unknown>;
   outcome: "ok" | "error" | "forbidden" | "unauthorized";
   statusCode: number;
+  status: number;
   durationMs: number;
   jobId?: string | null;
   error?: string | null;

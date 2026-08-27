@@ -1,7 +1,11 @@
 [Unit]
-Description=Horizon Fit control plane (Tailscale-only Resource Server)
-After=network-online.target docker.service
+Description=Horizon Fit control plane (Tailscale-only MCP Resource Server)
+Documentation=file:/root/horizon-fit/horizon-control/docs/DEPLOY.md
+After=network-online.target tailscaled.service
 Wants=network-online.target
+
+# FILE ONLY — do not enable or install this unit from the feat/horizon-control branch.
+# A human starts CP on the VPS after Tailscale + Auth0 exist. Do not publish /mcp or /v1 on public nginx.
 
 [Service]
 Type=simple
@@ -10,14 +14,23 @@ WorkingDirectory=/root/horizon-fit/horizon-control
 Environment=NODE_ENV=production
 Environment=HORIZON_BIND=127.0.0.1
 Environment=HORIZON_PORT=8787
-Environment=HORIZON_REPO_DIR=/root/horizon-fit
-EnvironmentFile=-/root/horizon-fit/horizon-control/.env
-ExecStart=/usr/bin/node --import tsx /root/horizon-fit/horizon-control/src/index.ts
+Environment=HORIZON_DATA_DIR=/var/lib/horizon-control
+Environment=HORIZON_REPO_PATH=/root/horizon-fit
+# Secrets live here. Create with: install -m 0600 ops/systemd/horizon-control.env.example /etc/horizon-control.env
+EnvironmentFile=/etc/horizon-control.env
+ExecStartPre=/bin/mkdir -p /var/lib/horizon-control
+ExecStartPre=/bin/sh -c 'mode=$(stat -c %a /etc/horizon-control.env); test "$mode" = "600" || test "$mode" = "400"'
+ExecStart=/usr/bin/node --import tsx src/index.ts
 Restart=on-failure
 RestartSec=5
+TimeoutStopSec=20
 Nice=5
-# FILE ONLY — do not install on the VPS from this branch.
-# Bind HORIZON_BIND to the Tailscale IP before enabling. Do not publish on public nginx.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=horizon-control
+NoNewPrivileges=true
+PrivateTmp=true
+LimitNOFILE=8192
 
 [Install]
 WantedBy=multi-user.target

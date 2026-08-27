@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Horizon Fit control plane: OAuth Resource Server + MCP adapter (Phase 2 read-only adapters)",
+  "description": "Horizon Fit control plane: OAuth Resource Server + MCP adapter (Phase 2.5 live connectivity, read-only)",
   "engines": {
     "node": ">=22"
   },
@@ -17,6 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:live": "vitest run --config vitest.e2e.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

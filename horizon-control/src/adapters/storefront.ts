@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { extraAllowedHosts, allowlistedFetch } from "../http/allowlist.js";
+import { safeJoin } from "../http/paths.js";
 
 export type ConfigPiece<T> = {
   status: "ok" | "unavailable";
@@ -70,10 +71,10 @@ export function createStorefrontAdapter(options: {
 
   return {
     async getConfig() {
-      const menuLocal = options.cacheDir ? await readLocalJson(path.join(options.cacheDir, "menu.json")) : null;
+      const menuLocal = options.cacheDir ? await readLocalJson(safeJoin(options.cacheDir, "menu.json")) : null;
       const sectionsLocal = options.cacheDir
-        ? (await readLocalJson(path.join(options.cacheDir, "home-sections.json"))) ??
-          (await readLocalJson(path.join(options.cacheDir, "home-layout.json")))
+        ? (await readLocalJson(safeJoin(options.cacheDir, "home-sections.json"))) ??
+          (await readLocalJson(safeJoin(options.cacheDir, "home-layout.json")))
         : null;
 
       const menu =

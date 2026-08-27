@@ -31,7 +31,7 @@ export type CreateServicesOptions = {
 
 export function createServices(options: CreateServicesOptions = {}): AppServices {
   const config = options.config ?? loadConfig(options.env);
-  const { db, sqlite } = createDb(options.sqlitePath ?? config.HORIZON_SQLITE_PATH);
+  const { db, sqlite } = createDb(options.sqlitePath ?? config.sqlitePath);
   const extraHosts = extraAllowedHosts([config.storefrontUrl, config.wooBaseUrl, config.HORIZON_MERCHANT_DIAGNOSTICS_URL]);
   const auth = createResourceServer({
     config,

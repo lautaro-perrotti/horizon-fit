@@ -3,6 +3,7 @@ import { ALL_TOOLS, DENIED_TOOLS, SEO_AUDIT_ORIGIN, TOOL_SCOPES } from "../../co
 import type { AppServices } from "../../app-context.js";
 import { assertToolScope, ScopeError } from "../../auth/scopes.js";
 import { AuthError } from "../../auth/resource-server.js";
+import { assertSafeToolArgs, UnsafeArgsError } from "../../http/safe-args.js";
 import type { AuthPrincipal, CommandResult, ToolName } from "../../types.js";
 
 const searchSchema = z.object({
@@ -156,6 +157,7 @@ export async function dispatchCommand(
   const named = tool as ToolName;
   try {
     assertToolScope(principal, named);
+    assertSafeToolArgs(rawArgs);
   } catch (error) {
     if (error instanceof ScopeError) {
       await services.audit.record({
@@ -168,6 +170,18 @@ export async function dispatchCommand(
         error: error.message,
       });
       return { ok: false, status: 403, error: error.message, code: error.code };
+    }
+    if (error instanceof UnsafeArgsError) {
+      await services.audit.record({
+        principal,
+        tool,
+        args: rawArgs,
+        outcome: "error",
+        statusCode: 400,
+        durationMs: duration(),
+        error: error.message,
+      });
+      return { ok: false, status: 400, error: error.message, code: error.code };
     }
     throw error;
   }

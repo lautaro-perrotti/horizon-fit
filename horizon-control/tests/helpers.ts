@@ -1,7 +1,9 @@
 import { exportJWK, generateKeyPair, SignJWT, type GenerateKeyPairResult, type JWK } from "jose";
+import { type Server } from "node:http";
 import { loadConfig } from "../src/config.js";
 import { createServices, type CreateServicesOptions } from "../src/create-services.js";
 import { createHttpApp } from "../src/api/app.js";
+import { createHorizonHttpServer } from "../src/server.js";
 import { CLIENT_SCOPES } from "../src/config.js";
 import type { AppServices } from "../src/app-context.js";
 import type { CatalogProduct } from "../src/types.js";
@@ -195,6 +197,7 @@ export async function buildTestApp(overrides: CreateServicesOptions = {}) {
     HORIZON_PORT: "8787",
     HORIZON_PUBLIC_URL: "http://127.0.0.1:8787",
     HORIZON_SQLITE_PATH: ":memory:",
+    HORIZON_DATA_DIR: "",
     HORIZON_REPO_PATH: "",
     HORIZON_STOREFRONT_URL: "https://horizonfit.com.ar",
     HORIZON_WOO_BASE_URL: "https://api.horizonfit.com.ar",
@@ -239,5 +242,123 @@ export async function request(
     headers: response.headers,
     json: async <T = Record<string, any>>() => (await response.json()) as T,
     text: () => response.text(),
+  };
+}
+
+export async function listenHorizon(services: AppServices): Promise<{ server: Server; base: string }> {
+  const server = createHorizonHttpServer(services);
+  await new Promise<void>((resolve) => {
+    server.listen(0, "127.0.0.1", () => resolve());
+  });
+  const address = server.address();
+  if (!address || typeof address === "string") {
+    server.close();
+    throw new Error("listenHorizon: no TCP port");
+  }
+  return { server, base: `http://127.0.0.1:${address.port}` };
+}
+
+export function closeServer(server: Server): Promise<void> {
+  return new Promise((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
+  });
+}
+
+const MCP_ACCEPT = "application/json, text/event-stream";
+
+function parseMcpBody(text: string, contentType: string | null): unknown {
+  if (contentType?.includes("text/event-stream")) {
+    const payloads = text
+      .split("\n")
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trim())
+      .filter((line) => line && line !== "[DONE]");
+    if (!payloads.length) return { raw: text };
+    return JSON.parse(payloads[payloads.length - 1]);
+  }
+  if (!text.trim()) return undefined;
+  return JSON.parse(text);
+}
+
+export async function mcpRpc(
+  base: string,
+  token: string | undefined,
+  body: unknown,
+  method = "POST",
+): Promise<{
+  status: number;
+  headers: Headers;
+  json: unknown;
+  text: string;
+}> {
+  const headers: Record<string, string> = {
+    accept: MCP_ACCEPT,
+    "content-type": "application/json",
+  };
+  if (token) headers.authorization = `Bearer ${token}`;
+  const response = await fetch(`${base}/mcp`, {
+    method,
+    headers,
+    body: method === "GET" ? undefined : JSON.stringify(body),
+  });
+  const text = await response.text();
+  let json: unknown = text;
+  try {
+    json = parseMcpBody(text, response.headers.get("content-type"));
+  } catch {
+    json = { parse_error: true, raw: text };
+  }
+  return { status: response.status, headers: response.headers, json, text };
+}
+
+export async function mcpInitialize(base: string, token: string) {
+  const init = await mcpRpc(base, token, {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "initialize",
+    params: {
+      protocolVersion: "2025-03-26",
+      capabilities: {},
+      clientInfo: { name: "horizon-control-tests", version: "0.1.0" },
+    },
+  });
+  await mcpRpc(base, token, {
+    jsonrpc: "2.0",
+    method: "notifications/initialized",
+  });
+  return init;
+}
+
+export async function mcpCallTool(
+  base: string,
+  token: string,
+  name: string,
+  args: Record<string, unknown> = {},
+) {
+  const response = await mcpRpc(base, token, {
+    jsonrpc: "2.0",
+    id: 2,
+    method: "tools/call",
+    params: { name, arguments: args },
+  });
+  const rpc = response.json as {
+    result?: { content?: Array<{ text?: string }>; isError?: boolean };
+    error?: { message?: string; code?: number };
+  };
+  let tool: Record<string, unknown> | null = null;
+  const text = rpc?.result?.content?.[0]?.text;
+  if (text) {
+    try {
+      tool = JSON.parse(text) as Record<string, unknown>;
+    } catch {
+      tool = { text };
+    }
+  }
+  return {
+    httpStatus: response.status,
+    isError: Boolean(rpc?.result?.isError) || Boolean(rpc?.error),
+    rpc,
+    tool,
+    text: response.text,
   };
 }

@@ -54,8 +54,11 @@ describe("audit redaction", () => {
       events: Array<{
         tool: string;
         clientId: string;
+        subject: string;
         scope: string;
+        timestamp: number;
         durationMs: number;
+        status: number;
         argsRedacted: Record<string, unknown>;
       }>;
     };
@@ -66,8 +69,11 @@ describe("audit redaction", () => {
     expect(blob).toMatch(/\[REDACTED\]/);
     const catalogEvent = body.events.find((event) => event.tool === "catalog.search_products");
     expect(catalogEvent?.clientId).toBe("claude");
+    expect(catalogEvent?.subject).toBe("claude");
     expect(catalogEvent?.scope).toBe("catalog.read");
+    expect(typeof catalogEvent?.timestamp).toBe("number");
     expect(typeof catalogEvent?.durationMs).toBe("number");
+    expect(catalogEvent?.status).toBe(200);
     expect(catalogEvent?.argsRedacted).toEqual({ query: "calza" });
   });
 });

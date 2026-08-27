@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS audit_events (
   id TEXT PRIMARY KEY,
   at INTEGER NOT NULL,
   actor TEXT NOT NULL,
+  subject TEXT,
   client_id TEXT NOT NULL,
   tool TEXT NOT NULL,
   scope TEXT,
@@ -74,6 +75,7 @@ export function createDb(sqlitePath: string): { sqlite: Database.Database; db: H
   addColumn(sqlite, "jobs", "finished_at", "INTEGER");
   addColumn(sqlite, "audit_events", "scope", "TEXT");
   addColumn(sqlite, "audit_events", "duration_ms", "INTEGER NOT NULL DEFAULT 0");
+  addColumn(sqlite, "audit_events", "subject", "TEXT");
   const db = drizzle(sqlite, { schema });
   return { sqlite, db };
 }

@@ -95,9 +95,15 @@ export async function handleMcpRequest(
 
   const transport = new StreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
+    enableJsonResponse: true,
   });
   const server = createMcpServer(services, principal);
   await server.connect(transport);
-  const body = req.method === "POST" ? await readJsonBody(req) : undefined;
-  await transport.handleRequest(req, res, body);
+  try {
+    const body = req.method === "POST" ? await readJsonBody(req) : undefined;
+    await transport.handleRequest(req, res, body);
+  } finally {
+    await transport.close().catch(() => undefined);
+    await server.close().catch(() => undefined);
+  }
 }

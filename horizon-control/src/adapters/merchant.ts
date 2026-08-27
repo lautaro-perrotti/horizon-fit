@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { extraAllowedHosts, allowlistedFetch, isAllowedUrl } from "../http/allowlist.js";
+import { PathTraversalError, safeJoin } from "../http/paths.js";
 
 export type MerchantProblem = {
   sku: string;
@@ -110,16 +111,12 @@ async function fromLocalPath(configured: string): Promise<MerchantDiagnostics | 
   try {
     const stat = await fs.stat(resolved);
     const dir = stat.isDirectory() ? resolved : path.dirname(resolved);
-    const txtName = stat.isDirectory()
-      ? "merchant-diagnostics.txt"
-      : path.basename(resolved).endsWith(".json")
-        ? "merchant-diagnostics.txt"
-        : path.basename(resolved);
-    const diagnosticsTxt = await readText(path.join(dir, txtName));
-    const productsJson = await readJson(path.join(dir, "merchant-products.json"));
+    const diagnosticsTxt = await readText(safeJoin(dir, "merchant-diagnostics.txt"));
+    const productsJson = await readJson(safeJoin(dir, "merchant-products.json"));
     if (diagnosticsTxt === null && productsJson === null) return null;
     return withSummary(diagnosticsTxt, productsJson, dir, "local");
-  } catch {
+  } catch (error) {
+    if (error instanceof PathTraversalError) throw error;
     return null;
   }
 }
