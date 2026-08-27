@@ -19,7 +19,7 @@ Environment=HORIZON_REPO_PATH=/root/horizon-fit
 # Secrets live here. Create with: install -m 0600 ops/systemd/horizon-control.env.example /etc/horizon-control.env
 EnvironmentFile=/etc/horizon-control.env
 ExecStartPre=/bin/mkdir -p /var/lib/horizon-control
-ExecStartPre=/bin/sh -c 'mode=$(stat -c %a /etc/horizon-control.env); test "$mode" = "600" || test "$mode" = "400"'
+ExecStartPre=/bin/sh -c 'mode=$(stat -c %%a /etc/horizon-control.env); test "$mode" = "600" || test "$mode" = "400"'
 ExecStart=/usr/bin/node --import tsx src/index.ts
 Restart=on-failure
 RestartSec=5
