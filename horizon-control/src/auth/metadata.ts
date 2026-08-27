@@ -3,7 +3,8 @@ import type { Config } from "../config.js";
 
 export function protectedResourceMetadata(config: Config) {
   return {
-    resource: config.resourceUrl,
+    // Auth0 API identifier / RFC 8707 resource — not the Tailscale MCP URL.
+    resource: config.HORIZON_OIDC_AUDIENCE,
     authorization_servers: [config.HORIZON_OIDC_ISSUER.replace(/\/$/, "")],
     bearer_methods_supported: ["header"],
     scopes_supported: ALL_SCOPES,

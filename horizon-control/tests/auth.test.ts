@@ -75,9 +75,17 @@ describe("resource server JWT validation", () => {
     const response = await request(app, "/.well-known/oauth-protected-resource");
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.resource).toBe("http://127.0.0.1:8787/mcp");
+    expect(body.resource).toBe(AUDIENCE);
     expect(body.authorization_servers[0]).toMatch(/auth0\.com/);
     expect(body.scopes_supported).toContain("catalog.read");
+  });
+
+  it("publishes the same Auth0 audience on the path-aware PRM", async () => {
+    const { app } = await buildTestApp();
+    const response = await request(app, "/.well-known/oauth-protected-resource/mcp");
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.resource).toBe("https://horizon-control");
   });
 
   it("rejects in-process test JWKS unless NODE_ENV=test", async () => {
