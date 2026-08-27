@@ -3,7 +3,9 @@ import { eq, desc } from "drizzle-orm";
 import type { HorizonDb } from "../db/client.js";
 import { auditEvents } from "../db/schema.js";
 import type { AuditEvent, AuthPrincipal } from "../types.js";
-import { redactArgs } from "../auth/redact.js";
+import { sanitizeToolArgs } from "../auth/redact.js";
+import { TOOL_SCOPES } from "../config.js";
+import type { ToolName } from "../types.js";
 
 export function createAuditLog(db: HorizonDb) {
   return {
@@ -13,6 +15,7 @@ export function createAuditLog(db: HorizonDb) {
       args: unknown;
       outcome: AuditEvent["outcome"];
       statusCode: number;
+      durationMs?: number;
       jobId?: string | null;
       error?: string | null;
     }): Promise<AuditEvent> {
@@ -22,9 +25,11 @@ export function createAuditLog(db: HorizonDb) {
         actor: input.principal.subject,
         clientId: input.principal.clientId,
         tool: input.tool,
-        argsRedacted: redactArgs(input.args),
+        scope: TOOL_SCOPES[input.tool as ToolName] ?? null,
+        argsRedacted: sanitizeToolArgs(input.tool, input.args),
         outcome: input.outcome,
         statusCode: input.statusCode,
+        durationMs: input.durationMs ?? 0,
         jobId: input.jobId ?? null,
         error: input.error ?? null,
       };
@@ -35,9 +40,11 @@ export function createAuditLog(db: HorizonDb) {
           actor: event.actor,
           clientId: event.clientId,
           tool: event.tool,
+          scope: event.scope,
           argsRedacted: JSON.stringify(event.argsRedacted),
           outcome: event.outcome,
           statusCode: event.statusCode,
+          durationMs: event.durationMs,
           jobId: event.jobId,
           error: event.error,
         })
@@ -52,28 +59,14 @@ export function createAuditLog(db: HorizonDb) {
         actor: row.actor,
         clientId: row.clientId,
         tool: row.tool,
+        scope: row.scope,
         argsRedacted: JSON.parse(row.argsRedacted) as Record<string, unknown>,
         outcome: row.outcome as AuditEvent["outcome"],
         statusCode: row.statusCode,
+        durationMs: row.durationMs,
         jobId: row.jobId,
         error: row.error,
       }));
-    },
-    async get(id: string): Promise<AuditEvent | null> {
-      const row = db.select().from(auditEvents).where(eq(auditEvents.id, id)).get();
-      if (!row) return null;
-      return {
-        id: row.id,
-        at: row.at,
-        actor: row.actor,
-        clientId: row.clientId,
-        tool: row.tool,
-        argsRedacted: JSON.parse(row.argsRedacted) as Record<string, unknown>,
-        outcome: row.outcome as AuditEvent["outcome"],
-        statusCode: row.statusCode,
-        jobId: row.jobId,
-        error: row.error,
-      };
     },
   };
 }

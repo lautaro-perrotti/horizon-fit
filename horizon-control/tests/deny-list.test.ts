@@ -15,8 +15,8 @@ describe("deny list / no arbitrary shell", () => {
       expect(tools).not.toContain(denied);
     }
     const joined = tools.join(" ");
-    expect(joined).not.toMatch(/shell|ssh|eval|docker\.exec|sql|files\.write|cache\.regenerate|deploy|rollback/i);
-    expect(denyList()).toEqual(expect.arrayContaining(["shell.execute", "ssh", "wp.eval", "cache.regenerate"]));
+    expect(joined).not.toMatch(/shell|ssh|eval|docker\.exec|sql|files\.write|cache\.regenerate|deploy|rollback|http\.request/i);
+    expect(denyList()).toEqual(expect.arrayContaining(["shell.execute", "ssh", "wp.eval", "cache.regenerate", "http.request"]));
   });
 
   it("Cursor token cannot mutate production: no regenerate/deploy/write tools even listed", async () => {

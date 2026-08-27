@@ -4,9 +4,10 @@ import { createServices, type CreateServicesOptions } from "../src/create-servic
 import { createHttpApp } from "../src/api/app.js";
 import { CLIENT_SCOPES } from "../src/config.js";
 import type { AppServices } from "../src/app-context.js";
-import type { WooAdapter } from "../src/adapters/woo.js";
-import type { CacheAdapter } from "../src/adapters/wp-cli.js";
-import type { VpsAdapter } from "../src/adapters/vps.js";
+import type { CatalogProduct } from "../src/types.js";
+import type { CatalogAdapter } from "../src/adapters/woo.js";
+import type { StorefrontAdapter } from "../src/adapters/storefront.js";
+import type { MerchantAdapter } from "../src/adapters/merchant.js";
 import type { GitAdapter } from "../src/adapters/git.js";
 
 export const ISSUER = "https://horizon-fit.test.auth0.com/";
@@ -22,7 +23,7 @@ export async function createTestKeys() {
 }
 
 export async function signToken(
-  privateKey: CryptoKey,
+  privateKey: Awaited<ReturnType<typeof createTestKeys>>["privateKey"],
   claims: {
     client?: string;
     scopes?: string[];
@@ -53,58 +54,115 @@ export async function signToken(
   return jwt.sign(privateKey);
 }
 
-export function mockWoo(): WooAdapter {
-  const catalog = [
-    { id: 1, name: "Calza Test", slug: "calza-test", sku: "HF-C1", status: "publish", permalink: "https://horizonfit.com.ar/producto/calza-test/", price: "10000", stock_status: "instock" },
-    { id: 2, name: "Top Test", slug: "top-test", sku: "HF-T1", status: "publish", permalink: "https://horizonfit.com.ar/producto/top-test/", price: "8000", stock_status: "instock" },
-  ];
+function sampleProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct {
   return {
-    async searchProducts(query) {
-      const q = query.toLowerCase();
-      return catalog.filter((item) => item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q));
+    id: 1,
+    parent_sku: "HF-C1",
+    sku: "HF-C1",
+    slug: "calza-test",
+    name: "Calza Test",
+    status: "publish",
+    categories: [{ name: "Calzas", slug: "calzas" }],
+    description: "desc",
+    short_description: "short",
+    images: [],
+    attributes: { Talle: ["S"], Color: ["Negro"] },
+    variations: [],
+    price: { amount: "100.00", currency: "ARS", raw: "10000" },
+    stock_status: "instock",
+    ...overrides,
+  };
+}
+
+export const SAMPLE_TOP_AZU: CatalogProduct = {
+  id: 99,
+  parent_sku: "001-TOP-AZU",
+  sku: "001-TOP-AZU",
+  slug: "top-liso-azul",
+  name: "Top Dynamic blue",
+  status: "publish",
+  categories: [
+    { name: "Básicos", slug: "basicos" },
+    { name: "Tops", slug: "tops" },
+  ],
+  description: "Top de entrenamiento",
+  short_description: "Top Dynamic",
+  images: ["https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"],
+  attributes: { Talle: ["S", "M", "L"], Color: ["Azul"] },
+  variations: [
+    {
+      id: 100,
+      sku: "001-TOP-AZU-S",
+      name: "Top Dynamic blue",
+      parent: 99,
+      in_stock: true,
+      price: { amount: "67000.00", currency: "ARS", raw: "6700000" },
+      attributes: [
+        { name: "Talle", value: "S" },
+        { name: "Color", value: "Azul" },
+      ],
+      image: "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg",
+    },
+  ],
+  price: { amount: "67000.00", currency: "ARS", raw: "6700000" },
+  stock_status: "instock",
+};
+
+export function mockWoo(): CatalogAdapter {
+  const catalog = [sampleProduct(), sampleProduct({ id: 2, sku: "HF-T1", parent_sku: "HF-T1", slug: "top-test", name: "Top Test" }), SAMPLE_TOP_AZU];
+  return {
+    async searchProducts(filters) {
+      const q = (filters.query ?? "").toLowerCase();
+      const sku = (filters.sku ?? "").toLowerCase();
+      const products = catalog.filter((item) => {
+        if (q && !item.name.toLowerCase().includes(q) && !item.sku.toLowerCase().includes(q) && !item.parent_sku.toLowerCase().includes(q)) {
+          return false;
+        }
+        if (sku && item.sku.toLowerCase() !== sku && item.parent_sku.toLowerCase() !== sku) return false;
+        if (filters.category && !item.categories.some((category: { slug: string }) => category.slug === filters.category)) return false;
+        return true;
+      });
+      return { products, page: filters.page ?? 1, limit: filters.limit ?? 20 };
     },
     async getProduct(id) {
-      return catalog.find((item) => String(item.id) === String(id)) ?? null;
+      const key = String(id);
+      return (
+        catalog.find(
+          (item) =>
+            String(item.id) === key ||
+            item.sku === key ||
+            item.parent_sku === key ||
+            item.slug === key ||
+            item.variations.some((variation: { sku: string }) => variation.sku === key),
+        ) ?? null
+      );
     },
   };
 }
 
-export function mockCache(): CacheAdapter {
+export function mockStorefront(): StorefrontAdapter {
   return {
-    async readStorefrontConfig() {
-      return { path: "/tmp/horizon-fit-cache", files: { "menu.json": [{ label: "Shop", href: "/" }] } };
-    },
-    async readMerchantDiagnostics() {
+    async getConfig() {
       return {
-        path: "/tmp/horizon-fit-seo",
-        diagnosticsTxt: "Merchant diagnostics fixture\n- none: 0\n",
-        productsJson: { ready: 1, blocked: 0, items: [] },
+        menu: { status: "ok", data: [{ label: "Shop", url: "/" }], source: "mock" },
+        home_sections: { status: "unavailable", data: null, source: null },
+        hero: { status: "unavailable", data: null, source: null },
+        marquee: { status: "unavailable", data: null, source: null },
       };
     },
-    async readLatestSeoAudit() {
-      return { path: null, report: null };
-    },
   };
 }
 
-export function mockVps(): VpsAdapter {
+export function mockMerchant(): MerchantAdapter {
   return {
-    async inspectContainers() {
-      return [
-        { name: "horizon-fit-db", present: false, running: null, status: "docker_unavailable" },
-        { name: "horizon-fit-wp", present: false, running: null, status: "docker_unavailable" },
-        { name: "horizon-fit-spa", present: false, running: null, status: "docker_unavailable" },
-        { name: "horizon-fit-wpcli", present: false, running: null, status: "docker_unavailable" },
-      ];
-    },
-    async probeHttp(url) {
-      return { url, ok: false, status: null };
-    },
-    async compareGit() {
-      return { head: "abc", originMain: "abc", inSync: true };
-    },
-    async typedJob() {
-      throw new Error("typedJob must be mocked in tests — refusing to run real processes");
+    async readDiagnostics() {
+      return {
+        path: "/tmp/horizon-fit-merchant",
+        diagnosticsTxt: "Merchant diagnostics fixture\n- none: 0\n",
+        productsJson: { ready: 1, blocked: 0, items: [] },
+        source: "local",
+        summary: { ready: 1, blocked: 0, problems: [] },
+      };
     },
   };
 }
@@ -116,9 +174,13 @@ export function mockGit(): GitAdapter {
         path: "/repo",
         branch: "feat/horizon-control",
         dirty: false,
+        dirty_files: [],
+        dirty_summary: { changed: 0, shown: 0 },
         ahead: 0,
         behind: 0,
         head: "abc123",
+        remote: "origin",
+        fetched: false,
       };
     },
   };
@@ -133,19 +195,22 @@ export async function buildTestApp(overrides: CreateServicesOptions = {}) {
     HORIZON_PORT: "8787",
     HORIZON_PUBLIC_URL: "http://127.0.0.1:8787",
     HORIZON_SQLITE_PATH: ":memory:",
-    HORIZON_REPO_DIR: "",
+    HORIZON_REPO_PATH: "",
+    HORIZON_STOREFRONT_URL: "https://horizonfit.com.ar",
+    HORIZON_WOO_BASE_URL: "https://api.horizonfit.com.ar",
   });
   const jobsRun: Array<{ type: string; args: Record<string, unknown> }> = [];
   const services: AppServices = createServices({
     config,
     jwks: keys.jwks,
     clockToleranceSec: 0,
-    woo: mockWoo(),
-    cache: mockCache(),
-    vps: mockVps(),
+    catalog: mockWoo(),
+    storefront: mockStorefront(),
+    merchant: mockMerchant(),
     git: mockGit(),
     startWorker: false,
     sqlitePath: ":memory:",
+    fetchImpl: async () => new Response("{}", { status: 200, headers: { "content-type": "application/json" } }),
     runner: async (type, args) => {
       jobsRun.push({ type, args });
       return { stdout: "mocked", stderr: "", exitCode: 0, mocked: true };
@@ -164,9 +229,15 @@ export async function request(
   const headers: Record<string, string> = { accept: "application/json" };
   if (options.token) headers.authorization = `Bearer ${options.token}`;
   if (options.body !== undefined) headers["content-type"] = "application/json";
-  return app.request(path, {
+  const response = await app.request(path, {
     method: options.method ?? "GET",
     headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
+  return {
+    status: response.status,
+    headers: response.headers,
+    json: async <T = Record<string, any>>() => (await response.json()) as T,
+    text: () => response.text(),
+  };
 }

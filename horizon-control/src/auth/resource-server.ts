@@ -41,6 +41,9 @@ function audienceMatches(tokenAud: string[], expected: string): boolean {
 
 export function createResourceServer(options: ResourceServerOptions) {
   const { config } = options;
+  if (options.jwks && process.env.NODE_ENV !== "test") {
+    throw new Error("test JWKS is only allowed when NODE_ENV=test");
+  }
   const getKey: JWTVerifyGetKey = options.jwks
     ? createLocalJWKSet(options.jwks as Parameters<typeof createLocalJWKSet>[0])
     : createRemoteJWKSet(new URL(config.jwksUrl));

@@ -1,0 +1,10 @@
+Merchant diagnostics fixture
+Productos analizados: 2
+Variantes analizadas: 2
+Merchant ready: 1
+Bloqueados: 1
+Errores: 1
+Warnings: 0
+
+Top issues:
+- missing_image: 1

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { CLIENT_SCOPES } from "../src/config.js";
-import { buildTestApp, request, signToken } from "./helpers.js";
+import { CLIENT_SCOPES, loadConfig } from "../src/config.js";
+import { createResourceServer } from "../src/auth/resource-server.js";
+import { AUDIENCE, ISSUER, buildTestApp, request, signToken } from "./helpers.js";
 
 describe("resource server JWT validation", () => {
   it("rejects missing bearer token with 401 and WWW-Authenticate resource_metadata", async () => {
@@ -62,8 +63,11 @@ describe("resource server JWT validation", () => {
     const response = await request(app, "/v1/health", { token });
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.containers).toHaveLength(4);
-    expect(body.github.enabled).toBe(false);
+    expect(["healthy", "degraded", "unavailable"]).toContain(body.status);
+    expect(body.storefront).toHaveProperty("status");
+    expect(body.api).toHaveProperty("latency_ms");
+    expect(body.db).toHaveProperty("healthy");
+    expect(body.control_plane).toHaveProperty("uptime_s");
   });
 
   it("publishes RFC 9728 protected resource metadata", async () => {
@@ -74,5 +78,23 @@ describe("resource server JWT validation", () => {
     expect(body.resource).toBe("http://127.0.0.1:8787/mcp");
     expect(body.authorization_servers[0]).toMatch(/auth0\.com/);
     expect(body.scopes_supported).toContain("catalog.read");
+  });
+
+  it("rejects in-process test JWKS unless NODE_ENV=test", async () => {
+    const previous = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      expect(() =>
+        createResourceServer({
+          config: loadConfig({
+            HORIZON_OIDC_ISSUER: ISSUER,
+            HORIZON_OIDC_AUDIENCE: AUDIENCE,
+          }),
+          jwks: { keys: [{ kty: "RSA", kid: "x" }] },
+        }),
+      ).toThrow(/NODE_ENV=test/);
+    } finally {
+      process.env.NODE_ENV = previous;
+    }
   });
 });

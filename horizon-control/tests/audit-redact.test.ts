@@ -32,21 +32,42 @@ describe("audit redaction", () => {
     });
     expect(response.status).toBe(200);
 
+    const principal = await services.auth.verifyAccessToken(token);
     await services.audit.record({
-      principal: await services.auth.verifyAccessToken(token),
+      principal,
       tool: "catalog.search_products",
       args: { query: "calza", password: "should-not-leak", authorization: "Bearer secret-token" },
+      outcome: "ok",
+      statusCode: 200,
+    });
+    await services.audit.record({
+      principal,
+      tool: "ops.health",
+      args: { password: "should-not-leak", authorization: "Bearer secret-token", HORIZON_OIDC_ISSUER: "hidden" },
       outcome: "ok",
       statusCode: 200,
     });
 
     const history = await request(app, "/v1/audit/history", { token });
     expect(history.status).toBe(200);
-    const body = await history.json();
+    const body = (await history.json()) as {
+      events: Array<{
+        tool: string;
+        clientId: string;
+        scope: string;
+        durationMs: number;
+        argsRedacted: Record<string, unknown>;
+      }>;
+    };
     const blob = JSON.stringify(body);
     expect(blob).not.toMatch(/should-not-leak/);
     expect(blob).not.toMatch(/secret-token/);
     expect(blob).not.toMatch(/WOO_APP_PASSWORD/);
     expect(blob).toMatch(/\[REDACTED\]/);
+    const catalogEvent = body.events.find((event) => event.tool === "catalog.search_products");
+    expect(catalogEvent?.clientId).toBe("claude");
+    expect(catalogEvent?.scope).toBe("catalog.read");
+    expect(typeof catalogEvent?.durationMs).toBe("number");
+    expect(catalogEvent?.argsRedacted).toEqual({ query: "calza" });
   });
 });

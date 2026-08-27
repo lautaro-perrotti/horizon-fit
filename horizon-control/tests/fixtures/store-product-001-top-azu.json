@@ -1,0 +1,56 @@
+{
+  "id": 99,
+  "name": "Top Dynamic blue",
+  "slug": "top-liso-azul",
+  "parent": 0,
+  "type": "variable",
+  "sku": "001-TOP-AZU",
+  "description": "<p>Top de entrenamiento</p>",
+  "short_description": "<p>Top Dynamic</p>",
+  "permalink": "https://horizonfit.com.ar/producto/top-liso-azul/",
+  "prices": {
+    "price": "6700000",
+    "regular_price": "6700000",
+    "sale_price": "6700000",
+    "currency_code": "ARS",
+    "currency_minor_unit": 2
+  },
+  "images": [
+    {
+      "src": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"
+    }
+  ],
+  "categories": [
+    { "name": "Básicos", "slug": "basicos" },
+    { "name": "Tops", "slug": "tops" }
+  ],
+  "attributes": [
+    {
+      "name": "Talle",
+      "has_variations": true,
+      "terms": [{ "name": "S" }, { "name": "M" }, { "name": "L" }]
+    },
+    {
+      "name": "Color",
+      "has_variations": true,
+      "terms": [{ "name": "Azul" }]
+    }
+  ],
+  "variations": [
+    {
+      "id": 100,
+      "attributes": [
+        { "name": "Talle", "value": "S" },
+        { "name": "Color", "value": "Azul" }
+      ]
+    },
+    {
+      "id": 101,
+      "attributes": [
+        { "name": "Talle", "value": "M" },
+        { "name": "Color", "value": "Azul" }
+      ]
+    }
+  ],
+  "is_in_stock": true
+}

@@ -67,7 +67,13 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/catalog/products", (c) => {
     const query = c.req.query();
     return invoke(c, "catalog.search_products", {
-      query: query.q ?? query.query ?? "",
+      query: query.q || query.query || undefined,
+      sku: query.sku || undefined,
+      category: query.category || undefined,
+      color: query.color || undefined,
+      size: query.size || query.talle || undefined,
+      stock_status: query.stock_status || undefined,
+      page: query.page ? Number(query.page) : undefined,
       limit: query.limit ? Number(query.limit) : undefined,
     });
   });

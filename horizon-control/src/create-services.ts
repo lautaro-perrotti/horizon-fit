@@ -1,9 +1,11 @@
 import { createDb } from "./db/client.js";
+import { extraAllowedHosts } from "./http/allowlist.js";
 import { loadConfig, type Config } from "./config.js";
 import { createResourceServer, type ResourceServerOptions } from "./auth/resource-server.js";
-import { createWooAdapter, type WooAdapter } from "./adapters/woo.js";
-import { createCacheAdapter, type CacheAdapter } from "./adapters/wp-cli.js";
-import { createVpsAdapter, type VpsAdapter } from "./adapters/vps.js";
+import { createCatalogAdapter, type CatalogAdapter } from "./adapters/woo.js";
+import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
+import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
+import { createHealthAdapter } from "./adapters/health.js";
 import { createGitAdapter, type GitAdapter } from "./adapters/git.js";
 import { createGithubAdapter } from "./adapters/github.js";
 import { createAuditLog } from "./audit/log.js";
@@ -16,49 +18,60 @@ export type CreateServicesOptions = {
   env?: Record<string, string | number | undefined>;
   jwks?: ResourceServerOptions["jwks"];
   clockToleranceSec?: number;
-  woo?: WooAdapter;
-  cache?: CacheAdapter;
-  vps?: VpsAdapter;
+  catalog?: CatalogAdapter;
+  woo?: CatalogAdapter;
+  storefront?: StorefrontAdapter;
+  merchant?: MerchantAdapter;
   git?: GitAdapter;
   runner?: JobRunner;
+  fetchImpl?: typeof fetch;
   sqlitePath?: string;
   startWorker?: boolean;
 };
 
 export function createServices(options: CreateServicesOptions = {}): AppServices {
   const config = options.config ?? loadConfig(options.env);
-  const { db } = createDb(options.sqlitePath ?? config.HORIZON_SQLITE_PATH);
+  const { db, sqlite } = createDb(options.sqlitePath ?? config.HORIZON_SQLITE_PATH);
+  const extraHosts = extraAllowedHosts([config.storefrontUrl, config.wooBaseUrl, config.HORIZON_MERCHANT_DIAGNOSTICS_URL]);
   const auth = createResourceServer({
     config,
     jwks: options.jwks,
     clockToleranceSec: options.clockToleranceSec,
   });
-  const woo =
+  const catalog =
+    options.catalog ??
     options.woo ??
-    createWooAdapter({
-      baseUrl: config.WOO_BASE_URL,
-      user: config.WOO_USER,
-      appPassword: config.WOO_APP_PASSWORD,
+    createCatalogAdapter({
+      baseUrl: config.wooBaseUrl,
+      extraHosts,
+      fetchImpl: options.fetchImpl,
     });
-  const cache =
-    options.cache ??
-    createCacheAdapter({
+  const storefront =
+    options.storefront ??
+    createStorefrontAdapter({
       cacheDir: config.HORIZON_CACHE_DIR,
-      merchantDir: config.HORIZON_MERCHANT_DIR,
-      seoReportDir: config.HORIZON_SEO_REPORT_DIR,
+      apiBaseUrl: config.wooBaseUrl,
+      extraHosts,
+      fetchImpl: options.fetchImpl,
     });
-  const vps =
-    options.vps ??
-    createVpsAdapter({
-      repoDir: config.HORIZON_REPO_DIR,
-      spaUrl: config.HORIZON_SPA_URL,
-      wpUrl: config.HORIZON_WP_URL,
+  const merchant =
+    options.merchant ??
+    createMerchantAdapter({
+      localPath: config.merchantDiagnosticsPath,
+      endpointUrl: config.HORIZON_MERCHANT_DIAGNOSTICS_URL || undefined,
+      extraHosts,
+      fetchImpl: options.fetchImpl,
     });
-  const git = options.git ?? createGitAdapter({ repoDir: config.HORIZON_REPO_DIR });
+  const git =
+    options.git ??
+    createGitAdapter({
+      repoDir: config.repoPath,
+      allowFetch: config.allowFetch,
+    });
   const github = createGithubAdapter();
   const audit = createAuditLog(db);
   const jobs = createJobQueue(db);
-  const runner = options.runner ?? createDefaultJobRunner({ config, vps, cache });
+  const runner = options.runner ?? createDefaultJobRunner({ config, merchant });
   const worker = startJobWorker({
     queue: jobs,
     runner,
@@ -67,5 +80,40 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
   if (options.startWorker === false) {
     worker.stop();
   }
-  return { config, db, auth, woo, cache, vps, git, github, audit, jobs, runner, worker };
+  const startedAt = Date.now();
+  const health = createHealthAdapter({
+    storefrontUrl: config.storefrontUrl,
+    apiUrl: config.wooBaseUrl,
+    extraHosts,
+    fetchImpl: options.fetchImpl,
+    gitStatus: () => git.status(),
+    dbPing: () => {
+      try {
+        sqlite.prepare("SELECT 1").get();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    worker,
+    startedAt,
+  });
+  return {
+    config,
+    db,
+    sqlite,
+    auth,
+    catalog,
+    woo: catalog,
+    storefront,
+    merchant,
+    health,
+    git,
+    github,
+    audit,
+    jobs,
+    runner,
+    worker,
+    startedAt,
+  };
 }

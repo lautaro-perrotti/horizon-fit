@@ -32,14 +32,14 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/audit/history", { token })).status).toBe(200);
   });
 
-  it("Cursor token cannot call seo.execute or merchant.execute", async () => {
+  it("Cursor token cannot call seo.* or merchant.*", async () => {
     const { app, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "cursor", scopes: CLIENT_SCOPES.cursor });
 
-    const seo = await request(app, "/v1/seo/audit", { method: "POST", token, body: {} });
-    expect(seo.status).toBe(403);
-    const merchant = await request(app, "/v1/merchant/audit", { method: "POST", token });
-    expect(merchant.status).toBe(403);
+    expect((await request(app, "/v1/seo/audit", { method: "POST", token, body: {} })).status).toBe(403);
+    expect((await request(app, "/v1/seo/audits/latest", { token })).status).toBe(403);
+    expect((await request(app, "/v1/merchant/audit", { method: "POST", token })).status).toBe(403);
+    expect((await request(app, "/v1/merchant/diagnostics", { token })).status).toBe(403);
   });
 
   it("Cursor can call health, catalog, repo.status, tests.run", async () => {

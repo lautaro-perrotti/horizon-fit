@@ -13,6 +13,17 @@ describe("MVP tools", () => {
     expect(body.products[0].sku).toBe("HF-C1");
   });
 
+  it("catalog.get_product returns Horizon SKU 001-TOP-AZU", async () => {
+    const { app, keys } = await buildTestApp();
+    const token = await signToken(keys.privateKey, { client: "claude", scopes: CLIENT_SCOPES.claude });
+    const response = await request(app, "/v1/catalog/products/001-TOP-AZU", { token });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.sku).toBe("001-TOP-AZU");
+    expect(body.parent_sku).toBe("001-TOP-AZU");
+    expect(body.variations[0].sku).toBe("001-TOP-AZU-S");
+  });
+
   it("seo.audit enqueues a mocked job and does not crawl production", async () => {
     const { app, keys, services } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "claude", scopes: CLIENT_SCOPES.claude });
@@ -27,24 +38,15 @@ describe("MVP tools", () => {
     expect((stored?.result as { mocked?: boolean })?.mocked).toBe(true);
   });
 
-  it("seo.audit rejects URLs outside the allowlist at job run time", async () => {
-    const { services, keys } = await buildTestApp({
-      runner: undefined,
-    });
+  it("seo.audit ignores agent URLs and always stores the allowlisted origin", async () => {
+    const { services, keys } = await buildTestApp();
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const principal = await services.auth.verifyAccessToken(token);
     const enqueued = await dispatchCommand(services, "seo.audit", { url: "https://evil.example" }, principal);
     expect(enqueued.ok).toBe(true);
     if (enqueued.ok) {
-      const job = enqueued.data as { id: string };
-      const { createDefaultJobRunner } = await import("../src/jobs/runner.js");
-      const runner = createDefaultJobRunner({
-        config: services.config,
-        vps: services.vps,
-        cache: services.cache,
-      });
-      await expect(runner("seo.audit", { url: "https://evil.example" })).rejects.toThrow(/not_allowlisted/);
-      expect(job.id).toBeTruthy();
+      const job = enqueued.data as { id: string; args: { target: string } };
+      expect(job.args.target).toBe("https://horizonfit.com.ar");
     }
   });
 
@@ -70,11 +72,15 @@ describe("MVP tools", () => {
     expect(jobsRun.some((job) => job.type === "tests.run")).toBe(true);
   });
 
-  it("ops.health degrades when docker is absent", async () => {
-    const { app, keys } = await buildTestApp();
+  it("ops.health degrades when HTTP probes fail", async () => {
+    const { app, keys } = await buildTestApp({
+      fetchImpl: async () => new Response("down", { status: 503 }),
+    });
     const token = await signToken(keys.privateKey, { client: "cursor", scopes: CLIENT_SCOPES.cursor });
     const response = await request(app, "/v1/health", { token });
     const body = await response.json();
-    expect(body.containers.every((row: { present: boolean }) => row.present === false)).toBe(true);
+    expect(body.status).toBe("unavailable");
+    expect(body.storefront.ok).toBe(false);
+    expect(body.api.ok).toBe(false);
   });
 });

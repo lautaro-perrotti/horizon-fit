@@ -1,0 +1,25 @@
+{
+  "id": 100,
+  "name": "Top Dynamic blue",
+  "slug": "top-liso-azul-s",
+  "parent": 99,
+  "type": "variation",
+  "sku": "001-TOP-AZU-S",
+  "description": "",
+  "short_description": "",
+  "prices": {
+    "price": "6700000",
+    "currency_code": "ARS",
+    "currency_minor_unit": 2
+  },
+  "images": [
+    {
+      "src": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"
+    }
+  ],
+  "attributes": [
+    { "name": "Talle", "value": "S", "terms": [{ "name": "S" }] },
+    { "name": "Color", "value": "Azul", "terms": [{ "name": "Azul" }] }
+  ],
+  "is_in_stock": true
+}

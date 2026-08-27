@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-08-27T00:00:00Z",
+  "ready": 1,
+  "blocked": 1,
+  "items": [
+    {
+      "sku": "001-TOP-AZU-S",
+      "ready": true,
+      "data": { "title": "Top Dynamic blue - Azul - S", "id": "001-TOP-AZU-S" },
+      "issues": []
+    },
+    {
+      "sku": "001-TOP-AZU-M",
+      "ready": false,
+      "data": { "title": "Top Dynamic blue - Azul - M", "id": "001-TOP-AZU-M" },
+      "issues": [
+        {
+          "severity": "error",
+          "code": "missing_image",
+          "message": "Falta imagen principal."
+        }
+      ]
+    }
+  ]
+}

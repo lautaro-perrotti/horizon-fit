@@ -1,8 +1,10 @@
-# Horizon Control Plane — Architecture (Phase 0 + Phase 1)
+# Horizon Control Plane — Architecture (Phase 0 + 1 + 2)
 
 Horizon Control (`horizon-control`) is the **MCP Resource Server** and HTTP command API for Horizon Fit. It is **not** an Authorization Server: it never logs users in, never stores passwords, never mints or refreshes tokens, and never shows consent screens.
 
-This document records the **approved** MVP decisions. Later phases (cache.regenerate, catalog writes, repo writes, patches, PRs, deploy, rollback, orders, pricing/stock, shell, SSH) are out of scope.
+Phase 2 replaces mock/VPS/Woo-application-password adapters with **real read-only** catalog, merchant, SEO, repo, health, and storefront adapters. Agents can ask for SKU `001-TOP-AZU`, Merchant problems, SEO audit, repo HEAD, service health, and home/menu **without any mutation**.
+
+This document records the **approved** MVP decisions. Later phases (cache.regenerate, catalog writes, repo writes, patches, PRs, deploy, rollback, orders, pricing/stock, shell, SSH, generic HTTP) are out of scope.
 
 ## Specs used (auth)
 
@@ -41,9 +43,9 @@ One Node 22 process:
 - HTTP `/v1` (Hono) — same commands as MCP
 - HTTP `/mcp` — Streamable HTTP adapter (`@modelcontextprotocol/sdk`). **Zero business logic.**
 - In-process SQLite job worker
-- VPS adapter in-process (docker inspect, HTTP probes, typed job argv)
+- Read-only adapters: Woo Store API, local/HTTP merchant artifacts, local git, HTTP health probes, storefront cache/REST, typed job argv (`scripts/seo-audit.js`, PHP/node validators)
 
-No second microservice. No Kubernetes. **Not** added to the shop `docker-compose.yml`. A systemd unit file exists at `ops/systemd/horizon-control.service` as a **file only** (not installed on the VPS by this branch).
+No second microservice. No Kubernetes. **Not** added to the shop `docker-compose.yml`. A systemd unit file exists at `ops/systemd/horizon-control.service` as a **file only** (not installed on the VPS by this branch). Phase 2 does **not** use remote Docker inspect or SSH.
 
 ## Identity: Auth0 (hosted OIDC)
 
@@ -76,7 +78,7 @@ CP validates Bearer tokens only:
 - client identity from `azp` / `client_id` / `sub`
 - scopes from `scope` (space-delimited) and/or `permissions`
 
-**Tests** never call a live IdP. They sign JWTs with a local RSA key and validate against a test JWKS.
+**Tests** never call a live IdP. They sign JWTs with a local RSA key and validate against a test JWKS. In-process JWKS is rejected unless `NODE_ENV=test`.
 
 ## Scopes and tools (MVP — 12 only)
 
@@ -106,7 +108,7 @@ Scope names (Auth0 API permissions; intent is stable if the IdP maps aliases):
 
 ### Hard deny list (must never be registered)
 
-`shell.execute`, `ssh`, `wp.eval`, generic `docker exec`, `sql`, `files.write` on prod, `cache.regenerate`, `deploy`, `rollback`, `repo.merge`, catalog/price/stock writes.
+`shell.execute`, `ssh`, `wp.eval`, generic `docker exec`, `sql`, `files.write` on prod, `cache.regenerate`, `deploy`, `rollback`, `repo.merge`, catalog/price/stock writes, generic `http.request` / shell.
 
 `seo.audit` / `tests.run` / `merchant.audit` are **controlled operational jobs**. They may write **gitignored reports**. They are **not** business-data writes.
 
@@ -117,29 +119,31 @@ MCP tools / HTTP /v1 / CLI
         ↓  (authn + scope)
    core/commands   ← only place with business rules
         ↓
-   adapters: woo (REST, secrets stay in env)
-             wp-cli (READ cache JSON files)
-             vps (health + typed job argv only)
+   adapters: catalog (Woo Store API GET, no credentials)
+             storefront (cache JSON + public REST)
+             merchant (existing artifacts only)
              git (read-only status)
+             health (HTTP storefront + API + local repo)
+             process (allowlisted job argv)
              github (stub)
         ↓
    SQLite: jobs, audit_events, idempotency_keys
            (NO oauth client/token tables)
 ```
 
-Secrets (Woo application password, OIDC config) **never** leave the process. Audit logs store **redacted** args (keys matching `/password|token|authorization|secret|passwd|api[_-]?key/i`).
+OIDC config **never** leaves the process. Audit logs store **redacted** args (keys matching `/password|token|authorization|secret|passwd|api[_-]?key|cookie|bearer/i` plus `HORIZON_*` / `WOO_*`). Catalog filters are stored as the allowlisted query fields only. Bearer tokens, cookies, and env values are stripped from errors.
 
 ## Reused existing ops (invoke, do not rewrite)
 
 | Concern | Existing artifact |
 | --- | --- |
-| Health | `docker inspect` of `horizon-fit-{db,wp,spa,wpcli}`; HTTP `8088` (SPA) / `8089` (WP); `git rev-parse HEAD` vs `origin/main`. Degrade if Docker is absent. |
-| Catalog | Woo REST `wc/v3` with Application Password from env. Tests **mock** Woo. |
-| Storefront config | Read `uploads/horizon-fit-cache/*.json` when `HORIZON_CACHE_DIR` is set. |
-| SEO audit | Enqueue `node scripts/seo-audit.js` with URL allowlist **`https://horizonfit.com.ar` only**. Tests mock the runner. |
-| Latest SEO audit | Latest `reports/seo-audit/*.json` or empty. |
-| Merchant | **Read** `merchant-diagnostics.txt` / `merchant-products.json` from `HORIZON_MERCHANT_DIR`. Do not regenerate. |
-| Repo status | Local `git` of `HORIZON_REPO_DIR` (branch, dirty, ahead/behind). Read only. |
+| Health | HTTP GET `HORIZON_STOREFRONT_URL` + `HORIZON_WOO_BASE_URL`; local `git` HEAD; CP uptime; SQLite ping; job worker. Status `healthy` / `degraded` / `unavailable`. No Docker/SSH this phase. |
+| Catalog | Public Woo Store API `GET /wp-json/wc/store/v1/products` (query, sku, category, stock_status, page). Color/talle filtered locally. Tests **mock HTTP**. Never mutates Woo. |
+| Storefront config | Read `uploads/horizon-fit-cache/{menu,home-sections,home-layout}.json` when `HORIZON_CACHE_DIR` is set, else public cache/REST on the API host. Missing pieces are `unavailable` (never invented). |
+| SEO audit | Enqueue `node scripts/seo-audit.js` with argv allowlist **`https://horizonfit.com.ar`** (+ www if passed internally). Agent URLs are ignored. Tests mock the runner. |
+| Latest SEO audit | Latest `seo.audit` **job** result (not a live crawl). |
+| Merchant | **Read** `merchant-diagnostics.txt` / `merchant-products.json` from `HORIZON_MERCHANT_DIAGNOSTICS_PATH`, else an allowlisted endpoint, else `diagnostics_unavailable`. Do not regenerate. |
+| Repo status | Local `git` of `HORIZON_REPO_PATH` (branch, HEAD, dirty summary, ahead/behind, remote). Fetch only if `HORIZON_GIT_FETCH=1`. No checkout/reset/clean/commit/push. |
 | Tests.run | Enqueue `php tests/search-merchant-tests.php` + `node scripts/validate-home-v1.js` if binaries exist. CP unit tests mock this. |
 
 ## GitHub branch protection
@@ -168,16 +172,18 @@ HORIZON_PORT=8787
 HORIZON_PUBLIC_URL=http://<tailscale-magicdns>:8787
 HORIZON_OIDC_ISSUER=https://<tenant>.auth0.com/
 HORIZON_OIDC_AUDIENCE=https://horizon-control.tailnet/mcp
-HORIZON_OIDC_JWKS_URL=https://<tenant>.auth0.com/.well-known/jwks.json
-HORIZON_REPO_DIR=/root/horizon-fit
+HORIZON_OIDC_JWKS_URI=https://<tenant>.auth0.com/.well-known/jwks.json
+HORIZON_STOREFRONT_URL=https://horizonfit.com.ar
+HORIZON_WOO_BASE_URL=https://api.horizonfit.com.ar
+HORIZON_REPO_PATH=/root/horizon-fit
 HORIZON_CACHE_DIR=.../uploads/horizon-fit-cache
-HORIZON_MERCHANT_DIR=.../uploads/horizon-fit-seo
-HORIZON_SEO_REPORT_DIR=.../reports/seo-audit
-WOO_BASE_URL=https://api.horizonfit.com.ar
-WOO_USER=...
-WOO_APP_PASSWORD=...            # never returned to clients
+HORIZON_MERCHANT_DIAGNOSTICS_PATH=.../uploads/horizon-fit-merchant
 HORIZON_SQLITE_PATH=./data/horizon-control.sqlite
 ```
+
+Phase 2 catalog uses the **public Store API** (no Woo application password). Optional `HORIZON_MERCHANT_DIAGNOSTICS_URL` is an allowlisted HTTP fallback. `HORIZON_GIT_FETCH` defaults off.
+
+Default `npm test` never hits production. `npm run test:integration` is opt-in via `HORIZON_INTEGRATION=1` plus the env vars above. Test JWKS is allowed only when `NODE_ENV=test`.
 
 ## Leftover human setup
 

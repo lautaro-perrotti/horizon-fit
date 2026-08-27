@@ -1,9 +1,9 @@
-import path from "node:path";
-import { SEO_AUDIT_ALLOWLIST } from "../config.js";
+import { SEO_AUDIT_ORIGIN } from "../config.js";
 import type { Config } from "../config.js";
-import type { VpsAdapter } from "../adapters/vps.js";
-import type { CacheAdapter } from "../adapters/wp-cli.js";
+import type { MerchantAdapter } from "../adapters/merchant.js";
+import { runTypedJob } from "../adapters/process.js";
 import type { AllowedJobType } from "./queue.js";
+import { sanitizeError } from "../auth/redact.js";
 
 export type JobRunResult = {
   stdout: string;
@@ -15,44 +15,30 @@ export type JobRunResult = {
 
 export type JobRunner = (type: AllowedJobType, args: Record<string, unknown>) => Promise<JobRunResult>;
 
-function assertAllowlistedSeoUrl(url: string): string {
-  const parsed = new URL(url);
-  parsed.hash = "";
-  parsed.search = "";
-  parsed.pathname = "/";
-  const normalized = parsed.origin;
-  if (!SEO_AUDIT_ALLOWLIST.includes(normalized)) {
-    throw new Error(`seo_url_not_allowlisted:${url}`);
-  }
-  return `${normalized}/`;
-}
-
 export function createDefaultJobRunner(options: {
   config: Config;
-  vps: VpsAdapter;
-  cache: CacheAdapter;
+  merchant: MerchantAdapter;
 }): JobRunner {
-  const repo = options.config.HORIZON_REPO_DIR || process.cwd();
+  const repo = options.config.repoPath || process.cwd();
 
-  return async (type, args) => {
+  return async (type) => {
     if (type === "seo.audit") {
-      const requested = String(args.url ?? "https://horizonfit.com.ar");
-      const url = assertAllowlistedSeoUrl(requested);
-      return options.vps.typedJob({
+      return runTypedJob({
         command: options.config.NODE_BIN,
-        args: [path.join("scripts", "seo-audit.js"), url, "--all"],
+        script: "scripts/seo-audit.js",
+        extraArgs: [SEO_AUDIT_ORIGIN, "--all"],
         cwd: repo,
       });
     }
     if (type === "tests.run") {
-      const php = await options.vps.typedJob({
+      const php = await runTypedJob({
         command: options.config.PHP_BIN,
-        args: [path.join("tests", "search-merchant-tests.php")],
+        script: "tests/search-merchant-tests.php",
         cwd: repo,
       });
-      const node = await options.vps.typedJob({
+      const node = await runTypedJob({
         command: options.config.NODE_BIN,
-        args: [path.join("scripts", "validate-home-v1.js")],
+        script: "scripts/validate-home-v1.js",
         cwd: repo,
       });
       return {
@@ -63,15 +49,17 @@ export function createDefaultJobRunner(options: {
       };
     }
     if (type === "merchant.audit") {
-      const snapshot = await options.cache.readMerchantDiagnostics();
+      const snapshot = await options.merchant.readDiagnostics();
       return {
         stdout: snapshot.diagnosticsTxt ?? "",
-        stderr: "",
-        exitCode: 0,
+        stderr: snapshot.error ?? "",
+        exitCode: snapshot.error ? 1 : 0,
         extra: {
           regenerated: false,
           path: snapshot.path,
+          source: snapshot.source,
           hasProductsJson: snapshot.productsJson !== null,
+          error: snapshot.error,
         },
       };
     }
@@ -79,26 +67,52 @@ export function createDefaultJobRunner(options: {
   };
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`job_timeout:${timeoutMs}`)), timeoutMs);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 export function startJobWorker(options: {
-  queue: { claimNext: () => Promise<{ id: string; type: string; args: Record<string, unknown> } | null>; finish: (id: string, result: unknown) => Promise<void>; fail: (id: string, error: string) => Promise<void> };
+  queue: {
+    claimNext: () => Promise<{ id: string; type: string; args: Record<string, unknown>; timeoutMs: number; attempt: number; maxAttempts: number } | null>;
+    finish: (id: string, result: unknown) => Promise<void>;
+    fail: (id: string, error: string, retry?: boolean) => Promise<void>;
+  };
   runner: JobRunner;
   intervalMs?: number;
-}): { stop: () => void; tick: () => Promise<void> } {
+}): { stop: () => void; tick: () => Promise<void>; lastTickAt: number | null; stopped: boolean } {
   let stopped = false;
+  let lastTickAt: number | null = null;
   const intervalMs = options.intervalMs ?? 250;
 
   async function tick() {
+    lastTickAt = Date.now();
     const job = await options.queue.claimNext();
     if (!job) return;
     try {
-      const result = await options.runner(job.type as AllowedJobType, job.args);
+      const result = await withTimeout(options.runner(job.type as AllowedJobType, job.args), job.timeoutMs);
       if (result.exitCode !== 0) {
-        await options.queue.fail(job.id, result.stderr || `exit_${result.exitCode}`);
+        await options.queue.fail(job.id, sanitizeError(result.stderr || `exit_${result.exitCode}`), job.attempt < job.maxAttempts);
         return;
       }
       await options.queue.finish(job.id, result);
     } catch (error) {
-      await options.queue.fail(job.id, error instanceof Error ? error.message : String(error));
+      await options.queue.fail(
+        job.id,
+        sanitizeError(error instanceof Error ? error.message : String(error)),
+        job.attempt < job.maxAttempts,
+      );
     }
   }
 
@@ -108,6 +122,12 @@ export function startJobWorker(options: {
   timer.unref?.();
 
   return {
+    get lastTickAt() {
+      return lastTickAt;
+    },
+    get stopped() {
+      return stopped;
+    },
     stop() {
       stopped = true;
       clearInterval(timer);

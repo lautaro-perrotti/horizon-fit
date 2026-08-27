@@ -46,7 +46,7 @@ export type CommandResult<T = unknown> = {
   code?: string;
 };
 
-export type JobStatus = "queued" | "running" | "succeeded" | "failed";
+export type JobStatus = "queued" | "running" | "succeeded" | "failed" | "cancelled";
 
 export type JobRecord = {
   id: string;
@@ -57,8 +57,13 @@ export type JobRecord = {
   error?: string | null;
   actor?: string | null;
   clientId?: string | null;
+  attempt: number;
+  maxAttempts: number;
+  timeoutMs: number;
   createdAt: number;
   updatedAt: number;
+  startedAt?: number | null;
+  finishedAt?: number | null;
 };
 
 export type AuditEvent = {
@@ -67,9 +72,53 @@ export type AuditEvent = {
   actor: string;
   clientId: string;
   tool: string;
+  scope: string | null;
   argsRedacted: Record<string, unknown>;
   outcome: "ok" | "error" | "forbidden" | "unauthorized";
   statusCode: number;
+  durationMs: number;
   jobId?: string | null;
   error?: string | null;
+};
+
+export type HealthStatus = "healthy" | "degraded" | "unavailable";
+
+export type CatalogSearchFilters = {
+  query?: string;
+  sku?: string;
+  category?: string;
+  color?: string;
+  size?: string;
+  talle?: string;
+  stock_status?: "instock" | "outofstock" | "onbackorder";
+  page?: number;
+  limit?: number;
+};
+
+export type CatalogVariation = {
+  id: number;
+  sku: string;
+  name: string;
+  parent: number;
+  in_stock: boolean;
+  price: { amount: string | null; currency: string; raw: string };
+  attributes: Array<{ name: string; value: string }>;
+  image: string | null;
+};
+
+export type CatalogProduct = {
+  id: number;
+  parent_sku: string;
+  sku: string;
+  slug: string;
+  name: string;
+  status: string;
+  categories: Array<{ name: string; slug: string }>;
+  description: string;
+  short_description: string;
+  images: string[];
+  attributes: Record<string, string[]>;
+  variations: CatalogVariation[];
+  price: { amount: string | null; currency: string; raw: string };
+  stock_status: string;
 };

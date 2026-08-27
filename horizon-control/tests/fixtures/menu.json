@@ -1,0 +1,4 @@
+[
+  { "label": "Shop", "url": "/", "children": [] },
+  { "label": "Tops", "url": "/coleccion/tops/", "children": [] }
+]

@@ -1,0 +1,5 @@
+[
+  { "type": "marquee", "settings": { "messages": ["Envíos a todo el país"] } },
+  { "type": "hero", "settings": { "title": "Horizon Fit" } },
+  { "type": "featured-products" }
+]
