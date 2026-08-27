@@ -13,7 +13,7 @@ import type { MerchantAdapter } from "../src/adapters/merchant.js";
 import type { GitAdapter } from "../src/adapters/git.js";
 
 export const ISSUER = "https://horizon-fit.test.auth0.com/";
-export const AUDIENCE = "https://horizon-control.tailnet/mcp";
+export const AUDIENCE = "https://horizon-control";
 
 export async function createTestKeys() {
   const pair: GenerateKeyPairResult = await generateKeyPair("RS256", { extractable: true });

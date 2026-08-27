@@ -57,7 +57,7 @@ Why this and not the rejected options:
 
 | Option | Verdict |
 | --- | --- |
-| **Auth0** | Smallest *hosted* AS that matches MCP-as-RS: JWT + JWKS, many applications (clients), **custom API scopes**, M2M (CLI) + Auth Code + PKCE (agents). First-party MCP RS docs and RFC 8707 `resource` via the Resource Parameter Compatibility Profile. Pre-register the four known clients (Claude, Cursor, Codex, Admin) plus the CLI. |
+| **Auth0** | Smallest *hosted* AS that matches MCP-as-RS: JWT + JWKS, many applications (clients), **custom API scopes**, M2M (CLI) + Auth Code + PKCE (agents). First-party MCP RS docs and RFC 8707 `resource` via the Resource Parameter Compatibility Profile. **API first** (identifier `https://horizon-control`); pre-register Claude, Cursor, Codex, Admin, and CLI **later**. |
 | Zitadel Cloud | Also a valid hosted OIDC. Slightly less MCP-specific documentation for `resource` / API scopes. Keep as fallback if Auth0 cost/terms become a problem. |
 | Keycloak self-hosted | Rejected: operational surface on the VPS. |
 | Minting JWTs inside horizon-control | Rejected: that would make CP an Authorization Server. |
@@ -65,11 +65,10 @@ Why this and not the rejected options:
 
 Auth0 tenant setup (human; exact clicks in `docs/AUTH0.md`):
 
-1. Create an **API** (resource server) whose identifier is `HORIZON_OIDC_AUDIENCE` (URI, e.g. `https://horizon-control.tailnet/mcp`).
-2. Enable **Resource Parameter Compatibility Profile** so MCP clients sending RFC 8707 `resource` get a JWT `aud` we can verify.
-3. Token dialect **`rfc9068_profile_authz`** so access tokens include `permissions` (and still a `scope` string).
-4. Pre-register applications: `horizon-claude`, `horizon-cursor`, `horizon-codex`, `horizon-admin`, `horizon-cli`. Do **not** enable DCR. CIMD is the spec’s preferred open registration; our client set is closed, so pre-registration is correct.
-5. Map the scopes below onto those apps / roles. Cursor/Codex MCP config: `docs/MCP-CLIENTS.md`.
+1. Create an **API** (resource server) named **Horizon Control** whose identifier is `HORIZON_OIDC_AUDIENCE` (`https://horizon-control`). JWT Profile **RFC 9068**, signing **RS256**.
+2. Enable **RBAC** and **Add Permissions in the Access Token** (token dialect **`rfc9068_profile_authz`**). Tenant **Settings → Advanced → Resource Parameter Compatibility Profile** → **ON** so MCP clients sending RFC 8707 `resource=https://horizon-control` get a JWT `aud` we can verify.
+3. **API first:** do not create Auth0 Applications / clients yet. Pre-register `horizon-claude`, `horizon-cursor`, `horizon-codex`, `horizon-admin`, `horizon-cli` in a later pass. Do **not** enable DCR.
+4. Permissions are listed below (`ops.read` is required by current code for `ops.health`). Cursor/Codex MCP config: `docs/MCP-CLIENTS.md`.
 
 CP validates Bearer tokens only:
 
@@ -174,7 +173,7 @@ HORIZON_BIND=127.0.0.1          # or Tailscale IP; never 0.0.0.0
 HORIZON_PORT=8787
 HORIZON_PUBLIC_URL=http://<tailscale-ip>:8787
 HORIZON_OIDC_ISSUER=https://<tenant>.auth0.com/
-HORIZON_OIDC_AUDIENCE=https://horizon-control.tailnet/mcp
+HORIZON_OIDC_AUDIENCE=https://horizon-control
 HORIZON_OIDC_JWKS_URI=https://<tenant>.auth0.com/.well-known/jwks.json
 HORIZON_STOREFRONT_URL=https://horizonfit.com.ar
 HORIZON_WOO_BASE_URL=https://api.horizonfit.com.ar
@@ -192,7 +191,7 @@ Default `npm test` never hits production or Auth0. It exercises `/mcp` Streamabl
 ## Leftover human setup
 
 1. Join the VPS and operator PCs to the same Tailscale tailnet (`docs/TAILSCALE.md`). Bind CP to loopback or the Tailscale IP only.
-2. Create the Auth0 API, scopes, and apps (`docs/AUTH0.md`). Put issuer/audience/JWKS into `/etc/horizon-control.env` (mode 0600), not git.
+2. Create the Auth0 **API** (Horizon Control, identifier `https://horizon-control`) and permissions (`docs/AUTH0.md`). Do **not** create Applications/clients yet. Put issuer/audience/JWKS into `/etc/horizon-control.env` (mode 0600), not git.
 3. Point Cursor (then Codex/Claude) at `/mcp` (`docs/MCP-CLIENTS.md`). Tokens stay in env / client secret storage.
 4. GitHub `main` branch protection was enabled (PR required, no force push, no deletions). Confirm in the UI if you want status checks added later.
 5. Do **not** put `horizon-control` on public nginx or in shop `docker-compose.yml`.

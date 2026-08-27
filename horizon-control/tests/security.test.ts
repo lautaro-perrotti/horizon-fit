@@ -149,7 +149,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
       NODE_ENV: "production",
       HORIZON_BIND: "127.0.0.1",
       HORIZON_OIDC_ISSUER: "https://horizon-fit.test.auth0.com/",
-      HORIZON_OIDC_AUDIENCE: "https://horizon-control.tailnet/mcp",
+      HORIZON_OIDC_AUDIENCE: "https://horizon-control",
       HORIZON_SQLITE_PATH: "",
       HORIZON_DATA_DIR: "",
     });
@@ -190,7 +190,7 @@ describe("security: JWT / scopes / SSRF / deny list (test JWKS)", () => {
       loadConfig({
         HORIZON_BIND: "0.0.0.0",
         HORIZON_OIDC_ISSUER: "https://horizon-fit.test.auth0.com/",
-        HORIZON_OIDC_AUDIENCE: "https://horizon-control.tailnet/mcp",
+        HORIZON_OIDC_AUDIENCE: "https://horizon-control",
       }),
     ).toThrow(/HORIZON_BIND/);
   });

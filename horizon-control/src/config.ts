@@ -9,7 +9,7 @@ const envSchema = z.object({
   HORIZON_PORT: z.coerce.number().default(8787),
   HORIZON_PUBLIC_URL: z.string().optional(),
   HORIZON_OIDC_ISSUER: z.string().default("https://horizon-fit.example.auth0.com/"),
-  HORIZON_OIDC_AUDIENCE: z.string().default("https://horizon-control.tailnet/mcp"),
+  HORIZON_OIDC_AUDIENCE: z.string().default("https://horizon-control"),
   HORIZON_OIDC_JWKS_URL: z.string().optional(),
   HORIZON_OIDC_JWKS_URI: z.string().optional(),
   HORIZON_REPO_DIR: z.string().default(""),
