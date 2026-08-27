@@ -1,0 +1,51 @@
+import { describe, expect, it } from "vitest";
+import { ALL_TOOLS, DENIED_TOOLS, CLIENT_SCOPES, TOOL_SCOPES } from "../src/config.js";
+import { denyList, listRegisteredTools } from "../src/mcp/index.js";
+import { buildTestApp, request, signToken } from "./helpers.js";
+
+describe("deny list / no arbitrary shell", () => {
+  it("registered MCP tools are exactly the 12 MVP tools", () => {
+    expect(listRegisteredTools()).toEqual(ALL_TOOLS);
+    expect(listRegisteredTools()).toHaveLength(12);
+  });
+
+  it("tool catalog has no shell, ssh, eval, sql, docker exec, files.write, cache.regenerate, or deploy", () => {
+    const tools = listRegisteredTools();
+    for (const denied of DENIED_TOOLS) {
+      expect(tools).not.toContain(denied);
+    }
+    const joined = tools.join(" ");
+    expect(joined).not.toMatch(/shell|ssh|eval|docker\.exec|sql|files\.write|cache\.regenerate|deploy|rollback/i);
+    expect(denyList()).toEqual(expect.arrayContaining(["shell.execute", "ssh", "wp.eval", "cache.regenerate"]));
+  });
+
+  it("Cursor token cannot mutate production: no regenerate/deploy/write tools even listed", async () => {
+    const { app, keys } = await buildTestApp();
+    const token = await signToken(keys.privateKey, { client: "cursor", scopes: CLIENT_SCOPES.cursor });
+    const response = await request(app, "/v1/tools", { token });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.catalog).toEqual(ALL_TOOLS);
+    expect(body.tools).toEqual([
+      "ops.health",
+      "catalog.search_products",
+      "catalog.get_product",
+      "storefront.get_config",
+      "repo.status",
+      "tests.run",
+      "jobs.get",
+      "audit.history",
+    ]);
+    expect(body.tools).not.toContain("seo.audit");
+    expect(body.tools).not.toContain("merchant.audit");
+    expect(body.catalog).not.toContain("cache.regenerate");
+    expect(body.catalog).not.toContain("deploy");
+    expect(body.catalog).not.toContain("shell.execute");
+  });
+
+  it("every registered tool has a mapped scope", () => {
+    for (const tool of ALL_TOOLS) {
+      expect(TOOL_SCOPES[tool]).toBeTruthy();
+    }
+  });
+});

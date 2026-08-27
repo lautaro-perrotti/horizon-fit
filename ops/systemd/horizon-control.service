@@ -1,0 +1,23 @@
+[Unit]
+Description=Horizon Fit control plane (Tailscale-only Resource Server)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/horizon-fit/horizon-control
+Environment=NODE_ENV=production
+Environment=HORIZON_BIND=127.0.0.1
+Environment=HORIZON_PORT=8787
+Environment=HORIZON_REPO_DIR=/root/horizon-fit
+EnvironmentFile=-/root/horizon-fit/horizon-control/.env
+ExecStart=/usr/bin/node --import tsx /root/horizon-fit/horizon-control/src/index.ts
+Restart=on-failure
+RestartSec=5
+Nice=5
+# FILE ONLY — do not install on the VPS from this branch.
+# Bind HORIZON_BIND to the Tailscale IP before enabling. Do not publish on public nginx.
+
+[Install]
+WantedBy=multi-user.target

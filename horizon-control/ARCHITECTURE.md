@@ -1,0 +1,188 @@
+# Horizon Control Plane — Architecture (Phase 0 + Phase 1)
+
+Horizon Control (`horizon-control`) is the **MCP Resource Server** and HTTP command API for Horizon Fit. It is **not** an Authorization Server: it never logs users in, never stores passwords, never mints or refreshes tokens, and never shows consent screens.
+
+This document records the **approved** MVP decisions. Later phases (cache.regenerate, catalog writes, repo writes, patches, PRs, deploy, rollback, orders, pricing/stock, shell, SSH) are out of scope.
+
+## Specs used (auth)
+
+Reviewed before implementation (July 2026-era MCP authorization):
+
+| Source | What we took from it |
+| --- | --- |
+| [MCP Authorization spec (2025-11-25)](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization) | MCP HTTP servers are OAuth **2.1 Resource Servers**. Clients are OAuth clients. A **separate** AS issues tokens. |
+| Same spec + [draft CIMD](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-client-id-metadata-document-00) | **Client ID Metadata Documents** are the preferred client registration mechanism. **DCR (RFC 7591) is optional / legacy**, not something we implement. Closed-set clients may be **pre-registered** at the AS. |
+| [RFC 9728](https://datatracker.ietf.org/html/rfc9728) Protected Resource Metadata | Publish `/.well-known/oauth-protected-resource` (and path-aware `/mcp` variant). On 401, send `WWW-Authenticate: Bearer … resource_metadata="…"`. |
+| [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707.html) Resource Indicators | Validate JWT `aud` / resource against this server. Reject tokens minted for someone else. |
+| [RFC 6750](https://datatracker.ietf.org/html/rfc6750) | Bearer usage. `invalid_token` → 401. `insufficient_scope` → 403. Include `scope` on challenges when useful. |
+| [MCP TS SDK — Require authorization](https://ts.sdk.modelcontextprotocol.io/v2/serving/authorization.html) | `requireBearerAuth` + `verifyAccessToken` only. **Do not** use frozen AS helpers (`mcpAuthRouter`, `ProxyOAuthServerProvider`) in `@modelcontextprotocol/server-legacy/auth`. |
+| [MCP security tutorial 2026-07-28](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/authorization) | Discovery chain: 401 → PRM → AS metadata (RFC 8414 / OIDC Discovery) → token → retry. |
+| [Auth0: Authorization for your MCP server](https://auth0.com/ai/docs/mcp/get-started/authorization-for-your-mcp-server) + [Resource Parameter Compatibility Profile](https://auth0.com/ai/docs/mcp/guides/resource-param-compatibility-profile) | Hosted AS that can mint **JWT access tokens** for an API identifier, custom scopes, and RFC 8707 `resource`. |
+
+## Network (MVP)
+
+**Tailscale only.** `horizon-control` is **not** published on public nginx. There is no `control.horizonfit.com.ar` and no public `/mcp`.
+
+```
+PC (Cursor, Claude, Codex, horizon CLI)
+        -- Tailscale --
+VPS horizon-control process  (:8787 bind Tailscale IP or 127.0.0.1)
+        /v1  +  /mcp  +  in-process job worker
+```
+
+Bind default: `127.0.0.1`. Production bind: the VPS Tailscale address / MagicDNS name (env `HORIZON_BIND`).
+
+**Explicit later non-goal (do not design now):** SaaS/cloud-hosted agents that cannot join Tailscale would need a public HTTPS endpoint behind OAuth + an identity-aware proxy (e.g. Cloudflare). Out of scope for MVP.
+
+## Process model
+
+One Node 22 process:
+
+- HTTP `/v1` (Hono) — same commands as MCP
+- HTTP `/mcp` — Streamable HTTP adapter (`@modelcontextprotocol/sdk`). **Zero business logic.**
+- In-process SQLite job worker
+- VPS adapter in-process (docker inspect, HTTP probes, typed job argv)
+
+No second microservice. No Kubernetes. **Not** added to the shop `docker-compose.yml`. A systemd unit file exists at `ops/systemd/horizon-control.service` as a **file only** (not installed on the VPS by this branch).
+
+## Identity: Auth0 (hosted OIDC)
+
+**Choice: Auth0** as the external Authorization Server.
+
+Why this and not the rejected options:
+
+| Option | Verdict |
+| --- | --- |
+| **Auth0** | Smallest *hosted* AS that matches MCP-as-RS: JWT + JWKS, many applications (clients), **custom API scopes**, M2M (CLI) + Auth Code + PKCE (agents). First-party MCP RS docs and RFC 8707 `resource` via the Resource Parameter Compatibility Profile. Pre-register the four known clients (Claude, Cursor, Codex, Admin) plus the CLI. |
+| Zitadel Cloud | Also a valid hosted OIDC. Slightly less MCP-specific documentation for `resource` / API scopes. Keep as fallback if Auth0 cost/terms become a problem. |
+| Keycloak self-hosted | Rejected: operational surface on the VPS. |
+| Minting JWTs inside horizon-control | Rejected: that would make CP an Authorization Server. |
+| GitHub as the only AS | Rejected: GitHub OAuth does not give a clean custom-scope matrix (`catalog.read` vs `seo.execute` vs `tests.execute`) on JWTs meant for *this* resource. |
+
+Auth0 tenant setup (human; see leftover checklist at the end of this file):
+
+1. Create an **API** (resource server) whose identifier is `HORIZON_OIDC_AUDIENCE` (URI, e.g. `https://horizon-control.tailnet/mcp`).
+2. Enable **Resource Parameter Compatibility Profile** so MCP clients sending RFC 8707 `resource` get a JWT `aud` we can verify.
+3. Token dialect **`rfc9068_profile_authz`** so access tokens include `permissions` (and still a `scope` string).
+4. Pre-register applications: `horizon-claude`, `horizon-cursor`, `horizon-codex`, `horizon-admin`, `horizon-cli`. Do **not** enable DCR. CIMD is the spec’s preferred open registration; our client set is closed, so pre-registration is correct.
+5. Map the scopes below onto those apps / roles.
+
+CP validates Bearer tokens only:
+
+- `iss` == `HORIZON_OIDC_ISSUER`
+- `aud` / resource includes `HORIZON_OIDC_AUDIENCE`
+- `exp` (clock skew ~60s)
+- signature via JWKS (`HORIZON_OIDC_JWKS_URL` or `{issuer}/.well-known/jwks.json`)
+- client identity from `azp` / `client_id` / `sub`
+- scopes from `scope` (space-delimited) and/or `permissions`
+
+**Tests** never call a live IdP. They sign JWTs with a local RSA key and validate against a test JWKS.
+
+## Scopes and tools (MVP — 12 only)
+
+Scope names (Auth0 API permissions; intent is stable if the IdP maps aliases):
+
+| Scope | Tools |
+| --- | --- |
+| `ops.read` | `ops.health` |
+| `catalog.read` | `catalog.search_products`, `catalog.get_product`, `storefront.get_config` |
+| `seo.read` | `seo.get_latest_audit` |
+| `seo.execute` | `seo.audit` (enqueue allowlisted crawl; gitignored report) |
+| `merchant.read` | `merchant.get_diagnostics` |
+| `merchant.execute` | `merchant.audit` (read existing artifacts; record a job; **do not regenerate**) |
+| `repo.read` | `repo.status` |
+| `tests.execute` | `tests.run` (enqueue existing PHP/node validators) |
+| `jobs.read` | `jobs.get` |
+| `audit.read` | `audit.history` |
+
+### Client matrix
+
+| Client | Allowed tools | Denied |
+| --- | --- | --- |
+| **Claude** | health, catalog.*, storefront.get_config, seo.*, merchant.*, jobs.get, audit.history | `repo.status`, `tests.run` |
+| **Cursor** | health, catalog.read (search/get + storefront), repo.status, tests.run, jobs.get, audit.history | `seo.*`, `merchant.*`, all production mutations |
+| **Codex** | same as Cursor | deploy / writes (not in MVP) |
+| **Admin** | all 12 | — |
+
+### Hard deny list (must never be registered)
+
+`shell.execute`, `ssh`, `wp.eval`, generic `docker exec`, `sql`, `files.write` on prod, `cache.regenerate`, `deploy`, `rollback`, `repo.merge`, catalog/price/stock writes.
+
+`seo.audit` / `tests.run` / `merchant.audit` are **controlled operational jobs**. They may write **gitignored reports**. They are **not** business-data writes.
+
+## Layering
+
+```
+MCP tools / HTTP /v1 / CLI
+        ↓  (authn + scope)
+   core/commands   ← only place with business rules
+        ↓
+   adapters: woo (REST, secrets stay in env)
+             wp-cli (READ cache JSON files)
+             vps (health + typed job argv only)
+             git (read-only status)
+             github (stub)
+        ↓
+   SQLite: jobs, audit_events, idempotency_keys
+           (NO oauth client/token tables)
+```
+
+Secrets (Woo application password, OIDC config) **never** leave the process. Audit logs store **redacted** args (keys matching `/password|token|authorization|secret|passwd|api[_-]?key/i`).
+
+## Reused existing ops (invoke, do not rewrite)
+
+| Concern | Existing artifact |
+| --- | --- |
+| Health | `docker inspect` of `horizon-fit-{db,wp,spa,wpcli}`; HTTP `8088` (SPA) / `8089` (WP); `git rev-parse HEAD` vs `origin/main`. Degrade if Docker is absent. |
+| Catalog | Woo REST `wc/v3` with Application Password from env. Tests **mock** Woo. |
+| Storefront config | Read `uploads/horizon-fit-cache/*.json` when `HORIZON_CACHE_DIR` is set. |
+| SEO audit | Enqueue `node scripts/seo-audit.js` with URL allowlist **`https://horizonfit.com.ar` only**. Tests mock the runner. |
+| Latest SEO audit | Latest `reports/seo-audit/*.json` or empty. |
+| Merchant | **Read** `merchant-diagnostics.txt` / `merchant-products.json` from `HORIZON_MERCHANT_DIR`. Do not regenerate. |
+| Repo status | Local `git` of `HORIZON_REPO_DIR` (branch, dirty, ahead/behind). Read only. |
+| Tests.run | Enqueue `php tests/search-merchant-tests.php` + `node scripts/validate-home-v1.js` if binaries exist. CP unit tests mock this. |
+
+## GitHub branch protection
+
+Agents never receive `repo.merge`. Humans merge via PR.
+
+**Required on `main`:** PR required, no force push, no deletions, status checks then merge. Existing VPS deploy timer (~1 min) is unchanged.
+
+**Enabled 2026-08-27** via `gh` on `lautaro-perrotti/horizon-fit` `main`: PR required (1 approving review), `enforce_admins` true, force pushes disabled, deletions disabled. No required status-check contexts yet (none configured in CI). Agents never receive `repo.merge`.
+
+If this rule is ever removed, restore it with:
+
+```text
+gh api -X PUT repos/lautaro-perrotti/horizon-fit/branches/main/protection \
+  -H "Accept: application/vnd.github+json" \
+  --input protection.json
+```
+
+GitHub UI fallback: Repo → Settings → Branches → rule for `main` → Require a pull request before merging, Do not allow bypassing, Block force pushes, Block deletions.
+
+## Env (production / VPS)
+
+```
+HORIZON_BIND=127.0.0.1          # or Tailscale IP
+HORIZON_PORT=8787
+HORIZON_PUBLIC_URL=http://<tailscale-magicdns>:8787
+HORIZON_OIDC_ISSUER=https://<tenant>.auth0.com/
+HORIZON_OIDC_AUDIENCE=https://horizon-control.tailnet/mcp
+HORIZON_OIDC_JWKS_URL=https://<tenant>.auth0.com/.well-known/jwks.json
+HORIZON_REPO_DIR=/root/horizon-fit
+HORIZON_CACHE_DIR=.../uploads/horizon-fit-cache
+HORIZON_MERCHANT_DIR=.../uploads/horizon-fit-seo
+HORIZON_SEO_REPORT_DIR=.../reports/seo-audit
+WOO_BASE_URL=https://api.horizonfit.com.ar
+WOO_USER=...
+WOO_APP_PASSWORD=...            # never returned to clients
+HORIZON_SQLITE_PATH=./data/horizon-control.sqlite
+```
+
+## Leftover human setup
+
+1. Join the VPS and operator PCs to the same Tailscale tailnet. Bind CP to the Tailscale IP only.
+2. Create the Auth0 tenant, API, scopes, and four+ apps as above. Put issuer/audience/JWKS into VPS env (not into git).
+3. GitHub `main` branch protection was enabled (PR required, no force push, no deletions). Confirm in the UI if you want status checks added later.
+4. Do **not** put `horizon-control` on public nginx.
+5. Install the systemd unit later, by hand, after Tailscale + Auth0 exist. This branch only adds the file.
