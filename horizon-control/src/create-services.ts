@@ -6,6 +6,9 @@ import { createCatalogAdapter, type CatalogAdapter } from "./adapters/woo.js";
 import { createCommerceAdapter, type CommerceAdapter } from "./adapters/commerce.js";
 import { createWarehouse, type Warehouse } from "./adapters/warehouse.js";
 import { createAssistantAdapter } from "./adapters/assistant.js";
+import { createSeoReportAdapter, type SeoReportAdapter } from "./adapters/seo-report.js";
+import { createAnalyticsAdapter, type AnalyticsAdapter } from "./adapters/analytics.js";
+import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter } from "./adapters/competitors.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
 import { createHealthAdapter } from "./adapters/health.js";
@@ -25,6 +28,9 @@ export type CreateServicesOptions = {
   woo?: CatalogAdapter;
   commerce?: CommerceAdapter;
   warehouse?: Warehouse;
+  seo?: SeoReportAdapter;
+  analytics?: AnalyticsAdapter;
+  competitors?: CompetitorsAdapter;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
   git?: GitAdapter;
@@ -88,7 +94,24 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
   const github = createGithubAdapter();
   const audit = createAuditLog(db);
   const jobs = createJobQueue(db);
-  const runner = options.runner ?? createDefaultJobRunner({ config, merchant });
+  const seo = options.seo ?? createSeoReportAdapter({ reportDir: config.seoReportDir });
+  const analytics =
+    options.analytics ??
+    createAnalyticsAdapter({
+      saPath: config.HORIZON_GOOGLE_SA_PATH,
+      saJson: config.HORIZON_GOOGLE_SA_JSON,
+      gscSiteUrl: config.HORIZON_GSC_SITE_URL,
+      ga4PropertyId: config.HORIZON_GA4_PROPERTY_ID,
+      extraHosts,
+      fetchImpl: options.fetchImpl,
+    });
+  const competitors =
+    options.competitors ??
+    createCompetitorsAdapter({
+      urls: parseCompetitorUrls(config.HORIZON_COMPETITOR_URLS),
+      fetchImpl: options.fetchImpl,
+    });
+  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo });
   const worker = startJobWorker({
     queue: jobs,
     runner,
@@ -123,12 +146,18 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       catalog,
       commerce,
       jobs,
+      seo,
+      analytics,
+      competitors,
     });
   const assistant = createAssistantAdapter({
     health,
     catalog,
     commerce,
     warehouse,
+    seo,
+    analytics,
+    competitors,
   });
   if (options.startWorker !== false) {
     const timer = setInterval(() => {
@@ -146,6 +175,9 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     commerce,
     warehouse,
     assistant,
+    seo,
+    analytics,
+    competitors,
     storefront,
     merchant,
     health,

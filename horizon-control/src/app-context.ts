@@ -13,6 +13,9 @@ import type { ResourceServer } from "./auth/resource-server.js";
 import type { CommerceAdapter } from "./adapters/commerce.js";
 import type { Warehouse } from "./adapters/warehouse.js";
 import type { AssistantAdapter } from "./adapters/assistant.js";
+import type { SeoReportAdapter } from "./adapters/seo-report.js";
+import type { AnalyticsAdapter } from "./adapters/analytics.js";
+import type { CompetitorsAdapter } from "./adapters/competitors.js";
 import type Database from "better-sqlite3";
 
 export type AppServices = {
@@ -25,6 +28,9 @@ export type AppServices = {
   commerce: CommerceAdapter;
   warehouse: Warehouse;
   assistant: AssistantAdapter;
+  seo: SeoReportAdapter;
+  analytics: AnalyticsAdapter;
+  competitors: CompetitorsAdapter;
   storefront: StorefrontAdapter;
   merchant: MerchantAdapter;
   health: HealthAdapter;

@@ -35,6 +35,11 @@ const envSchema = z.object({
   HORIZON_WOO_KEY: z.string().default(""),
   HORIZON_WOO_SECRET: z.string().default(""),
   HORIZON_DASHBOARD_CLIENT_ID: z.string().default(""),
+  HORIZON_GOOGLE_SA_PATH: z.string().default(""),
+  HORIZON_GOOGLE_SA_JSON: z.string().default(""),
+  HORIZON_GA4_PROPERTY_ID: z.string().default(""),
+  HORIZON_GSC_SITE_URL: z.string().default("https://horizonfit.com.ar/"),
+  HORIZON_COMPETITOR_URLS: z.string().default(""),
   PHP_BIN: z.string().default("php"),
   NODE_BIN: z.string().default("node"),
 });
@@ -48,6 +53,7 @@ export type Config = z.infer<typeof envSchema> & {
   wooBaseUrl: string;
   storefrontUrl: string;
   merchantDiagnosticsPath: string;
+  seoReportDir: string;
   sqlitePath: string;
   dataDir: string;
   allowFetch: boolean;
@@ -146,6 +152,9 @@ export function loadConfig(overrides: Record<string, string | number | undefined
     parsed.HORIZON_MERCHANT_DIAGNOSTICS_PATH,
     parsed.HORIZON_MERCHANT_DIR,
   );
+  const seoReportDir =
+    parsed.HORIZON_SEO_REPORT_DIR.trim() ||
+    (repoPath ? path.join(repoPath, "reports", "seo-audit") : path.join(process.cwd(), "reports", "seo-audit"));
   return {
     ...parsed,
     HORIZON_OIDC_ISSUER: issuer,
@@ -157,6 +166,7 @@ export function loadConfig(overrides: Record<string, string | number | undefined
     wooBaseUrl,
     storefrontUrl,
     merchantDiagnosticsPath,
+    seoReportDir,
     sqlitePath,
     dataDir,
     HORIZON_SQLITE_PATH: sqlitePath,
@@ -181,6 +191,7 @@ export const ALL_SCOPES: ScopeName[] = [
   "commerce.read",
   "metrics.read",
   "alerts.read",
+  "analytics.read",
 ];
 
 /** Historic Auth0 names accepted on inbound JWTs and canonicalized. */
@@ -228,6 +239,9 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "alerts.list": "alerts.read",
   "alerts.evaluate": "alerts.read",
   "assistant.ask": "alerts.read",
+  "analytics.search_console": "analytics.read",
+  "analytics.ga4": "analytics.read",
+  "analytics.competitors": "analytics.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -270,6 +284,9 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "commerce.read",
     "metrics.read",
     "alerts.read",
+    "seo.read",
+    "seo.audit",
+    "analytics.read",
   ],
 };
 

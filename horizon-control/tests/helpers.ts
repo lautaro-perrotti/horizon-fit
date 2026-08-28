@@ -10,6 +10,9 @@ import type { CatalogProduct } from "../src/types.js";
 import type { CatalogAdapter } from "../src/adapters/woo.js";
 import type { StorefrontAdapter } from "../src/adapters/storefront.js";
 import type { MerchantAdapter } from "../src/adapters/merchant.js";
+import type { SeoReportAdapter, SeoSummary } from "../src/adapters/seo-report.js";
+import type { AnalyticsAdapter, Ga4Report, GscReport } from "../src/adapters/analytics.js";
+import type { CompetitorsAdapter, CompetitorsReport } from "../src/adapters/competitors.js";
 import type { GitAdapter } from "../src/adapters/git.js";
 
 export const ISSUER = "https://horizon-fit.test.auth0.com/";
@@ -157,6 +160,86 @@ export function mockStorefront(): StorefrontAdapter {
   };
 }
 
+export const SAMPLE_SEO_SUMMARY: SeoSummary = {
+  generatedAt: "2026-08-27T12:00:00.000Z",
+  auditedCount: 12,
+  totals: { critical: 1, warning: 7 },
+  reportPath: "reports/seo-audit/latest.json",
+  age_h: 1,
+  pages: [
+    {
+      url: "https://horizonfit.com.ar/product/top-liso-azul/",
+      slug: "top-liso-azul",
+      title: "Top Dynamic blue",
+      description: "Top de entrenamiento",
+      critical: 1,
+      warning: 0,
+      issues: { critical: [{ message: "H1 vacío" }], warning: [] },
+    },
+  ],
+};
+
+export function mockSeo(summary: SeoSummary | null = null): SeoReportAdapter {
+  return {
+    readLatest() {
+      if (!summary) return { configured: false, summary: null, reason: "missing_seo_report" };
+      return { configured: true, summary };
+    },
+  };
+}
+
+const EMPTY_GSC: GscReport = {
+  configured: false,
+  ok: false,
+  reason: "missing_google_credentials",
+  store_id: "horizon-fit",
+  site_url: "https://horizonfit.com.ar/",
+  start_date: "2026-07-30",
+  end_date: "2026-08-27",
+  clicks: null,
+  impressions: null,
+  ctr: null,
+  position: null,
+  queries: [],
+};
+
+const EMPTY_GA4: Ga4Report = {
+  configured: false,
+  ok: false,
+  reason: "missing_google_credentials",
+  store_id: "horizon-fit",
+  property_id: "",
+  sessions: null,
+  users: null,
+  purchases: null,
+  channels: [],
+};
+
+export function mockAnalytics(gsc: Partial<GscReport> = {}, ga4: Partial<Ga4Report> = {}): AnalyticsAdapter {
+  return {
+    async searchConsole() {
+      return { ...EMPTY_GSC, ...gsc };
+    },
+    async ga4() {
+      return { ...EMPTY_GA4, ...ga4 };
+    },
+  };
+}
+
+export function mockCompetitors(report: Partial<CompetitorsReport> = {}): CompetitorsAdapter {
+  return {
+    async snapshot() {
+      return {
+        configured: false,
+        reason: "missing_competitor_urls",
+        store_id: "horizon-fit",
+        pages: [],
+        ...report,
+      };
+    },
+  };
+}
+
 export function mockMerchant(): MerchantAdapter {
   return {
     async readDiagnostics() {
@@ -203,6 +286,10 @@ export async function buildTestApp(overrides: CreateServicesOptions = {}) {
     HORIZON_REPO_PATH: "",
     HORIZON_STOREFRONT_URL: "https://horizonfit.com.ar",
     HORIZON_WOO_BASE_URL: "https://api.horizonfit.com.ar",
+    HORIZON_GOOGLE_SA_PATH: "",
+    HORIZON_GOOGLE_SA_JSON: "",
+    HORIZON_GA4_PROPERTY_ID: "",
+    HORIZON_COMPETITOR_URLS: "",
   });
   const jobsRun: Array<{ type: string; args: Record<string, unknown> }> = [];
   const services: AppServices = createServices({
@@ -213,6 +300,7 @@ export async function buildTestApp(overrides: CreateServicesOptions = {}) {
     storefront: mockStorefront(),
     merchant: mockMerchant(),
     git: mockGit(),
+    seo: mockSeo(),
     startWorker: false,
     sqlitePath: ":memory:",
     fetchImpl: async () => new Response("{}", { status: 200, headers: { "content-type": "application/json" } }),

@@ -103,6 +103,7 @@ Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`,
 | `commerce.read` | `commerce.sales`, `commerce.settings` (Woo REST; `configured:false` without keys) |
 | `metrics.read` | `metrics.snapshots` |
 | `alerts.read` | `alerts.list`, `alerts.evaluate`, `assistant.ask` |
+| `analytics.read` | `analytics.search_console`, `analytics.ga4`, `analytics.competitors` (Google SA + env competitor URLs; `configured:false` without creds) |
 
 MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so Cursor can list and call them. HTTP `/v1` still uses the dotted command names above.
 
@@ -111,10 +112,10 @@ MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so
 | Client | Allowed tools | Denied |
 | --- | --- | --- |
 | **Claude** | health, catalog.*, storefront.get_config, seo.*, merchant.*, jobs.get, audit.history | `repo.status`, `tests.run` |
-| **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.audit`, `merchant.audit` (and seo.read / merchant.read) |
-| **Codex** | same as Cursor | `seo.audit`, `merchant.audit` |
+| **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.*`, `merchant.*`, `commerce.*`, `alerts.*`, `analytics.*` |
+| **Codex** | same as Cursor | same as Cursor |
 | **Admin** | all registered read tools | writes (not registered) |
-| **Dashboard** | health, catalog, storefront, commerce, metrics, alerts/assistant | seo, merchant, repo, tests |
+| **Dashboard** | health, catalog, storefront, commerce, metrics, alerts/assistant, seo.read/seo.audit, analytics.read | merchant, repo, tests |
 
 ### Hard deny list (must never be registered)
 
@@ -137,6 +138,9 @@ MCP tools / HTTP /v1 / CLI
              health (HTTP storefront + API + local repo)
              warehouse (metric_snapshots + deterministic alerts)
              assistant (deterministic consult, no LLM)
+             seo-report (latest.json summary, never invented)
+             analytics (GSC + GA4 via Google SA; allowlisted Google hosts)
+             competitors (env URL homepage probes; no agent-supplied URLs)
              process (allowlisted job argv)
              github (stub)
         ↓
@@ -153,8 +157,8 @@ OIDC config **never** leaves the process. Audit logs store **redacted** args (ke
 | Health | HTTP GET `HORIZON_STOREFRONT_URL` + `HORIZON_WOO_BASE_URL`; local `git` HEAD; CP uptime; SQLite ping; job worker. Status `healthy` / `degraded` / `unavailable`. No Docker/SSH this phase. |
 | Catalog | Public Woo Store API `GET /wp-json/wc/store/v1/products` (query, sku, category, stock_status, page). Color/talle filtered locally. Tests **mock HTTP**. Never mutates Woo. |
 | Storefront config | Read `uploads/horizon-fit-cache/{menu,home-sections,home-layout}.json` when `HORIZON_CACHE_DIR` is set, else public cache/REST on the API host. Missing pieces are `unavailable` (never invented). |
-| SEO audit | Enqueue `node scripts/seo-audit.js` with argv allowlist **`https://horizonfit.com.ar`** (+ www if passed internally). Agent URLs are ignored. Tests mock the runner. |
-| Latest SEO audit | Latest `seo.audit` **job** result (not a live crawl). |
+| SEO audit | Enqueue `node scripts/seo-audit.js` with argv allowlist **`https://horizonfit.com.ar`** (+ www if passed internally). Writes `reports/seo-audit/latest.json`. Agent URLs are ignored. Tests mock the runner. |
+| Latest SEO audit | `{ configured, job, summary }` from latest job extra + `latest.json`. Never invents issues. |
 | Merchant | **Read** `merchant-diagnostics.txt` / `merchant-products.json` from `HORIZON_MERCHANT_DIAGNOSTICS_PATH`, else an allowlisted endpoint, else `diagnostics_unavailable`. Do not regenerate. |
 | Repo status | Local `git` of `HORIZON_REPO_PATH` (branch, HEAD, dirty summary, ahead/behind, remote). Fetch only if `HORIZON_GIT_FETCH=1`. No checkout/reset/clean/commit/push. |
 | Tests.run | Enqueue `php tests/search-merchant-tests.php` + `node scripts/validate-home-v1.js` if binaries exist. CP unit tests mock this. |
@@ -198,6 +202,13 @@ HORIZON_SQLITE_PATH=/var/lib/horizon-control/horizon-control.sqlite
 # HORIZON_WOO_SECRET=
 # public Auth0 SPA client id for /app
 # HORIZON_DASHBOARD_CLIENT_ID=
+# Google service account JSON path or inline JSON (never commit). Dashboard never sees this.
+# HORIZON_GOOGLE_SA_PATH=/etc/horizon-google.json
+# HORIZON_GOOGLE_SA_JSON=
+# HORIZON_GA4_PROPERTY_ID=123456789
+# HORIZON_GSC_SITE_URL=https://horizonfit.com.ar/
+# Comma-separated https competitor homepages (max 8). Not agent-supplied.
+# HORIZON_COMPETITOR_URLS=
 ```
 
 Phase 2 catalog uses the **public Store API** (no Woo application password). Optional `HORIZON_MERCHANT_DIAGNOSTICS_URL` is an allowlisted HTTP fallback. `HORIZON_GIT_FETCH` defaults off.

@@ -1,6 +1,7 @@
 import { SEO_AUDIT_ORIGIN } from "../config.js";
 import type { Config } from "../config.js";
 import type { MerchantAdapter } from "../adapters/merchant.js";
+import type { SeoReportAdapter } from "../adapters/seo-report.js";
 import { runTypedJob } from "../adapters/process.js";
 import type { AllowedJobType } from "./queue.js";
 import { sanitizeError } from "../auth/redact.js";
@@ -18,17 +19,26 @@ export type JobRunner = (type: AllowedJobType, args: Record<string, unknown>) =>
 export function createDefaultJobRunner(options: {
   config: Config;
   merchant: MerchantAdapter;
+  seo?: SeoReportAdapter;
 }): JobRunner {
   const repo = options.config.repoPath || process.cwd();
 
   return async (type) => {
     if (type === "seo.audit") {
-      return runTypedJob({
+      const run = await runTypedJob({
         command: options.config.NODE_BIN,
         script: "scripts/seo-audit.js",
         extraArgs: [SEO_AUDIT_ORIGIN, "--all"],
         cwd: repo,
       });
+      const latest = options.seo?.readLatest();
+      return {
+        ...run,
+        extra: {
+          summary: run.exitCode === 0 ? latest?.summary ?? null : null,
+          reportPath: latest?.summary?.reportPath ?? null,
+        },
+      };
     }
     if (type === "tests.run") {
       const php = await runTypedJob({

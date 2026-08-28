@@ -4,6 +4,7 @@ import type { AppServices } from "../../app-context.js";
 import { assertToolScope, ScopeError } from "../../auth/scopes.js";
 import { AuthError } from "../../auth/resource-server.js";
 import { assertSafeToolArgs, UnsafeArgsError } from "../../http/safe-args.js";
+import { compactSeoJob, summaryFromJobResult } from "../../adapters/seo-report.js";
 import type { AuthPrincipal, CommandResult, ToolName } from "../../types.js";
 
 const searchSchema = z.object({
@@ -33,6 +34,7 @@ const askSchema = z.object({
 });
 const snapshotsSchema = z.object({
   limit: z.number().int().min(1).max(50).optional(),
+  kpi: z.string().min(1).max(64).optional(),
 });
 
 export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
@@ -54,6 +56,9 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "alerts.list": emptySchema,
   "alerts.evaluate": emptySchema,
   "assistant.ask": askSchema,
+  "analytics.search_console": emptySchema,
+  "analytics.ga4": emptySchema,
+  "analytics.competitors": emptySchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -62,7 +67,7 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "catalog.get_product": "Get one product by id, parent SKU, or slug (read-only).",
   "storefront.get_config": "Read menu, home sections, hero, and marquee from existing caches/endpoints.",
   "seo.audit": "Enqueue allowlisted SEO audit of https://horizonfit.com.ar. Agent URLs are ignored.",
-  "seo.get_latest_audit": "Read the latest seo.audit job result stored by Horizon Control.",
+  "seo.get_latest_audit": "Read the latest SEO audit summary (pages with issues, totals). Never invents findings.",
   "merchant.audit": "Record a job that reads existing merchant diagnostics. Does not regenerate feeds.",
   "merchant.get_diagnostics": "Read merchant-diagnostics.txt and merchant-products.json.",
   "repo.status": "Local git status of HORIZON_REPO_PATH. Read only; no fetch unless configured.",
@@ -73,8 +78,11 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "commerce.settings": "Read allowlisted Woo general settings and payment gateways. No secrets.",
   "metrics.snapshots": "List recent metric snapshots from the local warehouse.",
   "alerts.list": "List warehouse alerts (open and resolved).",
-  "alerts.evaluate": "Run deterministic alert rules (storefront, stock sample, failed jobs).",
-  "assistant.ask": "Deterministic consult over health, catalog (max 10), sales, Woo settings, or alerts. No LLM.",
+  "alerts.evaluate": "Run deterministic alert rules (storefront, stock sample, failed jobs, SEO).",
+  "assistant.ask": "Deterministic consult over health, catalog (max 10), sales, SEO, GA4/GSC, competitors, allowlisted charts, or alerts. No LLM.",
+  "analytics.search_console": "Read Search Console clicks/impressions for horizonfit.com.ar. configured:false without Google credentials.",
+  "analytics.ga4": "Read GA4 sessions/users/channels. configured:false without credentials or property id.",
+  "analytics.competitors": "Probe env-allowlisted competitor homepages. Agent URLs are ignored. configured:false if HORIZON_COMPETITOR_URLS is empty.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -111,7 +119,15 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       });
     case "seo.get_latest_audit": {
       const latest = await services.jobs.latestOfType("seo.audit");
-      return latest ? { job: latest } : { job: null };
+      const fromJob = summaryFromJobResult(latest?.result);
+      const fromDisk = services.seo.readLatest();
+      const summary = fromJob ?? fromDisk.summary ?? null;
+      return {
+        configured: Boolean(summary),
+        reason: summary ? undefined : fromDisk.reason ?? "missing_seo_report",
+        job: compactSeoJob(latest),
+        summary,
+      };
     }
     case "merchant.audit": {
       const snapshot = await services.merchant.readDiagnostics();
@@ -152,7 +168,7 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       return services.commerce.settings();
     case "metrics.snapshots": {
       const parsed = snapshotsSchema.parse(args);
-      return { snapshots: services.warehouse.snapshots(parsed.limit) };
+      return { snapshots: services.warehouse.snapshots(parsed.limit, parsed.kpi) };
     }
     case "alerts.list":
       return { alerts: services.warehouse.listAlerts() };
@@ -162,6 +178,18 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       const parsed = askSchema.parse(args);
       return services.assistant.ask(parsed.question);
     }
+    case "analytics.search_console": {
+      const report = await services.analytics.searchConsole();
+      services.warehouse.recordGsc(report);
+      return report;
+    }
+    case "analytics.ga4": {
+      const report = await services.analytics.ga4();
+      services.warehouse.recordGa4(report);
+      return report;
+    }
+    case "analytics.competitors":
+      return services.competitors.snapshot();
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

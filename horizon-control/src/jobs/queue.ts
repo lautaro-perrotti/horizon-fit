@@ -29,7 +29,7 @@ export const ALLOWED_JOB_TYPES = ["seo.audit", "tests.run", "merchant.audit"] as
 export type AllowedJobType = (typeof ALLOWED_JOB_TYPES)[number];
 
 const DEFAULTS: Record<AllowedJobType, { timeoutMs: number; maxAttempts: number }> = {
-  "seo.audit": { timeoutMs: 120_000, maxAttempts: 1 },
+  "seo.audit": { timeoutMs: 600_000, maxAttempts: 1 },
   "tests.run": { timeoutMs: 120_000, maxAttempts: 1 },
   "merchant.audit": { timeoutMs: 15_000, maxAttempts: 1 },
 };

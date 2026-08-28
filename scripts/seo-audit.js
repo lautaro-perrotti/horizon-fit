@@ -295,7 +295,9 @@ async function run() {
   };
 
   fs.mkdirSync(reportDir, { recursive: true });
-  fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
+  const payload = `${JSON.stringify(report, null, 2)}\n`;
+  fs.writeFileSync(reportPath, payload);
+  fs.writeFileSync(path.join(reportDir, 'latest.json'), payload);
 
   console.log(`SEO audit: ${checks.length}/${urls.length} URLs`);
   console.log(`Críticos: ${totals.critical} | Warnings: ${totals.warning}`);
@@ -311,7 +313,7 @@ async function run() {
     for (const issue of page.issues.warning.slice(0, 4)) console.log(`  WARN: ${issue.message}${issue.evidence ? ` (${issue.evidence})` : ''}`);
   }
 
-  if (totals.critical > 0 || (strict && totals.warning > 0)) {
+  if (strict && (totals.critical > 0 || totals.warning > 0)) {
     process.exitCode = 1;
   }
 }

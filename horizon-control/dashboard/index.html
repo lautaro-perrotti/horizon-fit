@@ -3,81 +3,252 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Horizon Control Admin</title>
+    <title>Horizon Control</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/app/app.css" />
   </head>
   <body>
-    <header class="top">
-      <div>
-        <p class="eyebrow">Horizon Control</p>
-        <h1>Admin</h1>
-        <label class="store-filter">
-          Tienda
-          <select id="storeFilter" disabled>
-            <option value="horizon-fit" selected>Horizon Fit</option>
-          </select>
-        </label>
+    <div class="shell">
+      <header class="top">
+        <div class="brand">
+          <div class="mark">H</div>
+          <span>Horizon Control</span>
+        </div>
+        <span class="chip">Horizon Fit</span>
+        <select id="storeFilter" hidden>
+          <option value="horizon-fit" selected>Horizon Fit</option>
+        </select>
+        <nav class="tabs" id="tabNav" aria-label="Secciones">
+          <button type="button" data-tab="overview" class="active">Overview</button>
+          <button type="button" data-tab="sitio">Sitio</button>
+          <button type="button" data-tab="catalogo">Catálogo</button>
+          <button type="button" data-tab="analytics">Analytics</button>
+          <button type="button" data-tab="competencia">Competencia</button>
+          <button type="button" data-tab="ventas">Ventas</button>
+          <button type="button" data-tab="seo">SEO</button>
+          <button type="button" data-tab="merchant" class="blocked">Merchant</button>
+          <button type="button" data-tab="operaciones">Operaciones</button>
+          <button type="button" data-tab="alertas">Alertas</button>
+        </nav>
+        <div class="top-end">
+          <span class="session"><span class="dot" id="sessionDot"></span><span id="authState">sin sesión</span></span>
+          <button id="loginBtn" type="button">Entrar</button>
+          <button id="logoutBtn" type="button" hidden>Salir</button>
+          <button id="drawerBtn" type="button">Consulta <span class="kbd">⌘K</span></button>
+        </div>
+      </header>
+
+      <div class="status">
+        <span id="announceSite">horizonfit.com.ar</span>
+        <span id="announceApi">API</span>
+        <span id="announceCp">Control Plane</span>
+        <span id="announceAlerts" class="status-warn"></span>
       </div>
-      <div class="top-actions">
-        <span id="authState" class="muted">Sin sesión</span>
-        <button id="loginBtn" type="button">Entrar</button>
-        <button id="logoutBtn" type="button" hidden>Salir</button>
-      </div>
-    </header>
-    <nav class="tabs" aria-label="Secciones">
-      <button type="button" data-tab="site" class="active">Sitio</button>
-      <button type="button" data-tab="health">Salud</button>
-      <button type="button" data-tab="catalog">Catálogo</button>
-      <button type="button" data-tab="sales">Ventas</button>
-      <button type="button" data-tab="woo">Woo</button>
-      <button type="button" data-tab="alerts">Alertas</button>
-    </nav>
-    <p id="banner" class="banner" hidden></p>
-    <div class="workspace">
-      <main>
-        <section id="panel-site" class="panel embed-panel">
-          <div class="row embed-bar">
-            <input id="siteUrl" type="url" spellcheck="false" />
-            <button id="siteGo" type="button">Ir</button>
-            <button id="siteHome" type="button">Home</button>
-            <button id="sitePdp" type="button">Top azul</button>
-            <a id="siteOpen" href="https://horizonfit.com.ar/" target="_blank" rel="noopener">Nueva pestaña</a>
+
+      <p id="banner" class="banner" hidden></p>
+
+      <div class="stage">
+        <main>
+          <section id="panel-overview" class="panel">
+            <div class="overview">
+              <div class="col">
+                <article class="card">
+                  <div class="card-head">
+                    <h2>Ventas</h2>
+                    <span class="src">Source: commerce.sales · Woo REST</span>
+                  </div>
+                  <div id="overviewSales"></div>
+                </article>
+                <article class="card">
+                  <div class="card-head">
+                    <h2>Catálogo</h2>
+                    <span class="src">Source: catalog.search_products</span>
+                  </div>
+                  <div id="overviewCatalog" class="catalog-summary"></div>
+                </article>
+                <article class="card">
+                  <div class="card-head">
+                    <h2>Tráfico</h2>
+                    <span class="src">Source: analytics.ga4</span>
+                  </div>
+                  <div id="overviewTraffic"></div>
+                </article>
+              </div>
+              <div class="col">
+                <article class="card gauge-card">
+                  <h2>Salud general</h2>
+                  <div id="overviewHealth"></div>
+                </article>
+                <article class="card">
+                  <h2>Alertas</h2>
+                  <div id="overviewAlerts"></div>
+                </article>
+                <article class="card">
+                  <h2>Próximas fases</h2>
+                  <div class="phase">
+                    <div id="overviewSeo">SEO</div>
+                    <div>Merchant — diagnósticos <span class="src">(requiere scope)</span></div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section id="panel-sitio" class="panel" hidden>
+            <div class="sitio">
+              <div class="bar">
+                <input id="siteUrl" type="url" spellcheck="false" />
+                <button id="siteGo" type="button">Ir</button>
+                <button id="siteHome" type="button">Home</button>
+                <button id="sitePdp" type="button">Colección</button>
+                <a id="siteOpen" href="https://horizonfit.com.ar/" target="_blank" rel="noopener">Nueva pestaña ↗</a>
+              </div>
+              <div class="sitio-body">
+                <div class="monitor">
+                  <iframe id="siteFrame" title="Storefront Horizon Fit" src="about:blank"></iframe>
+                </div>
+                <aside class="inspector" id="siteInspector">
+                  <p class="muted">Elegí un producto en Catálogo para ver su inspector acá, o navegá el sitio con la barra de arriba.</p>
+                </aside>
+              </div>
+            </div>
+          </section>
+
+          <section id="panel-catalogo" class="panel" hidden>
+            <form id="catalogForm">
+              <input name="q" placeholder="Buscar SKU, nombre, producto..." autocomplete="off" />
+            </form>
+            <div class="table-wrap">
+              <div class="table-head">
+                <span>Producto</span><span>SKU</span><span>Categoría</span><span>Color</span><span>Precio</span><span>Stock</span><span>SEO</span><span>Merchant</span>
+              </div>
+              <div id="catalogOut"></div>
+            </div>
+            <div id="catalogDetail"></div>
+          </section>
+
+          <section id="panel-operaciones" class="panel" hidden>
+            <article class="card">
+              <h2>Salud</h2>
+              <div id="healthGrid" class="ops-grid"></div>
+            </article>
+            <article class="card">
+              <h2>Repo</h2>
+              <div id="repoOut" class="muted">vista previa · requiere <code>repo.read</code></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2>Jobs recientes</h2>
+                <span class="src">vista previa · requiere jobs.read</span>
+              </div>
+              <p class="muted">El dashboard no tiene <code>jobs.read</code>. No se inventan jobs.</p>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2>Audit</h2>
+                <span class="src">vista previa · requiere audit.read</span>
+              </div>
+              <p class="muted">El dashboard no tiene <code>audit.read</code>. No se inventa historial.</p>
+            </article>
+          </section>
+
+          <section id="panel-ventas" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Ventas</h2>
+                <span class="src">Source: commerce.sales · Woo REST v3</span>
+              </div>
+              <div id="salesOut"></div>
+            </article>
+          </section>
+
+          <section id="panel-alertas" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Alertas</h2>
+                <button id="evalAlerts" type="button">Evaluar ahora</button>
+              </div>
+              <div id="alertsOut"></div>
+            </article>
+          </section>
+
+          <section id="panel-seo" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">SEO</h2>
+                <span class="src">Source: seo.get_latest_audit</span>
+                <button id="seoAuditBtn" type="button">Auditar ahora</button>
+              </div>
+              <div id="seoStatus" class="muted"></div>
+              <div id="seoCards" class="catalog-summary"></div>
+              <div id="seoSpark"></div>
+            </article>
+            <article class="card">
+              <h2>URLs con issues</h2>
+              <div id="seoPages"></div>
+            </article>
+          </section>
+
+          <section id="panel-merchant" class="panel" hidden>
+            <article class="card locked">
+              <h2 class="title">Merchant</h2>
+              <p>Bloqueado hoy: el dashboard no tiene <code>merchant.read</code>. Cuando se amplíe el scope, esta pantalla lee <code>merchant.get_diagnostics</code>.</p>
+            </article>
+          </section>
+
+          <section id="panel-analytics" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">GA4</h2>
+                <span class="src">Source: analytics.ga4 · 28 días</span>
+              </div>
+              <div id="ga4Out"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Search Console</h2>
+                <span class="src">Source: analytics.search_console · 28 días</span>
+              </div>
+              <div id="gscOut"></div>
+            </article>
+          </section>
+
+          <section id="panel-competencia" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Competencia</h2>
+                <span class="src">Source: analytics.competitors · URLs del env</span>
+              </div>
+              <div id="competitorsOut"></div>
+            </article>
+          </section>
+
+          <section id="panel-woo" class="panel" hidden>
+            <article class="card">
+              <h2 class="title">Woo</h2>
+              <div id="wooOut"></div>
+            </article>
+          </section>
+        </main>
+
+        <aside id="drawer" class="drawer" aria-hidden="true">
+          <div class="drawer-head">
+            <div>
+              <div class="drawer-title">Consulta</div>
+              <div id="drawerContext" class="muted" hidden></div>
+            </div>
+            <button id="drawerClose" type="button" aria-label="Cerrar">×</button>
           </div>
-          <p class="muted embed-note">Vista embebida del storefront público. wp-admin no entra en iframe (abrilo desde Woo).</p>
-          <iframe id="siteFrame" title="Storefront Horizon Fit" src="about:blank"></iframe>
-        </section>
-        <section id="panel-health" class="panel" hidden>
-          <div class="grid" id="healthGrid"></div>
-        </section>
-        <section id="panel-catalog" class="panel" hidden>
-          <form id="catalogForm" class="row">
-            <input name="q" placeholder="SKU o nombre (001-TOP-AZU)" autocomplete="off" />
-            <button type="submit">Buscar</button>
+          <div id="askLog" class="ask-log"></div>
+          <div id="askHints" class="hints"></div>
+          <form id="askForm" class="ask-compose">
+            <input name="question" placeholder="¿Cuál es el precio del SKU 001-TOP-AZU?" autocomplete="off" />
+            <button type="submit">Preguntar</button>
           </form>
-          <div id="catalogOut" class="stack"></div>
-        </section>
-        <section id="panel-sales" class="panel" hidden>
-          <div id="salesOut" class="grid"></div>
-        </section>
-        <section id="panel-woo" class="panel" hidden>
-          <div id="wooOut" class="stack"></div>
-        </section>
-        <section id="panel-alerts" class="panel" hidden>
-          <div class="row">
-            <button id="evalAlerts" type="button">Evaluar ahora</button>
-          </div>
-          <div id="alertsOut" class="stack"></div>
-        </section>
-      </main>
-      <aside class="chat" aria-label="Consulta">
-        <h2>Consulta</h2>
-        <p class="muted">Preguntá por SKU, salud, ventas, alertas o config Woo. Sin LLM; llama `/v1`.</p>
-        <div id="askLog" class="ask-log"></div>
-        <form id="askForm" class="row">
-          <input name="question" placeholder="¿Cuál es el precio del SKU 001-TOP-AZU?" autocomplete="off" />
-          <button type="submit">Preguntar</button>
-        </form>
-      </aside>
+        </aside>
+      </div>
     </div>
     <script src="/app/app.js" type="module"></script>
   </body>

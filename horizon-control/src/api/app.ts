@@ -112,11 +112,18 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/commerce/settings", (c) => invoke(c, "commerce.settings", {}));
   app.get("/v1/metrics/snapshots", (c) => {
     const limit = c.req.query("limit");
-    return invoke(c, "metrics.snapshots", { limit: limit ? Number(limit) : undefined });
+    const kpi = c.req.query("kpi");
+    return invoke(c, "metrics.snapshots", {
+      limit: limit ? Number(limit) : undefined,
+      kpi: kpi || undefined,
+    });
   });
   app.get("/v1/alerts", (c) => invoke(c, "alerts.list", {}));
   app.post("/v1/alerts/evaluate", (c) => invoke(c, "alerts.evaluate", {}));
   app.post("/v1/assistant/ask", async (c) => invoke(c, "assistant.ask", await c.req.json().catch(() => ({}))));
+  app.get("/v1/analytics/search-console", (c) => invoke(c, "analytics.search_console", {}));
+  app.get("/v1/analytics/ga4", (c) => invoke(c, "analytics.ga4", {}));
+  app.get("/v1/analytics/competitors", (c) => invoke(c, "analytics.competitors", {}));
   app.get("/v1/tools", (c) =>
     c.json({
       tools: toolsForPrincipal(c.get("principal")),
@@ -149,7 +156,7 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
       storefrontUrl: config.storefrontUrl,
       apiUrl: config.wooBaseUrl,
       wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
-      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read",
+      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read",
     }),
   );
   app.get("/app", (c) => c.redirect("/app/"));
