@@ -166,6 +166,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     createInsightsAdapter({
       catalog,
       commerce,
+      analytics,
     });
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {

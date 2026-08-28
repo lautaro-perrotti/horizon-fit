@@ -11,7 +11,7 @@ import type { CatalogAdapter } from "../src/adapters/woo.js";
 import type { StorefrontAdapter } from "../src/adapters/storefront.js";
 import type { MerchantAdapter } from "../src/adapters/merchant.js";
 import type { SeoReportAdapter, SeoSummary } from "../src/adapters/seo-report.js";
-import type { AnalyticsAdapter, Ga4Report, GscReport } from "../src/adapters/analytics.js";
+import type { AnalyticsAdapter, Ga4ProductReport, Ga4Report, GscProductReport, GscReport } from "../src/adapters/analytics.js";
 import type { CompetitorsAdapter, CompetitorsReport } from "../src/adapters/competitors.js";
 import type { GitAdapter } from "../src/adapters/git.js";
 
@@ -215,13 +215,58 @@ const EMPTY_GA4: Ga4Report = {
   channels: [],
 };
 
-export function mockAnalytics(gsc: Partial<GscReport> = {}, ga4: Partial<Ga4Report> = {}): AnalyticsAdapter {
+const EMPTY_GA4_PRODUCT: Ga4ProductReport = {
+  configured: false,
+  ok: false,
+  reason: "missing_google_credentials",
+  store_id: "horizon-fit",
+  property_id: "",
+  period: "28d",
+  join: { item_id: null, page_path: null },
+  pdp_views: null,
+  view_item: null,
+  add_to_cart: null,
+  begin_checkout: null,
+  purchase: null,
+  purchase_revenue: null,
+  atc_rate: null,
+  checkout_rate: null,
+  cvr: null,
+};
+
+const EMPTY_GSC_PRODUCT: GscProductReport = {
+  configured: false,
+  ok: false,
+  reason: "missing_google_credentials",
+  store_id: "horizon-fit",
+  site_url: "https://horizonfit.com.ar/",
+  page: null,
+  start_date: "2026-07-30",
+  end_date: "2026-08-27",
+  clicks: null,
+  impressions: null,
+  ctr: null,
+  position: null,
+  queries: [],
+};
+
+export function mockAnalytics(
+  gsc: Partial<GscReport> = {},
+  ga4: Partial<Ga4Report> = {},
+  extra: { ga4Product?: Partial<Ga4ProductReport>; gscProduct?: Partial<GscProductReport> } = {},
+): AnalyticsAdapter {
   return {
     async searchConsole() {
       return { ...EMPTY_GSC, ...gsc };
     },
     async ga4() {
       return { ...EMPTY_GA4, ...ga4 };
+    },
+    async ga4Product() {
+      return { ...EMPTY_GA4_PRODUCT, ...extra.ga4Product };
+    },
+    async gscProduct() {
+      return { ...EMPTY_GSC_PRODUCT, ...extra.gscProduct };
     },
   };
 }

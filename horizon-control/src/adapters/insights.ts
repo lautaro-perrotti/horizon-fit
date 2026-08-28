@@ -1,6 +1,7 @@
 import type { CatalogProduct } from "../types.js";
 import type { CatalogAdapter } from "./woo.js";
 import type { CommerceAdapter, ProductSalesRollup } from "./commerce.js";
+import type { AnalyticsAdapter, Ga4ProductReport, GscProductReport } from "./analytics.js";
 import { resolveProductIdentity, type ProductIdentity } from "./product-identity.js";
 
 const STORE_ID = "horizon-fit";
@@ -46,8 +47,27 @@ export type ProductInsight = {
     revenue: number | null;
     aov: number | null;
   }>;
-  analytics: SourceSlice<null>;
-  search: SourceSlice<null>;
+  analytics: SourceSlice<{
+    period: "28d";
+    join: { item_id: string | null; page_path: string | null };
+    pdp_views: number | null;
+    view_item: number | null;
+    add_to_cart: number | null;
+    begin_checkout: number | null;
+    purchase: number | null;
+    purchase_revenue: number | null;
+    atc_rate: number | null;
+    checkout_rate: number | null;
+    cvr: number | null;
+  }>;
+  search: SourceSlice<{
+    page: string | null;
+    clicks: number | null;
+    impressions: number | null;
+    ctr: number | null;
+    position: number | null;
+    queries: Array<{ query: string; clicks: number; impressions: number; ctr: number; position: number }>;
+  }>;
   seo: SourceSlice<null>;
   merchant: SourceSlice<null>;
   competition: SourceSlice<null>;
@@ -86,16 +106,91 @@ function catalogSlice(product: CatalogProduct, fetched_at: string): ProductInsig
   };
 }
 
+function analyticsSlice(report: Ga4ProductReport, fetched_at: string): ProductInsight["analytics"] {
+  if (!report.configured) {
+    return {
+      available: false,
+      configured: false,
+      reason: report.reason ?? "missing_google_credentials",
+      fetched_at: null,
+      data: null,
+    };
+  }
+  return {
+    available: true,
+    configured: true,
+    reason: report.ok ? undefined : report.reason,
+    fetched_at,
+    data: {
+      period: report.period,
+      join: report.join,
+      pdp_views: report.pdp_views,
+      view_item: report.view_item,
+      add_to_cart: report.add_to_cart,
+      begin_checkout: report.begin_checkout,
+      purchase: report.purchase,
+      purchase_revenue: report.purchase_revenue,
+      atc_rate: report.atc_rate,
+      checkout_rate: report.checkout_rate,
+      cvr: report.cvr,
+    },
+  };
+}
+
+function searchSlice(report: GscProductReport, fetched_at: string): ProductInsight["search"] {
+  if (!report.configured) {
+    return {
+      available: false,
+      configured: false,
+      reason: report.reason ?? "missing_google_credentials",
+      fetched_at: null,
+      data: null,
+    };
+  }
+  return {
+    available: true,
+    configured: true,
+    reason: report.ok ? undefined : report.reason,
+    fetched_at,
+    data: {
+      page: report.page,
+      clicks: report.clicks,
+      impressions: report.impressions,
+      ctr: report.ctr,
+      position: report.position,
+      queries: report.queries,
+    },
+  };
+}
+
 export function createInsightsAdapter(options: {
   catalog: CatalogAdapter;
   commerce: CommerceAdapter;
+  analytics: AnalyticsAdapter;
 }): InsightsAdapter {
   return {
     async getProduct(id) {
       const resolved = await resolveProductIdentity(options.catalog, String(id));
       if (!resolved) return null;
       const fetched_at = new Date().toISOString();
-      const sales = await options.commerce.sales();
+      const itemIds = [
+        resolved.identity.parent_sku,
+        resolved.identity.variant_sku,
+        ...resolved.product.variations.map((row) => row.sku),
+        resolved.identity.product_id != null ? String(resolved.identity.product_id) : null,
+      ].filter((value): value is string => Boolean(value));
+      const [sales, ga4, gsc] = await Promise.all([
+        options.commerce.sales(),
+        options.analytics.ga4Product({
+          parent_sku: resolved.identity.parent_sku,
+          page_path: resolved.identity.canonical_url,
+          item_ids: itemIds,
+        }),
+        options.analytics.gscProduct({
+          page_url: resolved.identity.canonical_url,
+          slug: resolved.identity.slug,
+        }),
+      ]);
       const rollup = (sales.products ?? []).find((row) => row.parent_sku === resolved.identity.parent_sku) ?? null;
       const salesSlice: ProductInsight["sales"] = !sales.configured
         ? {
@@ -128,8 +223,8 @@ export function createInsightsAdapter(options: {
         keys: resolved.identity,
         catalog: catalogSlice(resolved.product, fetched_at),
         sales: salesSlice,
-        analytics: unavailable("not_joined_yet"),
-        search: unavailable("not_joined_yet"),
+        analytics: analyticsSlice(ga4, fetched_at),
+        search: searchSlice(gsc, fetched_at),
         seo: unavailable("not_joined_yet"),
         merchant: unavailable("not_joined_yet"),
         competition: unavailable("not_joined_yet"),

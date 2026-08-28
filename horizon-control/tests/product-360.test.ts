@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES, loadConfig } from "../src/config.js";
-import { AUDIENCE, ISSUER, buildTestApp, request, signToken } from "./helpers.js";
+import { AUDIENCE, ISSUER, buildTestApp, mockAnalytics, request, signToken } from "./helpers.js";
 
 describe("Product 360 insights.get_product", () => {
   it("joins catalog and SKU sales around parent_sku without inventing GA4/GSC", async () => {
@@ -64,8 +64,9 @@ describe("Product 360 insights.get_product", () => {
     expect(body.sales.data.units).toBe(1);
     expect(body.sales.data.revenue).toBe(67000);
     expect(body.analytics.available).toBe(false);
-    expect(body.analytics.reason).toBe("not_joined_yet");
+    expect(body.analytics.reason).toBe("missing_google_credentials");
     expect(body.search.available).toBe(false);
+    expect(body.search.reason).toBe("missing_google_credentials");
     expect(body.merchant.available).toBe(false);
     expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
 
@@ -79,6 +80,53 @@ describe("Product 360 insights.get_product", () => {
 
     const missing = await request(app, "/v1/insights/products/NO-SUCH-SKU", { token });
     expect(missing.status).toBe(404);
+  });
+
+  it("joins mocked GA4 and GSC onto the parent SKU without inventing metrics", async () => {
+    const { app, keys } = await buildTestApp({
+      analytics: mockAnalytics(
+        {},
+        {},
+        {
+          ga4Product: {
+            configured: true,
+            ok: true,
+            property_id: "550763778",
+            pdp_views: 1420,
+            view_item: 900,
+            add_to_cart: 86,
+            begin_checkout: 39,
+            purchase: 21,
+            purchase_revenue: 842000,
+            atc_rate: 86 / 1420,
+            cvr: 21 / 1420,
+            join: { item_id: "001-TOP-AZU", page_path: "/product/top-liso-azul/" },
+          },
+          gscProduct: {
+            configured: true,
+            ok: true,
+            page: "https://horizonfit.com.ar/product/top-liso-azul/",
+            clicks: 283,
+            impressions: 12480,
+            ctr: 0.0227,
+            position: 7.8,
+            queries: [{ query: "top azul", clicks: 40, impressions: 900, ctr: 0.044, position: 5.1 }],
+          },
+        },
+      ),
+    });
+    const token = await signToken(keys.privateKey, { client: "dashboard", scopes: CLIENT_SCOPES.dashboard });
+    const response = await request(app, "/v1/insights/products/001-TOP-AZU", { token });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.analytics.available).toBe(true);
+    expect(body.analytics.data.pdp_views).toBe(1420);
+    expect(body.analytics.data.add_to_cart).toBe(86);
+    expect(body.search.available).toBe(true);
+    expect(body.search.data.impressions).toBe(12480);
+    expect(body.search.data.queries[0].query).toBe("top azul");
+    expect(body.seo.reason).toBe("not_joined_yet");
+    expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
   });
 
   it("sales slice is configured:false without Woo keys and still returns catalog", async () => {

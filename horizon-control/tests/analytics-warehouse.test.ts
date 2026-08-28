@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES } from "../src/config.js";
 import { dispatchCommand } from "../src/core/commands/index.js";
-import { createAnalyticsAdapter, normalizeGscSite } from "../src/adapters/analytics.js";
+import { createAnalyticsAdapter, normalizeGscSite, pagePathFromUrl } from "../src/adapters/analytics.js";
 import { createCompetitorsAdapter, parseCompetitorUrls } from "../src/adapters/competitors.js";
 import { buildTestApp, mockAnalytics, mockCompetitors, request, signToken } from "./helpers.js";
 
@@ -146,6 +146,66 @@ describe("analytics + competitors warehouse", () => {
     expect(report.sessions).toBe(120);
     expect(report.users).toBe(90);
     expect(report.channels).toHaveLength(2);
+  });
+
+  it("pagePathFromUrl only allows Horizon PDP paths", () => {
+    expect(pagePathFromUrl("https://horizonfit.com.ar/product/top-liso-azul/")).toBe("/product/top-liso-azul/");
+    expect(pagePathFromUrl("https://evil.example/product/top-liso-azul/")).toBeNull();
+    expect(pagePathFromUrl("https://horizonfit.com.ar/coleccion/")).toBeNull();
+  });
+
+  it("GA4 product report joins itemId and pagePath", async () => {
+    const adapter = createAnalyticsAdapter({
+      ga4PropertyId: "550763778",
+      getAccessToken: async () => "ya29.test",
+      fetchImpl: async (_input, init) => {
+        const body = typeof init?.body === "string" ? JSON.parse(init.body) : {};
+        if (body.metrics?.[0]?.name === "screenPageViews") {
+          return jsonResponse({
+            rows: [{ dimensionValues: [{ value: "/product/top-liso-azul/" }], metricValues: [{ value: "1420" }] }],
+          });
+        }
+        return jsonResponse({
+          rows: [
+            { dimensionValues: [{ value: "view_item" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "900" }, { value: "0" }] },
+            { dimensionValues: [{ value: "add_to_cart" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "86" }, { value: "0" }] },
+            { dimensionValues: [{ value: "purchase" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "21" }, { value: "842000" }] },
+          ],
+        });
+      },
+    });
+    const report = await adapter.ga4Product({
+      parent_sku: "001-TOP-AZU",
+      page_path: "https://horizonfit.com.ar/product/top-liso-azul/",
+      item_ids: ["001-TOP-AZU-S"],
+    });
+    expect(report.configured).toBe(true);
+    expect(report.pdp_views).toBe(1420);
+    expect(report.add_to_cart).toBe(86);
+    expect(report.purchase).toBe(21);
+    expect(report.purchase_revenue).toBe(842000);
+    expect(report.join.item_id).toBe("001-TOP-AZU");
+    expect(report.cvr).toBeCloseTo(21 / 1420);
+  });
+
+  it("GSC product report filters by PDP slug", async () => {
+    const adapter = createAnalyticsAdapter({
+      gscSiteUrl: "sc-domain:horizonfit.com.ar",
+      getAccessToken: async () => "ya29.test",
+      fetchImpl: async (_input, init) => {
+        const body = typeof init?.body === "string" ? JSON.parse(init.body) : {};
+        expect(String(body.dimensionFilterGroups[0].filters[0].expression)).toContain("/product/top-liso-azul");
+        if (body.dimensions) {
+          return jsonResponse({ rows: [{ keys: ["top azul"], clicks: 40, impressions: 900, ctr: 0.044, position: 5.1 }] });
+        }
+        return jsonResponse({ rows: [{ clicks: 283, impressions: 12480, ctr: 0.0227, position: 7.8 }] });
+      },
+    });
+    const report = await adapter.gscProduct({ slug: "top-liso-azul" });
+    expect(report.configured).toBe(true);
+    expect(report.clicks).toBe(283);
+    expect(report.impressions).toBe(12480);
+    expect(report.queries[0].query).toBe("top azul");
   });
 
   it("competitors adapter probes allowlisted HTML and ignores agent URLs at the tool layer", async () => {

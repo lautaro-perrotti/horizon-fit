@@ -84,7 +84,7 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "analytics.search_console": "Read Search Console clicks/impressions for horizonfit.com.ar. configured:false without Google credentials.",
   "analytics.ga4": "Read GA4 sessions/users/channels. configured:false without credentials or property id.",
   "analytics.competitors": "Probe env-allowlisted competitor homepages. Agent URLs are ignored. configured:false if HORIZON_COMPETITOR_URLS is empty.",
-  "insights.get_product": "Product 360 join: catalog + SKU sales around parent_sku. Other slices unavailable until later phases. Never invents metrics.",
+  "insights.get_product": "Product 360 join: catalog + SKU sales + GA4/GSC around parent_sku/PDP. Missing sources stay unavailable. Never invents metrics.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
