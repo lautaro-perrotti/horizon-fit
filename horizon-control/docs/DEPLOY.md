@@ -26,8 +26,8 @@ The process refuses to start if `HORIZON_BIND` is a public or wildcard address.
 ## Human steps on the VPS (after Tailscale + Auth0)
 
 1. Join the VPS to the tailnet. Note its Tailscale IPv4.
-2. `git checkout feat/horizon-control` in `/root/horizon-fit` (or copy `horizon-control/` there).
-3. `cd /root/horizon-fit/horizon-control && npm ci`
+2. Clone or pull the **control-plane worktree** at `/opt/horizon-control-plane` on `feat/horizon-control`. Keep `/root/horizon-fit` on **`main`** (shop only).
+3. `cd /opt/horizon-control-plane/horizon-control && npm ci`
 4. `install -d -m 0755 /var/lib/horizon-control`
 5. `install -m 0600 ops/systemd/horizon-control.env.example /etc/horizon-control.env` from the repo root, then edit issuer/audience/JWKS and set `HORIZON_BIND` to `127.0.0.1` (SSH tunnel) or the Tailscale IP.
 6. `install -m 0644 ops/systemd/horizon-control.service /etc/systemd/system/horizon-control.service`

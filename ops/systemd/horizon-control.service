@@ -1,6 +1,6 @@
 [Unit]
 Description=Horizon Fit control plane (Tailscale-only MCP Resource Server)
-Documentation=file:/root/horizon-fit/horizon-control/docs/DEPLOY.md
+Documentation=file:/opt/horizon-control-plane/horizon-control/docs/DEPLOY.md
 After=network-online.target tailscaled.service
 Wants=network-online.target
 
@@ -10,7 +10,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root/horizon-fit/horizon-control
+WorkingDirectory=/opt/horizon-control-plane/horizon-control
 Environment=NODE_ENV=production
 Environment=HORIZON_BIND=127.0.0.1
 Environment=HORIZON_PORT=8787
@@ -23,7 +23,7 @@ ExecStartPre=/bin/sh -c 'mode=$(stat -c %%a /etc/horizon-control.env); test "$mo
 ExecStart=/usr/bin/node --import tsx src/index.ts
 Restart=on-failure
 RestartSec=5
-TimeoutStopSec=20
+TimeoutStopSec=15
 Nice=5
 StandardOutput=journal
 StandardError=journal

@@ -1,6 +1,7 @@
 import { createServices } from "./create-services.js";
 import { createHorizonHttpServer } from "./server.js";
 import { assertAllowedBind } from "./net/bind.js";
+import { installProcessShutdown } from "./net/shutdown.js";
 
 const services = createServices({ startWorker: true });
 const bind = services.config.HORIZON_BIND;
@@ -18,9 +19,10 @@ server.listen(port, bind, () => {
   console.log(`  sqlite    ${services.config.sqlitePath}`);
 });
 
-for (const signal of ["SIGINT", "SIGTERM"] as const) {
-  process.on(signal, () => {
-    services.worker.stop();
-    server.close(() => process.exit(0));
-  });
-}
+installProcessShutdown({
+  server,
+  stopWorker: () => services.worker.stop(),
+  stopBackground: () => services.stopBackground(),
+  closeDb: () => services.closeDb(),
+});
+

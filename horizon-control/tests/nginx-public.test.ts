@@ -29,6 +29,8 @@ describe("public nginx / compose must not expose Horizon Control", () => {
     expect(unit).toMatch(/StandardOutput=journal/);
     expect(unit).toMatch(/Restart=on-failure/);
     expect(unit).toMatch(/HORIZON_BIND=127\.0\.0\.1/);
+    expect(unit).toMatch(/WorkingDirectory=\/opt\/horizon-control-plane\/horizon-control/);
+    expect(unit).toMatch(/TimeoutStopSec=15/);
     expect(unit).toMatch(/HORIZON_DATA_DIR=\/var\/lib\/horizon-control/);
     expect(unit).not.toMatch(/0\.0\.0\.0/);
     expect(unit).toMatch(/do not enable or install/i);

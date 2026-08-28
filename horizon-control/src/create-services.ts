@@ -167,11 +167,25 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       catalog,
       commerce,
     });
+  let evaluateTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {
-    const timer = setInterval(() => {
+    evaluateTimer = setInterval(() => {
       void warehouse.evaluate().catch(() => undefined);
     }, 60_000);
-    timer.unref?.();
+    evaluateTimer.unref?.();
+  }
+  function stopBackground() {
+    if (evaluateTimer) {
+      clearInterval(evaluateTimer);
+      evaluateTimer = null;
+    }
+  }
+  function closeDb() {
+    try {
+      sqlite.close();
+    } catch {
+      /* already closed */
+    }
   }
   return {
     config,
@@ -197,5 +211,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     runner,
     worker,
     startedAt,
+    stopBackground,
+    closeDb,
   };
 }

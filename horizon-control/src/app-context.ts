@@ -43,4 +43,6 @@ export type AppServices = {
   runner: JobRunner;
   worker: { stop: () => void; tick: () => Promise<void>; lastTickAt: number | null; stopped: boolean };
   startedAt: number;
+  stopBackground: () => void;
+  closeDb: () => void;
 };
