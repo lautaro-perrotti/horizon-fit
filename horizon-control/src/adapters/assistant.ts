@@ -1,5 +1,5 @@
 import type { CatalogAdapter } from "./woo.js";
-import type { CommerceAdapter } from "./commerce.js";
+import { parentSkuFromVariant, type CommerceAdapter } from "./commerce.js";
 import type { HealthAdapter } from "./health.js";
 import type { Warehouse } from "./warehouse.js";
 import type { SeoReportAdapter } from "./seo-report.js";
@@ -38,7 +38,11 @@ type Intent = "health" | "product" | "sales" | "settings" | "seo" | "ga4" | "gsc
 function intentOf(question: string): Intent {
   const q = question.toLowerCase();
   if (/\b(gr[aá]fico|grafico|chart|sparkline|visualiz)/i.test(q)) return "chart";
-  if (/\b(sku|precio|product|prenda|top|calza|stock)\b/.test(q) || /\d{3}-[a-z]{3}-[a-z]{3}/i.test(q)) {
+  const hasSku = /\d{3}-[a-z]{3}-[a-z]{3}/i.test(q);
+  if (hasSku && /\b(venta|vendi|unidad|revenue|factur|aov|pedido)\b/.test(q) && !/\bprecio\b/.test(q)) {
+    return "sales";
+  }
+  if (/\b(sku|precio|product|prenda|top|calza|stock)\b/.test(q) || hasSku) {
     return "product";
   }
   if (/\b(venta|pedido|revenue|ticket|orden)\b/.test(q)) return "sales";
@@ -70,7 +74,7 @@ function pickChartKpi(question: string): ChartKpi | null {
   return null;
 }
 
-const SKU = /\d{3}-[A-Z]{3}-[A-Z]{3}(?:-(S|M|L|XL|XXL))?/i;
+const SKU = /\d{3}-[A-Z]{3}-[A-Z]{3}(?:-(XS|S|M|L|XL|XXL))?/i;
 
 export function createAssistantAdapter(options: {
   health: HealthAdapter;
@@ -113,7 +117,26 @@ export function createAssistantAdapter(options: {
         };
       }
       if (intent === "sales") {
-        return { mode: "deterministic", intent, question: trimmed, data: await options.commerce.sales(), note };
+        const sales = await options.commerce.sales();
+        const sku = trimmed.match(SKU)?.[0];
+        if (sku) {
+          const parent = parentSkuFromVariant(sku);
+          const rollup = (sales.products ?? []).find((row) => row.parent_sku === parent) ?? null;
+          return {
+            mode: "deterministic",
+            intent,
+            question: trimmed,
+            data: {
+              configured: sales.configured,
+              reason: sales.reason,
+              fetched_at: sales.fetched_at,
+              parent_sku: parent,
+              product: rollup,
+            },
+            note,
+          };
+        }
+        return { mode: "deterministic", intent, question: trimmed, data: sales, note };
       }
       if (intent === "settings") {
         return { mode: "deterministic", intent, question: trimmed, data: await options.commerce.settings(), note };

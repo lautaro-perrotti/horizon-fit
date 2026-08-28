@@ -30,7 +30,7 @@ Auth0 API identifier / JWT `aud` stays `http://100.123.37.74:8787/mcp`. Create a
 | Catálogo | `catalog.search_products` / `catalog.get_product` + SEO chip by slug | `catalog.read` `seo.read` |
 | Analytics | `analytics.ga4` + `analytics.search_console` | `analytics.read` |
 | Competencia | `analytics.competitors` (env URLs only) | `analytics.read` |
-| Ventas | `commerce.sales` | `commerce.read` |
+| Ventas | `commerce.sales` (orders + line-item SKU rollups) | `commerce.read` |
 | Operaciones | `ops.health`; repo/jobs/audit locked | `ops.read` |
 | Alertas | `alerts.list` / `alerts.evaluate` | `alerts.read` |
 | SEO | `seo.get_latest_audit` / `seo.audit` | `seo.read` `seo.audit` |

@@ -100,7 +100,7 @@ Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`,
 | `tests.execute` | `tests.run` (enqueue existing PHP/node validators) |
 | `jobs.read` | `jobs.get` |
 | `audit.read` | `audit.history` |
-| `commerce.read` | `commerce.sales`, `commerce.settings` (Woo REST; `configured:false` without keys) |
+| `commerce.read` | `commerce.sales`, `commerce.settings` (Woo REST orders + SKU rollups; `configured:false` without keys) |
 | `metrics.read` | `metrics.snapshots` |
 | `alerts.read` | `alerts.list`, `alerts.evaluate`, `assistant.ask` |
 | `analytics.read` | `analytics.search_console`, `analytics.ga4`, `analytics.competitors` (Google SA + env competitor URLs; `configured:false` without creds) |

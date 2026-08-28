@@ -20,6 +20,7 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(html).toMatch(/Auditar ahora/);
     expect(html).toMatch(/Competencia/);
     expect(html).toMatch(/analytics\.ga4/);
+    expect(html).toMatch(/line items \/ SKU/);
     expect(html).not.toMatch(/GA4 no conectado\. No hay adapter/);
     expect(html).toMatch(/\/app\/app\.js/);
     expect(html).not.toMatch(/\$214\.000/);
@@ -47,9 +48,13 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.reason).toBe("missing_woo_rest_credentials");
     expect(body.today.revenue).toBeNull();
     expect(body.week.orders).toBe(0);
+    expect(body.products).toEqual([]);
+    expect(body.fetched_at).toBeNull();
+    expect(body.source).toBe("orders");
   });
 
-  it("sales reads mocked Woo REST reports and writes metric snapshots", async () => {
+  it("sales rolls up line items by parent SKU from mocked Woo REST orders", async () => {
+    const soldAt = new Date().toISOString().slice(0, 19);
     const { app, keys } = await buildTestApp({
       config: loadConfig({
         HORIZON_OIDC_ISSUER: ISSUER,
@@ -67,21 +72,29 @@ describe("dashboard SPA + commerce warehouse", () => {
       }),
       fetchImpl: async (input) => {
         const url = String(input);
-        if (url.includes("/wp-json/wc/v3/reports/sales")) {
-          return new Response(JSON.stringify([{ total_sales: "134000", total_orders: 2 }]), {
-            status: 200,
-            headers: { "content-type": "application/json" },
-          });
-        }
         if (url.includes("/wp-json/wc/v3/orders")) {
+          if (/[?&]page=2(?:&|$)/.test(url)) {
+            return new Response("[]", { status: 200, headers: { "content-type": "application/json" } });
+          }
           return new Response(
             JSON.stringify([
               {
                 id: 42,
                 status: "processing",
                 total: "67000.00",
-                date_created_gmt: "2026-08-27T12:00:00",
+                date_created_gmt: soldAt,
                 currency: "ARS",
+                line_items: [
+                  {
+                    sku: "001-TOP-AZU-S",
+                    name: "Top Dynamic blue",
+                    product_id: 99,
+                    variation_id: 100,
+                    quantity: 1,
+                    price: "67000",
+                    total: "67000",
+                  },
+                ],
               },
             ]),
             { status: 200, headers: { "content-type": "application/json" } },
@@ -95,9 +108,21 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(sales.status).toBe(200);
     const body = await sales.json();
     expect(body.configured).toBe(true);
-    expect(body.today.orders).toBe(2);
-    expect(body.today.revenue).toBe(134000);
+    expect(body.source).toBe("orders");
+    expect(body.fetched_at).toBeTruthy();
+    expect(body.incomplete).toBe(false);
+    expect(body.month.orders).toBe(1);
+    expect(body.month.units).toBe(1);
+    expect(body.month.revenue).toBe(67000);
+    expect(body.month.aov).toBe(67000);
     expect(body.recent_orders[0].id).toBe(42);
+    expect(body.recent_orders[0].items[0].parent_sku).toBe("001-TOP-AZU");
+    expect(body.products[0].parent_sku).toBe("001-TOP-AZU");
+    expect(body.products[0].d30.units).toBe(1);
+    expect(body.products[0].d30.revenue).toBe(67000);
+    expect(body.products[0].d30.aov).toBe(67000);
+    expect(body.products[0].variants[0].sku).toBe("001-TOP-AZU-S");
+    expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
 
     const snapshots = await request(app, "/v1/metrics/snapshots", { token });
     const snapBody = await snapshots.json();
@@ -149,6 +174,70 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.data.sku).toBe("001-TOP-AZU");
     expect(body.data.price.amount).toBe("67000.00");
     expect(JSON.stringify(body)).not.toMatch(/HF-C1/);
+  });
+
+  it("assistant.ask returns SKU sales rollups for unidades vendidas", async () => {
+    const soldAt = new Date().toISOString().slice(0, 19);
+    const { app, keys } = await buildTestApp({
+      config: loadConfig({
+        HORIZON_OIDC_ISSUER: ISSUER,
+        HORIZON_OIDC_AUDIENCE: AUDIENCE,
+        HORIZON_BIND: "127.0.0.1",
+        HORIZON_PORT: "8787",
+        HORIZON_PUBLIC_URL: "http://127.0.0.1:8787",
+        HORIZON_SQLITE_PATH: ":memory:",
+        HORIZON_DATA_DIR: "",
+        HORIZON_REPO_PATH: "",
+        HORIZON_STOREFRONT_URL: "https://horizonfit.com.ar",
+        HORIZON_WOO_BASE_URL: "https://api.horizonfit.com.ar",
+        HORIZON_WOO_KEY: "ck_test",
+        HORIZON_WOO_SECRET: "cs_test",
+      }),
+      fetchImpl: async (input) => {
+        const url = String(input);
+        if (url.includes("/wp-json/wc/v3/orders")) {
+          if (/[?&]page=2(?:&|$)/.test(url)) {
+            return new Response("[]", { status: 200, headers: { "content-type": "application/json" } });
+          }
+          return new Response(
+            JSON.stringify([
+              {
+                id: 42,
+                status: "completed",
+                total: "67000.00",
+                date_created_gmt: soldAt,
+                currency: "ARS",
+                line_items: [
+                  {
+                    sku: "001-TOP-AZU-S",
+                    name: "Top Dynamic blue",
+                    product_id: 99,
+                    quantity: 1,
+                    price: "67000",
+                    total: "67000",
+                  },
+                ],
+              },
+            ]),
+            { status: 200, headers: { "content-type": "application/json" } },
+          );
+        }
+        return new Response("{}", { status: 200, headers: { "content-type": "application/json" } });
+      },
+    });
+    const token = await signToken(keys.privateKey, { client: "dashboard", scopes: CLIENT_SCOPES.dashboard });
+    const response = await request(app, "/v1/assistant/ask", {
+      method: "POST",
+      token,
+      body: { question: "cuántas unidades vendió 001-TOP-AZU" },
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.intent).toBe("sales");
+    expect(body.data.parent_sku).toBe("001-TOP-AZU");
+    expect(body.data.product.d30.units).toBe(1);
+    expect(body.data.product.d30.revenue).toBe(67000);
+    expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
   });
 
   it("Cursor cannot call commerce.sales", async () => {

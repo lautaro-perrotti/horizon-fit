@@ -271,16 +271,30 @@ async function loadOverview() {
     const html = !sales.configured
       ? `<div class="empty-row"><span>Woo REST no configurado — faltan credenciales.</span><button type="button" disabled>Conectar fuente</button></div>`
       : `<div class="metrics">
-          <div><div class="n">${esc(money(sales.today.revenue, sales.currency))}</div><div class="l">hoy · ${esc(sales.today.orders)} pedidos</div></div>
-          <div><div class="n">${esc(money(sales.week.revenue, sales.currency))}</div><div class="l">7 días · ${esc(sales.week.orders)} pedidos</div></div>
-          <div><div class="n">${esc(money(sales.month.revenue, sales.currency))}</div><div class="l">30 días · ${esc(sales.month.orders)} pedidos</div></div>
+          <div><div class="n">${esc(money(sales.today.revenue, sales.currency))}</div><div class="l">hoy · ${esc(sales.today.orders)} pedidos · ${esc(sales.today.units ?? 0)} u</div></div>
+          <div><div class="n">${esc(money(sales.week.revenue, sales.currency))}</div><div class="l">7d · ${esc(sales.week.orders)} · AOV ${esc(money(sales.week.aov, sales.currency))}</div></div>
+          <div><div class="n">${esc(money(sales.month.revenue, sales.currency))}</div><div class="l">30d · ${esc(sales.month.orders)} · ${esc(sales.month.units ?? 0)} u</div></div>
+          <div><div class="n">${esc(money(sales.ninety?.revenue, sales.currency))}</div><div class="l">90d · ${esc(sales.ninety?.orders ?? 0)}</div></div>
         </div>`;
     $("overviewSales").innerHTML = html;
+    const fetched = sales.fetched_at ? `<div class="src" style="margin:8px 0 0">Woo orders · ${esc(sales.fetched_at)}${sales.incomplete ? " · incomplete (page cap)" : ""}</div>` : "";
+    const products = (sales.products ?? [])
+      .slice(0, 20)
+      .map(
+        (row) =>
+          `<div class="item"><span class="mono">${esc(row.parent_sku)}</span><span>${esc(row.d30.units)} u / 30d · AOV ${esc(money(row.d30.aov, sales.currency))}</span><span class="mono">${esc(money(row.d30.revenue, sales.currency))}</span></div>`,
+      )
+      .join("");
     $("salesOut").innerHTML = !sales.configured
       ? `<div class="notice">Acceso a pedidos no habilitado — faltan <code>HORIZON_WOO_KEY</code> / <code>HORIZON_WOO_SECRET</code> en el Control Plane.</div>`
       : html +
+        fetched +
+        (products ? `<h3 class="sub" style="margin:22px 0 8px">Por SKU (30d, line items)</h3>${products}` : "") +
         `<h3 class="sub" style="margin:22px 0 8px">Pedidos recientes</h3>${(sales.recent_orders ?? [])
-          .map((order) => `<div class="item"><span class="mono">#${esc(order.id)}</span><span class="muted">${esc(order.status)}</span><span class="mono">${esc(order.total)}</span></div>`)
+          .map((order) => {
+            const skus = (order.items ?? []).map((item) => item.parent_sku || item.sku).join(" · ");
+            return `<div class="item"><span class="mono">#${esc(order.id)}</span><span class="muted">${esc(order.status)}${skus ? ` · ${esc(skus)}` : ""}</span><span class="mono">${esc(order.total)}</span></div>`;
+          })
           .join("")}`;
   } catch (error) {
     $("overviewSales").innerHTML = notice(esc(error.message));
@@ -511,6 +525,11 @@ function replyText(data) {
   if (data.intent === "health" && data.data?.status) return `Storefront ${data.data.storefront?.status ?? "—"} · API ${data.data.api?.status ?? "—"} · ${data.data.status}`;
   if (data.intent === "sales" && data.data) {
     if (data.data.configured === false) return data.data.reason || "Falta HORIZON_WOO_KEY";
+    if (data.data.product) {
+      const p = data.data.product;
+      return `${data.data.parent_sku} · ${p.d30?.units ?? 0} u / 30d · ${money(p.d30?.revenue, "ARS")}`;
+    }
+    if (data.data.parent_sku && !data.data.product) return `${data.data.parent_sku} · sin ventas en la ventana`;
     return `Hoy ${data.data.today?.orders ?? 0} pedidos · ${money(data.data.today?.revenue, data.data.currency)}`;
   }
   if (data.intent === "alerts") {

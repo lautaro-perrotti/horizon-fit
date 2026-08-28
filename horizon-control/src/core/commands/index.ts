@@ -74,7 +74,7 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "tests.run": "Enqueue existing PHP search-merchant tests and node validators.",
   "jobs.get": "Get a previously enqueued operational job by id.",
   "audit.history": "Read redacted command audit history.",
-  "commerce.sales": "Read Woo REST sales/orders snapshots. Returns configured:false if keys are missing.",
+  "commerce.sales": "Read Woo REST paid orders (90d) with line items and SKU rollups. configured:false without keys. Never invents revenue.",
   "commerce.settings": "Read allowlisted Woo general settings and payment gateways. No secrets.",
   "metrics.snapshots": "List recent metric snapshots from the local warehouse.",
   "alerts.list": "List warehouse alerts (open and resolved).",
