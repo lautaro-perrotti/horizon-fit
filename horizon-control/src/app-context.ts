@@ -16,6 +16,7 @@ import type { AssistantAdapter } from "./adapters/assistant.js";
 import type { SeoReportAdapter } from "./adapters/seo-report.js";
 import type { AnalyticsAdapter } from "./adapters/analytics.js";
 import type { CompetitorsAdapter } from "./adapters/competitors.js";
+import type { InsightsAdapter } from "./adapters/insights.js";
 import type Database from "better-sqlite3";
 
 export type AppServices = {
@@ -31,6 +32,7 @@ export type AppServices = {
   seo: SeoReportAdapter;
   analytics: AnalyticsAdapter;
   competitors: CompetitorsAdapter;
+  insights: InsightsAdapter;
   storefront: StorefrontAdapter;
   merchant: MerchantAdapter;
   health: HealthAdapter;

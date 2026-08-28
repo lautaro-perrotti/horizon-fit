@@ -124,6 +124,11 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/analytics/search-console", (c) => invoke(c, "analytics.search_console", {}));
   app.get("/v1/analytics/ga4", (c) => invoke(c, "analytics.ga4", {}));
   app.get("/v1/analytics/competitors", (c) => invoke(c, "analytics.competitors", {}));
+  app.get("/v1/insights/products", (c) => {
+    const id = c.req.query("id") || c.req.query("sku") || "";
+    return invoke(c, "insights.get_product", { id });
+  });
+  app.get("/v1/insights/products/:id", (c) => invoke(c, "insights.get_product", { id: c.req.param("id") }));
   app.get("/v1/tools", (c) =>
     c.json({
       tools: toolsForPrincipal(c.get("principal")),

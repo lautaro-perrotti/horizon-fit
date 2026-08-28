@@ -9,6 +9,7 @@ import { createAssistantAdapter } from "./adapters/assistant.js";
 import { createSeoReportAdapter, type SeoReportAdapter } from "./adapters/seo-report.js";
 import { createAnalyticsAdapter, type AnalyticsAdapter } from "./adapters/analytics.js";
 import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter } from "./adapters/competitors.js";
+import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
 import { createHealthAdapter } from "./adapters/health.js";
@@ -31,6 +32,7 @@ export type CreateServicesOptions = {
   seo?: SeoReportAdapter;
   analytics?: AnalyticsAdapter;
   competitors?: CompetitorsAdapter;
+  insights?: InsightsAdapter;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
   git?: GitAdapter;
@@ -159,6 +161,12 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     analytics,
     competitors,
   });
+  const insights =
+    options.insights ??
+    createInsightsAdapter({
+      catalog,
+      commerce,
+    });
   if (options.startWorker !== false) {
     const timer = setInterval(() => {
       void warehouse.evaluate().catch(() => undefined);
@@ -178,6 +186,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     seo,
     analytics,
     competitors,
+    insights,
     storefront,
     merchant,
     health,

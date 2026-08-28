@@ -24,6 +24,7 @@
           <button type="button" data-tab="overview" class="active">Overview</button>
           <button type="button" data-tab="sitio">Sitio</button>
           <button type="button" data-tab="catalogo">Catálogo</button>
+          <button type="button" data-tab="product360">Product 360</button>
           <button type="button" data-tab="analytics">Analytics</button>
           <button type="button" data-tab="competencia">Competencia</button>
           <button type="button" data-tab="ventas">Ventas</button>
@@ -127,6 +128,19 @@
               <div id="catalogOut"></div>
             </div>
             <div id="catalogDetail"></div>
+          </section>
+
+          <section id="panel-product360" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Product 360</h2>
+                <span class="src">Source: insights.get_product · catalog + commerce.sales</span>
+              </div>
+              <form id="product360Form" class="table-wrap" style="padding:16px 20px 0">
+                <input id="product360Q" name="q" placeholder="SKU, id, slug o PDP (001-TOP-AZU / top-liso-azul)" autocomplete="off" />
+              </form>
+              <div id="product360Out"></div>
+            </article>
           </section>
 
           <section id="panel-operaciones" class="panel" hidden>

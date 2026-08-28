@@ -28,6 +28,7 @@ Auth0 API identifier / JWT `aud` stays `http://100.123.37.74:8787/mcp`. Create a
 | Overview | health + sales + catalog sample + alerts + SEO totals + GA4 if connected | `ops.read` `commerce.read` `catalog.read` `alerts.read` `seo.read` `analytics.read` |
 | Sitio | iframe storefront (`horizonfit.com.ar`) | — (public embed) |
 | Catálogo | `catalog.search_products` / `catalog.get_product` + SEO chip by slug | `catalog.read` `seo.read` |
+| Product 360 | `insights.get_product` (catalog + SKU sales; other slices unavailable) | `commerce.read` |
 | Analytics | `analytics.ga4` + `analytics.search_console` | `analytics.read` |
 | Competencia | `analytics.competitors` (env URLs only) | `analytics.read` |
 | Ventas | `commerce.sales` (orders + line-item SKU rollups) | `commerce.read` |

@@ -41,6 +41,7 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/analytics/ga4", { token })).status).toBe(403);
     expect((await request(app, "/v1/merchant/audit", { method: "POST", token })).status).toBe(403);
     expect((await request(app, "/v1/merchant/diagnostics", { token })).status).toBe(403);
+    expect((await request(app, "/v1/insights/products/001-TOP-AZU", { token })).status).toBe(403);
   });
 
   it("Cursor can call health, catalog, storefront, repo.status, tests.run", async () => {
@@ -76,7 +77,7 @@ describe("scope matrix", () => {
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const listed = await request(app, "/v1/tools", { token });
     const body = await listed.json();
-    expect(body.tools).toHaveLength(21);
+    expect(body.tools).toHaveLength(22);
   });
 
   it("dashboard client can call health, catalog, commerce, alerts, seo; not merchant or repo", async () => {
@@ -85,6 +86,7 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/health", { token })).status).toBe(200);
     expect((await request(app, "/v1/catalog/products?q=top", { token })).status).toBe(200);
     expect((await request(app, "/v1/commerce/sales", { token })).status).toBe(200);
+    expect((await request(app, "/v1/insights/products/001-TOP-AZU", { token })).status).toBe(200);
     expect((await request(app, "/v1/commerce/settings", { token })).status).toBe(200);
     expect((await request(app, "/v1/alerts", { token })).status).toBe(200);
     expect((await request(app, "/v1/seo/audits/latest", { token })).status).toBe(200);

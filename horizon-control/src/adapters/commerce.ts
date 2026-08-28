@@ -1,7 +1,9 @@
 import { allowlistedFetch } from "../http/allowlist.js";
+import { parentSkuFromVariant } from "./product-identity.js";
+
+export { parentSkuFromVariant };
 
 const STORE_ID = "horizon-fit";
-const SIZE_SUFFIX = /-(XS|S|M|L|XL|XXL)$/i;
 const PER_PAGE = 100;
 const MAX_PAGES = 5;
 const CACHE_MS = 120_000;
@@ -137,12 +139,6 @@ const GENERAL_SETTING_IDS = new Set([
   "woocommerce_prices_include_tax",
   "woocommerce_ship_to_countries",
 ]);
-
-export function parentSkuFromVariant(sku: string): string {
-  const trimmed = sku.trim();
-  if (!trimmed) return "";
-  return trimmed.replace(SIZE_SUFFIX, "") || trimmed;
-}
 
 function emptyBucket(currency: string): SalesBucket {
   return { orders: 0, units: 0, revenue: null, aov: null, currency };

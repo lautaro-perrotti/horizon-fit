@@ -100,7 +100,7 @@ Scope names (Auth0 API permissions; inbound aliases `seo.execute`→`seo.audit`,
 | `tests.execute` | `tests.run` (enqueue existing PHP/node validators) |
 | `jobs.read` | `jobs.get` |
 | `audit.read` | `audit.history` |
-| `commerce.read` | `commerce.sales`, `commerce.settings` (Woo REST orders + SKU rollups; `configured:false` without keys) |
+| `commerce.read` | `commerce.sales`, `commerce.settings`, `insights.get_product` (catalog + SKU sales join; other slices `unavailable`) |
 | `metrics.read` | `metrics.snapshots` |
 | `alerts.read` | `alerts.list`, `alerts.evaluate`, `assistant.ask` |
 | `analytics.read` | `analytics.search_console`, `analytics.ga4`, `analytics.competitors` (Google SA + env competitor URLs; `configured:false` without creds) |
@@ -112,7 +112,7 @@ MCP wire names replace `.` with `_` (`ops_health`, `catalog_search_products`) so
 | Client | Allowed tools | Denied |
 | --- | --- | --- |
 | **Claude** | health, catalog.*, storefront.get_config, seo.*, merchant.*, jobs.get, audit.history | `repo.status`, `tests.run` |
-| **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.*`, `merchant.*`, `commerce.*`, `alerts.*`, `analytics.*` |
+| **Cursor** | health, catalog.*, storefront.get_config, repo.status, tests.run, jobs.get, audit.history | `seo.*`, `merchant.*`, `commerce.*`, `insights.*`, `alerts.*`, `analytics.*` |
 | **Codex** | same as Cursor | same as Cursor |
 | **Admin** | all registered read tools | writes (not registered) |
 | **Dashboard** | health, catalog, storefront, commerce, metrics, alerts/assistant, seo.read/seo.audit, analytics.read | merchant, repo, tests |

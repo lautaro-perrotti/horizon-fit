@@ -207,6 +207,7 @@ function renderInspector(product) {
       <div><div class="muted">Stock</div><span class="${product.stock_status === "outofstock" ? "bad" : "ok"}">${product.stock_status === "outofstock" ? "Sin stock" : "Disponible"}</span></div>
     </div>
     <div class="detail-actions">
+      <button type="button" id="view360">Product 360</button>
       <button type="button" id="viewPdp" style="background:var(--violet);color:#fff">Ver PDP</button>
       <button type="button" id="askSeo">Analizar SEO</button>
       <button type="button" id="askMerchant">Ver Merchant</button>
@@ -218,6 +219,14 @@ function renderInspector(product) {
   });
   $("askSeo")?.addEventListener("click", () => openAsk("¿Cómo está el SEO de este producto?", product.name));
   $("askMerchant")?.addEventListener("click", () => openAsk("¿Tiene problemas de Merchant este producto?", product.name));
+  $("view360")?.addEventListener("click", () => {
+    const sku = meta.sku || product.parent_sku;
+    if ($("product360Q")) $("product360Q").value = sku;
+    showTab("product360", cfgRef);
+    void loadProduct360(sku).catch((error) => {
+      if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
+    });
+  });
   $("viewPdp")?.addEventListener("click", () => {
     if (!cfgRef) return;
     showTab("sitio", cfgRef);
@@ -494,9 +503,74 @@ function renderCompetitors(data) {
     : `<p class="muted">Sin páginas.</p>`;
 }
 
-async function loadCompetitors() {
-  const data = await api("/v1/analytics/competitors");
-  renderCompetitors(data);
+function insightsPath(ref) {
+  const trimmed = String(ref || "").trim();
+  if (/^https?:\/\//i.test(trimmed) || trimmed.includes("/")) {
+    return `/v1/insights/products?id=${encodeURIComponent(trimmed)}`;
+  }
+  return `/v1/insights/products/${encodeURIComponent(trimmed)}`;
+}
+
+function sliceBlock(title, slice, bodyHtml) {
+  const fetched = slice?.fetched_at ? ` · ${esc(slice.fetched_at)}` : "";
+  if (!slice || !slice.available) {
+    return `<h3 class="sub" style="margin:18px 0 8px">${esc(title)}</h3>
+      <div class="empty-row"><span>unavailable${slice?.reason ? ` · ${esc(slice.reason)}` : ""}${fetched}</span></div>`;
+  }
+  return `<h3 class="sub" style="margin:18px 0 8px">${esc(title)}<span class="src">${fetched}</span></h3>${bodyHtml}`;
+}
+
+function renderProduct360(data) {
+  if (!$("product360Out")) return;
+  if (!data?.found && !data?.keys) {
+    $("product360Out").innerHTML = `<p class="muted" style="padding:16px 20px">Producto no encontrado. No se inventan métricas.</p>`;
+    return;
+  }
+  const keys = data.keys ?? {};
+  const cat = data.catalog?.data;
+  const sales = data.sales?.data;
+  $("product360Out").innerHTML = `
+    <div style="padding:8px 20px 20px">
+      <div class="mono">${esc(keys.parent_sku || "—")}${keys.variant_sku ? ` · ${esc(keys.variant_sku)}` : ""}</div>
+      <div style="font-size:16px;font-weight:800;margin:4px 0 8px">${esc(cat?.name || "—")}</div>
+      <div class="src">via ${esc(keys.kind || "—")}${keys.canonical_url ? ` · ${esc(keys.canonical_url)}` : ""}</div>
+      ${sliceBlock(
+        "Catalog",
+        data.catalog,
+        `<div class="metrics">
+          <div><div class="n">${esc(money(cat?.price?.amount, cat?.price?.currency))}</div><div class="l">precio</div></div>
+          <div><div class="n ${cat?.stock_status === "outofstock" ? "bad" : "ok"}">${esc(cat?.stock_status || "—")}</div><div class="l">${esc((cat?.variants ?? []).map((row) => row.size || row.sku).join(" / ") || "—")}</div></div>
+        </div>`,
+      )}
+      ${sliceBlock(
+        "Sales",
+        data.sales,
+        sales
+          ? `<div class="metrics">
+              <div><div class="n">${esc(money(sales.revenue, sales.currency))}</div><div class="l">revenue 30d · line items</div></div>
+              <div><div class="n">${esc(sales.units ?? "—")}</div><div class="l">unidades 30d</div></div>
+              <div><div class="n">${esc(money(sales.aov, sales.currency))}</div><div class="l">AOV pedidos</div></div>
+              <div><div class="n">${sales.velocity_30d == null ? "—" : Number(sales.velocity_30d).toFixed(2)}</div><div class="l">u / día 30d</div></div>
+            </div>`
+          : "",
+      )}
+      ${sliceBlock("Analytics", data.analytics, "")}
+      ${sliceBlock("Search", data.search, "")}
+      ${sliceBlock("SEO", data.seo, "")}
+      ${sliceBlock("Merchant", data.merchant, "")}
+      ${sliceBlock("Competition", data.competition, "")}
+    </div>`;
+}
+
+async function loadProduct360(ref) {
+  if (!$("product360Out")) return;
+  const trimmed = String(ref || "").trim();
+  if (!trimmed) {
+    $("product360Out").innerHTML = `<p class="muted" style="padding:16px 20px">Ingresá un parent SKU, variante, id Woo, slug o URL de PDP.</p>`;
+    return;
+  }
+  const data = await api(insightsPath(trimmed));
+  renderProduct360(data);
   return data;
 }
 
@@ -659,6 +733,14 @@ function showTab(name, cfg) {
   if (name === "catalogo") void searchCatalog("").catch((error) => {
     $("catalogOut").innerHTML = notice(esc(error.message));
   });
+  if (name === "product360") {
+    const q = $("product360Q")?.value?.trim();
+    if (q) {
+      void loadProduct360(q).catch((error) => {
+        if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
+      });
+    }
+  }
 }
 
 async function boot() {
@@ -705,6 +787,13 @@ async function boot() {
     event.preventDefault();
     void searchCatalog(String(new FormData(event.target).get("q") || "")).catch((error) => {
       $("catalogOut").innerHTML = notice(esc(error.message));
+    });
+  });
+  $("product360Form")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const q = String(new FormData(event.target).get("q") || "");
+    void loadProduct360(q).catch((error) => {
+      if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
     });
   });
   $("evalAlerts").addEventListener("click", () => {
