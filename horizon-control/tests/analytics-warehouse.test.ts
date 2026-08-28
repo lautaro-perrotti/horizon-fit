@@ -167,9 +167,10 @@ describe("analytics + competitors warehouse", () => {
         }
         return jsonResponse({
           rows: [
-            { dimensionValues: [{ value: "view_item" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "900" }, { value: "0" }] },
-            { dimensionValues: [{ value: "add_to_cart" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "86" }, { value: "0" }] },
-            { dimensionValues: [{ value: "purchase" }, { value: "001-TOP-AZU" }], metricValues: [{ value: "21" }, { value: "842000" }] },
+            {
+              dimensionValues: [{ value: "001-TOP-AZU" }],
+              metricValues: [{ value: "900" }, { value: "86" }, { value: "39" }, { value: "21" }, { value: "842000" }],
+            },
           ],
         });
       },

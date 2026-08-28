@@ -97,7 +97,6 @@ export type AnalyticsAdapter = {
 
 const GA4_PRODUCT_TTL_MS = 30 * 60 * 1000;
 const GSC_PRODUCT_TTL_MS = 12 * 60 * 60 * 1000;
-const ECOMMERCE_EVENTS = ["view_item", "add_to_cart", "begin_checkout", "purchase"] as const;
 
 function isoDate(daysAgo: number): string {
   const d = new Date();
@@ -426,16 +425,15 @@ export function createAnalyticsAdapter(options: {
           itemIds.length > 0
             ? run({
                 dateRanges: [{ startDate: "28daysAgo", endDate: "today" }],
-                dimensions: [{ name: "eventName" }, { name: "itemId" }],
-                metrics: [{ name: "eventCount" }, { name: "itemRevenue" }],
-                dimensionFilter: {
-                  andGroup: {
-                    expressions: [
-                      { filter: { fieldName: "eventName", inListFilter: { values: [...ECOMMERCE_EVENTS] } } },
-                      { filter: { fieldName: "itemId", inListFilter: { values: itemIds } } },
-                    ],
-                  },
-                },
+                dimensions: [{ name: "itemId" }],
+                metrics: [
+                  { name: "itemsViewed" },
+                  { name: "itemsAddedToCart" },
+                  { name: "itemsCheckedOut" },
+                  { name: "itemsPurchased" },
+                  { name: "itemRevenue" },
+                ],
+                dimensionFilter: { filter: { fieldName: "itemId", inListFilter: { values: itemIds } } },
                 limit: 50,
               })
             : Promise.resolve({ status: 0, json: {} as Record<string, unknown> });
@@ -464,34 +462,35 @@ export function createAnalyticsAdapter(options: {
         const eventRows = eventsRes.status && eventsRes.status < 400 ? ((eventsRes.json.rows as Row[] | undefined) ?? []) : [];
         const byItem = new Map<string, Row[]>();
         for (const row of eventRows) {
-          const itemId = String(row.dimensionValues?.[1]?.value ?? "");
+          const itemId = String(row.dimensionValues?.[0]?.value ?? "");
           const list = byItem.get(itemId) ?? [];
           list.push(row);
           byItem.set(itemId, list);
         }
         const parentRows = byItem.get(ref.parent_sku) ?? [];
         const chosenRows = parentRows.length > 0 ? parentRows : eventRows;
-        const joinItem = parentRows.length > 0 ? ref.parent_sku : eventRows.length > 0 ? String(eventRows[0]?.dimensionValues?.[1]?.value ?? "") : null;
+        const joinItem = parentRows.length > 0 ? ref.parent_sku : eventRows.length > 0 ? String(eventRows[0]?.dimensionValues?.[0]?.value ?? "") : null;
 
-        const counts: Record<(typeof ECOMMERCE_EVENTS)[number], number> = {
-          view_item: 0,
-          add_to_cart: 0,
-          begin_checkout: 0,
-          purchase: 0,
-        };
+        let viewItem = 0;
+        let addToCart = 0;
+        let checkout = 0;
+        let purchase = 0;
         let purchaseRevenue = 0;
         for (const row of chosenRows) {
-          const name = String(row.dimensionValues?.[0]?.value ?? "") as (typeof ECOMMERCE_EVENTS)[number];
-          if (name in counts) counts[name] += metric(row, 0) ?? 0;
-          if (name === "purchase") purchaseRevenue += metric(row, 1) ?? 0;
+          viewItem += metric(row, 0) ?? 0;
+          addToCart += metric(row, 1) ?? 0;
+          checkout += metric(row, 2) ?? 0;
+          purchase += metric(row, 3) ?? 0;
+          purchaseRevenue += metric(row, 4) ?? 0;
         }
+        const eventsOk = eventsRes.status >= 200 && eventsRes.status < 400;
 
         const views = pdpViews > 0 ? pdpViews : null;
-        const viewItem = eventsRes.status >= 200 && eventsRes.status < 400 ? counts.view_item : null;
-        const addToCart = eventsRes.status >= 200 && eventsRes.status < 400 ? counts.add_to_cart : null;
-        const checkout = eventsRes.status >= 200 && eventsRes.status < 400 ? counts.begin_checkout : null;
-        const purchase = eventsRes.status >= 200 && eventsRes.status < 400 ? counts.purchase : null;
-        const traffic = views ?? viewItem;
+        const viewItemN = eventsOk ? viewItem : null;
+        const addToCartN = eventsOk ? addToCart : null;
+        const checkoutN = eventsOk ? checkout : null;
+        const purchaseN = eventsOk ? purchase : null;
+        const traffic = views ?? viewItemN;
         const value: Ga4ProductReport = {
           configured: true,
           ok: reasons.length === 0,
@@ -501,14 +500,14 @@ export function createAnalyticsAdapter(options: {
           period: "28d",
           join: { item_id: joinItem || null, page_path: joinedPath },
           pdp_views: viewsRes.status >= 200 && viewsRes.status < 400 ? pdpViews : null,
-          view_item: viewItem,
-          add_to_cart: addToCart,
-          begin_checkout: checkout,
-          purchase,
-          purchase_revenue: eventsRes.status >= 200 && eventsRes.status < 400 ? purchaseRevenue : null,
-          atc_rate: ratio(addToCart, traffic),
-          checkout_rate: ratio(checkout, traffic),
-          cvr: ratio(purchase, traffic),
+          view_item: viewItemN,
+          add_to_cart: addToCartN,
+          begin_checkout: checkoutN,
+          purchase: purchaseN,
+          purchase_revenue: eventsOk ? purchaseRevenue : null,
+          atc_rate: ratio(addToCartN, traffic),
+          checkout_rate: ratio(checkoutN, traffic),
+          cvr: ratio(purchaseN, traffic),
         };
         ga4ProductCache.set(cacheKey, { exp: Date.now() + GA4_PRODUCT_TTL_MS, value });
         return value;
