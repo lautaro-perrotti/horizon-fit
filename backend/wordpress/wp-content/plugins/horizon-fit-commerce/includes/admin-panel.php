@@ -518,6 +518,17 @@ function hf_panel_tab_seo() {
     <h2><?php esc_html_e('SEO de la home', 'horizon-fit-commerce'); ?></h2>
     <p class="description"><?php esc_html_e('Editá el título y la meta description principal que Google puede usar para la home.', 'horizon-fit-commerce'); ?></p>
 
+    <div class="notice notice-info inline" style="max-width: 1060px; margin: 16px 0;">
+        <p><strong><?php esc_html_e('Dónde se edita cada SEO', 'horizon-fit-commerce'); ?></strong></p>
+        <ul style="list-style: disc; margin-left: 20px;">
+            <li><?php esc_html_e('Home: se edita acá, en esta pestaña SEO.', 'horizon-fit-commerce'); ?></li>
+            <li><?php esc_html_e('Páginas informativas del footer: se editan en Horizon Fit → Páginas del footer.', 'horizon-fit-commerce'); ?></li>
+            <li><?php esc_html_e('Productos: se editan desde WooCommerce → Productos, dentro de cada producto. La meta description sale de la descripción/copy del producto y los atributos como color, talle y precio salen de WooCommerce.', 'horizon-fit-commerce'); ?></li>
+            <li><?php esc_html_e('Colecciones/categorías: se editan desde Productos → Categorías. El SEO de colecciones usa el nombre y la descripción de cada categoría.', 'horizon-fit-commerce'); ?></li>
+        </ul>
+        <p class="description"><?php esc_html_e('Este panel resume lo que está usando la tienda, pero no reemplaza los editores propios de productos y categorías.', 'horizon-fit-commerce'); ?></p>
+    </div>
+
     <form method="post" style="max-width: 860px; margin: 18px 0 28px;">
         <?php wp_nonce_field('hf_seo_action'); ?>
         <p>
