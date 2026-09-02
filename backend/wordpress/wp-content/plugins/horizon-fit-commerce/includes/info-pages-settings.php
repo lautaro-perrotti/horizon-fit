@@ -104,7 +104,7 @@ function hf_info_pages_get() {
 
         $out[$slug] = [
             'title'       => ($s['title'] ?? '') !== '' ? $s['title'] : $def['title'],
-            'description' => $def['description'],
+            'description' => ($s['description'] ?? '') !== '' ? $s['description'] : $def['description'],
             'content'     => '' !== $saved_content ? $saved_content : ($def['content'] ?? ''),
         ];
     }
