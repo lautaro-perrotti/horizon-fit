@@ -1,0 +1,414 @@
+{
+  "source": "local-cache-of-store-api",
+  "products": 51,
+  "items": [
+    {
+      "id": 99,
+      "name": "Top Dynamic blue",
+      "slug": "top-liso-azul",
+      "sku": "001-TOP-AZU",
+      "description": "<p dir=\"auto\">El top Dynamic se convierte en la base de tus looks más versátiles. Pensado para mujeres que buscan prendas que se adapten a su día a día, esta pieza te permite crear combinaciones distintas según la ocasión.</p>\n<p dir=\"auto\">Combínala con diferentes tops, camperas o remeras y armá outfits que reflejen tu estilo personal. Ideal para mujeres que valoran la practicidad sin renunciar a verse bien.</p>\n<p dir=\"auto\">Con él podés pasar del entrenamiento a un encuentro casual manteniendo un look fresco. Este top se convierte en ese básico que usás una y otra vez.</p>",
+      "short_description": "<p>Top liso de calce cómodo y soporte medio, ideal para entrenar o usar todos los días.</p>"
+    },
+    {
+      "id": 93,
+      "name": "Top Dynamic green",
+      "slug": "top-liso-verde",
+      "sku": "001-TOP-VER",
+      "description": "<p dir=\"auto\">El top Dynamic se convierte en la base de tus looks más versátiles. Pensado para mujeres que buscan prendas que se adapten a su día a día, esta pieza te permite crear combinaciones distintas según la ocasión.</p>\n<p dir=\"auto\">Combínala con diferentes tops, camperas o remeras y armá outfits que reflejen tu estilo personal. Ideal para mujeres que valoran la practicidad sin renunciar a verse bien.</p>\n<p dir=\"auto\">Con él podés pasar del entrenamiento a un encuentro casual manteniendo un look fresco. Este top se convierte en ese básico que usás una y otra vez.</p>",
+      "short_description": "<p>Top liso de calce cómodo y soporte medio, ideal para entrenar o usar todos los días.</p>"
+    },
+    {
+      "id": 87,
+      "name": "Top Dynamic sky blue",
+      "slug": "top-liso-celeste",
+      "sku": "001-TOP-CEL",
+      "description": "<p dir=\"auto\">El top Dynamic se convierte en la base de tus looks más versátiles. Pensado para mujeres que buscan prendas que se adapten a su día a día, esta pieza te permite crear combinaciones distintas según la ocasión.</p>\n<p dir=\"auto\">Combínala con diferentes tops, camperas o remeras y armá outfits que reflejen tu estilo personal. Ideal para mujeres que valoran la practicidad sin renunciar a verse bien.</p>\n<p dir=\"auto\">Con él podés pasar del entrenamiento a un encuentro casual manteniendo un look fresco. Este top se convierte en ese básico que usás una y otra vez.</p>",
+      "short_description": "<p>Top liso de calce cómodo y soporte medio, ideal para entrenar o usar todos los días.</p>"
+    },
+    {
+      "id": 133,
+      "name": "Calza Dynamic black",
+      "slug": "calsa-lisa-larga-negra",
+      "sku": "001-CAL-NEG",
+      "description": "<p dir=\"auto\">La calza Dynamic es mucho más que una prenda deportiva: es la aliada perfecta para quienes viven en movimiento. Pensada para acompañarte desde la primera hora del día.</p>\n<p dir=\"auto\">Podés usarla en el entrenamiento y después salir a la calle sin sentir que estás vestida solo para el gym. Elegí una prenda que te acompañe en cada momento y te permita disfrutar de la libertad de vestirte como quieras, cuando quieras.</p>\n<p dir=\"auto\">Ya sea para una clase, una caminata o un día completo de actividades, esta calza se adapta a tu ritmo y te da la confianza de estar siempre lista.</p>",
+      "short_description": "<p>Calza larga lisa con calce cómodo, pensada para entrenar y moverte con libertad.</p>"
+    },
+    {
+      "id": 114,
+      "name": "Top Dynamic white",
+      "slug": "top-liso-blanco",
+      "sku": "001-TOP-BLA",
+      "description": "<p dir=\"auto\">El top Dynamic se convierte en la base de tus looks más versátiles. Pensado para mujeres que buscan prendas que se adapten a su día a día, esta pieza te permite crear combinaciones distintas según la ocasión.</p>\n<p dir=\"auto\">Combínala con diferentes tops, camperas o remeras y armá outfits que reflejen tu estilo personal. Ideal para mujeres que valoran la practicidad sin renunciar a verse bien.</p>\n<p dir=\"auto\">Con él podés pasar del entrenamiento a un encuentro casual manteniendo un look fresco. Este top se convierte en ese básico que usás una y otra vez.</p>",
+      "short_description": "<p>Top liso de calce cómodo y soporte medio, ideal para entrenar o usar todos los días.</p>"
+    },
+    {
+      "id": 142,
+      "name": "Calza Dynamic green",
+      "slug": "calsa-lisa-larga-verde",
+      "sku": "001-CAL-VER",
+      "description": "<p dir=\"auto\">La calza Dynamic es mucho más que una prenda deportiva: es la aliada perfecta para quienes viven en movimiento. Pensada para acompañarte desde la primera hora del día.</p>\n<p dir=\"auto\">Podés usarla en el entrenamiento y después salir a la calle sin sentir que estás vestida solo para el gym. Elegí una prenda que te acompañe en cada momento y te permita disfrutar de la libertad de vestirte como quieras, cuando quieras.</p>\n<p dir=\"auto\">Ya sea para una clase, una caminata o un día completo de actividades, esta calza se adapta a tu ritmo y te da la confianza de estar siempre lista.</p>",
+      "short_description": "<p>Calza larga lisa con calce cómodo, pensada para entrenar y moverte con libertad.</p>"
+    },
+    {
+      "id": 162,
+      "name": "Calza Dynamic white",
+      "slug": "calsa-lisa-larga-blanca",
+      "sku": "001-CAL-BLA",
+      "description": "<p dir=\"auto\">La calza Dynamic es mucho más que una prenda deportiva: es la aliada perfecta para quienes viven en movimiento. Pensada para acompañarte desde la primera hora del día.</p>\n<p dir=\"auto\">Podés usarla en el entrenamiento y después salir a la calle sin sentir que estás vestida solo para el gym. Elegí una prenda que te acompañe en cada momento y te permita disfrutar de la libertad de vestirte como quieras, cuando quieras.</p>\n<p dir=\"auto\">Ya sea para una clase, una caminata o un día completo de actividades, esta calza se adapta a tu ritmo y te da la confianza de estar siempre lista.</p>",
+      "short_description": "<p>Calza larga lisa con calce cómodo, pensada para entrenar y moverte con libertad.</p>"
+    },
+    {
+      "id": 154,
+      "name": "Calza Dynamic sky blue",
+      "slug": "calsa-lisa-larga-celeste",
+      "sku": "001-CAL-CEL",
+      "description": "<p dir=\"auto\">La calza Dynamic es mucho más que una prenda deportiva: es la aliada perfecta para quienes viven en movimiento. Pensada para acompañarte desde la primera hora del día.</p>\n<p dir=\"auto\">Podés usarla en el entrenamiento y después salir a la calle sin sentir que estás vestida solo para el gym. Elegí una prenda que te acompañe en cada momento y te permita disfrutar de la libertad de vestirte como quieras, cuando quieras.</p>\n<p dir=\"auto\">Ya sea para una clase, una caminata o un día completo de actividades, esta calza se adapta a tu ritmo y te da la confianza de estar siempre lista.</p>",
+      "short_description": "<p>Calza larga lisa con calce cómodo, pensada para entrenar y moverte con libertad.</p>"
+    },
+    {
+      "id": 186,
+      "name": "Short Dynamic black",
+      "slug": "short-liso-negro",
+      "sku": "001-SHO-NEG",
+      "description": "<p>Short liso negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker liso, cómodo y versátil para entrenamiento y looks urbanos.</p>"
+    },
+    {
+      "id": 172,
+      "name": "Calza Dynamic blue",
+      "slug": "calsa-lisa-azul-larga",
+      "sku": "001-CAL-AZU",
+      "description": "<p dir=\"auto\">La calza Dynamic es mucho más que una prenda deportiva: es la aliada perfecta para quienes viven en movimiento. Pensada para acompañarte desde la primera hora del día.</p>\n<p dir=\"auto\">Podés usarla en el entrenamiento y después salir a la calle sin sentir que estás vestida solo para el gym. Elegí una prenda que te acompañe en cada momento y te permita disfrutar de la libertad de vestirte como quieras, cuando quieras.</p>\n<p dir=\"auto\">Ya sea para una clase, una caminata o un día completo de actividades, esta calza se adapta a tu ritmo y te da la confianza de estar siempre lista.</p>",
+      "short_description": "<p>Calza larga lisa con calce cómodo, pensada para entrenar y moverte con libertad.</p>"
+    },
+    {
+      "id": 205,
+      "name": "Short Dynamic green",
+      "slug": "short-liso-verde",
+      "sku": "001-SHO-VER",
+      "description": "<p>Short liso verde es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En verde, la prenda aporta un tono natural, equilibrado y distinto. Funciona muy bien para conjuntos con personalidad sin dejar de ser fácil de usar. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker liso, cómodo y versátil para entrenamiento y looks urbanos.</p>"
+    },
+    {
+      "id": 195,
+      "name": "Short Dynamic sky blue",
+      "slug": "short-liso-celeste",
+      "sku": "001-SHO-CEL",
+      "description": "<p>Short liso celeste es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En celeste, la prenda transmite frescura y liviandad visual. Es una opción suave, limpia y moderna para looks claros o combinaciones más relajadas. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker liso, cómodo y versátil para entrenamiento y looks urbanos.</p>"
+    },
+    {
+      "id": 227,
+      "name": "Short Dynamic blue",
+      "slug": "short-liso-azul",
+      "sku": "001-SHO-AZU",
+      "description": "<p>Short liso azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker liso, cómodo y versátil para entrenamiento y looks urbanos.</p>"
+    },
+    {
+      "id": 257,
+      "name": "Campera Dynamic white",
+      "slug": "campera-lisa-blanca",
+      "sku": "001-CAM-BLA",
+      "description": "<p>Campera lisa blanca es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera lisa crop, liviana y funcional para pre y post entrenamiento.</p>"
+    },
+    {
+      "id": 248,
+      "name": "Campera Dynamic green",
+      "slug": "campera-lisa-verde",
+      "sku": "001-CAM-VER",
+      "description": "<p>Campera lisa verde es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En verde, la prenda aporta un tono natural, equilibrado y distinto. Funciona muy bien para conjuntos con personalidad sin dejar de ser fácil de usar. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera lisa crop, liviana y funcional para pre y post entrenamiento.</p>"
+    },
+    {
+      "id": 268,
+      "name": "Campera Dynamic blue",
+      "slug": "campera-lisa-azul",
+      "sku": "001-CAM-AZU",
+      "description": "<p>Campera lisa azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera lisa crop, liviana y funcional para pre y post entrenamiento.</p>"
+    },
+    {
+      "id": 237,
+      "name": "Campera Dynamic black",
+      "slug": "campera-lisa-negra",
+      "sku": "001-CAM-NEG",
+      "description": "<p>Campera lisa negra es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera lisa crop, liviana y funcional para pre y post entrenamiento.</p>"
+    },
+    {
+      "id": 288,
+      "name": "Top Vanguard white",
+      "slug": "top-rustico-blanco",
+      "sku": "003-TOP-BLA",
+      "description": "<p>Top rustico blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top rústico cómodo, suave y funcional para entrenar o usar en looks casuales.</p>"
+    },
+    {
+      "id": 278,
+      "name": "Top Vanguard red",
+      "slug": "top-rustico-rojo",
+      "sku": "003-TOP-ROJ",
+      "description": "<p>Top rustico rojo es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En rojo, la prenda suma energía y presencia. Es una opción con carácter, pensada para destacar dentro de un conjunto deportivo o urbano. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top rústico cómodo, suave y funcional para entrenar o usar en looks casuales.</p>"
+    },
+    {
+      "id": 308,
+      "name": "Top Vanguard blue",
+      "slug": "top-rustico-azul",
+      "sku": "003-TOP-AZU",
+      "description": "<p>Top rústico azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top rústico cómodo, suave y funcional para entrenar o usar en looks casuales.</p>"
+    },
+    {
+      "id": 298,
+      "name": "Top Vanguard black",
+      "slug": "top-rustico-negro",
+      "sku": "003-TOP-NEG",
+      "description": "<p>Top rústico negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top rústico cómodo, suave y funcional para entrenar o usar en looks casuales.</p>"
+    },
+    {
+      "id": 329,
+      "name": "Short Vanguard white",
+      "slug": "short-rustico-blanco",
+      "sku": "003-SHO-BLA",
+      "description": "<p>Short Rústico blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short rústico cómodo, liviano y versátil para moverte todos los días.</p>"
+    },
+    {
+      "id": 318,
+      "name": "Short Vanguard red",
+      "slug": "short-rustico-rojo",
+      "sku": "003-SHO-ROJ",
+      "description": "<p>Short rústico rojo es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En rojo, la prenda suma energía y presencia. Es una opción con carácter, pensada para destacar dentro de un conjunto deportivo o urbano. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short rústico cómodo, liviano y versátil para moverte todos los días.</p>"
+    },
+    {
+      "id": 350,
+      "name": "Short Vanguard black",
+      "slug": "short-rustico-negro",
+      "sku": "003-SHO-NEG",
+      "description": "<p>Short rústico negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short rústico cómodo, liviano y versátil para moverte todos los días.</p>"
+    },
+    {
+      "id": 341,
+      "name": "Short Vanguard blue",
+      "slug": "short-rustico-azul",
+      "sku": "003-SHO-AZU",
+      "description": "<p>Short rústico azul es una prenda de activewear diseñada para acompañarte en movimiento, con una confección cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short rústico cómodo, liviano y versátil para moverte todos los días.</p>"
+    },
+    {
+      "id": 375,
+      "name": "Campera Vanguard blue",
+      "slug": "campera-rustico-azul",
+      "sku": "003-CAM-AZU",
+      "description": "<p>Campera rústico azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera rústica crop con cierre y capucha, cómoda y urbana.</p>"
+    },
+    {
+      "id": 359,
+      "name": "Campera Vanguard black",
+      "slug": "campera-rustico-negro",
+      "sku": "003-CAM-NEG",
+      "description": "<p>Campera rústico negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera rústica crop con cierre y capucha, cómoda y urbana.</p>"
+    },
+    {
+      "id": 389,
+      "name": "Campera Vanguard white",
+      "slug": "campera-rustico-blanco",
+      "sku": "003-CAM-BLA",
+      "description": "<p>Campera rústico blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera rústica crop con cierre y capucha, cómoda y urbana.</p>"
+    },
+    {
+      "id": 369,
+      "name": "Campera Vanguard red",
+      "slug": "campera-rustico-rojo",
+      "sku": "003-CAM-ROJ",
+      "description": "<p>Campera rústico rojo es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta campera suma una capa liviana, funcional y fácil de combinar.</p>\n<p>Está pensada para usar antes o después de entrenar, para viajes cortos o para completar un conjunto con una prenda práctica que mantiene el estilo Horizon Fit sin perder comodidad. El modelo rústico aporta una textura con más presencia visual y una sensación envolvente. Mantiene la funcionalidad del activewear, pero suma un carácter más urbano, perfecto para looks cómodos, capas livianas y combinaciones con actitud relajada.</p>\n<p>En rojo, la prenda suma energía y presencia. Es una opción con carácter, pensada para destacar dentro de un conjunto deportivo o urbano. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Campera rústica crop con cierre y capucha, cómoda y urbana.</p>"
+    },
+    {
+      "id": 420,
+      "name": "Top Heaven pink",
+      "slug": "top-tiras-blancas-rosa",
+      "sku": "002-TOP-ROS",
+      "description": "<p>Top &quot;Tiras blancas&quot; Rosa es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top con tiras blancas en contraste, soporte cómodo y estética deportiva moderna.</p>"
+    },
+    {
+      "id": 410,
+      "name": "Top Heaven sky blue",
+      "slug": "top-tiras-blancas-celeste",
+      "sku": "002-TOP-CEL",
+      "description": "<p>Top &quot;Tiras blancas&quot; celeste es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top con tiras blancas en contraste, soporte cómodo y estética deportiva moderna.</p>"
+    },
+    {
+      "id": 400,
+      "name": "Top Heaven black",
+      "slug": "top-tiras-blancas-negro",
+      "sku": "002-TOP-NEG",
+      "description": "<p>Top &quot;tiras blancas&quot; negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top con tiras blancas en contraste, soporte cómodo y estética deportiva moderna.</p>"
+    },
+    {
+      "id": 448,
+      "name": "Short Heaven pink",
+      "slug": "short-tiras-blancas-rosa",
+      "sku": "002-SHO-ROS",
+      "description": "<p>Short &quot;Tiras blancas&quot; Rosa es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker con tiras blancas, cómodo y fácil de combinar.</p>"
+    },
+    {
+      "id": 438,
+      "name": "Short Heaven sky blue",
+      "slug": "short-tiras-blancas-celeste",
+      "sku": "002-SHO-CEL",
+      "description": "<p>Short &quot;Tiras blancas&quot; celeste es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker con tiras blancas, cómodo y fácil de combinar.</p>"
+    },
+    {
+      "id": 429,
+      "name": "Short Heaven black",
+      "slug": "short-tiras-blancas-negro",
+      "sku": "002-SHO-NEG",
+      "description": "<p>Short &quot;Tiras blancas&quot; negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker con tiras blancas, cómodo y fácil de combinar.</p>"
+    },
+    {
+      "id": 463,
+      "name": "Calza Heaven sky blue",
+      "slug": "calsa-larga-tiras-blancas-celeste",
+      "sku": "002-CAL-CEL",
+      "description": "<p>Calsa Larga &quot;Tiras blancas&quot; Celeste es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta calza larga combina soporte, elasticidad y cobertura para moverse con seguridad durante todo el día.</p>\n<p>El tiro acompaña la cintura de forma estable, la tela se adapta al cuerpo sin perder forma y el diseño estiliza la pierna manteniendo una estética deportiva y urbana. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Calza con tiras blancas en contraste, soporte y diseño para todos los días.</p>"
+    },
+    {
+      "id": 454,
+      "name": "Calza Heaven black",
+      "slug": "calsa-larga-tiras-blancas-negra",
+      "sku": "002-CAL-NEG",
+      "description": "<p>Calsa larga &quot;Tiras blancas&quot; Negra es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta calza larga combina soporte, elasticidad y cobertura para moverse con seguridad durante todo el día.</p>\n<p>El tiro acompaña la cintura de forma estable, la tela se adapta al cuerpo sin perder forma y el diseño estiliza la pierna manteniendo una estética deportiva y urbana. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Calza con tiras blancas en contraste, soporte y diseño para todos los días.</p>"
+    },
+    {
+      "id": 487,
+      "name": "Top Destiny black",
+      "slug": "top-rejilla-negro",
+      "sku": "005-TOP-NEG",
+      "description": "<p>Top rejilla negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rejilla trabaja con textura, respirabilidad y contraste. Es una propuesta pensada para destacar detalles, sumar profundidad al look y acompañar conjuntos con una impronta más técnica, moderna y visualmente liviana.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top de rejilla con microtul, diseño diferencial y soporte cómodo.</p>"
+    },
+    {
+      "id": 477,
+      "name": "Calza Heaven pink",
+      "slug": "calsa-larga-tiras-blancas-rosa",
+      "sku": "002-CAL-ROS",
+      "description": "<p>Calsa Larga &quot;Tiras blancas&quot; Rosa es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta calza larga combina soporte, elasticidad y cobertura para moverse con seguridad durante todo el día.</p>\n<p>El tiro acompaña la cintura de forma estable, la tela se adapta al cuerpo sin perder forma y el diseño estiliza la pierna manteniendo una estética deportiva y urbana. El modelo tiras blancas suma contraste y una identidad gráfica reconocible. Las líneas claras realzan el diseño de la prenda, aportan dinamismo visual y refuerzan una estética deportiva más marcada sin perder facilidad para combinar.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Calza con tiras blancas en contraste, soporte y diseño para todos los días.</p>"
+    },
+    {
+      "id": 216,
+      "name": "Short Dynamic white",
+      "slug": "short-liso-blanco",
+      "sku": "001-SHO-BLA",
+      "description": "<p>Short liso blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker liso, cómodo y versátil para entrenamiento y looks urbanos.</p>"
+    },
+    {
+      "id": 510,
+      "name": "Calza Destiny black",
+      "slug": "calsa-rejilla-negra",
+      "sku": "005-CAL-NEG",
+      "description": "<p>Calsa rejilla negra es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta calza larga combina soporte, elasticidad y cobertura para moverse con seguridad durante todo el día.</p>\n<p>El tiro acompaña la cintura de forma estable, la tela se adapta al cuerpo sin perder forma y el diseño estiliza la pierna manteniendo una estética deportiva y urbana. El modelo rejilla trabaja con textura, respirabilidad y contraste. Es una propuesta pensada para destacar detalles, sumar profundidad al look y acompañar conjuntos con una impronta más técnica, moderna y visualmente liviana.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Calza de rejilla con paneles de microtul y calce cómodo.</p>"
+    },
+    {
+      "id": 496,
+      "name": "Top Destiny white",
+      "slug": "top-rejilla-blanco",
+      "sku": "005-TOP-BLA",
+      "description": "<p>Top rejilla blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo rejilla trabaja con textura, respirabilidad y contraste. Es una propuesta pensada para destacar detalles, sumar profundidad al look y acompañar conjuntos con una impronta más técnica, moderna y visualmente liviana.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top de rejilla con microtul, diseño diferencial y soporte cómodo.</p>"
+    },
+    {
+      "id": 518,
+      "name": "Short Destiny white",
+      "slug": "short-rejilla-blanco",
+      "sku": "005-SHO-BLA",
+      "description": "<p>Short rejilla blanco es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este short ofrece comodidad, frescura y libertad de movimiento para entrenar, caminar o armar un look activo de todos los días.</p>\n<p>Su calce busca acompañar sin incomodar, con una terminación prolija que funciona tanto en conjunto como con prendas básicas del guardarropa. El modelo rejilla trabaja con textura, respirabilidad y contraste. Es una propuesta pensada para destacar detalles, sumar profundidad al look y acompañar conjuntos con una impronta más técnica, moderna y visualmente liviana.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Short biker de rejilla con pretina alta y detalles de microtul.</p>"
+    },
+    {
+      "id": 527,
+      "name": "Calza Destiny white",
+      "slug": "calsa-rejilla-blanca",
+      "sku": "005-CAL-BLA",
+      "description": "<p>Calsa rejilla blanca es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta calza larga combina soporte, elasticidad y cobertura para moverse con seguridad durante todo el día.</p>\n<p>El tiro acompaña la cintura de forma estable, la tela se adapta al cuerpo sin perder forma y el diseño estiliza la pierna manteniendo una estética deportiva y urbana. El modelo rejilla trabaja con textura, respirabilidad y contraste. Es una propuesta pensada para destacar detalles, sumar profundidad al look y acompañar conjuntos con una impronta más técnica, moderna y visualmente liviana.</p>\n<p>En blanco, la prenda aporta una estética luminosa, fresca y minimalista. Es ideal para looks limpios, combinaciones monocromáticas o contrastes suaves con tonos oscuros. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Calza de rejilla con paneles de microtul y calce cómodo.</p>"
+    },
+    {
+      "id": 536,
+      "name": "Top Zenith wine",
+      "slug": "top-falda-bordo",
+      "sku": "004-TOP-BOR",
+      "description": "<p>Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso. Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación. Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.</p>",
+      "short_description": "<p>Top asimétrico de un hombro, con soporte y diseño de alto impacto.</p>"
+    },
+    {
+      "id": 544,
+      "name": "Top Zenith blue",
+      "slug": "top-falda-azul",
+      "sku": "004-TOP-AZU",
+      "description": "<p>Top falda azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta falda combina movimiento, comodidad y una silueta femenina dentro de una propuesta deportiva.</p>\n<p>Su caída acompaña el cuerpo sin rigidez y permite armar conjuntos activos con tops del mismo modelo o usarla como pieza protagonista en looks urbanos. El modelo falda está diseñado para construir conjuntos con una estética activa y femenina. Combina prendas superiores e inferiores con coherencia visual, priorizando comodidad, movimiento y una presencia más estilizada dentro del universo deportivo.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top asimétrico de un hombro, con soporte y diseño de alto impacto.</p>"
+    },
+    {
+      "id": 548,
+      "name": "Top Zenith black",
+      "slug": "top-falda-negro",
+      "sku": "004-TOP-NEG",
+      "description": "<p>Top falda negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta falda combina movimiento, comodidad y una silueta femenina dentro de una propuesta deportiva.</p>\n<p>Su caída acompaña el cuerpo sin rigidez y permite armar conjuntos activos con tops del mismo modelo o usarla como pieza protagonista en looks urbanos. El modelo falda está diseñado para construir conjuntos con una estética activa y femenina. Combina prendas superiores e inferiores con coherencia visual, priorizando comodidad, movimiento y una presencia más estilizada dentro del universo deportivo.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top asimétrico de un hombro, con soporte y diseño de alto impacto.</p>"
+    },
+    {
+      "id": 552,
+      "name": "Falda Zenith wine",
+      "slug": "falda-conjunto-falda-bordo",
+      "sku": "004-FAL-BOR",
+      "description": "<p>Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso. Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación. Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.</p>\n<p>Para conservar el calce, el color y la suavidad, lavá la prenda con agua fría y jabón neutro, cuidando la tela para que mantenga su forma en cada uso. Su cuidado combina lavado delicado, separación de tonos y secado paciente para que puedas usarla tanto en entrenamiento como en momentos cotidianos sin afectar elasticidad, textura ni terminación. Evitá lavandina, remojos largos, secadora y calor directo; secala a la sombra, sin retorcer, y no planches logos, estampas o avíos para preservar el acabado.</p>",
+      "short_description": "<p>Falda deportiva de tiro alto, cómoda y con movimiento.</p>"
+    },
+    {
+      "id": 568,
+      "name": "Falda Zenith black",
+      "slug": "falda-conjunto-falda-negro",
+      "sku": "004-FAL-NEG",
+      "description": "<p>Falda &quot;Conjunto falda&quot; negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta falda combina movimiento, comodidad y una silueta femenina dentro de una propuesta deportiva.</p>\n<p>Su caída acompaña el cuerpo sin rigidez y permite armar conjuntos activos con tops del mismo modelo o usarla como pieza protagonista en looks urbanos. El modelo falda está diseñado para construir conjuntos con una estética activa y femenina. Combina prendas superiores e inferiores con coherencia visual, priorizando comodidad, movimiento y una presencia más estilizada dentro del universo deportivo.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Falda deportiva de tiro alto, cómoda y con movimiento.</p>"
+    },
+    {
+      "id": 560,
+      "name": "Falda Zenith blue",
+      "slug": "falda-conjunto-falda-azul",
+      "sku": "004-FAL-AZU",
+      "description": "<p>Falda &quot;Conjunto falda&quot; azul es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Esta falda combina movimiento, comodidad y una silueta femenina dentro de una propuesta deportiva.</p>\n<p>Su caída acompaña el cuerpo sin rigidez y permite armar conjuntos activos con tops del mismo modelo o usarla como pieza protagonista en looks urbanos. El modelo falda está diseñado para construir conjuntos con una estética activa y femenina. Combina prendas superiores e inferiores con coherencia visual, priorizando comodidad, movimiento y una presencia más estilizada dentro del universo deportivo.</p>\n<p>En azul, la prenda suma profundidad y un aire deportivo elegante. Es una alternativa al negro con más color, pero igual de fácil de integrar a conjuntos completos. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Falda deportiva de tiro alto, cómoda y con movimiento.</p>"
+    },
+    {
+      "id": 56,
+      "name": "Top Dynamic black",
+      "slug": "top-liso-negro",
+      "sku": "001-TOP-NEG",
+      "description": "<p>Top liso negro es una prenda de activewear diseñada para acompañarte en movimiento, con una construcción cómoda, funcional y pensada para el uso real. Su propuesta combina calce, suavidad y una estética cuidada para que puedas usarla tanto en entrenamiento como en momentos cotidianos. Este top está pensado para acompañar entrenamientos, rutinas de bajo impacto y looks diarios con una sensación firme pero cómoda.</p>\n<p>Su calce sostiene sin comprimir de más, permite libertad en hombros y espalda, y mantiene una silueta limpia para combinar con calzas, shorts o faldas del mismo set. El modelo liso se destaca por su estética limpia, versátil y atemporal. Es una línea fácil de combinar, ideal para quienes buscan prendas deportivas con terminaciones simples, colores definidos y una presencia sobria que se adapta a entrenamientos y uso cotidiano.</p>\n<p>En negro, la prenda gana una presencia clásica, sobria y muy versátil. Funciona como base para entrenar, combinar y repetir sin perder fuerza visual. La podés combinar con otras prendas Horizon Fit para armar un conjunto completo o usarla de manera individual como parte de un look más simple.</p>\n<p>Es una pieza pensada para sentirse bien puesta, sostener el ritmo del día y mantener una imagen prolija sin resignar comodidad.</p>",
+      "short_description": "<p>Top liso de calce cómodo y soporte medio, ideal para entrenar o usar todos los días.</p>"
+    }
+  ]
+}

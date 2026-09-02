@@ -1,0 +1,5069 @@
+{
+  "source": "https://api.horizonfit.com.ar/wp-json/wc/store/v1",
+  "products": 51,
+  "variations": 153,
+  "parent_skus": [
+    "001-CAL-AZU",
+    "001-CAL-BLA",
+    "001-CAL-CEL",
+    "001-CAL-NEG",
+    "001-CAL-VER",
+    "001-CAM-AZU",
+    "001-CAM-BLA",
+    "001-CAM-NEG",
+    "001-CAM-VER",
+    "001-SHO-AZU",
+    "001-SHO-BLA",
+    "001-SHO-CEL",
+    "001-SHO-NEG",
+    "001-SHO-VER",
+    "001-TOP-AZU",
+    "001-TOP-BLA",
+    "001-TOP-CEL",
+    "001-TOP-NEG",
+    "001-TOP-VER",
+    "002-CAL-CEL",
+    "002-CAL-NEG",
+    "002-CAL-ROS",
+    "002-SHO-CEL",
+    "002-SHO-NEG",
+    "002-SHO-ROS",
+    "002-TOP-CEL",
+    "002-TOP-NEG",
+    "002-TOP-ROS",
+    "003-CAM-AZU",
+    "003-CAM-BLA",
+    "003-CAM-NEG",
+    "003-CAM-ROJ",
+    "003-SHO-AZU",
+    "003-SHO-BLA",
+    "003-SHO-NEG",
+    "003-SHO-ROJ",
+    "003-TOP-AZU",
+    "003-TOP-BLA",
+    "003-TOP-NEG",
+    "003-TOP-ROJ",
+    "004-FAL-AZU",
+    "004-FAL-BOR",
+    "004-FAL-NEG",
+    "004-TOP-AZU",
+    "004-TOP-BOR",
+    "004-TOP-NEG",
+    "005-CAL-BLA",
+    "005-CAL-NEG",
+    "005-SHO-BLA",
+    "005-TOP-BLA",
+    "005-TOP-NEG"
+  ],
+  "variation_sku_sample": [
+    "001-TOP-AZU-S",
+    "001-TOP-AZU-M",
+    "001-TOP-AZU-L",
+    "001-TOP-VER-S",
+    "001-TOP-VER-M",
+    "001-TOP-VER-L",
+    "001-TOP-CEL-S",
+    "001-TOP-CEL-M",
+    "001-TOP-CEL-L",
+    "001-CAL-NEG-S",
+    "001-CAL-NEG-M",
+    "001-CAL-NEG-L"
+  ],
+  "variation_skus_missing": 0,
+  "garment_types_from_variation_sku": {
+    "TOP": 51,
+    "CAL": 30,
+    "SHO": 39,
+    "CAM": 24,
+    "FAL": 9
+  },
+  "categories": [
+    "basicos",
+    "calzas",
+    "camperas",
+    "diseno",
+    "shorts",
+    "tops"
+  ],
+  "items": [
+    {
+      "id": 99,
+      "name": "Top Dynamic blue",
+      "slug": "top-liso-azul",
+      "sku": "001-TOP-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "6700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02691.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_11938385902612249150.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02690.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02692.jpg"
+      ],
+      "description_len": 582,
+      "short_description_len": 91,
+      "variations": [
+        {
+          "id": 100,
+          "sku": "001-TOP-AZU-S",
+          "name": "Top Dynamic blue",
+          "parent": 99,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"
+        },
+        {
+          "id": 101,
+          "sku": "001-TOP-AZU-M",
+          "name": "Top Dynamic blue",
+          "parent": 99,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"
+        },
+        {
+          "id": 102,
+          "sku": "001-TOP-AZU-L",
+          "name": "Top Dynamic blue",
+          "parent": 99,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02686_retocada.jpg"
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "name": "Top Dynamic green",
+      "slug": "top-liso-verde",
+      "sku": "001-TOP-VER",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Verde"
+        ]
+      },
+      "price": "6700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02824.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Top-verde.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02839-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02828_retocada_v2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02829.jpg"
+      ],
+      "description_len": 582,
+      "short_description_len": 91,
+      "variations": [
+        {
+          "id": 108,
+          "sku": "001-TOP-VER-S",
+          "name": "Top Dynamic green",
+          "parent": 93,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02824.jpg"
+        },
+        {
+          "id": 109,
+          "sku": "001-TOP-VER-M",
+          "name": "Top Dynamic green",
+          "parent": 93,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02824.jpg"
+        },
+        {
+          "id": 110,
+          "sku": "001-TOP-VER-L",
+          "name": "Top Dynamic green",
+          "parent": 93,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02824.jpg"
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "name": "Top Dynamic sky blue",
+      "slug": "top-liso-celeste",
+      "sku": "001-TOP-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "6700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02199_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02199_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02202_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02211_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02209_glass.jpg"
+      ],
+      "description_len": 582,
+      "short_description_len": 91,
+      "variations": [
+        {
+          "id": 111,
+          "sku": "001-TOP-CEL-S",
+          "name": "Top Dynamic sky blue",
+          "parent": 87,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02199_glass.jpg"
+        },
+        {
+          "id": 112,
+          "sku": "001-TOP-CEL-M",
+          "name": "Top Dynamic sky blue",
+          "parent": 87,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02199_glass.jpg"
+        },
+        {
+          "id": 113,
+          "sku": "001-TOP-CEL-L",
+          "name": "Top Dynamic sky blue",
+          "parent": 87,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02199_glass.jpg"
+        }
+      ]
+    },
+    {
+      "id": 133,
+      "name": "Calza Dynamic black",
+      "slug": "calsa-lisa-larga-negra",
+      "sku": "001-CAL-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "8670000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02674-Editar-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02655-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02647_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02648_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02651_retocada-1.jpg"
+      ],
+      "description_len": 604,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 134,
+          "sku": "001-CAL-NEG-S",
+          "name": "Calza Dynamic black",
+          "parent": 133,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02674-Editar-2.jpg"
+        },
+        {
+          "id": 135,
+          "sku": "001-CAL-NEG-M",
+          "name": "Calza Dynamic black",
+          "parent": 133,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02674-Editar-2.jpg"
+        },
+        {
+          "id": 136,
+          "sku": "001-CAL-NEG-L",
+          "name": "Calza Dynamic black",
+          "parent": 133,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02674-Editar-2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "name": "Top Dynamic white",
+      "slug": "top-liso-blanco",
+      "sku": "001-TOP-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "6700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02750_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02750_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/imagen2_sin_marca_agua.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02755_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02754_retocada.jpg"
+      ],
+      "description_len": 582,
+      "short_description_len": 91,
+      "variations": [
+        {
+          "id": 115,
+          "sku": "001-TOP-BLA-S",
+          "name": "Top Dynamic white",
+          "parent": 114,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02750_retocada.jpg"
+        },
+        {
+          "id": 116,
+          "sku": "001-TOP-BLA-M",
+          "name": "Top Dynamic white",
+          "parent": 114,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02750_retocada.jpg"
+        },
+        {
+          "id": 117,
+          "sku": "001-TOP-BLA-L",
+          "name": "Top Dynamic white",
+          "parent": 114,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02750_retocada.jpg"
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "name": "Calza Dynamic green",
+      "slug": "calsa-lisa-larga-verde",
+      "sku": "001-CAL-VER",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Verde"
+        ]
+      },
+      "price": "8670000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02857-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calsa_lisa_verde_final_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calza_verde_2_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02845.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Calsa_lisa_verde_casifinal_sin_marca.jpg"
+      ],
+      "description_len": 604,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 143,
+          "sku": "001-CAL-VER-S",
+          "name": "Calza Dynamic green",
+          "parent": 142,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02857-2.jpg"
+        },
+        {
+          "id": 144,
+          "sku": "001-CAL-VER-M",
+          "name": "Calza Dynamic green",
+          "parent": 142,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02857-2.jpg"
+        },
+        {
+          "id": 145,
+          "sku": "001-CAL-VER-L",
+          "name": "Calza Dynamic green",
+          "parent": 142,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02857-2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 162,
+      "name": "Calza Dynamic white",
+      "slug": "calsa-lisa-larga-blanca",
+      "sku": "001-CAL-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "8670000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02778-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02772-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02780.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02790-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02817-Editar.jpg"
+      ],
+      "description_len": 604,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 168,
+          "sku": "001-CAL-BLA-S",
+          "name": "Calza Dynamic white",
+          "parent": 162,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02778-Editar-1.jpg"
+        },
+        {
+          "id": 169,
+          "sku": "001-CAL-BLA-M",
+          "name": "Calza Dynamic white",
+          "parent": 162,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02778-Editar-1.jpg"
+        },
+        {
+          "id": 170,
+          "sku": "001-CAL-BLA-L",
+          "name": "Calza Dynamic white",
+          "parent": 162,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02778-Editar-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 154,
+      "name": "Calza Dynamic sky blue",
+      "slug": "calsa-lisa-larga-celeste",
+      "sku": "001-CAL-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "8670000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/lisofinal.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02235_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02232_glass_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/936bba5c_sin_marca.jpg"
+      ],
+      "description_len": 604,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 155,
+          "sku": "001-CAL-CEL-S",
+          "name": "Calza Dynamic sky blue",
+          "parent": 154,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/lisofinal.jpg"
+        },
+        {
+          "id": 156,
+          "sku": "001-CAL-CEL-M",
+          "name": "Calza Dynamic sky blue",
+          "parent": 154,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/lisofinal.jpg"
+        },
+        {
+          "id": 157,
+          "sku": "001-CAL-CEL-L",
+          "name": "Calza Dynamic sky blue",
+          "parent": 154,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/lisofinal.jpg"
+        }
+      ]
+    },
+    {
+      "id": 186,
+      "name": "Short Dynamic black",
+      "slug": "short-liso-negro",
+      "sku": "001-SHO-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7010000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortnegroportadafinal_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02308_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/674213bc_sin_marca.jpg"
+      ],
+      "description_len": 1271,
+      "short_description_len": 78,
+      "variations": [
+        {
+          "id": 187,
+          "sku": "001-SHO-NEG-S",
+          "name": "Short Dynamic black",
+          "parent": 186,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortnegroportadafinal_sin_marca.jpg"
+        },
+        {
+          "id": 188,
+          "sku": "001-SHO-NEG-M",
+          "name": "Short Dynamic black",
+          "parent": 186,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortnegroportadafinal_sin_marca.jpg"
+        },
+        {
+          "id": 189,
+          "sku": "001-SHO-NEG-L",
+          "name": "Short Dynamic black",
+          "parent": 186,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortnegroportadafinal_sin_marca.jpg"
+        }
+      ]
+    },
+    {
+      "id": 172,
+      "name": "Calza Dynamic blue",
+      "slug": "calsa-lisa-azul-larga",
+      "sku": "001-CAL-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "8670000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02726-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/0e3a8d8a_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02709.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02729.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_sin_marca-1.jpg"
+      ],
+      "description_len": 604,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 181,
+          "sku": "001-CAL-AZU-S",
+          "name": "Calza Dynamic blue",
+          "parent": 172,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02726-2.jpg"
+        },
+        {
+          "id": 182,
+          "sku": "001-CAL-AZU-M",
+          "name": "Calza Dynamic blue",
+          "parent": 172,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02726-2.jpg"
+        },
+        {
+          "id": 183,
+          "sku": "001-CAL-AZU-L",
+          "name": "Calza Dynamic blue",
+          "parent": 172,
+          "in_stock": true,
+          "price": "8670000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02726-2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 205,
+      "name": "Short Dynamic green",
+      "slug": "short-liso-verde",
+      "sku": "001-SHO-VER",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Verde"
+        ]
+      },
+      "price": "7010000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02839-Editar_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02841-Editar_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02831-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Short-lisoverdefinal-2.jpg"
+      ],
+      "description_len": 1271,
+      "short_description_len": 78,
+      "variations": [
+        {
+          "id": 206,
+          "sku": "001-SHO-VER-S",
+          "name": "Short Dynamic green",
+          "parent": 205,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02839-Editar_retocada.jpg"
+        },
+        {
+          "id": 207,
+          "sku": "001-SHO-VER-M",
+          "name": "Short Dynamic green",
+          "parent": 205,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02839-Editar_retocada.jpg"
+        },
+        {
+          "id": 208,
+          "sku": "001-SHO-VER-L",
+          "name": "Short Dynamic green",
+          "parent": 205,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02839-Editar_retocada.jpg"
+        }
+      ]
+    },
+    {
+      "id": 195,
+      "name": "Short Dynamic sky blue",
+      "slug": "short-liso-celeste",
+      "sku": "001-SHO-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "7010000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortcelesteportada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/short-celeste-3-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02214_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/919d75ab-d01b-47f4-b17a85178b2dc3b3-1.jpg"
+      ],
+      "description_len": 1271,
+      "short_description_len": 78,
+      "variations": [
+        {
+          "id": 196,
+          "sku": "001-SHO-CEL-S",
+          "name": "Short Dynamic sky blue",
+          "parent": 195,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortcelesteportada-1.jpg"
+        },
+        {
+          "id": 197,
+          "sku": "001-SHO-CEL-M",
+          "name": "Short Dynamic sky blue",
+          "parent": 195,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortcelesteportada-1.jpg"
+        },
+        {
+          "id": 198,
+          "sku": "001-SHO-CEL-L",
+          "name": "Short Dynamic sky blue",
+          "parent": 195,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortcelesteportada-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 227,
+      "name": "Short Dynamic blue",
+      "slug": "short-liso-azul",
+      "sku": "001-SHO-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "7010000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02701-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02703-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/dbf48e29-2728-42cd-ac73-5205b39f6058-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_16996715702408650136-1.jpg"
+      ],
+      "description_len": 1284,
+      "short_description_len": 78,
+      "variations": [
+        {
+          "id": 228,
+          "sku": "001-SHO-AZU-S",
+          "name": "Short Dynamic blue",
+          "parent": 227,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02701-Editar.jpg"
+        },
+        {
+          "id": 229,
+          "sku": "001-SHO-AZU-M",
+          "name": "Short Dynamic blue",
+          "parent": 227,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02701-Editar.jpg"
+        },
+        {
+          "id": 230,
+          "sku": "001-SHO-AZU-L",
+          "name": "Short Dynamic blue",
+          "parent": 227,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02701-Editar.jpg"
+        }
+      ]
+    },
+    {
+      "id": 257,
+      "name": "Campera Dynamic white",
+      "slug": "campera-lisa-blanca",
+      "sku": "001-CAM-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "11000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02780-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02790-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02781.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02816.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02786.jpg"
+      ],
+      "description_len": 1273,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 258,
+          "sku": "001-CAM-BLA-S",
+          "name": "Campera Dynamic white",
+          "parent": 257,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02780-1.jpg"
+        },
+        {
+          "id": 259,
+          "sku": "001-CAM-BLA-M",
+          "name": "Campera Dynamic white",
+          "parent": 257,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02780-1.jpg"
+        },
+        {
+          "id": 260,
+          "sku": "001-CAM-BLA-L",
+          "name": "Campera Dynamic white",
+          "parent": 257,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02780-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 248,
+      "name": "Campera Dynamic green",
+      "slug": "campera-lisa-verde",
+      "sku": "001-CAM-VER",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Verde"
+        ]
+      },
+      "price": "11000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calza_verde_2_sin_marca-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02865-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02857-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02861.jpg"
+      ],
+      "description_len": 1252,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 249,
+          "sku": "001-CAM-VER-S",
+          "name": "Campera Dynamic green",
+          "parent": 248,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calza_verde_2_sin_marca-1.jpg"
+        },
+        {
+          "id": 250,
+          "sku": "001-CAM-VER-M",
+          "name": "Campera Dynamic green",
+          "parent": 248,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calza_verde_2_sin_marca-1.jpg"
+        },
+        {
+          "id": 251,
+          "sku": "001-CAM-VER-L",
+          "name": "Campera Dynamic green",
+          "parent": 248,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Verde"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calza_verde_2_sin_marca-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 268,
+      "name": "Campera Dynamic blue",
+      "slug": "campera-lisa-azul",
+      "sku": "001-CAM-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "11000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02724.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02726-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02737-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02732.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02729-1.jpg"
+      ],
+      "description_len": 1265,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 269,
+          "sku": "001-CAM-AZU-S",
+          "name": "Campera Dynamic blue",
+          "parent": 268,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02724.jpg"
+        },
+        {
+          "id": 270,
+          "sku": "001-CAM-AZU-M",
+          "name": "Campera Dynamic blue",
+          "parent": 268,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02724.jpg"
+        },
+        {
+          "id": 271,
+          "sku": "001-CAM-AZU-L",
+          "name": "Campera Dynamic blue",
+          "parent": 268,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02724.jpg"
+        }
+      ]
+    },
+    {
+      "id": 237,
+      "name": "Campera Dynamic black",
+      "slug": "campera-lisa-negra",
+      "sku": "001-CAM-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "11000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02661-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02680-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02660-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02663.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02666.jpg"
+      ],
+      "description_len": 1252,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 238,
+          "sku": "001-CAM-NEG-S",
+          "name": "Campera Dynamic black",
+          "parent": 237,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02661-1.jpg"
+        },
+        {
+          "id": 239,
+          "sku": "001-CAM-NEG-M",
+          "name": "Campera Dynamic black",
+          "parent": 237,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02661-1.jpg"
+        },
+        {
+          "id": 240,
+          "sku": "001-CAM-NEG-L",
+          "name": "Campera Dynamic black",
+          "parent": 237,
+          "in_stock": true,
+          "price": "11000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02661-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 288,
+      "name": "Top Vanguard white",
+      "slug": "top-rustico-blanco",
+      "sku": "003-TOP-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "7400000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02463-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-4.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/0a781926_calidad_fiel.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02461-2.jpg"
+      ],
+      "description_len": 1303,
+      "short_description_len": 84,
+      "variations": [
+        {
+          "id": 289,
+          "sku": "003-TOP-BLA-S",
+          "name": "Top Vanguard white",
+          "parent": 288,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02463-Editar-1.jpg"
+        },
+        {
+          "id": 290,
+          "sku": "003-TOP-BLA-M",
+          "name": "Top Vanguard white",
+          "parent": 288,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02463-Editar-1.jpg"
+        },
+        {
+          "id": 291,
+          "sku": "003-TOP-BLA-L",
+          "name": "Top Vanguard white",
+          "parent": 288,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02463-Editar-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 278,
+      "name": "Top Vanguard red",
+      "slug": "top-rustico-rojo",
+      "sku": "003-TOP-ROJ",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rojo"
+        ]
+      },
+      "price": "7400000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-5.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-5.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02517-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02502_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02503_final.jpg"
+      ],
+      "description_len": 1268,
+      "short_description_len": 84,
+      "variations": [
+        {
+          "id": 279,
+          "sku": "003-TOP-ROJ-S",
+          "name": "Top Vanguard red",
+          "parent": 278,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-5.jpeg"
+        },
+        {
+          "id": 280,
+          "sku": "003-TOP-ROJ-M",
+          "name": "Top Vanguard red",
+          "parent": 278,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-5.jpeg"
+        },
+        {
+          "id": 281,
+          "sku": "003-TOP-ROJ-L",
+          "name": "Top Vanguard red",
+          "parent": 278,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-5.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 308,
+      "name": "Top Vanguard blue",
+      "slug": "top-rustico-azul",
+      "sku": "003-TOP-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "7400000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-6.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02549.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02567.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02552.jpg"
+      ],
+      "description_len": 1295,
+      "short_description_len": 84,
+      "variations": [
+        {
+          "id": 309,
+          "sku": "003-TOP-AZU-S",
+          "name": "Top Vanguard blue",
+          "parent": 308,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-1.jpg"
+        },
+        {
+          "id": 310,
+          "sku": "003-TOP-AZU-M",
+          "name": "Top Vanguard blue",
+          "parent": 308,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-1.jpg"
+        },
+        {
+          "id": 311,
+          "sku": "003-TOP-AZU-L",
+          "name": "Top Vanguard blue",
+          "parent": 308,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 298,
+      "name": "Top Vanguard black",
+      "slug": "top-rustico-negro",
+      "sku": "003-TOP-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7400000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-3.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-3.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-2.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02602_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02600_sin_marca.jpg"
+      ],
+      "description_len": 1282,
+      "short_description_len": 84,
+      "variations": [
+        {
+          "id": 299,
+          "sku": "003-TOP-NEG-S",
+          "name": "Top Vanguard black",
+          "parent": 298,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-3.jpeg"
+        },
+        {
+          "id": 300,
+          "sku": "003-TOP-NEG-M",
+          "name": "Top Vanguard black",
+          "parent": 298,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-3.jpeg"
+        },
+        {
+          "id": 301,
+          "sku": "003-TOP-NEG-L",
+          "name": "Top Vanguard black",
+          "parent": 298,
+          "in_stock": true,
+          "price": "7400000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.50-3.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 329,
+      "name": "Short Vanguard white",
+      "slug": "short-rustico-blanco",
+      "sku": "003-SHO-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "7200000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortrusticoblanco.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02463-Editar-4.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02468_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02477-Editar-1.jpg"
+      ],
+      "description_len": 1278,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 330,
+          "sku": "003-SHO-BLA-S",
+          "name": "Short Vanguard white",
+          "parent": 329,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortrusticoblanco.jpg"
+        },
+        {
+          "id": 331,
+          "sku": "003-SHO-BLA-M",
+          "name": "Short Vanguard white",
+          "parent": 329,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortrusticoblanco.jpg"
+        },
+        {
+          "id": 332,
+          "sku": "003-SHO-BLA-L",
+          "name": "Short Vanguard white",
+          "parent": 329,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Shortrusticoblanco.jpg"
+        }
+      ]
+    },
+    {
+      "id": 318,
+      "name": "Short Vanguard red",
+      "slug": "short-rustico-rojo",
+      "sku": "003-SHO-ROJ",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rojo"
+        ]
+      },
+      "price": "7200000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/WhatsApp-Image-2026-06-15-at-23.29.51-1.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02509_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02508_retocada-1-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02517-Editar.jpg"
+      ],
+      "description_len": 1243,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 319,
+          "sku": "003-SHO-ROJ-S",
+          "name": "Short Vanguard red",
+          "parent": 318,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar.jpg"
+        },
+        {
+          "id": 320,
+          "sku": "003-SHO-ROJ-M",
+          "name": "Short Vanguard red",
+          "parent": 318,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar.jpg"
+        },
+        {
+          "id": 321,
+          "sku": "003-SHO-ROJ-L",
+          "name": "Short Vanguard red",
+          "parent": 318,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02510-Editar.jpg"
+        }
+      ]
+    },
+    {
+      "id": 350,
+      "name": "Short Vanguard black",
+      "slug": "short-rustico-negro",
+      "sku": "003-SHO-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7200000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/de021d34-c79c-4d17-8708-00b5835bc51d.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02596.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02600-1-1.jpg"
+      ],
+      "description_len": 1257,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 351,
+          "sku": "003-SHO-NEG-S",
+          "name": "Short Vanguard black",
+          "parent": 350,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar-1.jpg"
+        },
+        {
+          "id": 352,
+          "sku": "003-SHO-NEG-M",
+          "name": "Short Vanguard black",
+          "parent": 350,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar-1.jpg"
+        },
+        {
+          "id": 353,
+          "sku": "003-SHO-NEG-L",
+          "name": "Short Vanguard black",
+          "parent": 350,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 341,
+      "name": "Short Vanguard blue",
+      "slug": "short-rustico-azul",
+      "sku": "003-SHO-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "7200000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02555-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02559-Editar-3.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02573-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/bc042b36-118e-40e7-92a8-25e2f26314c4-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02584-Editar-1.jpg"
+      ],
+      "description_len": 1259,
+      "short_description_len": 76,
+      "variations": [
+        {
+          "id": 342,
+          "sku": "003-SHO-AZU-S",
+          "name": "Short Vanguard blue",
+          "parent": 341,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02555-1.jpg"
+        },
+        {
+          "id": 343,
+          "sku": "003-SHO-AZU-M",
+          "name": "Short Vanguard blue",
+          "parent": 341,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02555-1.jpg"
+        },
+        {
+          "id": 344,
+          "sku": "003-SHO-AZU-L",
+          "name": "Short Vanguard blue",
+          "parent": 341,
+          "in_stock": true,
+          "price": "7200000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02555-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 375,
+      "name": "Campera Vanguard blue",
+      "slug": "campera-rustico-azul",
+      "sku": "003-CAM-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "12000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02570.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02584-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02573.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02581.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02574.jpg"
+      ],
+      "description_len": 1251,
+      "short_description_len": 66,
+      "variations": [
+        {
+          "id": 382,
+          "sku": "003-CAM-AZU-S",
+          "name": "Campera Vanguard blue",
+          "parent": 375,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02570.jpg"
+        },
+        {
+          "id": 383,
+          "sku": "003-CAM-AZU-M",
+          "name": "Campera Vanguard blue",
+          "parent": 375,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02570.jpg"
+        },
+        {
+          "id": 384,
+          "sku": "003-CAM-AZU-L",
+          "name": "Campera Vanguard blue",
+          "parent": 375,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02570.jpg"
+        }
+      ]
+    },
+    {
+      "id": 359,
+      "name": "Campera Vanguard black",
+      "slug": "campera-rustico-negro",
+      "sku": "003-CAM-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "12000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02614-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02620-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02605-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02610.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02609.jpg"
+      ],
+      "description_len": 1238,
+      "short_description_len": 66,
+      "variations": [
+        {
+          "id": 360,
+          "sku": "003-CAM-NEG-S",
+          "name": "Campera Vanguard black",
+          "parent": 359,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02614-1.jpg"
+        },
+        {
+          "id": 361,
+          "sku": "003-CAM-NEG-M",
+          "name": "Campera Vanguard black",
+          "parent": 359,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02614-1.jpg"
+        },
+        {
+          "id": 362,
+          "sku": "003-CAM-NEG-L",
+          "name": "Campera Vanguard black",
+          "parent": 359,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02614-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 389,
+      "name": "Campera Vanguard white",
+      "slug": "campera-rustico-blanco",
+      "sku": "003-CAM-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "12000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02469.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02472.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02482.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02483.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02485.jpg"
+      ],
+      "description_len": 1259,
+      "short_description_len": 66,
+      "variations": [
+        {
+          "id": 390,
+          "sku": "003-CAM-BLA-S",
+          "name": "Campera Vanguard white",
+          "parent": 389,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02469.jpg"
+        },
+        {
+          "id": 391,
+          "sku": "003-CAM-BLA-M",
+          "name": "Campera Vanguard white",
+          "parent": 389,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02469.jpg"
+        },
+        {
+          "id": 392,
+          "sku": "003-CAM-BLA-L",
+          "name": "Campera Vanguard white",
+          "parent": 389,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02469.jpg"
+        }
+      ]
+    },
+    {
+      "id": 369,
+      "name": "Campera Vanguard red",
+      "slug": "campera-rustico-rojo",
+      "sku": "003-CAM-ROJ",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Camperas",
+          "slug": "camperas"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rojo"
+        ]
+      },
+      "price": "12000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02542-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02527-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02537.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02530.jpg"
+      ],
+      "description_len": 1224,
+      "short_description_len": 66,
+      "variations": [
+        {
+          "id": 385,
+          "sku": "003-CAM-ROJ-S",
+          "name": "Campera Vanguard red",
+          "parent": 369,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02542-Editar-1.jpg"
+        },
+        {
+          "id": 386,
+          "sku": "003-CAM-ROJ-M",
+          "name": "Campera Vanguard red",
+          "parent": 369,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02542-Editar-1.jpg"
+        },
+        {
+          "id": 387,
+          "sku": "003-CAM-ROJ-L",
+          "name": "Campera Vanguard red",
+          "parent": 369,
+          "in_stock": true,
+          "price": "12000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Rojo"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02542-Editar-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 420,
+      "name": "Top Heaven pink",
+      "slug": "top-tiras-blancas-rosa",
+      "sku": "002-TOP-ROS",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rosa"
+        ]
+      },
+      "price": "7100000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02872_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02875_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02887-Editar_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02881_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02891_glass_v4.jpg"
+      ],
+      "description_len": 1305,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 421,
+          "sku": "002-TOP-ROS-S",
+          "name": "Top Heaven pink",
+          "parent": 420,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02872_retocada.jpg"
+        },
+        {
+          "id": 422,
+          "sku": "002-TOP-ROS-M",
+          "name": "Top Heaven pink",
+          "parent": 420,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02872_retocada.jpg"
+        },
+        {
+          "id": 423,
+          "sku": "002-TOP-ROS-L",
+          "name": "Top Heaven pink",
+          "parent": 420,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02872_retocada.jpg"
+        }
+      ]
+    },
+    {
+      "id": 410,
+      "name": "Top Heaven sky blue",
+      "slug": "top-tiras-blancas-celeste",
+      "sku": "002-TOP-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "7100000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02913.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02914.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02918.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02916.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_17334933776645950019-1.jpg"
+      ],
+      "description_len": 1308,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 411,
+          "sku": "002-TOP-CEL-S",
+          "name": "Top Heaven sky blue",
+          "parent": 410,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02913.jpg"
+        },
+        {
+          "id": 412,
+          "sku": "002-TOP-CEL-M",
+          "name": "Top Heaven sky blue",
+          "parent": 410,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02913.jpg"
+        },
+        {
+          "id": 413,
+          "sku": "002-TOP-CEL-L",
+          "name": "Top Heaven sky blue",
+          "parent": 410,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02913.jpg"
+        }
+      ]
+    },
+    {
+      "id": 400,
+      "name": "Top Heaven black",
+      "slug": "top-tiras-blancas-negro",
+      "sku": "002-TOP-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7100000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02249_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02256_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02258_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02259_glass.jpg"
+      ],
+      "description_len": 1306,
+      "short_description_len": 87,
+      "variations": [
+        {
+          "id": 401,
+          "sku": "002-TOP-NEG-S",
+          "name": "Top Heaven black",
+          "parent": 400,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02249_glass.jpg"
+        },
+        {
+          "id": 402,
+          "sku": "002-TOP-NEG-M",
+          "name": "Top Heaven black",
+          "parent": 400,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02249_glass.jpg"
+        },
+        {
+          "id": 403,
+          "sku": "002-TOP-NEG-L",
+          "name": "Top Heaven black",
+          "parent": 400,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02249_glass.jpg"
+        }
+      ]
+    },
+    {
+      "id": 448,
+      "name": "Short Heaven pink",
+      "slug": "short-tiras-blancas-rosa",
+      "sku": "002-SHO-ROS",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rosa"
+        ]
+      },
+      "price": "7600000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02887-Editar_retocada-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02878_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02879_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/798e332c-e079-468a-ae47-392178a918fa-2-1.jpg"
+      ],
+      "description_len": 1280,
+      "short_description_len": 65,
+      "variations": [
+        {
+          "id": 819,
+          "sku": "002-SHO-ROS-S",
+          "name": "Short Heaven pink",
+          "parent": 448,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02887-Editar_retocada-2.jpg"
+        },
+        {
+          "id": 820,
+          "sku": "002-SHO-ROS-M",
+          "name": "Short Heaven pink",
+          "parent": 448,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02887-Editar_retocada-2.jpg"
+        },
+        {
+          "id": 821,
+          "sku": "002-SHO-ROS-L",
+          "name": "Short Heaven pink",
+          "parent": 448,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02887-Editar_retocada-2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 438,
+      "name": "Short Heaven sky blue",
+      "slug": "short-tiras-blancas-celeste",
+      "sku": "002-SHO-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "7600000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_17334933776645950019-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Vfinalshortceleste.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02921.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/11952004-4829-4996-a32e-b923f66650e8-1-1.jpg"
+      ],
+      "description_len": 1283,
+      "short_description_len": 65,
+      "variations": [
+        {
+          "id": 439,
+          "sku": "002-SHO-CEL-S",
+          "name": "Short Heaven sky blue",
+          "parent": 438,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_17334933776645950019-1.jpg"
+        },
+        {
+          "id": 440,
+          "sku": "002-SHO-CEL-M",
+          "name": "Short Heaven sky blue",
+          "parent": 438,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_17334933776645950019-1.jpg"
+        },
+        {
+          "id": 441,
+          "sku": "002-SHO-CEL-L",
+          "name": "Short Heaven sky blue",
+          "parent": 438,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_17334933776645950019-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 429,
+      "name": "Short Heaven black",
+      "slug": "short-tiras-blancas-negro",
+      "sku": "002-SHO-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7600000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02645_retocada-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Vfinal1.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02631_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02633_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Vfinal2-1.jpg"
+      ],
+      "description_len": 1281,
+      "short_description_len": 65,
+      "variations": [
+        {
+          "id": 430,
+          "sku": "002-SHO-NEG-S",
+          "name": "Short Heaven black",
+          "parent": 429,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02645_retocada-2.jpg"
+        },
+        {
+          "id": 431,
+          "sku": "002-SHO-NEG-M",
+          "name": "Short Heaven black",
+          "parent": 429,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02645_retocada-2.jpg"
+        },
+        {
+          "id": 432,
+          "sku": "002-SHO-NEG-L",
+          "name": "Short Heaven black",
+          "parent": 429,
+          "in_stock": true,
+          "price": "7600000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02645_retocada-2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 463,
+      "name": "Calza Heaven sky blue",
+      "slug": "calsa-larga-tiras-blancas-celeste",
+      "sku": "002-CAL-CEL",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        },
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Celeste"
+        ]
+      },
+      "price": "8700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_18261364429105335878_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02936.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02934-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02939.jpg"
+      ],
+      "description_len": 1293,
+      "short_description_len": 82,
+      "variations": [
+        {
+          "id": 464,
+          "sku": "002-CAL-CEL-S",
+          "name": "Calza Heaven sky blue",
+          "parent": 463,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_18261364429105335878_sin_marca.jpg"
+        },
+        {
+          "id": 465,
+          "sku": "002-CAL-CEL-M",
+          "name": "Calza Heaven sky blue",
+          "parent": 463,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_18261364429105335878_sin_marca.jpg"
+        },
+        {
+          "id": 466,
+          "sku": "002-CAL-CEL-L",
+          "name": "Calza Heaven sky blue",
+          "parent": 463,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Celeste"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/watermarked_img_18261364429105335878_sin_marca.jpg"
+        }
+      ]
+    },
+    {
+      "id": 454,
+      "name": "Calza Heaven black",
+      "slug": "calsa-larga-tiras-blancas-negra",
+      "sku": "002-CAL-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        },
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "8700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02290-Editar_glass-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02278_glass-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02283_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02281_glass.jpg"
+      ],
+      "description_len": 1291,
+      "short_description_len": 82,
+      "variations": [
+        {
+          "id": 455,
+          "sku": "002-CAL-NEG-S",
+          "name": "Calza Heaven black",
+          "parent": 454,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02290-Editar_glass-1.jpg"
+        },
+        {
+          "id": 456,
+          "sku": "002-CAL-NEG-M",
+          "name": "Calza Heaven black",
+          "parent": 454,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02290-Editar_glass-1.jpg"
+        },
+        {
+          "id": 457,
+          "sku": "002-CAL-NEG-L",
+          "name": "Calza Heaven black",
+          "parent": 454,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02290-Editar_glass-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 487,
+      "name": "Top Destiny black",
+      "slug": "top-rejilla-negro",
+      "sku": "005-TOP-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7300000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02295_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02297.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02299_glass.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/foto_sin_marca.jpg"
+      ],
+      "description_len": 1259,
+      "short_description_len": 72,
+      "variations": [
+        {
+          "id": 493,
+          "sku": "005-TOP-NEG-S",
+          "name": "Top Destiny black",
+          "parent": 487,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02295_glass.jpg"
+        },
+        {
+          "id": 494,
+          "sku": "005-TOP-NEG-M",
+          "name": "Top Destiny black",
+          "parent": 487,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02295_glass.jpg"
+        },
+        {
+          "id": 495,
+          "sku": "005-TOP-NEG-L",
+          "name": "Top Destiny black",
+          "parent": 487,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02295_glass.jpg"
+        }
+      ]
+    },
+    {
+      "id": 477,
+      "name": "Calza Heaven pink",
+      "slug": "calsa-larga-tiras-blancas-rosa",
+      "sku": "002-CAL-ROS",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        },
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Rosa"
+        ]
+      },
+      "price": "8700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02904-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/d98b4903-534a-4d61-82bf-35064e1841c6.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/calzarosafinal.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02910-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/798e332c-e079-468a-ae47-392178a918fa-1.jpg"
+      ],
+      "description_len": 1290,
+      "short_description_len": 82,
+      "variations": [
+        {
+          "id": 478,
+          "sku": "002-CAL-ROS-S",
+          "name": "Calza Heaven pink",
+          "parent": 477,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02904-1.jpg"
+        },
+        {
+          "id": 479,
+          "sku": "002-CAL-ROS-M",
+          "name": "Calza Heaven pink",
+          "parent": 477,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02904-1.jpg"
+        },
+        {
+          "id": 480,
+          "sku": "002-CAL-ROS-L",
+          "name": "Calza Heaven pink",
+          "parent": 477,
+          "in_stock": true,
+          "price": "8700000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Rosa"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02904-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 216,
+      "name": "Short Dynamic white",
+      "slug": "short-liso-blanco",
+      "sku": "001-SHO-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "7010000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortblancofinal.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02757-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02759.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/ef6a4029-6287-41d5-bf01-70020ea3772f-1.jpg"
+      ],
+      "description_len": 1292,
+      "short_description_len": 78,
+      "variations": [
+        {
+          "id": 816,
+          "sku": "001-SHO-BLA-S",
+          "name": "Short Dynamic white",
+          "parent": 216,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortblancofinal.jpg"
+        },
+        {
+          "id": 817,
+          "sku": "001-SHO-BLA-M",
+          "name": "Short Dynamic white",
+          "parent": 216,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortblancofinal.jpg"
+        },
+        {
+          "id": 818,
+          "sku": "001-SHO-BLA-L",
+          "name": "Short Dynamic white",
+          "parent": 216,
+          "in_stock": true,
+          "price": "7010000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": null
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/shortblancofinal.jpg"
+        }
+      ]
+    },
+    {
+      "id": 510,
+      "name": "Calza Destiny black",
+      "slug": "calsa-rejilla-negra",
+      "sku": "005-CAL-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        },
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "8800000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/102cf072-9c69-4b32-9d58-93ef30767354.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02320_glass-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02323.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02299_glass-1.jpg"
+      ],
+      "description_len": 1238,
+      "short_description_len": 63,
+      "variations": [
+        {
+          "id": 511,
+          "sku": "005-CAL-NEG-S",
+          "name": "Calza Destiny black",
+          "parent": 510,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/102cf072-9c69-4b32-9d58-93ef30767354.jpg"
+        },
+        {
+          "id": 512,
+          "sku": "005-CAL-NEG-M",
+          "name": "Calza Destiny black",
+          "parent": 510,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/102cf072-9c69-4b32-9d58-93ef30767354.jpg"
+        },
+        {
+          "id": 513,
+          "sku": "005-CAL-NEG-L",
+          "name": "Calza Destiny black",
+          "parent": 510,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/102cf072-9c69-4b32-9d58-93ef30767354.jpg"
+        }
+      ]
+    },
+    {
+      "id": 496,
+      "name": "Top Destiny white",
+      "slug": "top-rejilla-blanco",
+      "sku": "005-TOP-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "7300000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/foto2_sin_marca-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02342.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02374.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02345.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02343.jpg"
+      ],
+      "description_len": 1280,
+      "short_description_len": 72,
+      "variations": [
+        {
+          "id": 503,
+          "sku": "005-TOP-BLA-S",
+          "name": "Top Destiny white",
+          "parent": 496,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/foto2_sin_marca-1.jpg"
+        },
+        {
+          "id": 504,
+          "sku": "005-TOP-BLA-M",
+          "name": "Top Destiny white",
+          "parent": 496,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/foto2_sin_marca-1.jpg"
+        },
+        {
+          "id": 505,
+          "sku": "005-TOP-BLA-L",
+          "name": "Top Destiny white",
+          "parent": 496,
+          "in_stock": true,
+          "price": "7300000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/foto2_sin_marca-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 518,
+      "name": "Short Destiny white",
+      "slug": "short-rejilla-blanco",
+      "sku": "005-SHO-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "7100000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Final2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/VFinalshort-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/DSC02349.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Vfinalfinalcalsablancatb-1.jpg"
+      ],
+      "description_len": 1255,
+      "short_description_len": 70,
+      "variations": [
+        {
+          "id": 519,
+          "sku": "005-SHO-BLA-S",
+          "name": "Short Destiny white",
+          "parent": 518,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Final2.jpg"
+        },
+        {
+          "id": 520,
+          "sku": "005-SHO-BLA-M",
+          "name": "Short Destiny white",
+          "parent": 518,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Final2.jpg"
+        },
+        {
+          "id": 521,
+          "sku": "005-SHO-BLA-L",
+          "name": "Short Destiny white",
+          "parent": 518,
+          "in_stock": true,
+          "price": "7100000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/07/Final2.jpg"
+        }
+      ]
+    },
+    {
+      "id": 527,
+      "name": "Calza Destiny white",
+      "slug": "calsa-rejilla-blanca",
+      "sku": "005-CAL-BLA",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Calzas",
+          "slug": "calzas"
+        },
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Blanco"
+        ]
+      },
+      "price": "8800000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/Calsaportadafinal.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02368.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02370.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02373.jpg"
+      ],
+      "description_len": 1259,
+      "short_description_len": 63,
+      "variations": [
+        {
+          "id": 528,
+          "sku": "005-CAL-BLA-S",
+          "name": "Calza Destiny white",
+          "parent": 527,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/Calsaportadafinal.jpg"
+        },
+        {
+          "id": 529,
+          "sku": "005-CAL-BLA-M",
+          "name": "Calza Destiny white",
+          "parent": 527,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/Calsaportadafinal.jpg"
+        },
+        {
+          "id": 530,
+          "sku": "005-CAL-BLA-L",
+          "name": "Calza Destiny white",
+          "parent": 527,
+          "in_stock": true,
+          "price": "8800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Blanco"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/Calsaportadafinal.jpg"
+        }
+      ]
+    },
+    {
+      "id": 536,
+      "name": "Top Zenith wine",
+      "slug": "top-falda-bordo",
+      "sku": "004-TOP-BOR",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Bordeaux"
+        ]
+      },
+      "price": "7000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02407-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/WhatsApp-Image-2026-06-15-at-23.29.49-3.jpeg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02411_retocada-1-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02413.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02415.jpg"
+      ],
+      "description_len": 512,
+      "short_description_len": 73,
+      "variations": [
+        {
+          "id": 537,
+          "sku": "004-TOP-BOR-S",
+          "name": "Top Zenith wine",
+          "parent": 536,
+          "in_stock": true,
+          "price": "7000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02407-1.jpg"
+        },
+        {
+          "id": 538,
+          "sku": "004-TOP-BOR-M",
+          "name": "Top Zenith wine",
+          "parent": 536,
+          "in_stock": true,
+          "price": "7000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02407-1.jpg"
+        },
+        {
+          "id": 539,
+          "sku": "004-TOP-BOR-L",
+          "name": "Top Zenith wine",
+          "parent": 536,
+          "in_stock": true,
+          "price": "7000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02407-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 544,
+      "name": "Top Zenith blue",
+      "slug": "top-falda-azul",
+      "sku": "004-TOP-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "7800000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/641739d5-bbac-4d1f-9f93-4ec07d248a1f.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02389_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02391_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02390_retocada.jpg"
+      ],
+      "description_len": 1249,
+      "short_description_len": 73,
+      "variations": [
+        {
+          "id": 545,
+          "sku": "004-TOP-AZU-S",
+          "name": "Top Zenith blue",
+          "parent": 544,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/641739d5-bbac-4d1f-9f93-4ec07d248a1f.jpg"
+        },
+        {
+          "id": 546,
+          "sku": "004-TOP-AZU-M",
+          "name": "Top Zenith blue",
+          "parent": 544,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/641739d5-bbac-4d1f-9f93-4ec07d248a1f.jpg"
+        },
+        {
+          "id": 547,
+          "sku": "004-TOP-AZU-L",
+          "name": "Top Zenith blue",
+          "parent": 544,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/641739d5-bbac-4d1f-9f93-4ec07d248a1f.jpg"
+        }
+      ]
+    },
+    {
+      "id": 548,
+      "name": "Top Zenith black",
+      "slug": "top-falda-negro",
+      "sku": "004-TOP-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "7800000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02427_logo_centrado.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02429_logo_centrado.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02442-Editar-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02431_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02447_retocada-1.jpg"
+      ],
+      "description_len": 1236,
+      "short_description_len": 73,
+      "variations": [
+        {
+          "id": 549,
+          "sku": "004-TOP-NEG-S",
+          "name": "Top Zenith black",
+          "parent": 548,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02427_logo_centrado.jpg"
+        },
+        {
+          "id": 550,
+          "sku": "004-TOP-NEG-M",
+          "name": "Top Zenith black",
+          "parent": 548,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02427_logo_centrado.jpg"
+        },
+        {
+          "id": 551,
+          "sku": "004-TOP-NEG-L",
+          "name": "Top Zenith black",
+          "parent": 548,
+          "in_stock": true,
+          "price": "7800000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02427_logo_centrado.jpg"
+        }
+      ]
+    },
+    {
+      "id": 552,
+      "name": "Falda Zenith wine",
+      "slug": "falda-conjunto-falda-bordo",
+      "sku": "004-FAL-BOR",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Bordeaux"
+        ]
+      },
+      "price": "10000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02413_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02415_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02417.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02407-2.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02411_retocada-1.jpg"
+      ],
+      "description_len": 1025,
+      "short_description_len": 61,
+      "variations": [
+        {
+          "id": 553,
+          "sku": "004-FAL-BOR-S",
+          "name": "Falda Zenith wine",
+          "parent": 552,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02413_retocada-1.jpg"
+        },
+        {
+          "id": 554,
+          "sku": "004-FAL-BOR-M",
+          "name": "Falda Zenith wine",
+          "parent": 552,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02413_retocada-1.jpg"
+        },
+        {
+          "id": 555,
+          "sku": "004-FAL-BOR-L",
+          "name": "Falda Zenith wine",
+          "parent": 552,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Bordeaux"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02413_retocada-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 568,
+      "name": "Falda Zenith black",
+      "slug": "falda-conjunto-falda-negro",
+      "sku": "004-FAL-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Negro"
+        ]
+      },
+      "price": "10000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02435faldalogo_centrado.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02442-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02437.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02447_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02448_retocada.jpg"
+      ],
+      "description_len": 1259,
+      "short_description_len": 61,
+      "variations": [
+        {
+          "id": 569,
+          "sku": "004-FAL-NEG-S",
+          "name": "Falda Zenith black",
+          "parent": 568,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02435faldalogo_centrado.jpg"
+        },
+        {
+          "id": 570,
+          "sku": "004-FAL-NEG-M",
+          "name": "Falda Zenith black",
+          "parent": 568,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02435faldalogo_centrado.jpg"
+        },
+        {
+          "id": 571,
+          "sku": "004-FAL-NEG-L",
+          "name": "Falda Zenith black",
+          "parent": 568,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02435faldalogo_centrado.jpg"
+        }
+      ]
+    },
+    {
+      "id": 560,
+      "name": "Falda Zenith blue",
+      "slug": "falda-conjunto-falda-azul",
+      "sku": "004-FAL-AZU",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Diseño",
+          "slug": "diseno"
+        },
+        {
+          "name": "Shorts",
+          "slug": "shorts"
+        }
+      ],
+      "attributes": {
+        "Talle": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Color": [
+          "Azul"
+        ]
+      },
+      "price": "10000000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02397-Editar_retocada-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02393Topazullogo_centrado_v2-1.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02395_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02403_retocada.jpg"
+      ],
+      "description_len": 1272,
+      "short_description_len": 61,
+      "variations": [
+        {
+          "id": 561,
+          "sku": "004-FAL-AZU-S",
+          "name": "Falda Zenith blue",
+          "parent": 560,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "S"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02397-Editar_retocada-1.jpg"
+        },
+        {
+          "id": 562,
+          "sku": "004-FAL-AZU-M",
+          "name": "Falda Zenith blue",
+          "parent": 560,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "M"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02397-Editar_retocada-1.jpg"
+        },
+        {
+          "id": 563,
+          "sku": "004-FAL-AZU-L",
+          "name": "Falda Zenith blue",
+          "parent": 560,
+          "in_stock": true,
+          "price": "10000000",
+          "attributes": [
+            {
+              "name": "Talle",
+              "value": "L"
+            },
+            {
+              "name": "Color",
+              "value": "Azul"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/06/DSC02397-Editar_retocada-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "name": "Top Dynamic black",
+      "slug": "top-liso-negro",
+      "sku": "001-TOP-NEG",
+      "type": "variable",
+      "categories": [
+        {
+          "name": "Básicos",
+          "slug": "basicos"
+        },
+        {
+          "name": "Tops",
+          "slug": "tops"
+        }
+      ],
+      "attributes": {
+        "Size": [
+          "S",
+          "M",
+          "L"
+        ],
+        "Colour": [
+          "Negro"
+        ]
+      },
+      "price": "6700000",
+      "currency": "ARS",
+      "in_stock": true,
+      "images": [
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02625_retocadaFINAL.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02645-Editar.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/foto3_sin_marca.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02628_retocada.jpg",
+        "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02630.jpg"
+      ],
+      "description_len": 1296,
+      "short_description_len": 91,
+      "variations": [
+        {
+          "id": 57,
+          "sku": "001-TOP-NEG-S",
+          "name": "Top Dynamic black",
+          "parent": 56,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Size",
+              "value": "S"
+            },
+            {
+              "name": "Colour",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02625_retocadaFINAL.jpg"
+        },
+        {
+          "id": 60,
+          "sku": "001-TOP-NEG-M",
+          "name": "Top Dynamic black",
+          "parent": 56,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Size",
+              "value": "M"
+            },
+            {
+              "name": "Colour",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02625_retocadaFINAL.jpg"
+        },
+        {
+          "id": 63,
+          "sku": "001-TOP-NEG-L",
+          "name": "Top Dynamic black",
+          "parent": 56,
+          "in_stock": true,
+          "price": "6700000",
+          "attributes": [
+            {
+              "name": "Size",
+              "value": "L"
+            },
+            {
+              "name": "Colour",
+              "value": "Negro"
+            }
+          ],
+          "image": "https://api.horizonfit.com.ar/wp-content/uploads/2026/05/DSC02625_retocadaFINAL.jpg"
+        }
+      ]
+    }
+  ]
+}
