@@ -857,7 +857,7 @@
       } else if (lostPasswordRoute) {
         updateSeo({
           title: `Recuperar contraseña | ${SITE_NAME}`,
-          description: 'Recuperá el acceso a tu cuenta de Horizon Fit desde 8088.',
+          description: 'Recuperá el acceso a tu cuenta de Horizon Fit.',
           canonical: routeBaseUrl('/mi-cuenta/lost-password/'),
           robots: 'noindex,nofollow',
           ogType: 'website',
