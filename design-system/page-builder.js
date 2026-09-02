@@ -62,6 +62,16 @@
   const CHECKOUT_ORDER_STORAGE_KEY = 'hf-checkout-last-order';
   const CHECKOUT_DRAFT_STORAGE_KEY = 'hf-checkout-draft';
   const PAYWAY_GATEWAY_ID = 'payway_gateway';
+
+  const trackGa4 = (method, ...args) => {
+    const api = window.hfGa4;
+    if (!api || typeof api[method] !== 'function') return;
+    try {
+      api[method](...args);
+    } catch (error) {
+      console.warn('[HF GA4]', error.message);
+    }
+  };
   let paywaySdkPromise = null;
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
@@ -4731,6 +4741,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (!order && !snapshot && errorEl) {
       errorEl.textContent = 'El pedido fue recibido, pero no pudimos recuperar el detalle en este dispositivo. Revisá el correo de confirmación.';
     }
+
+    trackGa4('purchase', {
+      orderId: confirmationParams.orderId,
+      orderNumber,
+      order,
+      orderSummary,
+      snapshot
+    });
   };
 
   const renderCheckoutPage = async (root, html) => {
@@ -5282,6 +5300,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
         sameAddressToggle.addEventListener('change', syncBillingVisibility);
         syncBillingVisibility();
       }
+
+      trackGa4('beginCheckout', cart);
     };
 
     if (checkoutForm) {
@@ -5710,7 +5730,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const buttons = [addToCartButton, buyNowButton].filter(Boolean);
       buttons.forEach(button => button.setAttribute('disabled', ''));
       try {
-        await mutateCart('/cart/add-item', payload);
+        const cart = await mutateCart('/cart/add-item', payload);
+        trackGa4('addToCart', product, variation, cart, payload.id);
         if (goCheckout) {
           const checkoutUrl = await syncCartForCheckout();
           window.location.assign(checkoutUrl);
@@ -5780,6 +5801,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (!colors.length) colorsSlot?.closest('.hf-pdp-view__color-row')?.setAttribute('hidden', '');
 
     updatePurchaseState(getInitialSelectedVariation());
+    trackGa4('viewItem', product, findVariationForSelection() || getInitialSelectedVariation());
 
     addToCartButton?.addEventListener('click', async (event) => {
       event.preventDefault();

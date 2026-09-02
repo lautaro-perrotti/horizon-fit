@@ -39,6 +39,9 @@ function hf_storefront_seo_description($value, $fallback = '') {
 }
 
 function hf_storefront_product_meta_description($product) {
+    if (function_exists('hf_search_product_meta_description') && $product instanceof WC_Product) {
+        return hf_search_product_meta_description($product);
+    }
     $name = $product instanceof WC_Product ? $product->get_name() : 'Activewear Horizon Fit';
     if (function_exists('hf_catalog_display_name')) {
         $name = hf_catalog_display_name($name);
@@ -50,24 +53,29 @@ function hf_storefront_product_meta_description($product) {
 }
 
 function hf_storefront_product_group_id($product) {
+    if (function_exists('hf_search_item_group_id')) {
+        return hf_search_item_group_id($product);
+    }
     if (! $product instanceof WC_Product) {
         return '';
     }
-    $skus = array_filter(array($product->get_sku()));
-    if ($product->is_type('variable')) {
-        foreach ($product->get_children() as $variation_id) {
-            $variation = wc_get_product($variation_id);
-            if ($variation && $variation->get_sku()) {
-                $skus[] = $variation->get_sku();
-            }
+    $sku = trim((string) $product->get_sku());
+    if ($sku !== '' && function_exists('hf_product_parent_sku_base_from_variation_sku')) {
+        $base = hf_product_parent_sku_base_from_variation_sku($sku);
+        if ($base !== '') {
+            return $base;
         }
     }
-    foreach ($skus as $sku) {
-        if (preg_match('/^(\d{3})-([A-Z]{3})-/i', (string) $sku, $matches)) {
-            return strtoupper($matches[1] . '-' . $matches[2]);
+    if ($sku !== '') {
+        return strtoupper($sku);
+    }
+    if ($product->is_type('variable') && function_exists('hf_product_parent_sku_derive_from_variations')) {
+        $base = hf_product_parent_sku_derive_from_variations($product);
+        if ($base !== '') {
+            return $base;
         }
     }
-    return '';
+    return $product->get_id() ? 'HF-P' . $product->get_id() : '';
 }
 
 function hf_storefront_product_primary_sku($product) {
@@ -172,20 +180,20 @@ function hf_storefront_product_image_id($product) {
 }
 
 function hf_storefront_product_color($product) {
-    $color = hf_storefront_product_attribute_text($product, array('pa_color', 'color', 'Color'));
+    $color = hf_storefront_product_attribute_text($product, array('pa_color', 'color', 'Color', 'colour', 'Colour'));
     if ($color !== '') {
         return $color;
     }
     $name = hf_storefront_display_name($product);
     $colors = array(
-        'Bordeaux' => '/\b(bordeaux|bord[oó])\b/iu',
-        'Blanco' => '/\bblanc[oa]\b/iu',
-        'Negro' => '/\bnegr[oa]\b/iu',
-        'Celeste' => '/\bceleste\b/iu',
-        'Verde' => '/\bverde\b/iu',
-        'Rosa' => '/\brosa\b/iu',
-        'Rojo' => '/\broj[oa]\b/iu',
-        'Azul' => '/\bazul\b/iu',
+        'Bordeaux' => '/\b(bordeaux|bord[oó]|wine)\b/iu',
+        'Blanco' => '/\b(blanc[oa]|white)\b/iu',
+        'Negro' => '/\b(negr[oa]|black)\b/iu',
+        'Celeste' => '/\b(celeste|sky blue)\b/iu',
+        'Verde' => '/\b(verde|green)\b/iu',
+        'Rosa' => '/\b(rosa|pink)\b/iu',
+        'Rojo' => '/\b(roj[oa]|red)\b/iu',
+        'Azul' => '/\b(azul|blue)\b/iu',
     );
     foreach ($colors as $label => $pattern) {
         if (preg_match($pattern, $name)) {
@@ -196,7 +204,7 @@ function hf_storefront_product_color($product) {
 }
 
 function hf_storefront_product_sizes($product) {
-    $sizes = hf_storefront_product_attribute_text($product, array('pa_talle', 'talle', 'Talle'));
+    $sizes = hf_storefront_product_attribute_text($product, array('pa_talle', 'talle', 'Talle', 'pa_size', 'size', 'Size'));
     if ($sizes !== '') {
         return array_values(array_filter(array_map('trim', preg_split('/\s*[|,]\s*/u', $sizes))));
     }
@@ -209,7 +217,7 @@ function hf_storefront_product_sizes($product) {
         if (! $variation) {
             continue;
         }
-        $size = hf_storefront_product_attribute_text($variation, array('pa_talle', 'talle', 'Talle'));
+        $size = hf_storefront_product_attribute_text($variation, array('pa_talle', 'talle', 'Talle', 'pa_size', 'size', 'Size'));
         if ($size !== '') {
             $values[] = $size;
         }
@@ -448,6 +456,9 @@ function hf_storefront_product_seo($product) {
     $canonical = hf_storefront_public_url($route);
     $display_name = function_exists('hf_catalog_display_name') ? hf_catalog_display_name($product->get_name()) : $product->get_name();
     $description = hf_storefront_product_meta_description($product);
+    $title = function_exists('hf_search_product_title')
+        ? hf_search_product_title($product)
+        : ($display_name . ' | Horizon Fit');
     $image_id = hf_storefront_product_image_id($product);
     $image = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
     $offer = hf_storefront_product_offer_schema($product, $canonical);
@@ -527,7 +538,7 @@ function hf_storefront_product_seo($product) {
                 'url' => $canonical,
                 'image' => $image ? array($image) : array(),
                 'brand' => array('@type' => 'Brand', 'name' => 'Horizon Fit'),
-                'productGroupID' => $group_id ?: 'HF-' . $product->get_id(),
+                'productGroupID' => $group_id ?: ('HF-P' . $product->get_id()),
                 'variesBy' => array('https://schema.org/size'),
                 'hasVariant' => $variants,
             );
@@ -545,7 +556,7 @@ function hf_storefront_product_seo($product) {
 
     return array(
         'route' => $route,
-        'title' => $display_name . ' | Horizon Fit',
+        'title' => $title,
         'description' => $description,
         'canonical' => $canonical,
         'type' => 'product',
