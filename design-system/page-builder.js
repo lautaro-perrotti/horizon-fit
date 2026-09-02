@@ -104,6 +104,7 @@
   // Páginas del footer (Envíos, Cambios, etc.): título + contenido HTML editable
   // desde el panel. El page-builder lo lee para rellenar el cuerpo de cada página.
   const INFO_PAGES_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/info-pages.json`;
+  const HOME_SEO_SRC = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-seo.json`;
   const GLOBAL_SECTION_TYPES = new Set(['marquee', 'navbar', 'footer', 'whatsapp-float']);
   const SECTION_SLOT = {
     BEFORE_ROOT: 'before-root',
@@ -831,6 +832,7 @@
         ? getInfoPageForRoute()
         : null;
       const utilityRoute = isUtilityRoute() || Boolean(infoPage);
+      const homeRoute = !productRoute && !collectionRoute && !utilityRoute;
       const productPageTemplatePromise = productRoute ? fetchText(PRODUCT_DETAIL_COMPONENT) : null;
       const accountPageTemplatePromise = accountRoute ? fetchText(ACCOUNT_COMPONENT) : null;
       const checkoutPageTemplatePromise = checkoutRoute ? fetchText(CHECKOUT_COMPONENT) : null;
@@ -838,6 +840,10 @@
       const infoPageTemplatePromise = infoPage ? fetchText(INFO_PAGE_COMPONENT) : null;
       // Contenido editable de las páginas del footer (título + HTML).
       const infoPagesDataPromise = infoPage ? fetchJson(INFO_PAGES_SRC).catch(() => null) : null;
+      const homeSeoDataPromise = homeRoute ? fetchJson(HOME_SEO_SRC).catch(() => null) : null;
+      const homeSeoData = homeSeoDataPromise ? await homeSeoDataPromise : null;
+      const homeSeoTitle = homeSeoData?.title || HOME_SEO_TITLE;
+      const homeSeoDescription = homeSeoData?.description || HOME_SEO_DESCRIPTION;
 
       if (checkoutRoute) {
         updateSeo({
@@ -851,7 +857,7 @@
       } else if (lostPasswordRoute) {
         updateSeo({
           title: `Recuperar contraseña | ${SITE_NAME}`,
-          description: 'Recuperá el acceso a tu cuenta de Horizon Fit desde 8088.',
+          description: 'Recuperá el acceso a tu cuenta de Horizon Fit.',
           canonical: routeBaseUrl('/mi-cuenta/lost-password/'),
           robots: 'noindex,nofollow',
           ogType: 'website',
@@ -894,13 +900,13 @@
         });
       } else if (!productRoute && !collectionRoute) {
         updateSeo({
-          title: HOME_SEO_TITLE,
-          description: HOME_SEO_DESCRIPTION,
+          title: homeSeoTitle,
+          description: homeSeoDescription,
           canonical: routeBaseUrl('/'),
           ogType: 'website',
           schema: [
             organizationSchema(),
-            websiteSchema(HOME_SEO_DESCRIPTION)
+            websiteSchema(homeSeoDescription)
           ]
         });
       }
@@ -1144,15 +1150,14 @@
       // Hydrate sections with data
       const t3 = performance.now();
       if (!productRoute && !collectionRoute && !utilityRoute) {
-        const footerCopy = wpSettings.get('footer')?.copy || HOME_SEO_DESCRIPTION;
         updateSeo({
-          title: HOME_SEO_TITLE,
-          description: footerCopy,
+          title: homeSeoTitle,
+          description: homeSeoDescription,
           canonical: routeBaseUrl('/'),
           ogType: 'website',
           schema: [
             organizationSchema(),
-            websiteSchema(footerCopy)
+            websiteSchema(homeSeoDescription)
           ]
         });
       }

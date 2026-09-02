@@ -38,6 +38,35 @@ function hf_storefront_seo_description($value, $fallback = '') {
     return wp_html_excerpt($value, 158, '…');
 }
 
+function hf_storefront_home_seo_defaults() {
+    return array(
+        'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
+        'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
+    );
+}
+
+function hf_storefront_home_seo_settings() {
+    $defaults = hf_storefront_home_seo_defaults();
+    $saved = get_option('hf_home_seo', array());
+    $saved = is_array($saved) ? $saved : array();
+    $title = trim(wp_strip_all_tags((string) ($saved['title'] ?? '')));
+
+    return array(
+        'title' => $title !== '' ? $title : $defaults['title'],
+        'description' => hf_storefront_seo_description($saved['description'] ?? '', $defaults['description']),
+    );
+}
+
+function hf_regenerate_home_seo_cache() {
+    if (! function_exists('hf_featured_products_cache_path')) {
+        return;
+    }
+    hf_featured_products_write_cache(
+        dirname(hf_featured_products_cache_path()) . '/home-seo.json',
+        hf_storefront_home_seo_settings()
+    );
+}
+
 function hf_storefront_product_meta_description($product) {
     if (function_exists('hf_search_product_meta_description') && $product instanceof WC_Product) {
         return hf_search_product_meta_description($product);
@@ -655,9 +684,11 @@ function hf_regenerate_storefront_seo_cache() {
     $home_description = hf_storefront_seo_description(
         'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.'
     );
+    $home_seo = hf_storefront_home_seo_settings();
+    $home_description = $home_seo['description'];
     $home_image = hf_storefront_public_url('assets/hero-poster-desktop.jpg');
     hf_storefront_write_route($template, '', array(
-        'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
+        'title' => $home_seo['title'],
         'description' => $home_description,
         'canonical' => hf_storefront_public_url('/'),
         'type' => 'website',
@@ -666,13 +697,14 @@ function hf_regenerate_storefront_seo_cache() {
             array(
                 '@type' => 'WebPage',
                 '@id' => hf_storefront_public_url('/#webpage'),
-                'name' => 'Horizon Fit | Ropa deportiva y conjuntos',
+                'name' => $home_seo['title'],
                 'url' => hf_storefront_public_url('/'),
                 'description' => $home_description,
             ),
         ),
         'body' => hf_storefront_home_body(),
     ));
+    hf_regenerate_home_seo_cache();
     $sitemap_images[hf_storefront_public_url('/')] = $home_image;
     foreach ($products as $product) {
         if (hf_storefront_is_duplicate_copy_product($product)) {
@@ -807,6 +839,15 @@ function hf_schedule_storefront_seo_cache() {
 }
 
 add_action('hf_regenerate_storefront_seo_cache_event', 'hf_regenerate_storefront_seo_cache');
+add_action('init', function () {
+    if (! function_exists('hf_featured_products_cache_path')) {
+        return;
+    }
+    $cache_file = dirname(hf_featured_products_cache_path()) . '/home-seo.json';
+    if (! file_exists($cache_file)) {
+        hf_regenerate_home_seo_cache();
+    }
+}, 26);
 add_action('save_post_product', 'hf_schedule_storefront_seo_cache', 60);
 add_action('save_post_product_variation', 'hf_schedule_storefront_seo_cache', 60);
 add_action('created_product_cat', 'hf_schedule_storefront_seo_cache', 60);
@@ -814,6 +855,7 @@ add_action('edited_product_cat', 'hf_schedule_storefront_seo_cache', 60);
 add_action('created_hf_collection', 'hf_schedule_storefront_seo_cache', 60);
 add_action('edited_hf_collection', 'hf_schedule_storefront_seo_cache', 60);
 add_action('update_option_hf_info_pages', 'hf_schedule_storefront_seo_cache', 10, 0);
+add_action('update_option_hf_home_seo', 'hf_schedule_storefront_seo_cache', 10, 0);
 
 add_action('updated_option', function ($option) {
     if ('hf_info_pages' === $option) {

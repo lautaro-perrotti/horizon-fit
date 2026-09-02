@@ -36,6 +36,7 @@ function hf_panel_render() {
         'menu'     => __('Menú de navegación', 'horizon-fit-commerce'),
         'catalogo' => __('Categorías y conjuntos', 'horizon-fit-commerce'),
         'paginas'  => __('Páginas del footer', 'horizon-fit-commerce'),
+        'seo'      => __('SEO', 'horizon-fit-commerce'),
         'precios'  => __('Productos y precios', 'horizon-fit-commerce'),
     ];
     $current = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'inicio';
@@ -65,6 +66,9 @@ function hf_panel_render() {
                     break;
                 case 'paginas':
                     hf_panel_tab_paginas();
+                    break;
+                case 'seo':
+                    hf_panel_tab_seo();
                     break;
                 case 'precios':
                     hf_panel_tab_precios();
@@ -405,10 +409,11 @@ function hf_panel_tab_paginas() {
         if (isset($pages[$slug])) {
             $eid     = 'hf_ip_' . str_replace('-', '_', $slug);
             $title   = sanitize_text_field(wp_unslash($_POST['hf_paginas_title'] ?? ''));
+            $description = sanitize_text_field(wp_unslash($_POST['hf_paginas_description'] ?? ''));
             $content = wp_kses_post(wp_unslash($_POST[$eid] ?? ''));
             $opt = get_option('hf_info_pages', []);
             $opt = is_array($opt) ? $opt : [];
-            $opt[$slug] = ['title' => $title, 'content' => $content];
+            $opt[$slug] = ['title' => $title, 'description' => $description, 'content' => $content];
             update_option('hf_info_pages', $opt);
             if (function_exists('hf_regenerate_info_pages_cache')) {
                 hf_regenerate_info_pages_cache();
@@ -451,6 +456,12 @@ function hf_panel_tab_paginas() {
                     <input type="text" name="hf_paginas_title" value="<?php echo esc_attr($data['title']); ?>" style="width:100%; max-width:520px;">
                 </p>
 
+                <p>
+                    <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Meta description SEO', 'horizon-fit-commerce'); ?></label>
+                    <textarea name="hf_paginas_description" rows="3" maxlength="180" style="width:100%; max-width:720px;"><?php echo esc_textarea($data['description'] ?? ''); ?></textarea>
+                    <span class="description"><?php esc_html_e('Texto sugerido para Google. Recomendado: 120 a 158 caracteres.', 'horizon-fit-commerce'); ?></span>
+                </p>
+
                 <p style="font-weight:600; margin:18px 0 6px;"><?php esc_html_e('Contenido', 'horizon-fit-commerce'); ?></p>
                 <?php
                 wp_editor($data['content'], $eid, [
@@ -469,6 +480,88 @@ function hf_panel_tab_paginas() {
 }
 
 // ---- Helpers genéricos para secciones hf_page_section por tipo ----
+function hf_panel_tab_seo() {
+    if (!current_user_can('manage_woocommerce')) {
+        return;
+    }
+
+    $saved = false;
+    if (!empty($_POST['hf_seo_submit'])) {
+        check_admin_referer('hf_seo_action');
+        $title = sanitize_text_field(wp_unslash($_POST['hf_home_seo_title'] ?? ''));
+        $description = sanitize_text_field(wp_unslash($_POST['hf_home_seo_description'] ?? ''));
+        update_option('hf_home_seo', array(
+            'title' => $title,
+            'description' => $description,
+        ));
+        if (function_exists('hf_regenerate_home_seo_cache')) {
+            hf_regenerate_home_seo_cache();
+        }
+        if (function_exists('hf_regenerate_storefront_seo_cache')) {
+            hf_regenerate_storefront_seo_cache();
+        }
+        $saved = true;
+    }
+
+    $home = function_exists('hf_storefront_home_seo_settings')
+        ? hf_storefront_home_seo_settings()
+        : array(
+            'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
+            'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
+        );
+    $pages = function_exists('hf_info_pages_get') ? hf_info_pages_get() : array();
+    ?>
+    <?php if ($saved) : ?>
+        <div class="notice notice-success"><p><?php esc_html_e('SEO guardado y cache regenerada.', 'horizon-fit-commerce'); ?></p></div>
+    <?php endif; ?>
+
+    <h2><?php esc_html_e('SEO de la home', 'horizon-fit-commerce'); ?></h2>
+    <p class="description"><?php esc_html_e('Editá el título y la meta description principal que Google puede usar para la home.', 'horizon-fit-commerce'); ?></p>
+
+    <form method="post" style="max-width: 860px; margin: 18px 0 28px;">
+        <?php wp_nonce_field('hf_seo_action'); ?>
+        <p>
+            <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Título SEO home', 'horizon-fit-commerce'); ?></label>
+            <input type="text" name="hf_home_seo_title" value="<?php echo esc_attr($home['title']); ?>" maxlength="80" style="width:100%;">
+        </p>
+        <p>
+            <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Meta description home', 'horizon-fit-commerce'); ?></label>
+            <textarea name="hf_home_seo_description" rows="4" maxlength="180" style="width:100%;"><?php echo esc_textarea($home['description']); ?></textarea>
+            <span class="description"><?php echo esc_html(sprintf(__('Actual: %d caracteres. Recomendado: 120 a 158.', 'horizon-fit-commerce'), mb_strlen($home['description']))); ?></span>
+        </p>
+        <p class="submit"><button type="submit" name="hf_seo_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar SEO', 'horizon-fit-commerce'); ?></button></p>
+    </form>
+
+    <h2><?php esc_html_e('Resumen de descripciones actuales', 'horizon-fit-commerce'); ?></h2>
+    <table class="widefat striped" style="max-width: 1100px;">
+        <thead>
+            <tr>
+                <th><?php esc_html_e('Página', 'horizon-fit-commerce'); ?></th>
+                <th><?php esc_html_e('Título SEO', 'horizon-fit-commerce'); ?></th>
+                <th><?php esc_html_e('Meta description', 'horizon-fit-commerce'); ?></th>
+                <th><?php esc_html_e('Chars', 'horizon-fit-commerce'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong><?php esc_html_e('Home', 'horizon-fit-commerce'); ?></strong><br><code>/</code></td>
+                <td><?php echo esc_html($home['title']); ?></td>
+                <td><?php echo esc_html($home['description']); ?></td>
+                <td><?php echo (int) mb_strlen($home['description']); ?></td>
+            </tr>
+            <?php foreach ($pages as $slug => $page) : ?>
+                <tr>
+                    <td><strong><?php echo esc_html($page['title']); ?></strong><br><code>/<?php echo esc_html($slug); ?>/</code></td>
+                    <td><?php echo esc_html($page['title'] . ' | Horizon Fit'); ?></td>
+                    <td><?php echo esc_html($page['description'] ?? ''); ?></td>
+                    <td><?php echo (int) mb_strlen((string) ($page['description'] ?? '')); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+}
+
 function hf_panel_section_id_by_type($type) {
     $sections = get_posts([
         'post_type'   => 'hf_page_section',
