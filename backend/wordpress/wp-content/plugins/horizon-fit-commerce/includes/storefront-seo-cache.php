@@ -371,6 +371,14 @@ function hf_storefront_replace_head_node($html, $pattern, $replacement) {
 }
 
 function hf_storefront_inject_prerender_body($html, $body) {
+    $visible_prerender_enabled = filter_var(
+        getenv('HF_ENABLE_VISIBLE_BODY_PRERENDER') ?: '0',
+        FILTER_VALIDATE_BOOLEAN
+    );
+    if (! $visible_prerender_enabled) {
+        return $html;
+    }
+
     if (! is_string($body) || trim($body) === '') {
         return $html;
     }
