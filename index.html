@@ -30,7 +30,11 @@
      */
     html:not([data-page-builder-ready="true"]) #hfPageBuilderRoot > :not([data-hf-prerender]),
     .hf-runtime-pending {
+      position: absolute !important;
+      inset: 0 auto auto 0 !important;
+      width: 100% !important;
       visibility: hidden !important;
+      pointer-events: none !important;
     }
     .hf-prerender {
       /*
