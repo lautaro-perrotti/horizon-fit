@@ -15,7 +15,7 @@
  *                 If SKU is empty, fallback is the Woo product/variation numeric id.
  *   item_variant = size token (S/M/L/…) or the full variation SKU.
  *
- * Events: page_view (gtag config), view_item, add_to_cart, begin_checkout, purchase.
+ * Events include the GA4 ecommerce funnel plus search, login, sign_up and leads.
  * Hits are sent only on horizonfit.com.ar. Local / IP hosts expose the same API as a no-op.
  */
 (function (window, document) {
@@ -23,6 +23,7 @@
 
   var MEASUREMENT_ID = 'G-8TL56B3B8X';
   var PURCHASE_STORAGE_PREFIX = 'hf-ga4-purchase:';
+  var EVENT_STORAGE_PREFIX = 'hf-ga4-event:';
   var SIZE_TOKENS = {
     XS: 1, S: 1, M: 1, L: 1, XL: 1, XXL: 1, XXXL: 1, U: 1, UNI: 1, UNICO: 1
   };
@@ -178,8 +179,26 @@
   }
 
   function cartValue(cart) {
-    var currency = (cart && cart.totals) || {};
-    return roundMoney(toMajor(currency.total_price || currency.total_items || 0, currency));
+    return roundMoney(itemsFromCart(cart).reduce(function (total, item) {
+      return total + (Number(item.price || 0) * Number(item.quantity || 0));
+    }, 0));
+  }
+
+  function cartSignature(cart) {
+    return itemsFromCart(cart).map(function (item) {
+      return [item.item_id, item.item_variant, item.quantity].join(':');
+    }).sort().join('|') + ':' + cartValue(cart);
+  }
+
+  function sendOnce(key, name, params) {
+    try {
+      var storageKey = EVENT_STORAGE_PREFIX + key;
+      if (window.sessionStorage.getItem(storageKey)) return;
+      window.sessionStorage.setItem(storageKey, '1');
+    } catch (error) {
+      // Tracking still works if browser storage is unavailable.
+    }
+    sendEvent(name, params);
   }
 
   function findCartItem(cart, productId) {
@@ -205,6 +224,17 @@
     viewItem: function () {},
     addToCart: function () {},
     beginCheckout: function () {},
+    viewItemList: function () {},
+    selectItem: function () {},
+    viewCart: function () {},
+    removeFromCart: function () {},
+    addShippingInfo: function () {},
+    addPaymentInfo: function () {},
+    search: function () {},
+    login: function () {},
+    signUp: function () {},
+    contact: function () {},
+    subscribe: function () {},
     purchase: function () {}
   };
 
@@ -277,10 +307,100 @@
   api.beginCheckout = function (cart) {
     var items = itemsFromCart(cart);
     if (!items.length) return;
-    sendEvent('begin_checkout', {
+    sendOnce('checkout:' + cartSignature(cart), 'begin_checkout', {
       currency: currencyCode(cart && cart.totals) || 'ARS',
       value: cartValue(cart),
       items: items
+    });
+  };
+
+  api.viewItemList = function (products, listName) {
+    var items = (Array.isArray(products) ? products : [])
+      .map(function (product, index) {
+        var item = itemFromProduct(product, null, 1);
+        item.index = index;
+        item.item_list_name = String(listName || 'Productos');
+        return item;
+      })
+      .filter(function (item) { return item.item_id; });
+    if (!items.length) return;
+    sendOnce('list:' + String(listName || '') + ':' + items.map(function (item) { return item.item_id; }).join(','), 'view_item_list', {
+      currency: 'ARS',
+      item_list_name: String(listName || 'Productos'),
+      items: items
+    });
+  };
+
+  api.selectItem = function (product, listName) {
+    var item = itemFromProduct(product, null, 1);
+    if (!item.item_id) return;
+    item.item_list_name = String(listName || 'Productos');
+    sendEvent('select_item', {
+      item_list_name: item.item_list_name,
+      items: [item]
+    });
+  };
+
+  api.viewCart = function (cart) {
+    var items = itemsFromCart(cart);
+    if (!items.length) return;
+    sendEvent('view_cart', {
+      currency: currencyCode(cart && cart.totals) || 'ARS',
+      value: cartValue(cart),
+      items: items
+    });
+  };
+
+  api.removeFromCart = function (item, cart) {
+    if (!item) return;
+    var ga4Item = itemFromCartItem(item, cart && cart.totals);
+    sendEvent('remove_from_cart', {
+      currency: currencyCode(cart && cart.totals) || 'ARS',
+      value: roundMoney(ga4Item.price * ga4Item.quantity),
+      items: [ga4Item]
+    });
+  };
+
+  api.addShippingInfo = function (cart) {
+    var items = itemsFromCart(cart);
+    if (!items.length) return;
+    sendOnce('shipping:' + cartSignature(cart), 'add_shipping_info', {
+      currency: currencyCode(cart && cart.totals) || 'ARS',
+      value: cartValue(cart),
+      items: items
+    });
+  };
+
+  api.addPaymentInfo = function (cart, method) {
+    var items = itemsFromCart(cart);
+    if (!items.length) return;
+    sendOnce('payment:' + String(method || '') + ':' + cartSignature(cart), 'add_payment_info', {
+      currency: currencyCode(cart && cart.totals) || 'ARS',
+      value: cartValue(cart),
+      payment_type: String(method || ''),
+      items: items
+    });
+  };
+
+  api.search = function (query, resultsCount) {
+    var term = String(query || '').trim();
+    if (term) sendEvent('search', { search_term: term, result_count: Number(resultsCount || 0) });
+  };
+
+  api.login = function () { sendOnce('login', 'login', { method: 'wordpress' }); };
+  api.signUp = function (reference) {
+    sendOnce('registration:' + String(reference || 'checkout'), 'sign_up', { method: 'checkout' });
+  };
+  api.contact = function (channel, placement) {
+    sendEvent('generate_lead', {
+      method: String(channel || 'contact'),
+      lead_source: String(placement || 'storefront')
+    });
+  };
+  api.subscribe = function (source) {
+    sendEvent('generate_lead', {
+      method: 'newsletter',
+      lead_source: String(source || 'footer')
     });
   };
 

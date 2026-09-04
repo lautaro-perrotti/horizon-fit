@@ -7,10 +7,14 @@
             Activewear funcional para todos los días. Nuevos drops, mejores telas y fits pensados para entrenar y vivir
             en movimiento.
           </p>
-          <div class="footer__newsletter">
-            <input class="control" id="footerNewsletterEmail" name="email" type="email" placeholder="Tu email para promos y drops" data-footer-news-placeholder>
-            <button class="btn btn--primary" data-footer-news-btn>Suscribirme</button>
-          </div>
+          <form class="footer__newsletter" data-footer-newsletter novalidate>
+            <label class="sr-only" for="footerNewsletterEmail">Email para recibir novedades</label>
+            <input class="control" id="footerNewsletterEmail" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="Tu email para promos y drops" data-footer-news-placeholder>
+            <input name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="footer__newsletter-honeypot">
+            <button class="btn btn--primary" type="submit" data-footer-news-btn>Suscribirme</button>
+          </form>
+          <p class="footer__newsletter-status" data-footer-news-status aria-live="polite"></p>
+          <p class="footer__newsletter-consent">Al suscribirte aceptás recibir novedades y promociones. Podés darte de baja cuando quieras. Consultá nuestra <a href="/privacidad/">Política de privacidad</a>.</p>
           <div class="footer__trust">
             <span class="chip" data-footer-chip="0">Envíos a todo el país</span>
             <span class="chip" data-footer-chip="1">3 y 6 cuotas sin interés</span>

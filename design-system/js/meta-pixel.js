@@ -6,7 +6,8 @@
  *   2. <meta name="hf-meta-pixel-id" content="...">
  *   3. /wp-content/uploads/horizon-fit-cache/tracking-settings.json
  *
- * Events: PageView, ViewContent, AddToCart, InitiateCheckout, Purchase.
+ * Events: PageView, ViewContent, AddToCart, InitiateCheckout, AddPaymentInfo,
+ * Search, Contact, CompleteRegistration, Subscribe and Purchase.
  * The script is a no-op until a numeric Pixel ID is configured.
  */
 (function (window, document) {
@@ -14,6 +15,7 @@
 
   var SETTINGS_SRC = 'https://api.horizonfit.com.ar/wp-content/uploads/horizon-fit-cache/tracking-settings.json';
   var PURCHASE_STORAGE_PREFIX = 'hf-meta-purchase:';
+  var EVENT_STORAGE_PREFIX = 'hf-meta-event:';
   var SIZE_TOKENS = {
     XS: 1, S: 1, M: 1, L: 1, XL: 1, XXL: 1, XXXL: 1, U: 1, UNI: 1, UNICO: 1
   };
@@ -249,6 +251,23 @@
     return roundMoney(toMajor(currency.total_price || currency.total_items || 0, currency));
   }
 
+  function cartSignature(cart) {
+    return itemsFromCart(cart).map(function (item) {
+      return [item.item_id, item.item_variant, item.quantity].join(':');
+    }).sort().join('|') + ':' + cartValue(cart);
+  }
+
+  function sendOnce(key, name, params) {
+    try {
+      var storageKey = EVENT_STORAGE_PREFIX + key;
+      if (window.sessionStorage.getItem(storageKey)) return;
+      window.sessionStorage.setItem(storageKey, '1');
+    } catch (error) {
+      // Tracking still works if browser storage is unavailable.
+    }
+    return sendEvent(name, params);
+  }
+
   function findCartItem(cart, productId) {
     var items = cart && Array.isArray(cart.items) ? cart.items : [];
     var matches = items.filter(function (item) {
@@ -290,13 +309,49 @@
     beginCheckout: function (cart) {
       var items = itemsFromCart(cart);
       if (!items.length) return;
-      return sendEvent('InitiateCheckout', {
+      return sendOnce('checkout:' + cartSignature(cart), 'InitiateCheckout', {
         content_ids: items.map(function (item) { return item.item_id; }),
         content_type: 'product',
         contents: items.map(metaItemFromGa4Item),
         currency: currencyCode(cart && cart.totals) || 'ARS',
         num_items: items.reduce(function (sum, item) { return sum + item.quantity; }, 0),
         value: cartValue(cart)
+      });
+    },
+    addPaymentInfo: function (cart, method) {
+      var items = itemsFromCart(cart);
+      if (!items.length) return;
+      return sendOnce('payment:' + String(method || '') + ':' + cartSignature(cart), 'AddPaymentInfo', {
+        content_ids: items.map(function (item) { return item.item_id; }),
+        content_type: 'product',
+        contents: items.map(metaItemFromGa4Item),
+        currency: currencyCode(cart && cart.totals) || 'ARS',
+        payment_method: String(method || ''),
+        value: cartValue(cart)
+      });
+    },
+    search: function (query) {
+      var term = String(query || '').trim();
+      if (!term) return;
+      return sendEvent('Search', { search_string: term, content_category: 'products' });
+    },
+    contact: function (channel, placement) {
+      return sendEvent('Contact', {
+        content_name: String(placement || 'storefront'),
+        content_category: String(channel || 'contact')
+      });
+    },
+    completeRegistration: function (reference) {
+      return sendOnce('registration:' + String(reference || 'checkout'), 'CompleteRegistration', {
+        content_name: 'Cuenta Horizon Fit',
+        status: true
+      });
+    },
+    subscribe: function (source) {
+      return sendEvent('Subscribe', {
+        content_name: 'Newsletter Horizon Fit',
+        content_category: String(source || 'footer'),
+        status: true
       });
     },
     purchase: function (payload) {

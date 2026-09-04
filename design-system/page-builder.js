@@ -1344,12 +1344,15 @@
   // Clona el template de card y lo rellena con los datos del producto.
   // Reusado por featured-products, colecciones y "Compralo con".
   const fillProductCard = (template, product, options = {}) => {
-    const { showSizes = true } = options;
+    const { showSizes = true, listName = 'Productos' } = options;
     const clone = template.content.cloneNode(true);
     const availability = getVisibleProductAvailability(product);
 
     const link = clone.querySelector('.hf-product-item__link');
-    if (link) link.href = productUrl(product);
+    if (link) {
+      link.href = productUrl(product);
+      link.addEventListener('click', () => trackGa4('selectItem', product, listName));
+    }
 
     const title = clone.querySelector('.hf-product-item__title');
     if (title) title.textContent = product.name || '';
@@ -1465,7 +1468,9 @@
       const template = sectionEl.querySelector('[data-product-template]');
       if (!template) return;
 
-      visibleProducts.forEach(product => grid.appendChild(fillProductCard(template, product)));
+      const listName = `${section.config?.title || section.title || 'Productos destacados'}`;
+      visibleProducts.forEach(product => grid.appendChild(fillProductCard(template, product, { listName })));
+      trackGa4('viewItemList', visibleProducts, listName);
       if (renderState?.usedKeys) {
         visibleProducts.forEach(product => renderState.usedKeys.add(getProductRenderKey(product)));
       }
@@ -1507,8 +1512,8 @@
 
   // Rellena el footer con los datos administrados desde wp-admin. Cada campo
   // que falte conserva el texto/href del HTML (fallback). Todo opcional.
-  const setupFooter = (sectionEl, settings) => {
-    if (!settings || typeof settings !== 'object') return;
+  const setupFooter = (sectionEl, settings = {}) => {
+    if (!settings || typeof settings !== 'object') settings = {};
 
     const setText = (sel, value) => {
       if (value == null || value === '') return;
@@ -1563,6 +1568,44 @@
       setText(`[data-footer-legal-link="${i}"]`, link.text);
       setAttr(`[data-footer-legal-link="${i}"]`, 'href', link.url);
     });
+
+    const newsletterForm = sectionEl.querySelector('[data-footer-newsletter]');
+    if (newsletterForm && !newsletterForm.dataset.hfBound) {
+      newsletterForm.dataset.hfBound = 'true';
+      newsletterForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const emailInput = newsletterForm.querySelector('[name="email"]');
+        const companyInput = newsletterForm.querySelector('[name="company"]');
+        const submitButton = newsletterForm.querySelector('[type="submit"]');
+        const status = sectionEl.querySelector('[data-footer-news-status]');
+        const email = `${emailInput?.value || ''}`.trim();
+
+        if (!emailInput?.checkValidity()) {
+          if (status) status.textContent = 'Ingresá un email válido.';
+          emailInput?.focus();
+          return;
+        }
+
+        if (submitButton) submitButton.disabled = true;
+        if (status) status.textContent = 'Guardando tu suscripción...';
+        try {
+          const result = await hfRestFetch('/newsletter/subscribe', {
+            email,
+            company: `${companyInput?.value || ''}`
+          });
+          if (status) status.textContent = result?.message || '¡Listo! Ya estás suscripta/o.';
+          if (result?.created) {
+            trackGa4('subscribe', 'footer');
+            trackMetaPixel('subscribe', 'footer');
+          }
+          newsletterForm.reset();
+        } catch (error) {
+          if (status) status.textContent = error.message || 'No pudimos completar la suscripción. Intentá nuevamente.';
+        } finally {
+          if (submitButton) submitButton.disabled = false;
+        }
+      });
+    }
   };
 
   const setupWhatsAppFloat = (sectionEl, settings = {}, fallback = {}) => {
@@ -1581,6 +1624,13 @@
       link.setAttribute('title', label);
       link.setAttribute('target', '_blank');
       link.setAttribute('rel', 'noopener noreferrer');
+      if (!link.dataset.hfContactTracking) {
+        link.dataset.hfContactTracking = 'true';
+        link.addEventListener('click', () => {
+          trackGa4('contact', 'whatsapp', 'floating_button');
+          trackMetaPixel('contact', 'whatsapp', 'floating_button');
+        });
+      }
     }
 
     const icon = sectionEl.querySelector('img');
@@ -1954,6 +2004,7 @@
       drawer.classList.add("is-on");
       drawer.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      trackGa4('viewCart', commerceState.cart);
     }
     function closeDrawer() {
       drawer.classList.remove("is-on");
@@ -3182,6 +3233,10 @@
             </a>`;
         }).join('')}
       </div>`;
+    trackGa4('viewItemList', visibleResults, 'Resultados de búsqueda');
+    target.querySelectorAll('.hf-search-result').forEach((link, index) => {
+      link.addEventListener('click', () => trackGa4('selectItem', visibleResults[index], 'Resultados de búsqueda'));
+    });
   };
 
   const initStorefrontCommerce = ({ getProducts }) => {
@@ -3226,7 +3281,10 @@
             await mutateCart('/cart/update-item', { key, quantity: Number(action.dataset.quantity || 0) }, 'Carrito actualizado.');
           }
           if (action.dataset.cartAction === 'remove' && key) {
+            const cartBeforeRemoval = commerceState.cart;
+            const removedItem = (cartBeforeRemoval?.items || []).find(item => `${item?.key || ''}` === `${key}`);
             await mutateCart('/cart/remove-item', { key });
+            trackGa4('removeFromCart', removedItem, cartBeforeRemoval);
           }
           if (action.dataset.cartAction === 'remove-coupon' && code) {
             await mutateCart('/cart/remove-coupon', { code }, 'Cupon eliminado.');
@@ -3274,6 +3332,7 @@
       window.location.assign(STORE_ACCOUNT_URL);
     });
 
+    let lastTrackedSearch = '';
     const runSearch = async () => {
       const runToken = ++searchRunToken;
       const query = `${searchInput?.value || ''}`.trim();
@@ -3315,6 +3374,12 @@
       window.clearTimeout(loadingTimer);
       if (runToken !== searchRunToken) return;
       renderSearchResults(results, query);
+      const searchSignature = `${normalizedQuery}:${results.length}`;
+      if (normalizedQuery.length >= 2 && searchSignature !== lastTrackedSearch) {
+        lastTrackedSearch = searchSignature;
+        trackGa4('search', query, results.length);
+        trackMetaPixel('search', query, results.length);
+      }
     };
 
     searchInput?.addEventListener('input', () => {
@@ -4087,7 +4152,8 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (grid && template) {
       grid.style.setProperty('--collection-cols-desktop', cfg.colsDesktop);
       grid.style.setProperty('--collection-cols-mobile', cfg.colsMobile);
-      list.forEach(product => grid.appendChild(fillProductCard(template, product, { showSizes: false })));
+      list.forEach(product => grid.appendChild(fillProductCard(template, product, { showSizes: false, listName: catName })));
+      trackGa4('viewItemList', list, catName);
     }
   };
 
@@ -4108,7 +4174,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const lostPasswordUrl = routeBaseUrl('/mi-cuenta/lost-password/');
 
     const form = sectionEl.querySelector('[data-account-login-shell]');
-    if (form) form.setAttribute('action', loginUrl);
+    if (form) {
+      form.setAttribute('action', loginUrl);
+      form.addEventListener('submit', () => {
+        try {
+          window.sessionStorage.setItem('hf-account-login-pending', '1');
+        } catch (error) {
+          // El inicio de sesión sigue funcionando si storage está bloqueado.
+        }
+      });
+    }
 
     const redirectInput = sectionEl.querySelector('[name="redirect_to"]');
     if (redirectInput) redirectInput.value = redirectUrl;
@@ -4187,6 +4262,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
       .then(data => {
         if (data?.loggedIn) {
           showSessionState(data);
+          try {
+            if (window.sessionStorage.getItem('hf-account-login-pending') === '1') {
+              window.sessionStorage.removeItem('hf-account-login-pending');
+              trackGa4('login');
+            }
+          } catch (error) {
+            // No registrar un login dudoso si no podemos confirmar la transición.
+          }
           hfRestFetch('/account/orders', null, { method: 'GET' })
             .then(orderData => renderAccountOrders(orderData?.orders || []))
             .catch(error => {
@@ -4745,6 +4828,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
       }
       bankTransferEl.innerHTML = buildBankTransferMarkup(bankTransfer || {}, cart, orderNumber);
       bankTransferEl.hidden = false;
+      bankTransferEl.querySelector('.hf-checkout-view__bank-whatsapp')?.addEventListener('click', () => {
+        trackGa4('contact', 'whatsapp', 'bank_transfer_receipt');
+        trackMetaPixel('contact', 'whatsapp', 'bank_transfer_receipt');
+      });
     }
 
     if (snapshot?.customerId > 0 && accountEl) {
@@ -5405,6 +5492,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
           }
         };
 
+        trackGa4('addShippingInfo', cart);
+        trackGa4('addPaymentInfo', cart, paymentMethod);
+        trackMetaPixel('addPaymentInfo', cart, paymentMethod);
+
         try {
           const response = await storeApiFetch('/checkout', { method: 'POST', body });
           const paymentFailed = response?.payment_result?.payment_status === 'failure' || response?.status === 'failed';
@@ -5421,6 +5512,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
             paymentMethod,
             paymentDetail
           });
+          if (createAccount && Number(response?.customer_id || 0) > 0) {
+            trackGa4('signUp', response.order_id);
+            trackMetaPixel('completeRegistration', response.order_id);
+          }
+          if (body.additional_fields['horizon-fit-commerce/email-marketing']) {
+            trackGa4('subscribe', 'checkout');
+            trackMetaPixel('subscribe', 'checkout');
+          }
           const redirectUrl = response?.payment_result?.redirect_url || '';
           if (redirectUrl && !isInternalOrderReceivedUrl(redirectUrl)) {
             window.location.assign(redirectUrl);
