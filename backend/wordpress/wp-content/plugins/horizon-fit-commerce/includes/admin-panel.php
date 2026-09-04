@@ -497,8 +497,20 @@ function hf_panel_tab_seo() {
         $meta_pixel_id = function_exists('hf_storefront_normalize_meta_pixel_id')
             ? hf_storefront_normalize_meta_pixel_id(wp_unslash($_POST['hf_meta_pixel_id'] ?? ''))
             : preg_replace('/\D+/', '', (string) wp_unslash($_POST['hf_meta_pixel_id'] ?? ''));
+        $current_tracking = get_option('hf_tracking_settings', array());
+        $current_tracking = is_array($current_tracking) ? $current_tracking : array();
+        $meta_capi_access_token = trim((string) ($current_tracking['meta_capi_access_token'] ?? ''));
+        $submitted_capi_token = trim((string) wp_unslash($_POST['hf_meta_capi_access_token'] ?? ''));
+        if ($submitted_capi_token !== '') {
+            $meta_capi_access_token = sanitize_text_field($submitted_capi_token);
+        }
+        if (! empty($_POST['hf_meta_capi_clear'])) {
+            $meta_capi_access_token = '';
+        }
         update_option('hf_tracking_settings', array(
             'meta_pixel_id' => $meta_pixel_id,
+            'meta_capi_access_token' => $meta_capi_access_token,
+            'meta_capi_test_event_code' => sanitize_text_field(wp_unslash($_POST['hf_meta_capi_test_event_code'] ?? '')),
         ));
         if (function_exists('hf_regenerate_home_seo_cache')) {
             hf_regenerate_home_seo_cache();
@@ -520,7 +532,7 @@ function hf_panel_tab_seo() {
         );
     $tracking = function_exists('hf_storefront_tracking_settings')
         ? hf_storefront_tracking_settings()
-        : array('meta_pixel_id' => '');
+        : array('meta_pixel_id' => '', 'meta_capi_access_token' => '', 'meta_capi_test_event_code' => '');
     $pages = function_exists('hf_info_pages_get') ? hf_info_pages_get() : array();
     ?>
     <?php if ($saved) : ?>
@@ -559,7 +571,20 @@ function hf_panel_tab_seo() {
             <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Meta Pixel ID', 'horizon-fit-commerce'); ?></label>
             <input type="text" name="hf_meta_pixel_id" value="<?php echo esc_attr($tracking['meta_pixel_id']); ?>" pattern="[0-9]*" inputmode="numeric" style="width:100%; max-width:360px;" placeholder="Ej: 123456789012345">
         </p>
-        <p class="submit"><button type="submit" name="hf_seo_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar SEO', 'horizon-fit-commerce'); ?></button></p>
+        <h4><?php esc_html_e('Conversions API (servidor)', 'horizon-fit-commerce'); ?></h4>
+        <p class="description"><?php esc_html_e('Hace que Purchase llegue a Meta aunque el comprador no vuelva desde Mercado Pago. El token queda guardado solamente en WordPress y nunca se publica en la cache de la tienda.', 'horizon-fit-commerce'); ?></p>
+        <p>
+            <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Access token de Conversions API', 'horizon-fit-commerce'); ?></label>
+            <input type="password" name="hf_meta_capi_access_token" value="" autocomplete="new-password" style="width:100%; max-width:620px;" placeholder="<?php echo esc_attr(! empty($tracking['meta_capi_access_token']) ? __('Token configurado; dejalo vacío para conservarlo', 'horizon-fit-commerce') : __('Pegá el token generado en Meta Events Manager', 'horizon-fit-commerce')); ?>">
+            <br><label><input type="checkbox" name="hf_meta_capi_clear" value="1"> <?php esc_html_e('Eliminar el token guardado', 'horizon-fit-commerce'); ?></label>
+        </p>
+        <p>
+            <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Código de evento de prueba (opcional)', 'horizon-fit-commerce'); ?></label>
+            <input type="text" name="hf_meta_capi_test_event_code" value="<?php echo esc_attr($tracking['meta_capi_test_event_code']); ?>" style="width:100%; max-width:360px;" placeholder="TEST12345">
+            <br><span class="description"><?php esc_html_e('Usalo sólo durante la prueba en Meta. Después vacialo para enviar eventos normales.', 'horizon-fit-commerce'); ?></span>
+        </p>
+        <p><strong><?php echo ! empty($tracking['meta_capi_access_token']) ? esc_html__('CAPI: configurada', 'horizon-fit-commerce') : esc_html__('CAPI: pendiente de token', 'horizon-fit-commerce'); ?></strong></p>
+        <p class="submit"><button type="submit" name="hf_seo_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar SEO y tracking', 'horizon-fit-commerce'); ?></button></p>
     </form>
 
     <h2><?php esc_html_e('Resumen de descripciones actuales', 'horizon-fit-commerce'); ?></h2>

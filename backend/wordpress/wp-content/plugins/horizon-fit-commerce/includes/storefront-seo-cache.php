@@ -70,6 +70,8 @@ function hf_regenerate_home_seo_cache() {
 function hf_storefront_tracking_settings_defaults() {
     return array(
         'meta_pixel_id' => '',
+        'meta_capi_access_token' => '',
+        'meta_capi_test_event_code' => '',
     );
 }
 
@@ -85,6 +87,10 @@ function hf_storefront_tracking_settings() {
 
     return array(
         'meta_pixel_id' => hf_storefront_normalize_meta_pixel_id($saved['meta_pixel_id'] ?? $defaults['meta_pixel_id']),
+        // Server-only secrets: hf_regenerate_tracking_settings_cache() deliberately
+        // never writes these values to the public JSON consumed by the SPA.
+        'meta_capi_access_token' => trim((string) ($saved['meta_capi_access_token'] ?? $defaults['meta_capi_access_token'])),
+        'meta_capi_test_event_code' => sanitize_text_field((string) ($saved['meta_capi_test_event_code'] ?? $defaults['meta_capi_test_event_code'])),
     );
 }
 

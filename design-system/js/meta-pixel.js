@@ -104,11 +104,15 @@
     });
   }
 
-  function sendEvent(name, params) {
+  function sendEvent(name, params, options) {
     logDebug(name, params);
     return ensureReady().then(function (ready) {
       if (!ready) return;
-      window.fbq('track', name, params || {});
+      if (options) {
+        window.fbq('track', name, params || {}, options);
+      } else {
+        window.fbq('track', name, params || {});
+      }
     });
   }
 
@@ -381,6 +385,10 @@
         currency: currencyCode(currency),
         num_items: items.reduce(function (sum, item) { return sum + item.quantity; }, 0),
         value: value
+      }, {
+        // The server-side Conversions API uses this exact identifier so Meta
+        // deduplicates browser and server Purchase events.
+        eventID: 'hf-order-' + String(orderId)
       });
     }
   };
