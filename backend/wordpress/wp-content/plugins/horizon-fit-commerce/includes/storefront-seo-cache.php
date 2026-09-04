@@ -899,7 +899,7 @@ add_action('update_option_hf_home_seo', 'hf_schedule_storefront_seo_cache', 10, 
 add_action('update_option_hf_tracking_settings', 'hf_schedule_storefront_seo_cache', 10, 0);
 
 add_action('updated_option', function ($option) {
-    if (in_array($option, array('hf_info_pages', 'hf_tracking_settings'), true)) {
+    if (in_array($option, array('hf_info_pages', 'hf_home_seo', 'hf_tracking_settings'), true)) {
         hf_regenerate_storefront_seo_cache();
     }
 }, 20, 1);

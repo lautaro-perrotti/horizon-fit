@@ -1807,7 +1807,8 @@
     setText('[data-social-kicker]', cfg.kicker);
     setText('[data-social-title]', cfg.title);
     setAttr('[data-social-viewport]', 'aria-label', cfg.viewportLabel);
-    setText('[data-social-foot-label]', cfg.footLabel);
+    const socialFootLabel = `${cfg.footLabel || ''}`.trim();
+    setText('[data-social-foot-label]', /^seguimos en$/i.test(socialFootLabel) ? 'Seguinos' : (socialFootLabel || 'Seguinos'));
     setText('[data-social-foot-handle]', cfg.footHandle);
     setAttr('[data-social-foot-icon-alt]', 'alt', cfg.footIconAlt);
     const footLink = `${cfg.footLink || ''}`.trim();

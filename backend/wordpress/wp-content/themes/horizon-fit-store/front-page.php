@@ -7246,7 +7246,7 @@
       </div>
 
       <div class="hf-social-strip__foot">
-        <span>Seguimos en</span>
+        <span>Seguinos</span>
         <span class="hf-social-strip__ig" aria-hidden="true">
           <img src="https://cdn.simpleicons.org/instagram/35006D" alt="Instagram">
         </span>

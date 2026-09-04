@@ -1676,8 +1676,14 @@ function hf_search_regenerate_commerce_artifacts() {
         ? hf_storefront_seo_dir()
         : trailingslashit(wp_upload_dir()['basedir']) . 'horizon-fit-seo';
 
-    $home_title = 'Ropa Deportiva para Mujer | Horizon Fit';
-    $home_description = 'Descubrí activewear y ropa deportiva para mujer en Horizon Fit: calzas, tops, shorts, conjuntos y prendas pensadas para entrenar y vivir en movimiento.';
+    $home_seo = function_exists('hf_storefront_home_seo_settings')
+        ? hf_storefront_home_seo_settings()
+        : array(
+            'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
+            'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
+        );
+    $home_title = (string) ($home_seo['title'] ?? 'Horizon Fit');
+    $home_description = (string) ($home_seo['description'] ?? '');
     hf_search_write_html(trailingslashit($seo_dir) . 'index.html', $home_title, hf_search_excerpt($home_description, 158));
 
     $products = wc_get_products(array(
@@ -1718,7 +1724,7 @@ function hf_search_regenerate_commerce_artifacts() {
 
 add_action('hf_regenerate_storefront_seo_cache_event', 'hf_search_regenerate_commerce_artifacts', 20);
 add_action('updated_option', static function ($option) {
-    if ('hf_info_pages' === $option) {
+    if (in_array($option, array('hf_info_pages', 'hf_home_seo'), true)) {
         hf_search_regenerate_commerce_artifacts();
     }
 }, 30, 1);
