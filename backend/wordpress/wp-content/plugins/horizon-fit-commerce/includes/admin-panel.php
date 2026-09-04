@@ -494,8 +494,17 @@ function hf_panel_tab_seo() {
             'title' => $title,
             'description' => $description,
         ));
+        $meta_pixel_id = function_exists('hf_storefront_normalize_meta_pixel_id')
+            ? hf_storefront_normalize_meta_pixel_id(wp_unslash($_POST['hf_meta_pixel_id'] ?? ''))
+            : preg_replace('/\D+/', '', (string) wp_unslash($_POST['hf_meta_pixel_id'] ?? ''));
+        update_option('hf_tracking_settings', array(
+            'meta_pixel_id' => $meta_pixel_id,
+        ));
         if (function_exists('hf_regenerate_home_seo_cache')) {
             hf_regenerate_home_seo_cache();
+        }
+        if (function_exists('hf_regenerate_tracking_settings_cache')) {
+            hf_regenerate_tracking_settings_cache();
         }
         if (function_exists('hf_regenerate_storefront_seo_cache')) {
             hf_regenerate_storefront_seo_cache();
@@ -509,6 +518,9 @@ function hf_panel_tab_seo() {
             'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
             'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
         );
+    $tracking = function_exists('hf_storefront_tracking_settings')
+        ? hf_storefront_tracking_settings()
+        : array('meta_pixel_id' => '');
     $pages = function_exists('hf_info_pages_get') ? hf_info_pages_get() : array();
     ?>
     <?php if ($saved) : ?>
@@ -539,6 +551,13 @@ function hf_panel_tab_seo() {
             <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Meta description home', 'horizon-fit-commerce'); ?></label>
             <textarea name="hf_home_seo_description" rows="4" maxlength="180" style="width:100%;"><?php echo esc_textarea($home['description']); ?></textarea>
             <span class="description"><?php echo esc_html(sprintf(__('Actual: %d caracteres. Recomendado: 120 a 158.', 'horizon-fit-commerce'), mb_strlen($home['description']))); ?></span>
+        </p>
+        <hr>
+        <h3><?php esc_html_e('Tracking / Meta Pixel', 'horizon-fit-commerce'); ?></h3>
+        <p class="description"><?php esc_html_e('Pega aca el ID numerico del Pixel/Dataset de Meta. Si queda vacio, la tienda no carga Meta Pixel.', 'horizon-fit-commerce'); ?></p>
+        <p>
+            <label style="display:block; font-weight:600; margin-bottom:4px;"><?php esc_html_e('Meta Pixel ID', 'horizon-fit-commerce'); ?></label>
+            <input type="text" name="hf_meta_pixel_id" value="<?php echo esc_attr($tracking['meta_pixel_id']); ?>" pattern="[0-9]*" inputmode="numeric" style="width:100%; max-width:360px;" placeholder="Ej: 123456789012345">
         </p>
         <p class="submit"><button type="submit" name="hf_seo_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar SEO', 'horizon-fit-commerce'); ?></button></p>
     </form>

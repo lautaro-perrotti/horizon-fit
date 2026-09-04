@@ -72,6 +72,16 @@
       console.warn('[HF GA4]', error.message);
     }
   };
+
+  const trackMetaPixel = (method, ...args) => {
+    const api = window.hfMetaPixel;
+    if (!api || typeof api[method] !== 'function') return;
+    try {
+      api[method](...args);
+    } catch (error) {
+      console.warn('[HF Meta Pixel]', error.message);
+    }
+  };
   let paywaySdkPromise = null;
   // Cache estÃ¡tica de settings de secciones (rÃ¡pida). Fallback al REST.
   const WP_SECTIONS_CACHE_URL = `${WP_BASE_URL}/wp-content/uploads/horizon-fit-cache/home-sections.json`;
@@ -4754,6 +4764,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
       orderSummary,
       snapshot
     });
+    trackMetaPixel('purchase', {
+      orderId: confirmationParams.orderId,
+      orderNumber,
+      order,
+      orderSummary,
+      snapshot
+    });
   };
 
   const renderCheckoutPage = async (root, html) => {
@@ -5307,6 +5324,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       }
 
       trackGa4('beginCheckout', cart);
+      trackMetaPixel('beginCheckout', cart);
     };
 
     if (checkoutForm) {
@@ -5737,6 +5755,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       try {
         const cart = await mutateCart('/cart/add-item', payload);
         trackGa4('addToCart', product, variation, cart, payload.id);
+        trackMetaPixel('addToCart', product, variation, cart, payload.id);
         if (goCheckout) {
           const checkoutUrl = await syncCartForCheckout();
           window.location.assign(checkoutUrl);
@@ -5807,6 +5826,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     updatePurchaseState(getInitialSelectedVariation());
     trackGa4('viewItem', product, findVariationForSelection() || getInitialSelectedVariation());
+    trackMetaPixel('viewItem', product, findVariationForSelection() || getInitialSelectedVariation());
 
     addToCartButton?.addEventListener('click', async (event) => {
       event.preventDefault();

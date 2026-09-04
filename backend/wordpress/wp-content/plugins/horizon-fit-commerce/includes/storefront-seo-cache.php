@@ -67,6 +67,41 @@ function hf_regenerate_home_seo_cache() {
     );
 }
 
+function hf_storefront_tracking_settings_defaults() {
+    return array(
+        'meta_pixel_id' => '',
+    );
+}
+
+function hf_storefront_normalize_meta_pixel_id($value) {
+    $id = preg_replace('/\D+/', '', (string) $value);
+    return strlen($id) >= 6 ? $id : '';
+}
+
+function hf_storefront_tracking_settings() {
+    $defaults = hf_storefront_tracking_settings_defaults();
+    $saved = get_option('hf_tracking_settings', array());
+    $saved = is_array($saved) ? $saved : array();
+
+    return array(
+        'meta_pixel_id' => hf_storefront_normalize_meta_pixel_id($saved['meta_pixel_id'] ?? $defaults['meta_pixel_id']),
+    );
+}
+
+function hf_regenerate_tracking_settings_cache() {
+    if (! function_exists('hf_featured_products_cache_path')) {
+        return;
+    }
+    $settings = hf_storefront_tracking_settings();
+    hf_featured_products_write_cache(
+        dirname(hf_featured_products_cache_path()) . '/tracking-settings.json',
+        array(
+            'metaPixelId' => $settings['meta_pixel_id'],
+            'metaPixelEnabled' => $settings['meta_pixel_id'] !== '',
+        )
+    );
+}
+
 function hf_storefront_product_meta_description($product) {
     if (function_exists('hf_search_product_meta_description') && $product instanceof WC_Product) {
         return hf_search_product_meta_description($product);
@@ -705,6 +740,7 @@ function hf_regenerate_storefront_seo_cache() {
         'body' => hf_storefront_home_body(),
     ));
     hf_regenerate_home_seo_cache();
+    hf_regenerate_tracking_settings_cache();
     $sitemap_images[hf_storefront_public_url('/')] = $home_image;
     foreach ($products as $product) {
         if (hf_storefront_is_duplicate_copy_product($product)) {
@@ -847,6 +883,10 @@ add_action('init', function () {
     if (! file_exists($cache_file)) {
         hf_regenerate_home_seo_cache();
     }
+    $tracking_cache_file = dirname(hf_featured_products_cache_path()) . '/tracking-settings.json';
+    if (! file_exists($tracking_cache_file)) {
+        hf_regenerate_tracking_settings_cache();
+    }
 }, 26);
 add_action('save_post_product', 'hf_schedule_storefront_seo_cache', 60);
 add_action('save_post_product_variation', 'hf_schedule_storefront_seo_cache', 60);
@@ -856,9 +896,10 @@ add_action('created_hf_collection', 'hf_schedule_storefront_seo_cache', 60);
 add_action('edited_hf_collection', 'hf_schedule_storefront_seo_cache', 60);
 add_action('update_option_hf_info_pages', 'hf_schedule_storefront_seo_cache', 10, 0);
 add_action('update_option_hf_home_seo', 'hf_schedule_storefront_seo_cache', 10, 0);
+add_action('update_option_hf_tracking_settings', 'hf_schedule_storefront_seo_cache', 10, 0);
 
 add_action('updated_option', function ($option) {
-    if ('hf_info_pages' === $option) {
+    if (in_array($option, array('hf_info_pages', 'hf_tracking_settings'), true)) {
         hf_regenerate_storefront_seo_cache();
     }
 }, 20, 1);
