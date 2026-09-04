@@ -1,0 +1,22 @@
+---
+description: Horizon Control integrates mature SoTs; it does not rebuild them.
+alwaysApply: true
+---
+
+# Horizon Control — integrate, don't rebuild
+
+Horizon Control is the internal OS for Horizon Fit. It must **not** reconstruct GA4, GSC, Woo, Merchant Center, PostHog, Metabase, or Ads UIs.
+
+Before a large feature:
+
+1. Does a mature tool already own this?
+2. Should we **integrate** it through an existing CP adapter?
+3. What Horizon-specific **join / cache / job / scope / UI** do we BUILD?
+
+Code lives in the `horizon-control-plane` worktree. Reuse `woo.ts`, `commerce.ts`, `analytics.ts`, `merchant.ts`, `competitors.ts`, `seo-report.ts`. Do not add a second Google or Woo HTTP client.
+
+Browser talks only to `/v1`. Secrets stay in env. Never invent metrics.
+
+This phase: Woo sales, GA4, GSC, Merchant diagnostics, competitor segments, Product 360, deterministic insights. **Not:** Ads, LLM, catalog writes, deploy, warehouse, replay.
+
+Details: `horizon-control/docs/DATA-LAYER.md` and `BUILD-VS-INTEGRATE.md` on branch `feat/horizon-control`.
