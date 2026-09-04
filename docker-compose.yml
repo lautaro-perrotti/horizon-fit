@@ -57,6 +57,7 @@ services:
       - horizon_fit_html:/var/www/html
       - ./:/workspace:ro
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./backend/wordpress/wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
       - ./backend/wordpress/wp-content/themes/horizon-fit-blank:/var/www/html/wp-content/themes/horizon-fit-blank:ro
       - ./docker/wordpress/wp-htaccess:/var/www/html/.htaccess:ro
@@ -110,6 +111,7 @@ services:
       - horizon_fit_html:/var/www/html
       - ./:/workspace:ro
       - ./backend/wordpress/wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./backend/wordpress/wp-content/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
       - ./backend/wordpress/wp-content/uploads:/var/www/html/wp-content/uploads
 
   phpmyadmin:
