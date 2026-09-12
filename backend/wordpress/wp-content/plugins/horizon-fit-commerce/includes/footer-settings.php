@@ -13,7 +13,71 @@ if (!defined('ABSPATH')) {
 // Valores por defecto (los del HOME-ORIGINAL), para que no arranque en blanco.
 function hf_footer_defaults() {
     $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
-    if ($config) return array('badge'=>$config['name'],'title'=>$config['tagline'] ?? $config['name'],'copy'=>$config['seo']['description'] ?? '', 'newsPlaceholder'=>'Tu email','newsBtn'=>'Suscribirme','chips'=>array(),'helpTitle'=>'Ayuda','helpLinks'=>array(),'contactTitle'=>'Contacto','contactLines'=>array_filter(array($config['email'] ?? '')),'social'=>$config['social'] ?? array(),'copyright'=>'© '.gmdate('Y').' '.$config['name'].'. Todos los derechos reservados.','legalLinks'=>array());
+    if ($config) {
+        $name = trim((string) ($config['name'] ?? ''));
+        $email = function_exists('hf_framework_email') ? hf_framework_email() : trim((string) ($config['email'] ?? ''));
+        $whatsapp = function_exists('hf_framework_whatsapp_url') ? hf_framework_whatsapp_url() : trim((string) ($config['whatsappUrl'] ?? ''));
+        $contact_lines = array_values(array_filter(array($whatsapp, $email)));
+        $social = function_exists('hf_framework_social_map') ? hf_framework_social_map() : (is_array($config['social'] ?? null) ? $config['social'] : array());
+        $chips = array();
+        $shipping = is_array($config['shipping'] ?? null) ? $config['shipping'] : array();
+        $payments = is_array($config['payments'] ?? null) ? $config['payments'] : array();
+        foreach (array($shipping['label'] ?? $shipping['name'] ?? '', $payments['label'] ?? $payments['installmentsLabel'] ?? '') as $chip) {
+            $chip = trim((string) $chip);
+            if ($chip !== '') {
+                $chips[] = $chip;
+            }
+        }
+        $pages = is_array($config['infoPages'] ?? null) ? $config['infoPages'] : array();
+        $help_slugs = array(
+            'envios-y-entregas' => 'Envíos y entregas',
+            'cambios-y-devoluciones' => 'Cambios y devoluciones',
+            'guia-de-talles' => 'Guía de talles',
+            'medios-de-pago' => 'Medios de pago',
+            'quienes-somos' => 'Quiénes somos',
+            'contacto' => 'Contacto',
+            'preguntas-frecuentes' => 'Preguntas frecuentes',
+        );
+        $legal_slugs = array(
+            'terminos' => 'Términos',
+            'privacidad' => 'Privacidad',
+            'defensa-al-consumidor' => 'Defensa al consumidor',
+        );
+        $help_links = array();
+        $legal_links = array();
+        foreach ($help_slugs as $slug => $title) {
+            $page = is_array($pages[$slug] ?? null) ? $pages[$slug] : array();
+            if (trim((string) ($page['content'] ?? '')) === '' && $slug !== 'contacto') {
+                continue;
+            }
+            if ($slug === 'contacto' && trim((string) ($page['content'] ?? '')) === '' && !$contact_lines) {
+                continue;
+            }
+            $help_links[] = array('text' => (string) ($page['title'] ?? $title), 'url' => '/' . $slug . '/');
+        }
+        foreach ($legal_slugs as $slug => $title) {
+            $page = is_array($pages[$slug] ?? null) ? $pages[$slug] : array();
+            if (trim((string) ($page['content'] ?? '')) === '') {
+                continue;
+            }
+            $legal_links[] = array('text' => (string) ($page['title'] ?? $title), 'url' => '/' . $slug . '/');
+        }
+        return array(
+            'badge' => $name,
+            'title' => trim((string) ($config['tagline'] ?? $name)),
+            'copy' => (string) ($config['seo']['description'] ?? ''),
+            'newsPlaceholder' => 'Tu email',
+            'newsBtn' => 'Suscribirme',
+            'chips' => $chips,
+            'helpTitle' => 'Ayuda',
+            'helpLinks' => $help_links,
+            'contactTitle' => 'Contacto',
+            'contactLines' => $contact_lines,
+            'social' => $social,
+            'copyright' => $name !== '' ? ('© ' . gmdate('Y') . ' ' . $name . '. Todos los derechos reservados.') : '',
+            'legalLinks' => $legal_links,
+        );
+    }
     return [
         'badge'           => 'Horizon Fit',
         'title'           => 'Más allá de tus horizontes',
@@ -73,8 +137,10 @@ function hf_footer_get_settings() {
             }
         }
     }
+    if (function_exists('hf_framework_config') && hf_framework_config()) {
+        return hf_footer_defaults();
+    }
     $settings = array_merge(hf_footer_defaults(), $saved);
-    if (function_exists('hf_framework_config') && hf_framework_config()) return $settings;
 
     // Migra solamente los valores heredados que quedaron publicados antes de
     // contar con dominio y perfil oficial; el resto sigue siendo editable.

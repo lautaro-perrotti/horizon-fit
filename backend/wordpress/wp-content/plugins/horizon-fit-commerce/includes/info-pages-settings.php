@@ -15,8 +15,56 @@ if (!defined('ABSPATH')) {
 function hf_info_pages_defaults() {
     $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
     if ($config) {
-        $pages=array();foreach(array('envios-y-entregas'=>'Envíos y entregas','cambios-y-devoluciones'=>'Cambios y devoluciones','medios-de-pago'=>'Medios de pago','contacto'=>'Contacto','privacidad'=>'Privacidad','terminos'=>'Términos') as $slug=>$title)$pages[$slug]=array('title'=>$title,'description'=>'','content'=>'');
-        foreach(($config['infoPages'] ?? array()) as $slug=>$page)if(isset($pages[$slug]))$pages[$slug]=array_merge($pages[$slug],$page);
+        $titles = array(
+            'envios-y-entregas' => 'Envíos y entregas',
+            'cambios-y-devoluciones' => 'Cambios y devoluciones',
+            'guia-de-talles' => 'Guía de talles',
+            'medios-de-pago' => 'Medios de pago',
+            'terminos' => 'Términos y condiciones',
+            'privacidad' => 'Política de privacidad',
+            'defensa-al-consumidor' => 'Defensa al consumidor',
+            'quienes-somos' => 'Quiénes somos',
+            'contacto' => 'Contacto',
+            'preguntas-frecuentes' => 'Preguntas frecuentes',
+        );
+        $pages = array();
+        foreach ($titles as $slug => $title) {
+            $pages[$slug] = array('title' => $title, 'description' => '', 'content' => '');
+        }
+        foreach (($config['infoPages'] ?? array()) as $slug => $page) {
+            if (!is_string($slug) || !is_array($page)) {
+                continue;
+            }
+            $slug = function_exists('sanitize_title') ? sanitize_title($slug) : strtolower(trim($slug));
+            if ($slug === '') {
+                continue;
+            }
+            $pages[$slug] = array_merge(
+                $pages[$slug] ?? array('title' => '', 'description' => '', 'content' => ''),
+                array_intersect_key($page, array_flip(array('title', 'description', 'content', 'faq')))
+            );
+        }
+        if (trim((string) $pages['contacto']['content']) === '') {
+            $email = function_exists('hf_framework_email') ? hf_framework_email() : trim((string) ($config['email'] ?? ''));
+            $whatsapp = function_exists('hf_framework_whatsapp_url') ? hf_framework_whatsapp_url() : trim((string) ($config['whatsappUrl'] ?? ''));
+            $name = trim((string) ($config['name'] ?? ''));
+            $blocks = array();
+            if ($name !== '') {
+                $blocks[] = '<h2>' . esc_html($name) . '</h2>';
+            }
+            if ($email !== '') {
+                $blocks[] = '<p>' . esc_html($email) . '</p>';
+            }
+            if ($whatsapp !== '') {
+                $blocks[] = '<p><a href="' . esc_url($whatsapp) . '">' . esc_html($whatsapp) . '</a></p>';
+            }
+            if ($blocks) {
+                $pages['contacto']['content'] = implode('', $blocks);
+                if ($pages['contacto']['description'] === '') {
+                    $pages['contacto']['description'] = $email !== '' ? $email : $name;
+                }
+            }
+        }
         return $pages;
     }
     return [
@@ -79,7 +127,9 @@ function hf_info_pages_get() {
     $defaults = hf_info_pages_defaults();
     $saved = get_option('hf_info_pages', []);
     $saved = is_array($saved) ? $saved : [];
-    if (function_exists('hf_framework_config') && hf_framework_config()) {foreach($defaults as $slug=>&$page)$page=array_merge($page,is_array($saved[$slug] ?? null)?$saved[$slug]:array());unset($page);return $defaults;}
+    if (function_exists('hf_framework_config') && hf_framework_config()) {
+        return $defaults;
+    }
 
     $out = [];
     foreach ($defaults as $slug => $def) {

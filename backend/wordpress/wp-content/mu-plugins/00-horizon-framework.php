@@ -12,8 +12,54 @@ function hf_framework_config() {
     if (!is_array($config)) $config = array();
     return $config;
 }
-function hf_framework_name() { $config=hf_framework_config(); return (string)($config['name'] ?? 'Horizon Fit'); }
-function hf_framework_origin() { $config=hf_framework_config(); return rtrim((string)($config['storefrontUrl'] ?? 'https://horizonfit.com.ar'),'/'); }
+function hf_framework_configured() {
+    return (bool) hf_framework_config();
+}
+function hf_framework_name() {
+    $config = hf_framework_config();
+    if ($config) return (string) ($config['name'] ?? '');
+    return 'Horizon Fit';
+}
+function hf_framework_origin() {
+    $config = hf_framework_config();
+    if ($config) return rtrim((string) ($config['storefrontUrl'] ?? ''), '/');
+    return 'https://horizonfit.com.ar';
+}
+function hf_framework_email() {
+    $config = hf_framework_config();
+    if ($config) return trim((string) ($config['email'] ?? ''));
+    return 'hola@horizonfit.com.ar';
+}
+function hf_framework_whatsapp_url() {
+    $config = hf_framework_config();
+    if ($config) return trim((string) ($config['whatsappUrl'] ?? ''));
+    return 'https://wa.me/541131150999';
+}
+function hf_framework_social_map() {
+    $config = hf_framework_config();
+    if (!$config) {
+        return array(
+            'instagram' => 'https://www.instagram.com/horizonfit.oficial/',
+            'tiktok' => 'https://www.tiktok.com/@horizon.fit',
+            'facebook' => 'https://www.facebook.com/profile.php?id=61582311777195',
+            'spotify' => 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760',
+        );
+    }
+    $social = $config['social'] ?? array();
+    return is_array($social) ? $social : array();
+}
+function hf_framework_social_urls() {
+    $config = hf_framework_config();
+    if (!$config) {
+        return array_values(hf_framework_social_map());
+    }
+    if (!empty($config['socialUrls']) && is_array($config['socialUrls'])) {
+        return array_values(array_filter(array_map('strval', $config['socialUrls'])));
+    }
+    return array_values(array_filter(array_map('strval', hf_framework_social_map()), static function ($url) {
+        return $url !== '' && $url !== '#';
+    }));
+}
 function hf_framework_atomic_write($file,$content) {
     $temporary=$file.'.tmp-'.bin2hex(random_bytes(8));
     if (file_put_contents($temporary,$content,LOCK_EX)===false) return false;
