@@ -13,6 +13,72 @@ if (!defined('ABSPATH')) {
 // Lista fija de páginas: slug => [title, description]. El content lo carga el
 // usuario desde el panel. El slug es también la ruta del SPA (/slug/).
 function hf_info_pages_defaults() {
+    $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($config) {
+        $titles = array(
+            'envios-y-entregas' => 'Envíos y entregas',
+            'cambios-y-devoluciones' => 'Cambios y devoluciones',
+            'guia-de-talles' => 'Guía de talles',
+            'medios-de-pago' => 'Medios de pago',
+            'terminos' => 'Términos y condiciones',
+            'privacidad' => 'Política de privacidad',
+            'defensa-al-consumidor' => 'Defensa al consumidor',
+            'quienes-somos' => 'Quiénes somos',
+            'contacto' => 'Contacto',
+            'preguntas-frecuentes' => 'Preguntas frecuentes',
+        );
+        $pages = array();
+        foreach ($titles as $slug => $title) {
+            $pages[$slug] = array('title' => $title, 'description' => '', 'content' => '');
+        }
+        $from_config = function_exists('hf_framework_info_pages') ? hf_framework_info_pages() : array();
+        foreach ($from_config as $slug => $page) {
+            $pages[$slug] = array_merge(
+                $pages[$slug] ?? array('title' => '', 'description' => '', 'content' => ''),
+                $page
+            );
+        }
+        $shipping_copy = trim((string) ($config['shipping']['copy'] ?? ''));
+        $shipping_label = function_exists('hf_framework_shipping_label') ? hf_framework_shipping_label() : trim((string) ($config['shipping']['headline'] ?? ''));
+        if (trim((string) $pages['envios-y-entregas']['content']) === '' && ($shipping_copy !== '' || $shipping_label !== '')) {
+            $pages['envios-y-entregas']['content'] = ($shipping_label !== '' ? '<h2>' . esc_html($shipping_label) . '</h2>' : '')
+                . ($shipping_copy !== '' ? '<p>' . esc_html($shipping_copy) . '</p>' : '');
+            if ($pages['envios-y-entregas']['description'] === '') {
+                $pages['envios-y-entregas']['description'] = $shipping_copy !== '' ? $shipping_copy : $shipping_label;
+            }
+        }
+        $payments_copy = trim((string) ($config['payments']['copy'] ?? ''));
+        $payments_label = function_exists('hf_framework_payments_label') ? hf_framework_payments_label() : trim((string) ($config['payments']['headline'] ?? ''));
+        if (trim((string) $pages['medios-de-pago']['content']) === '' && ($payments_copy !== '' || $payments_label !== '')) {
+            $pages['medios-de-pago']['content'] = ($payments_label !== '' ? '<h2>' . esc_html($payments_label) . '</h2>' : '')
+                . ($payments_copy !== '' ? '<p>' . esc_html($payments_copy) . '</p>' : '');
+            if ($pages['medios-de-pago']['description'] === '') {
+                $pages['medios-de-pago']['description'] = $payments_copy !== '' ? $payments_copy : $payments_label;
+            }
+        }
+        if (trim((string) $pages['contacto']['content']) === '') {
+            $email = function_exists('hf_framework_email') ? hf_framework_email() : trim((string) ($config['email'] ?? ''));
+            $whatsapp = function_exists('hf_framework_whatsapp_url') ? hf_framework_whatsapp_url() : trim((string) ($config['whatsappUrl'] ?? ''));
+            $name = trim((string) ($config['name'] ?? ''));
+            $blocks = array();
+            if ($name !== '') {
+                $blocks[] = '<h2>' . esc_html($name) . '</h2>';
+            }
+            if ($email !== '') {
+                $blocks[] = '<p>' . esc_html($email) . '</p>';
+            }
+            if ($whatsapp !== '') {
+                $blocks[] = '<p><a href="' . esc_url($whatsapp) . '">' . esc_html($whatsapp) . '</a></p>';
+            }
+            if ($blocks) {
+                $pages['contacto']['content'] = implode('', $blocks);
+                if ($pages['contacto']['description'] === '') {
+                    $pages['contacto']['description'] = $email !== '' ? $email : $name;
+                }
+            }
+        }
+        return $pages;
+    }
     return [
         'envios-y-entregas' => [
             'title' => 'Envíos y entregas',
@@ -73,6 +139,9 @@ function hf_info_pages_get() {
     $defaults = hf_info_pages_defaults();
     $saved = get_option('hf_info_pages', []);
     $saved = is_array($saved) ? $saved : [];
+    if (function_exists('hf_framework_config') && hf_framework_config()) {
+        return $defaults;
+    }
 
     $out = [];
     foreach ($defaults as $slug => $def) {
