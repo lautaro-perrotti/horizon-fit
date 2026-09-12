@@ -19,6 +19,7 @@ function hf_search_text($value) {
     $value = html_entity_decode(wp_strip_all_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     return trim(preg_replace('/\s+/u', ' ', $value));
 }
+function hf_search_brand_name() { return function_exists('hf_framework_name') ? hf_framework_name() : 'Horizon Fit'; }
 
 function hf_search_excerpt($value, $limit = 158) {
     $value = hf_search_text($value);
@@ -205,9 +206,9 @@ function hf_search_is_placeholder_title($value) {
 function hf_search_product_title($product) {
     $name = hf_search_product_name($product);
     if ($name === '') {
-        return 'Horizon Fit';
+        return hf_search_brand_name();
     }
-    $base = $name . ' | Horizon Fit';
+    $base = $name . ' | ' . hf_search_brand_name();
     if (hf_search_strlen($base) <= 65) {
         return $base;
     }
@@ -380,11 +381,15 @@ function hf_search_item_group_id($product) {
 }
 
 function hf_search_category_title($term) {
-    $candidate = hf_search_term_label($term) . ' | Horizon Fit';
+    $candidate = hf_search_term_label($term) . ' | ' . hf_search_brand_name();
     return hf_search_strlen($candidate) <= 65 ? $candidate : hf_search_excerpt($candidate, 65);
 }
 
 function hf_search_category_description($term) {
+    if (function_exists('hf_framework_config') && hf_framework_config()) {
+        $copy = !empty($term->description) ? $term->description : 'Descubrí ' . hf_search_term_label($term) . ' de ' . hf_search_brand_name() . '. Consultá los productos disponibles en nuestra tienda.';
+        return hf_search_excerpt($copy, 158);
+    }
     $existing = is_object($term) && isset($term->description) ? (string) $term->description : '';
     if (hf_search_useful_copy($existing)) {
         return hf_search_excerpt($existing, 158);
@@ -1028,7 +1033,7 @@ function hf_merchant_row($item, $parent = null) {
         'availability' => hf_merchant_availability($item),
         'price' => $price,
         'sale_price' => $sale,
-        'brand' => 'Horizon Fit',
+        'brand' => hf_search_brand_name(),
         'condition' => 'new',
         'color' => $color,
         'size' => hf_merchant_normalize_size($size) ?: $size,
@@ -1046,7 +1051,7 @@ function hf_merchant_row($item, $parent = null) {
         'google_product_category_label' => $category_mapping['google_product_category_label'],
         'gtin' => $has_valid_gtin ? $gtin : '',
         'mpn' => $mpn,
-        'identifier_exists' => hf_merchant_identifier_exists('Horizon Fit', $mpn, $has_valid_gtin ? $gtin : ''),
+        'identifier_exists' => hf_merchant_identifier_exists(hf_search_brand_name(), $mpn, $has_valid_gtin ? $gtin : ''),
     );
 
     $issues = array();

@@ -1,0 +1,14 @@
+{
+  "slug": "casa-sur",
+  "name": "Casa Sur",
+  "storefrontUrl": "http://127.0.0.1:8920",
+  "apiUrl": "http://127.0.0.1:8921",
+  "ports": { "storefront": 8920, "api": 8921 },
+  "email": "hola@example.com",
+  "whatsappUrl": "",
+  "tagline": "Diseñado para acompañarte.",
+  "cache": { "maxAge": 30 },
+  "seo": { "title": "Casa Sur | Tienda online", "description": "Descubrí la colección de Casa Sur. Comprá online con envíos en Argentina." },
+  "tracking": { "enabled": false, "ga4Id": "", "googleAdsId": "", "googleAdsPurchaseLabel": "", "metaPixelId": "" },
+  "merchant": { "ownBrandManufacturer": false, "categoryMap": {}, "gender": "", "ageGroup": "" }
+}

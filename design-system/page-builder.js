@@ -47,11 +47,13 @@
   // En local/VPS por IP, WordPress usa el mismo host en el puerto 8089.
   // En el dominio pÃºblico usa el subdominio HTTPS de la API.
   const WP_PORT = '8089';
+  // Optional tenant bootstrap. Absent configuration preserves Horizon Fit.
+  const STORE_CONFIG = window.HF_STOREFRONT_CONFIG || {};
   const isProductionDomain = /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname);
-  const CANONICAL_STOREFRONT_ORIGIN = isProductionDomain
+  const CANONICAL_STOREFRONT_ORIGIN = STORE_CONFIG.storefrontOrigin || (isProductionDomain
     ? 'https://horizonfit.com.ar'
-    : window.location.origin;
-  const WP_BASE_URL = window.HF_WP_BASE_URL || (isProductionDomain
+    : window.location.origin);
+  const WP_BASE_URL = STORE_CONFIG.apiOrigin || window.HF_WP_BASE_URL || (isProductionDomain
     ? 'https://api.horizonfit.com.ar'
     : `${window.location.protocol}//${window.location.hostname}:${WP_PORT}`);
   const WOO_STORE_API_BASE = `${WP_BASE_URL}/wp-json/wc/store/v1`;
@@ -121,7 +123,7 @@
     ROOT: 'root',
     AFTER_ROOT: 'after-root'
   };
-  const WHATSAPP_DEFAULT_HREF = 'https://wa.me/541131150999?text=Hola%20Horizon%20Fit';
+  const WHATSAPP_DEFAULT_HREF = STORE_CONFIG.name ? (STORE_CONFIG.whatsappUrl || '') : 'https://wa.me/541131150999?text=Hola%20Horizon%20Fit';
   const WHATSAPP_DEFAULT_LABEL = 'Escribinos por WhatsApp';
 
   // Resuelve una URL de media de WordPress. Acepta absolutas (http...) o
@@ -132,9 +134,9 @@
     return rootUrl(url);
   };
 
-  const SITE_NAME = 'Horizon Fit';
-  const HOME_SEO_TITLE = `${SITE_NAME} | Ropa deportiva y conjuntos`;
-  const HOME_SEO_DESCRIPTION = 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.';
+  const SITE_NAME = STORE_CONFIG.name || 'Horizon Fit';
+  const HOME_SEO_TITLE = STORE_CONFIG.seoTitle || `${SITE_NAME} | Ropa deportiva y conjuntos`;
+  const HOME_SEO_DESCRIPTION = STORE_CONFIG.seoDescription || 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.';
   const DEFAULT_SOCIAL_IMAGE = resolveMediaUrl('assets/hero-poster-desktop.jpg');
   const INFO_PAGES = {
     '/envios-y-entregas': {
@@ -247,13 +249,14 @@
   };
 
   const productSeoDescription = (product) => {
+    if (STORE_CONFIG.name) return normalizeSeoDescription(plainTextFromHtml(product?.short_description || product?.description || `Descubrí ${product?.name || 'nuestros productos'} en ${SITE_NAME}.`));
     const name = plainTextFromHtml(product?.name || 'Activewear Horizon Fit').trim();
     return normalizeSeoDescription(
       `Descubrí ${name} de Horizon Fit: una prenda de activewear cómoda y funcional para entrenar, combinar con tu set y acompañarte todos los días.`
     );
   };
 
-  const merchantReturnPolicySchema = () => ({
+  const merchantReturnPolicySchema = () => STORE_CONFIG.name ? undefined : ({
     '@type': 'MerchantReturnPolicy',
     applicableCountry: 'AR',
     returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
@@ -274,7 +277,7 @@
     }
   });
 
-  const merchantShippingDetailsSchema = () => ({
+  const merchantShippingDetailsSchema = () => STORE_CONFIG.name ? undefined : ({
     '@type': 'OfferShippingDetails',
     hasShippingService: {
       '@id': routeBaseUrl('/envios-y-entregas/#envios')
@@ -347,7 +350,7 @@
       '@id': routeBaseUrl('/#organization'),
       name: SITE_NAME,
       url: routeBaseUrl('/'),
-      email: 'hola@horizonfit.com.ar',
+      email: STORE_CONFIG.name ? (STORE_CONFIG.email || '') : 'hola@horizonfit.com.ar',
       sameAs: [
         'https://www.instagram.com/horizonfit.oficial/',
         'https://www.tiktok.com/@horizon.fit',
@@ -356,7 +359,11 @@
       ],
       hasMerchantReturnPolicy: merchantReturnPolicySchema()
     };
-    if (window.location.pathname.replace(/\/+$/, '') === '/envios-y-entregas') {
+    if (STORE_CONFIG.name) {
+      schema.sameAs = STORE_CONFIG.socialUrls || [];
+      delete schema.hasMerchantReturnPolicy;
+    }
+    if (!STORE_CONFIG.name && window.location.pathname.replace(/\/+$/, '') === '/envios-y-entregas') {
       schema.hasShippingService = merchantShippingServiceSchema();
     }
     return schema;
@@ -393,7 +400,7 @@
       description: normalizeSeoDescription(page?.description || ''),
       url: canonical
     }];
-    if (page?.path === '/preguntas-frecuentes') {
+    if (!STORE_CONFIG.name && page?.path === '/preguntas-frecuentes') {
       schemas.push({
         '@type': 'FAQPage',
         '@id': `${canonical}#faq`,
@@ -1263,6 +1270,13 @@
         ]);
       }
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      if (STORE_CONFIG.name) {
+        document.querySelectorAll('a.brand').forEach(el => { el.textContent = STORE_CONFIG.name; el.style.fontSize = '24px'; el.style.fontWeight = '700'; });
+        document.querySelectorAll('[data-footer-badge]').forEach(el => { el.textContent = STORE_CONFIG.name; });
+        document.querySelectorAll('[data-footer-title]').forEach(el => { el.textContent = STORE_CONFIG.tagline || STORE_CONFIG.name; });
+        document.querySelectorAll('[data-footer-copy]').forEach(el => { el.textContent = STORE_CONFIG.seoDescription || ''; });
+        document.querySelectorAll('[data-footer-copyright]').forEach(el => { el.textContent = `© ${new Date().getFullYear()} ${STORE_CONFIG.name}. Todos los derechos reservados.`; });
+      }
       document.documentElement.dataset.pageBuilderReady = 'true';
       document.querySelectorAll('.hf-runtime-pending').forEach(element => {
         element.classList.remove('hf-runtime-pending');
@@ -1514,9 +1528,15 @@
   // que falte conserva el texto/href del HTML (fallback). Todo opcional.
   const setupFooter = (sectionEl, settings = {}) => {
     if (!settings || typeof settings !== 'object') settings = {};
+    if (STORE_CONFIG.name) {
+      settings = { badge: SITE_NAME, title: STORE_CONFIG.tagline || SITE_NAME, copy: STORE_CONFIG.seoDescription || '', contactLines: [STORE_CONFIG.email || ''], chips: [], helpLinks: [], legalLinks: [], social: STORE_CONFIG.social || {}, ...settings };
+      ['chip', 'contact', 'help-link', 'legal-link'].forEach(kind => {
+        sectionEl.querySelectorAll(`[data-footer-${kind}]`).forEach(el => { el.textContent = ''; if (el.tagName === 'A') el.removeAttribute('href'); });
+      });
+    }
 
     const setText = (sel, value) => {
-      if (value == null || value === '') return;
+      if (value == null || (value === '' && !STORE_CONFIG.name)) return;
       const el = sectionEl.querySelector(sel);
       if (el) el.textContent = value;
     };
@@ -1535,7 +1555,7 @@
     (settings.chips || []).forEach((chip, i) => setText(`[data-footer-chip="${i}"]`, chip));
 
     setText('[data-footer-help-title]', settings.helpTitle);
-    const helpLinks = FOOTER_HELP_DEFAULT_LINKS.map((fallback, i) => {
+    const helpLinks = (STORE_CONFIG.name ? (settings.helpLinks || []) : FOOTER_HELP_DEFAULT_LINKS).map((fallback, i) => {
       const saved = settings.helpLinks?.[i] || {};
       const savedUrl = `${saved.url || ''}`.trim();
       const url = savedUrl && savedUrl !== '#' && savedUrl !== '#components'
@@ -1558,7 +1578,7 @@
     applySocialLinks(social);
 
     setText('[data-footer-copyright]', settings.copyright);
-    FOOTER_LEGAL_DEFAULT_LINKS.forEach((fallback, i) => {
+    (STORE_CONFIG.name ? (settings.legalLinks || []) : FOOTER_LEGAL_DEFAULT_LINKS).forEach((fallback, i) => {
       const saved = settings.legalLinks?.[i] || {};
       const savedUrl = `${saved.url || ''}`.trim();
       const link = {
@@ -1612,6 +1632,7 @@
     if (!sectionEl) return;
 
     const config = { ...(fallback || {}), ...(settings || {}) };
+    if (STORE_CONFIG.name && !STORE_CONFIG.whatsappUrl && !config.href && !config.phone) { sectionEl.hidden = true; return; }
     const href = `${config.href || ''}`.trim()
       || (config.phone ? `https://wa.me/${`${config.phone}`.replace(/[^\d]/g, '')}` : '')
       || WHATSAPP_DEFAULT_HREF;
@@ -1764,6 +1785,7 @@
     facebook: 'https://www.facebook.com/profile.php?id=61582311777195',
     spotify: 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC?si=369b9c02bb474760'
   };
+  if (STORE_CONFIG.name) Object.keys(SOCIAL_DEFAULT_LINKS).forEach(key => { SOCIAL_DEFAULT_LINKS[key] = STORE_CONFIG.social?.[key] || ''; });
 
   let activeSocialLinks = { ...SOCIAL_DEFAULT_LINKS };
 
@@ -1782,7 +1804,8 @@
         `[data-social-link="${network}"]`,
         `[data-nav-social="${network}"]`
       ].join(',')).forEach(link => {
-        link.setAttribute('href', href);
+        link.setAttribute('href', href || '#');
+        if (STORE_CONFIG.name) link.hidden = !href;
         link.setAttribute('target', '_blank');
         link.setAttribute('rel', 'noopener noreferrer');
       });
@@ -2674,7 +2697,7 @@
     return Number.isFinite(total) && total > 0 ? formatMajorMoney(total) : '';
   };
 
-  const FEATURED_SET_DISCOUNT_PERCENT = 10;
+  const FEATURED_SET_DISCOUNT_PERCENT = STORE_CONFIG.name ? Number(STORE_CONFIG.setDiscountPercent || 0) : 10;
 
   const getFeaturedSetPricing = (setOrItems) => {
     const originalValue = getSetTotalPriceValue(setOrItems);
@@ -5037,7 +5060,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
           <div class="hf-checkout-view__trust-row" aria-label="Seguridad del pago">
             <span>${checkoutIconSvg('shield')} No guardamos tu tarjeta</span>
             <span>${checkoutIconSvg('lock')} Tokenización Payway</span>
-            <span>${checkoutIconSvg('check')} 3 y 6 cuotas sin interés</span>
+            <span>${checkoutIconSvg('check')} ${STORE_CONFIG.name ? 'Condiciones del medio de pago elegido' : '3 y 6 cuotas sin interés'}</span>
           </div>
           <p class="hf-checkout-view__payway-brands">Payway acepta tarjetas de débito, crédito y prepagas de las principales marcas como Visa, Mastercard, Cabal, American Express, Diners, Discover y Union Pay.</p>
         </div>
@@ -5257,7 +5280,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const paymentCopy = {
           [PAYWAY_GATEWAY_ID]: {
             title: 'Tarjeta de crédito o débito',
-            description: 'Pagá con tarjeta de crédito o débito. Incluye 3 y 6 cuotas sin interés.'
+            description: STORE_CONFIG.name ? 'Pagá con tarjeta. Las cuotas disponibles se muestran al ingresar los datos.' : 'Pagá con tarjeta de crédito o débito. Incluye 3 y 6 cuotas sin interés.'
           },
           bacs: {
             title: 'Transferencia bancaria directa',
@@ -5598,6 +5621,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
   };
 
   const setupPdpTrustItems = (sectionEl, settings) => {
+    if (STORE_CONFIG.name) sectionEl.querySelectorAll('[data-pdp-trust-title], [data-pdp-trust-desc]').forEach(el => { el.textContent = ''; });
     const items = Array.isArray(settings?.pdpItems) ? settings.pdpItems : [];
     items.slice(0, 3).forEach((item, i) => {
       const titleEl = sectionEl.querySelector(`[data-pdp-trust-title="${i}"]`);

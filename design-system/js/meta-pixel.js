@@ -13,17 +13,19 @@
 (function (window, document) {
   'use strict';
 
-  var SETTINGS_SRC = 'https://api.horizonfit.com.ar/wp-content/uploads/horizon-fit-cache/tracking-settings.json';
+  var storeConfig = window.HF_STOREFRONT_CONFIG || null;
+  var SETTINGS_SRC = (storeConfig ? (storeConfig.apiOrigin || window.location.origin) : 'https://api.horizonfit.com.ar') + '/wp-content/uploads/horizon-fit-cache/tracking-settings.json';
   var PURCHASE_STORAGE_PREFIX = 'hf-meta-purchase:';
   var EVENT_STORAGE_PREFIX = 'hf-meta-event:';
   var SIZE_TOKENS = {
     XS: 1, S: 1, M: 1, L: 1, XL: 1, XXL: 1, XXXL: 1, U: 1, UNI: 1, UNICO: 1
   };
-  var pixelId = normalizePixelId(window.HF_META_PIXEL_ID || metaPixelId());
+  var pixelId = normalizePixelId((storeConfig && storeConfig.metaPixelId) || window.HF_META_PIXEL_ID || metaPixelId());
   var initialized = false;
   var loading = null;
 
   function isProductionHost() {
+    if (storeConfig) return Boolean(storeConfig.trackingEnabled && storeConfig.storefrontOrigin && new URL(storeConfig.storefrontOrigin).hostname === window.location.hostname);
     return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
   }
 

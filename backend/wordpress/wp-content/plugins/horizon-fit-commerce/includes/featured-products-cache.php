@@ -81,6 +81,10 @@ function hf_schedule_featured_products_cache_regeneration_from_meta($meta_id, $o
 }
 
 function hf_run_scheduled_featured_products_cache_regeneration() {
+  if (function_exists('hf_framework_config') && hf_framework_config() && empty($GLOBALS['hf_framework_rebuilding'])) {
+    hf_framework_schedule_rebuild();
+    return;
+  }
   if (empty($GLOBALS['hf_featured_products_cache_regeneration_scheduled'])) {
     return;
   }
@@ -144,6 +148,13 @@ function hf_featured_products_ensure_cors($cache_dir) {
     . "  Header set Pragma \"no-cache\"\n"
     . "  Header set Expires \"0\"\n"
     . "</IfModule>\n";
+  if (function_exists('hf_framework_config') && hf_framework_config()) {
+    $config = hf_framework_config();
+    $ttl = max(0, min(300, (int)($config['cache']['maxAge'] ?? 30)));
+    $rules = str_replace('no-cache, no-store, must-revalidate, max-age=0', 'public, max-age=' . $ttl . ', stale-while-revalidate=15', $rules);
+    $rules = str_replace('Header set Pragma "no-cache"', 'Header unset Pragma', $rules);
+    $rules = str_replace('Header set Access-Control-', 'Header always set Access-Control-', $rules);
+  }
   if (!file_exists($htaccess) || file_get_contents($htaccess) !== $rules) {
     @file_put_contents($htaccess, $rules);
     @chmod($htaccess, 0666);
@@ -167,10 +178,12 @@ function hf_featured_products_format_payment_amount($amount) {
 }
 
 function hf_featured_products_default_installments_count() {
+  if (function_exists('hf_framework_config') && hf_framework_config()) return (int)(hf_framework_config()['payments']['installments'] ?? 0);
   return 6;
 }
 
 function hf_catalog_display_name($name) {
+  if (function_exists('hf_framework_config') && hf_framework_config()) return trim((string)$name);
   $name = trim((string) $name);
   $name = preg_replace('/\bCalsa\b/u', 'Calza', $name);
   $name = preg_replace('/\bcalsa\b/u', 'calza', $name);
@@ -196,6 +209,8 @@ function hf_featured_products_is_duplicate_copy_product($product) {
 }
 
 function hf_featured_products_default_transfer_discount_percent() {
+  $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+  if ($config) return max(0, min(100, (float) ($config['payments']['transferDiscountPercent'] ?? 0)));
   return 10;
 }
 

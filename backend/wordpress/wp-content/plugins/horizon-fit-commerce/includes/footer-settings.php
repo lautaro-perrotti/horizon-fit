@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 
 // Valores por defecto (los del HOME-ORIGINAL), para que no arranque en blanco.
 function hf_footer_defaults() {
+    $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($config) return array('badge'=>$config['name'],'title'=>$config['tagline'] ?? $config['name'],'copy'=>$config['seo']['description'] ?? '', 'newsPlaceholder'=>'Tu email','newsBtn'=>'Suscribirme','chips'=>array(),'helpTitle'=>'Ayuda','helpLinks'=>array(),'contactTitle'=>'Contacto','contactLines'=>array_filter(array($config['email'] ?? '')),'social'=>$config['social'] ?? array(),'copyright'=>'© '.gmdate('Y').' '.$config['name'].'. Todos los derechos reservados.','legalLinks'=>array());
     return [
         'badge'           => 'Horizon Fit',
         'title'           => 'Más allá de tus horizontes',
@@ -72,6 +74,7 @@ function hf_footer_get_settings() {
         }
     }
     $settings = array_merge(hf_footer_defaults(), $saved);
+    if (function_exists('hf_framework_config') && hf_framework_config()) return $settings;
 
     // Migra solamente los valores heredados que quedaron publicados antes de
     // contar con dominio y perfil oficial; el resto sigue siendo editable.

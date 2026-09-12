@@ -12,8 +12,10 @@ if (! defined('ABSPATH')) {
 }
 
 function hf_storefront_public_url($path = '/') {
-    return 'https://horizonfit.com.ar/' . ltrim((string) $path, '/');
+    $origin = function_exists('hf_framework_origin') ? hf_framework_origin() : 'https://horizonfit.com.ar';
+    return rtrim($origin, '/') . '/' . ltrim((string) $path, '/');
 }
+function hf_storefront_brand_name() { return function_exists('hf_framework_name') ? hf_framework_name() : 'Horizon Fit'; }
 
 function hf_storefront_seo_dir() {
     $uploads = wp_upload_dir();
@@ -39,6 +41,8 @@ function hf_storefront_seo_description($value, $fallback = '') {
 }
 
 function hf_storefront_home_seo_defaults() {
+    $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($config) return array('title'=>$config['seo']['title'] ?? $config['name'],'description'=>$config['seo']['description'] ?? '');
     return array(
         'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
         'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
@@ -313,6 +317,9 @@ function hf_storefront_product_offer_schema($product, $canonical) {
         'hasMerchantReturnPolicy' => hf_storefront_return_policy_schema(),
         'shippingDetails' => hf_storefront_offer_shipping_reference_schema(),
     );
+    if (function_exists('hf_framework_config') && hf_framework_config()) {
+        unset($offer['hasMerchantReturnPolicy'], $offer['shippingDetails']);
+    }
     if ($product->get_price() !== '') {
         $offer['price'] = (string) wc_format_decimal($product->get_price(), wc_get_price_decimals());
     }
@@ -327,6 +334,7 @@ function hf_storefront_price_text($product) {
 }
 
 function hf_storefront_prerender_chrome() {
+    if (function_exists('hf_framework_config') && hf_framework_config()) return '<header class="hf-prerender__nav"><a href="/">'.esc_html(hf_framework_name()).'</a><a href="/coleccion/">Productos</a></header>';
     $message = esc_html__('3 Y 6 CUOTAS SIN INTERÉS', 'horizon-fit-commerce');
     $marquee_items = '';
     for ($index = 0; $index < 10; $index++) {
@@ -426,6 +434,8 @@ function hf_storefront_info_body($page) {
 }
 
 function hf_storefront_home_body() {
+    $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($config) return '<div class="hf-prerender" data-hf-prerender><section style="padding:100px 8%"><h1>' . esc_html($config['tagline'] ?? $config['name']) . '</h1><p>' . esc_html($config['seo']['description'] ?? '') . '</p><a href="/coleccion/">Ver productos</a></section></div>';
     return '<div class="hf-prerender hf-prerender--home" data-hf-prerender>' .
         hf_storefront_prerender_chrome() .
         '<section class="hf-prerender__hero">' .
@@ -473,7 +483,7 @@ function hf_storefront_render_seo_html($template, $seo) {
     $organization_schema = array(
             '@type' => 'Organization',
             '@id' => hf_storefront_public_url('/#organization'),
-            'name' => 'Horizon Fit',
+            'name' => hf_storefront_brand_name(),
             'url' => hf_storefront_public_url('/'),
             'email' => 'hola@horizonfit.com.ar',
             'logo' => hf_storefront_public_url('LOGOS/favicon-512.png'),
@@ -484,6 +494,13 @@ function hf_storefront_render_seo_html($template, $seo) {
                 'https://open.spotify.com/playlist/6SM4GvEnXAoI3wfHlHh8aC',
             ),
     );
+    $framework = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($framework) {
+        $organization_schema['email'] = $framework['email'] ?? '';
+        $organization_schema['sameAs'] = $framework['socialUrls'] ?? array();
+        if (!empty($framework['logoUrl'])) $organization_schema['logo'] = $framework['logoUrl'];
+        else unset($organization_schema['logo']);
+    }
     if (hf_storefront_public_url('envios-y-entregas/') === $seo['canonical']) {
         $organization_schema['hasShippingService'] = hf_storefront_shipping_service_schema();
     }
@@ -492,9 +509,9 @@ function hf_storefront_render_seo_html($template, $seo) {
         array(
             '@type' => 'WebSite',
             '@id' => hf_storefront_public_url('/#website'),
-            'name' => 'Horizon Fit',
+            'name' => hf_storefront_brand_name(),
             'url' => hf_storefront_public_url('/'),
-            'description' => 'Activewear funcional para entrenar y vivir en movimiento.',
+            'description' => $framework ? ($framework['seo']['description'] ?? '') : 'Activewear funcional para entrenar y vivir en movimiento.',
         ),
     );
     $page_schema = array_values($seo['schema'] ?? array());
@@ -526,7 +543,9 @@ function hf_storefront_write_route($template, $route, $seo) {
     if (! wp_mkdir_p($directory)) {
         return false;
     }
-    return false !== file_put_contents(trailingslashit($directory) . 'index.html', hf_storefront_render_seo_html($template, $seo), LOCK_EX);
+    $file = trailingslashit($directory) . 'index.html';
+    $html = hf_storefront_render_seo_html($template, $seo);
+    return function_exists('hf_framework_atomic_write') ? hf_framework_atomic_write($file, $html) : false !== file_put_contents($file, $html, LOCK_EX);
 }
 
 function hf_storefront_product_seo($product) {
@@ -536,7 +555,7 @@ function hf_storefront_product_seo($product) {
     $description = hf_storefront_product_meta_description($product);
     $title = function_exists('hf_search_product_title')
         ? hf_search_product_title($product)
-        : ($display_name . ' | Horizon Fit');
+        : ($display_name . ' | ' . hf_storefront_brand_name());
     $image_id = hf_storefront_product_image_id($product);
     $image = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
     $offer = hf_storefront_product_offer_schema($product, $canonical);
@@ -551,7 +570,7 @@ function hf_storefront_product_seo($product) {
         'description' => $description,
         'image' => $image ? array($image) : array(),
         'sku' => hf_storefront_product_primary_sku($product),
-        'brand' => array('@type' => 'Brand', 'name' => 'Horizon Fit'),
+        'brand' => array('@type' => 'Brand', 'name' => hf_storefront_brand_name()),
         'offers' => $offer,
     );
     if ($category !== '') {
@@ -590,7 +609,7 @@ function hf_storefront_product_seo($product) {
                 'url' => $canonical,
                 'sku' => $variation->get_sku(),
                 'image' => $image ? array($image) : array(),
-                'brand' => array('@type' => 'Brand', 'name' => 'Horizon Fit'),
+                'brand' => array('@type' => 'Brand', 'name' => hf_storefront_brand_name()),
                 'offers' => hf_storefront_product_offer_schema($variation, $canonical),
             );
             if ($variation_sizes) {
@@ -615,7 +634,7 @@ function hf_storefront_product_seo($product) {
                 'description' => $description,
                 'url' => $canonical,
                 'image' => $image ? array($image) : array(),
-                'brand' => array('@type' => 'Brand', 'name' => 'Horizon Fit'),
+                'brand' => array('@type' => 'Brand', 'name' => hf_storefront_brand_name()),
                 'productGroupID' => $group_id ?: ('HF-P' . $product->get_id()),
                 'variesBy' => array('https://schema.org/size'),
                 'hasVariant' => $variants,
@@ -678,7 +697,7 @@ function hf_storefront_term_seo($term) {
 
     return array(
         'route' => $route,
-        'title' => $term->name . ' | Horizon Fit',
+        'title' => $term->name . ' | ' . hf_storefront_brand_name(),
         'description' => $description,
         'canonical' => $canonical,
         'type' => 'website',
@@ -829,7 +848,7 @@ function hf_regenerate_storefront_seo_cache() {
                 );
             }
             $seo = array(
-                'title' => $page['title'] . ' | Horizon Fit',
+                'title' => $page['title'] . ' | ' . hf_storefront_brand_name(),
                 'description' => $description,
                 'canonical' => $canonical,
                 'robots' => $has_content ? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1' : 'noindex,nofollow',
@@ -848,8 +867,8 @@ function hf_regenerate_storefront_seo_cache() {
     foreach (array('cart', 'my-account', 'checkout', 'mi-cuenta', 'recuperar-contrasena') as $slug) {
         $canonical = hf_storefront_public_url($slug . '/');
         hf_storefront_write_route($template, $slug . '/', array(
-            'title' => 'Horizon Fit',
-            'description' => 'Ruta operativa de Horizon Fit.',
+            'title' => hf_storefront_brand_name(),
+            'description' => 'Ruta operativa de ' . hf_storefront_brand_name() . '.',
             'canonical' => $canonical,
             'robots' => 'noindex,nofollow',
             'schema' => array(),
@@ -870,11 +889,13 @@ function hf_regenerate_storefront_seo_cache() {
         $xml .= "</url>\n";
     }
     $xml .= "</urlset>\n";
-    file_put_contents(trailingslashit($base) . 'sitemap.xml', $xml, LOCK_EX);
+    if (function_exists('hf_framework_atomic_write')) hf_framework_atomic_write(trailingslashit($base) . 'sitemap.xml', $xml);
+    else file_put_contents(trailingslashit($base) . 'sitemap.xml', $xml, LOCK_EX);
     return true;
 }
 
 function hf_schedule_storefront_seo_cache() {
+    if (function_exists('hf_framework_config') && hf_framework_config()) { hf_framework_schedule_rebuild(); return; }
     if (! wp_next_scheduled('hf_regenerate_storefront_seo_cache_event')) {
         wp_schedule_single_event(time() + 10, 'hf_regenerate_storefront_seo_cache_event');
     }

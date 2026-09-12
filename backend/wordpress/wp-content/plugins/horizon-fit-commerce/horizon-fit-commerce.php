@@ -45,9 +45,8 @@ add_action('woocommerce_checkout_order_created', 'hf_commerce_mark_order_origin_
 // Regenerar caché de featured-products cuando se guarda/actualiza un producto
 add_action('save_post_product', 'hf_regenerate_featured_products_cache');
 
-// Habilitar REST API pública para WooCommerce sin autenticación
-// Este filter intercepta la validación de permisos de WooCommerce
-add_filter('rest_authentication_errors', '__return_true', 0);
+// Store API exposes its own public routes and validates cart tokens/nonces.
+// Preserve WordPress authentication errors for protected platform/admin APIs.
 
 add_filter('allowed_http_origin', function($allowed_origin, $origin) {
     if (! $origin) {

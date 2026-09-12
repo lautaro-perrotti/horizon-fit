@@ -13,6 +13,12 @@ if (!defined('ABSPATH')) {
 // Lista fija de páginas: slug => [title, description]. El content lo carga el
 // usuario desde el panel. El slug es también la ruta del SPA (/slug/).
 function hf_info_pages_defaults() {
+    $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+    if ($config) {
+        $pages=array();foreach(array('envios-y-entregas'=>'Envíos y entregas','cambios-y-devoluciones'=>'Cambios y devoluciones','medios-de-pago'=>'Medios de pago','contacto'=>'Contacto','privacidad'=>'Privacidad','terminos'=>'Términos') as $slug=>$title)$pages[$slug]=array('title'=>$title,'description'=>'','content'=>'');
+        foreach(($config['infoPages'] ?? array()) as $slug=>$page)if(isset($pages[$slug]))$pages[$slug]=array_merge($pages[$slug],$page);
+        return $pages;
+    }
     return [
         'envios-y-entregas' => [
             'title' => 'Envíos y entregas',
@@ -73,6 +79,7 @@ function hf_info_pages_get() {
     $defaults = hf_info_pages_defaults();
     $saved = get_option('hf_info_pages', []);
     $saved = is_array($saved) ? $saved : [];
+    if (function_exists('hf_framework_config') && hf_framework_config()) {foreach($defaults as $slug=>&$page)$page=array_merge($page,is_array($saved[$slug] ?? null)?$saved[$slug]:array());unset($page);return $defaults;}
 
     $out = [];
     foreach ($defaults as $slug => $def) {
