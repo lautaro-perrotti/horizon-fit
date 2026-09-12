@@ -178,7 +178,13 @@ function hf_featured_products_format_payment_amount($amount) {
 }
 
 function hf_featured_products_default_installments_count() {
-  if (function_exists('hf_framework_config') && hf_framework_config()) return (int)(hf_framework_config()['payments']['installments'] ?? 0);
+  if (function_exists('hf_framework_installments_count') && function_exists('hf_framework_config') && hf_framework_config()) {
+    return hf_framework_installments_count();
+  }
+  if (function_exists('hf_framework_config') && hf_framework_config()) {
+    $raw = hf_framework_config()['payments']['installments'] ?? 0;
+    return is_array($raw) ? 0 : (int) $raw;
+  }
   return 6;
 }
 
@@ -235,35 +241,44 @@ function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $
 }
 
 function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
-  $installments_count = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_installments_count',
-    hf_featured_products_default_installments_count()
-  );
+  $configured = function_exists('hf_framework_config') && hf_framework_config();
+  $installments_count = $configured
+    ? hf_featured_products_default_installments_count()
+    : hf_featured_products_get_payment_number_meta(
+      $product_id,
+      $parent_id,
+      '_hf_installments_count',
+      hf_featured_products_default_installments_count()
+    );
 
   if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
     $installment_amount = (float) $price / $installments_count;
     $installments_label = (int) $installments_count === 1 ? 'cuota' : 'cuotas';
-
-    return hf_featured_products_format_payment_amount($installment_amount)
+    $text = hf_featured_products_format_payment_amount($installment_amount)
       . ' en '
       . (int) $installments_count
       . ' '
-      . $installments_label
-      . ' sin interés';
+      . $installments_label;
+    if ($configured) {
+      $suffix = trim((string) (hf_framework_config()['payments']['installmentsSuffix'] ?? ''));
+      return $suffix !== '' ? ($text . ' ' . $suffix) : $text;
+    }
+    return $text . ' sin interés';
   }
 
   return '';
 }
 
 function hf_featured_products_get_transfer_text($price, $product_id, $parent_id = 0) {
-  $transfer_discount_percent = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_transfer_discount_percent',
-    hf_featured_products_default_transfer_discount_percent()
-  );
+  $configured = function_exists('hf_framework_config') && hf_framework_config();
+  $transfer_discount_percent = $configured
+    ? hf_featured_products_default_transfer_discount_percent()
+    : hf_featured_products_get_payment_number_meta(
+      $product_id,
+      $parent_id,
+      '_hf_transfer_discount_percent',
+      hf_featured_products_default_transfer_discount_percent()
+    );
 
   if ($transfer_discount_percent !== null && $transfer_discount_percent > 0 && is_numeric($price) && (float) $price > 0) {
     $transfer_price = (float) $price * (1 - ($transfer_discount_percent / 100));
@@ -798,7 +813,9 @@ function hf_regenerate_product_cat_cache($cat_slug) {
   // completos y necesitan mantener ese orden (conjunto por conjunto), no el
   // orden por fecha de publicación. Se ordenan por menu_order (asignado al
   // armar la categoría) en vez de por fecha.
-  $manual_order_cats = ['basicos', 'diseno', 'urbano', 'prints'];
+  $manual_order_cats = (function_exists('hf_framework_config') && hf_framework_config())
+    ? []
+    : ['basicos', 'diseno', 'urbano', 'prints'];
   $orderby = in_array($cat_slug, $manual_order_cats, true) ? 'menu_order' : 'date';
   $order   = in_array($cat_slug, $manual_order_cats, true) ? 'ASC' : 'DESC';
 
