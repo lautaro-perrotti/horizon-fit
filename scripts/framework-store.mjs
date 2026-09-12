@@ -7,6 +7,8 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const [action,configPath]=process.argv.slice(2);
 if(!['build','refresh','backup','start','rebuild','status','stop','reset','seed','doctor'].includes(action)||!configPath)throw new Error('Uso: node scripts/framework-store.mjs build|refresh|backup|start|rebuild|status|stop|reset|seed|doctor framework/store.json');
 function assertLocal(){for(const key of ['storefrontUrl','apiUrl']){const host=new URL(config[key]).hostname;if(!['127.0.0.1','localhost'].includes(host))throw new Error(`${action} solo corre contra una instancia local`);}}
+function objectField(value,label){if(value==null||value==='')return {};if(typeof value!=='object'||Array.isArray(value))throw new Error(`${label} debe ser un objeto`);return value;}
+function httpUrl(value,label){const url=new URL(value);if(!['https:','http:'].includes(url.protocol)||url.username||url.password)throw new Error(`${label} inválida`);return url.href;}
 const config=JSON.parse(fs.readFileSync(path.resolve(configPath),'utf8'));
 if(!/^[a-z][a-z0-9-]{2,40}$/.test(config.slug||'')||typeof config.name!=='string'||!config.name.trim()||config.name.length>100)throw new Error('slug o nombre inválido');
 for(const key of ['storefrontUrl','apiUrl']){const url=new URL(config[key]);if(!['https:','http:'].includes(url.protocol)||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw new Error(`${key} debe ser un origen HTTP(S)`);config[key]=url.origin;}
@@ -15,10 +17,104 @@ if(!config.ports?.api||!config.ports?.storefront||config.ports.api===config.port
 if(config.tracking?.ga4Id&&!/^G-[A-Z0-9]+$/.test(config.tracking.ga4Id))throw new Error('ID GA4 inválido');
 if(config.tracking?.googleAdsId&&!/^AW-\d+$/.test(config.tracking.googleAdsId))throw new Error('ID Google Ads inválido');
 if(config.tracking?.metaPixelId&&!/^\d{6,30}$/.test(config.tracking.metaPixelId))throw new Error('ID Meta Pixel inválido');
+config.payments=objectField(config.payments,'payments');
+config.shipping=objectField(config.shipping,'shipping');
+config.social=objectField(config.social,'social');
+config.infoPages=objectField(config.infoPages,'infoPages');
+if(config.whatsappUrl)httpUrl(config.whatsappUrl,'whatsappUrl');
+else config.whatsappUrl='';
+if(config.payments.setDiscountPercent!=null&&config.payments.setDiscountPercent!==''){const n=Number(config.payments.setDiscountPercent);if(!Number.isFinite(n)||n<0||n>100)throw new Error('setDiscountPercent inválido');config.payments.setDiscountPercent=n;}
+if(config.payments.installments!=null&&!Array.isArray(config.payments.installments))throw new Error('payments.installments debe ser un array');
+for(const key of ['instagram','tiktok','facebook','spotify'])if(config.social[key])httpUrl(config.social[key],`social.${key}`);
+for(const [pagePath,page] of Object.entries(config.infoPages)){if(!/^\//.test(pagePath)||typeof page!=='object'||!page||Array.isArray(page))throw new Error('infoPages inválidas');}
 const instances=path.join(root,'framework/instances'),dir=path.resolve(instances,config.slug);
 if(!dir.startsWith(instances+path.sep))throw new Error('Destino inválido');
 const docker=(args,input)=>{const r=spawnSync('docker',['compose','-f','compose.json',...args],{cwd:dir,input,encoding:'utf8',windowsHide:true,timeout:300000,maxBuffer:16*1024*1024});if(r.status!==0)throw new Error(`Docker: ${r.stderr?.slice(-1200)||r.error?.message}`);return r.stdout};
 const wp=args=>docker(['run','--rm','cli',...args]);
+const TEXT_ASSETS=new Set(['.html','.js','.json','.css','.svg','.txt','.xml','.map','.md','.csv']);
+function walkFiles(rootDir,visit){for(const entry of fs.readdirSync(rootDir,{withFileTypes:true})){const full=path.join(rootDir,entry.name);if(entry.isDirectory())walkFiles(full,visit);else visit(full);}}
+function socialUrlsFrom(store){if(Array.isArray(store.socialUrls)&&store.socialUrls.length)return store.socialUrls.filter(Boolean);return ['instagram','tiktok','facebook','spotify'].map(key=>store.social?.[key]).filter(Boolean);}
+function storefrontPublicConfig(store){
+  const payments=store.payments||{};
+  const shipping=store.shipping||{};
+  const social=store.social||{};
+  const infoPages=store.infoPages||{};
+  return {
+    email:store.email||'',
+    socialUrls:socialUrlsFrom(store),
+    name:store.name,
+    tagline:store.tagline||store.name,
+    storefrontOrigin:store.storefrontUrl,
+    apiOrigin:store.apiUrl,
+    whatsappUrl:store.whatsappUrl||'',
+    seoTitle:store.seo?.title||store.name,
+    seoDescription:store.seo?.description||'',
+    trackingEnabled:store.tracking?.enabled===true,
+    ga4Id:store.tracking?.ga4Id||'',
+    googleAdsId:store.tracking?.googleAdsId||'',
+    googleAdsPurchaseLabel:store.tracking?.googleAdsPurchaseLabel||'',
+    metaPixelId:store.tracking?.metaPixelId||'',
+    social,
+    payments,
+    shipping,
+    infoPages,
+    setDiscountPercent:Number(payments.setDiscountPercent||0)||0,
+  };
+}
+function neutralizePublic(publicDir,store){
+  const origin=store.storefrontUrl;
+  const apiOrigin=store.apiUrl;
+  const host=new URL(origin).hostname;
+  const email=store.email||'';
+  const whatsapp=store.whatsappUrl||'';
+  const pay=`${store.payments?.headline||store.payments?.copy||''}`.trim();
+  const ship=`${store.shipping?.headline||store.shipping?.copy||''}`.trim();
+  const handle=`${store.social?.handle||''}`.trim();
+  const ig=store.social?.instagram||'';
+  const tt=store.social?.tiktok||'';
+  const fb=store.social?.facebook||'';
+  const spotify=store.social?.spotify||'';
+  const ga4=store.tracking?.ga4Id||'';
+  const hashTag=handle?(handle.startsWith('#')?handle:`#${handle.replace(/^@/,'')}`):'';
+  const replacements=[
+    [/https?:\/\/api\.horizonfit\.com\.ar/gi,apiOrigin],
+    [/https?:\/\/(?:www\.)?horizonfit\.com\.ar/gi,origin],
+    [/hola@horizonfit\.com\.ar/gi,email],
+    [/horizonfit\.com\.ar/gi,host],
+    [/https?:\/\/(?:www\.)?instagram\.com\/horizonfit\.oficial\/?/gi,ig],
+    [/https?:\/\/(?:www\.)?tiktok\.com\/@horizon\.fit\/?/gi,tt],
+    [/https?:\/\/(?:www\.)?facebook\.com\/profile\.php\?id=61582311777195[^"'<\s]*/gi,fb],
+    [/https?:\/\/open\.spotify\.com\/playlist\/6SM4GvEnXAoI3wfHlHh8aC[^"'<\s]*/gi,spotify],
+    [/https?:\/\/wa\.me\/541131150999(?:\?[^"'<\s]*)?/gi,whatsapp],
+    [/541131150999/g,''],
+    [/#HorizonFit/g,hashTag],
+    [/@horizonfit\b/gi,handle],
+    [/Horizon Fit/g,store.name],
+    [/HorizonFit/g,store.name.replace(/\s+/g,'')],
+    [/G-8TL56B3B8X/g,ga4],
+    [/3\s*(?:y|&amp;|&)\s*6\s+cuotas sin inter[ée]s/gi,pay],
+    [/3 Y 6 CUOTAS SIN INTER[ÉE]S/g,pay.toUpperCase()],
+    [/3 CUOTAS SIN INTER[ÉE]S/g,pay.toUpperCase()],
+    [/6 cuotas sin inter[ée]s desde \$150\.000/gi,pay],
+    [/Env[ií]os(?: gratis)? a todo el pa[ií]s(?: con opciones disponibles en checkout)?\.?/gi,ship],
+  ];
+  walkFiles(publicDir,file=>{
+    if(!TEXT_ASSETS.has(path.extname(file).toLowerCase()))return;
+    let text=fs.readFileSync(file,'utf8');
+    const original=text;
+    for(const [pattern,value] of replacements)text=text.replace(pattern,value);
+    text=text.replace(/horizonfit/gi,'');
+    if(text!==original)fs.writeFileSync(file,text);
+  });
+  const leaks=[];
+  const forbidden=[/horizonfit/i,/Horizon Fit/,/@horizonfit/i,/541131150999/,/G-8TL56B3B8X/,/3 y 6 cuotas/i,/instagram\.com\/horizonfit/i];
+  walkFiles(publicDir,file=>{
+    if(!TEXT_ASSETS.has(path.extname(file).toLowerCase()))return;
+    const text=fs.readFileSync(file,'utf8');
+    for(const pattern of forbidden)if(pattern.test(text))leaks.push(`${path.relative(publicDir,file)} ${pattern}`);
+  });
+  if(leaks.length)throw new Error('Assets copiados aún contienen identidad Horizon Fit:\n'+leaks.slice(0,20).join('\n'));
+}
 function backup() {
   const destination=path.join(dir,'backups',new Date().toISOString().replace(/[:.]/g,'-'));
   fs.mkdirSync(destination,{recursive:true});
@@ -38,12 +134,11 @@ if(action==='build'||action==='refresh'){
   fs.mkdirSync(dir,{recursive:true});
   for(const name of ['design-system','assets','LOGOS','TIPOGRAFIAS'])fs.cpSync(path.join(root,name),path.join(dir,'public',name),{recursive:true});
   fs.copyFileSync(path.join(root,'favicon.ico'),path.join(dir,'public/favicon.ico'));
-  const publicConfig={email:config.email||'',socialUrls:config.socialUrls||[],name:config.name,tagline:config.tagline||config.name,storefrontOrigin:config.storefrontUrl,apiOrigin:config.apiUrl,whatsappUrl:config.whatsappUrl||'',seoTitle:config.seo?.title||config.name,seoDescription:config.seo?.description||'',trackingEnabled:config.tracking?.enabled===true,ga4Id:config.tracking?.ga4Id||'',googleAdsId:config.tracking?.googleAdsId||'',googleAdsPurchaseLabel:config.tracking?.googleAdsPurchaseLabel||'',metaPixelId:config.tracking?.metaPixelId||''};
-  publicConfig.social=config.social||{};publicConfig.setDiscountPercent=config.payments?.setDiscountPercent||0;
+  const publicConfig=storefrontPublicConfig(config);
   const bootstrap=JSON.stringify(publicConfig).replace(/</g,'\\u003c');
   const version=fs.readFileSync(path.join(root,'framework/VERSION'),'utf8').trim();
   let html=fs.readFileSync(path.join(root,'index.html'),'utf8').replace('<head>',`<head>\n<script>window.HF_STOREFRONT_CONFIG=${bootstrap};</script>`);
-  html=html.replace(/horizonfit\.com\.ar/g,new URL(config.storefrontUrl).hostname).replaceAll('Horizon Fit',config.name.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+  html=html.replace(/https?:\/\/(?:www\.)?horizonfit\.com\.ar/g,config.storefrontUrl).replace(/horizonfit\.com\.ar/g,new URL(config.storefrontUrl).hostname).replaceAll('Horizon Fit',config.name.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
   // Build-specific asset fingerprints prevent cross-release stale JavaScript.
   html=html.replace(/(src|href)="(\/design-system\/[^"?]+)(?:\?[^\"]*)?"/g,(_,attr,url)=>{const asset=path.join(dir,'public',url);const hash=fs.existsSync(asset)?createHash('sha256').update(fs.readFileSync(asset)).digest('hex').slice(0,12):version;return `${attr}="${url}?v=${hash}"`});
   fs.writeFileSync(path.join(dir,'public/index.html'),html);
@@ -54,6 +149,7 @@ if(action==='build'||action==='refresh'){
   for(const section of home.sections){if(section.id==='hero'){section.type='framework-hero';section.component='design-system/components/sections/framework-hero.html';delete section.config;}if(section.id==='featured-products')section.config={title:'Nuestros productos',limit:12};}
   fs.writeFileSync(path.join(dir,'public/design-system/pages/home.json'),JSON.stringify(home));
   for(const file of ['featured-products.json','pdp-sets.json'])fs.writeFileSync(path.join(dir,'public/design-system/data',file),'[]');
+  neutralizePublic(path.join(dir,'public'),config);
   fs.mkdirSync(path.join(dir,'plugins'),{recursive:true});
   for(const name of ['woocommerce','horizon-fit-commerce','payway-woocommerce']){const source=path.join(root,'backend/wordpress/wp-content/plugins',name);if(fs.existsSync(source))fs.cpSync(source,path.join(dir,'plugins',name),{recursive:true});}
   fs.mkdirSync(path.join(dir,'mu-plugins/config'),{recursive:true});
@@ -78,7 +174,9 @@ if(action==='build'||action==='refresh'){
   },volumes:{wordpress:{},database:{}}};
   fs.writeFileSync(path.join(dir,'compose.json'),JSON.stringify(compose,null,2));fs.writeFileSync(path.join(dir,'VERSION'),version);console.log(`Framework ${version} generado: ${dir}`);
 }
-function envPresent(name){const env=fs.existsSync(path.join(dir,'.env'))?fs.readFileSync(path.join(dir,'.env'),'utf8'):'';const match=env.match(new RegExp('^'+name+'=(.*)$','m'));return Boolean(match&&match[1].trim());}
+function envFile(){return fs.existsSync(path.join(dir,'.env'))?fs.readFileSync(path.join(dir,'.env'),'utf8'):'';}
+function envPresent(name){const match=envFile().match(new RegExp('^'+name+'=(.*)$','m'));return Boolean(match&&match[1].trim());}
+function envSecrets(){return [...envFile().matchAll(/^[A-Z0-9_]+=(.*)$/gm)].map(match=>match[1].trim()).filter(value=>value.length>=8);}
 function startStore(){
   docker(['up','-d','--wait','db','wordpress','storefront']);let installed=false;try{wp(['core','is-installed']);installed=true}catch{}
   if(!installed){const env=fs.readFileSync(path.join(dir,'.env'),'utf8'),password=env.match(/^ADMIN_PASSWORD=(.+)$/m)?.[1];wp(['core','install',`--url=${config.apiUrl}`,`--title=${config.name}`,'--admin_user=platform-admin',`--admin_password=${password}`,`--admin_email=${config.email||'owner@example.com'}`,'--skip-email']);}
@@ -98,8 +196,11 @@ function doctor(){
     metaPixel:{configured:Boolean(enabled&&tracking.metaPixelId),verified:false},
     metaCapi:{configured:Boolean(enabled&&tracking.metaPixelId&&envPresent('HF_META_CAPI_ACCESS_TOKEN')),verified:false},
   },secrets:{webhook:envPresent('HF_CACHE_WEBHOOK_SECRET'),metaCapi:envPresent('HF_META_CAPI_ACCESS_TOKEN'),dbPassword:envPresent('DB_PASSWORD')},note:'configured is not connected. verified stays false until a live credential check.'};
+  for(const connector of Object.values(report.tracking))connector.verified=false;
   const serialized=JSON.stringify(report);
-  if(/HF_CACHE_WEBHOOK_SECRET|ck_|cs_|EAAG|ya29/.test(serialized))throw new Error('Doctor refused to print a credential-shaped value');
+  if(/"verified":true/.test(serialized))throw new Error('Doctor refused to mark a connector as verified');
+  if(/HF_CACHE_WEBHOOK_SECRET|ADMIN_PASSWORD|DB_PASSWORD|ck_|cs_|EAAG|ya29/.test(serialized))throw new Error('Doctor refused to print a credential-shaped value');
+  if(envSecrets().some(secret=>serialized.includes(secret)))throw new Error('Doctor refused to print a secret value');
   fs.mkdirSync(path.join(root,'reports'),{recursive:true});
   fs.writeFileSync(path.join(root,`reports/framework-doctor-${config.slug}.json`),JSON.stringify(report,null,2));
   console.log(JSON.stringify(report,null,2));
@@ -107,7 +208,7 @@ function doctor(){
 if(action==='backup') {backup();
 } else if(action==='start') {startStore();console.log(`Storefront: ${config.storefrontUrl}\nWooCommerce: ${config.apiUrl}/wp-admin\nCredenciales locales: ${path.join(dir,'.env')}`);
 } else if(action==='reset') {assertLocal();if(!fs.existsSync(path.join(dir,'compose.json')))throw new Error('La instancia no existe');docker(['down','-v','--remove-orphans']);startStore();seedCatalog();console.log(`Instancia local reiniciada: ${config.storefrontUrl}`);
-} else if(action==='seed') {seedCatalog();
+} else if(action==='seed') {assertLocal();seedCatalog();
 } else if(action==='doctor') {doctor();
 } else if(action==='rebuild') console.log(wp(['horizon','cache','rebuild']));
 else if(action==='status')console.log(docker(['ps']));
