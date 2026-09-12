@@ -76,3 +76,14 @@ hf_framework_idempotency_fail($store,$fail_key);
 $retry=hf_framework_idempotency_claim($store,$fail_key,131);
 check(!empty($retry['claimed']),'failed checkout can be retried');
 echo "OK checkout idempotency and cart session identity\n";
+
+$example=json_decode(file_get_contents(__DIR__.'/../framework/store.example.json'),true);
+check(is_array($example)&&($example['name']??'')==='Casa Sur','Casa Sur example name');
+check(($example['whatsappUrl']??'missing')==='','Casa Sur WhatsApp is empty');
+check(isset($example['payments'],$example['shipping'],$example['social'],$example['infoPages']),'store contract includes payments, shipping, social and infoPages');
+check(($example['tracking']['enabled']??true)===false&&($example['tracking']['ga4Id']??'x')==='','Casa Sur tracking is empty');
+check(($example['payments']['installments']??['x'])===[],'Casa Sur does not inherit cuotas');
+check(($example['social']['instagram']??'x')===''&&($example['social']['handle']??'x')==='','Casa Sur does not inherit redes');
+$encoded=json_encode($example);
+check(!str_contains($encoded,'horizonfit')&&!str_contains($encoded,'Horizon Fit')&&!str_contains($encoded,'541131150999')&&!str_contains($encoded,'G-8TL56B3B8X'),'Casa Sur example has no Horizon Fit identity');
+echo "OK Casa Sur store contract is isolated\n";
