@@ -22,13 +22,18 @@ function hf_footer_defaults() {
         $chips = array();
         $shipping = is_array($config['shipping'] ?? null) ? $config['shipping'] : array();
         $payments = is_array($config['payments'] ?? null) ? $config['payments'] : array();
-        foreach (array($shipping['label'] ?? $shipping['name'] ?? '', $payments['label'] ?? $payments['installmentsLabel'] ?? '') as $chip) {
+        foreach (array(
+            function_exists('hf_framework_shipping_label') ? hf_framework_shipping_label() : ($shipping['label'] ?? $shipping['name'] ?? $shipping['headline'] ?? ''),
+            function_exists('hf_framework_payments_label') ? hf_framework_payments_label() : ($payments['label'] ?? $payments['installmentsLabel'] ?? $payments['headline'] ?? ''),
+        ) as $chip) {
             $chip = trim((string) $chip);
             if ($chip !== '') {
                 $chips[] = $chip;
             }
         }
-        $pages = is_array($config['infoPages'] ?? null) ? $config['infoPages'] : array();
+        $pages = function_exists('hf_info_pages_defaults')
+            ? hf_info_pages_defaults()
+            : (function_exists('hf_framework_info_pages') ? hf_framework_info_pages() : array());
         $help_slugs = array(
             'envios-y-entregas' => 'Envíos y entregas',
             'cambios-y-devoluciones' => 'Cambios y devoluciones',

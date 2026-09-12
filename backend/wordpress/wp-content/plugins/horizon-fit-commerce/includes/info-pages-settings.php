@@ -31,18 +31,30 @@ function hf_info_pages_defaults() {
         foreach ($titles as $slug => $title) {
             $pages[$slug] = array('title' => $title, 'description' => '', 'content' => '');
         }
-        foreach (($config['infoPages'] ?? array()) as $slug => $page) {
-            if (!is_string($slug) || !is_array($page)) {
-                continue;
-            }
-            $slug = function_exists('sanitize_title') ? sanitize_title($slug) : strtolower(trim($slug));
-            if ($slug === '') {
-                continue;
-            }
+        $from_config = function_exists('hf_framework_info_pages') ? hf_framework_info_pages() : array();
+        foreach ($from_config as $slug => $page) {
             $pages[$slug] = array_merge(
                 $pages[$slug] ?? array('title' => '', 'description' => '', 'content' => ''),
-                array_intersect_key($page, array_flip(array('title', 'description', 'content', 'faq')))
+                $page
             );
+        }
+        $shipping_copy = trim((string) ($config['shipping']['copy'] ?? ''));
+        $shipping_label = function_exists('hf_framework_shipping_label') ? hf_framework_shipping_label() : trim((string) ($config['shipping']['headline'] ?? ''));
+        if (trim((string) $pages['envios-y-entregas']['content']) === '' && ($shipping_copy !== '' || $shipping_label !== '')) {
+            $pages['envios-y-entregas']['content'] = ($shipping_label !== '' ? '<h2>' . esc_html($shipping_label) . '</h2>' : '')
+                . ($shipping_copy !== '' ? '<p>' . esc_html($shipping_copy) . '</p>' : '');
+            if ($pages['envios-y-entregas']['description'] === '') {
+                $pages['envios-y-entregas']['description'] = $shipping_copy !== '' ? $shipping_copy : $shipping_label;
+            }
+        }
+        $payments_copy = trim((string) ($config['payments']['copy'] ?? ''));
+        $payments_label = function_exists('hf_framework_payments_label') ? hf_framework_payments_label() : trim((string) ($config['payments']['headline'] ?? ''));
+        if (trim((string) $pages['medios-de-pago']['content']) === '' && ($payments_copy !== '' || $payments_label !== '')) {
+            $pages['medios-de-pago']['content'] = ($payments_label !== '' ? '<h2>' . esc_html($payments_label) . '</h2>' : '')
+                . ($payments_copy !== '' ? '<p>' . esc_html($payments_copy) . '</p>' : '');
+            if ($pages['medios-de-pago']['description'] === '') {
+                $pages['medios-de-pago']['description'] = $payments_copy !== '' ? $payments_copy : $payments_label;
+            }
         }
         if (trim((string) $pages['contacto']['content']) === '') {
             $email = function_exists('hf_framework_email') ? hf_framework_email() : trim((string) ($config['email'] ?? ''));

@@ -246,7 +246,9 @@ function hf_storefront_return_policy_schema() {
 function hf_storefront_shipping_service_schema() {
     if (hf_storefront_configured()) {
         $shipping = hf_framework_config()['shipping'] ?? array();
-        $name = trim((string) ($shipping['name'] ?? $shipping['label'] ?? ''));
+        $name = function_exists('hf_framework_shipping_label')
+            ? hf_framework_shipping_label()
+            : trim((string) ($shipping['name'] ?? $shipping['label'] ?? $shipping['headline'] ?? ''));
         if ($name === '') {
             return null;
         }

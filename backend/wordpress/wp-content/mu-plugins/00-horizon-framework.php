@@ -53,12 +53,64 @@ function hf_framework_social_urls() {
     if (!$config) {
         return array_values(hf_framework_social_map());
     }
+    $urls = array();
     if (!empty($config['socialUrls']) && is_array($config['socialUrls'])) {
-        return array_values(array_filter(array_map('strval', $config['socialUrls'])));
+        $urls = $config['socialUrls'];
+    } else {
+        foreach (hf_framework_social_map() as $key => $url) {
+            if ($key === 'handle') {
+                continue;
+            }
+            $urls[] = $url;
+        }
     }
-    return array_values(array_filter(array_map('strval', hf_framework_social_map()), static function ($url) {
-        return $url !== '' && $url !== '#';
+    return array_values(array_filter(array_map('strval', $urls), static function ($url) {
+        return $url !== '' && $url !== '#' && preg_match('#^https?://#i', $url);
     }));
+}
+function hf_framework_info_pages() {
+    $config = hf_framework_config();
+    if (!$config) return array();
+    $pages = array();
+    foreach (($config['infoPages'] ?? array()) as $slug => $page) {
+        if (!is_string($slug) || !is_array($page)) continue;
+        $slug = trim($slug, '/');
+        $slug = function_exists('sanitize_title') ? sanitize_title($slug) : strtolower($slug);
+        if ($slug === '') continue;
+        $pages[$slug] = array(
+            'title' => (string) ($page['title'] ?? ''),
+            'description' => (string) ($page['description'] ?? ''),
+            'content' => (string) ($page['content'] ?? $page['body'] ?? ''),
+            'faq' => is_array($page['faq'] ?? null) ? $page['faq'] : array(),
+        );
+    }
+    return $pages;
+}
+function hf_framework_installments_count() {
+    $config = hf_framework_config();
+    if (!$config) return 6;
+    $raw = $config['payments']['installments'] ?? 0;
+    if (is_array($raw)) {
+        $count = 0;
+        foreach ($raw as $item) {
+            if (is_numeric($item)) $count = max($count, (int) $item);
+            elseif (is_array($item)) $count = max($count, (int) ($item['count'] ?? $item['cuotas'] ?? 0));
+        }
+        return $count;
+    }
+    return max(0, (int) $raw);
+}
+function hf_framework_shipping_label() {
+    $config = hf_framework_config();
+    if (!$config) return 'Envíos a todo el país';
+    $shipping = is_array($config['shipping'] ?? null) ? $config['shipping'] : array();
+    return trim((string) ($shipping['label'] ?? $shipping['name'] ?? $shipping['headline'] ?? ''));
+}
+function hf_framework_payments_label() {
+    $config = hf_framework_config();
+    if (!$config) return '3 y 6 cuotas sin interés';
+    $payments = is_array($config['payments'] ?? null) ? $config['payments'] : array();
+    return trim((string) ($payments['label'] ?? $payments['installmentsLabel'] ?? $payments['headline'] ?? ''));
 }
 function hf_framework_atomic_write($file,$content) {
     $temporary=$file.'.tmp-'.bin2hex(random_bytes(8));

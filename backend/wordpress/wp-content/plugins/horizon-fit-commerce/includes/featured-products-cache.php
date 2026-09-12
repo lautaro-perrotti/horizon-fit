@@ -178,7 +178,13 @@ function hf_featured_products_format_payment_amount($amount) {
 }
 
 function hf_featured_products_default_installments_count() {
-  if (function_exists('hf_framework_config') && hf_framework_config()) return (int)(hf_framework_config()['payments']['installments'] ?? 0);
+  if (function_exists('hf_framework_installments_count') && function_exists('hf_framework_config') && hf_framework_config()) {
+    return hf_framework_installments_count();
+  }
+  if (function_exists('hf_framework_config') && hf_framework_config()) {
+    $raw = hf_framework_config()['payments']['installments'] ?? 0;
+    return is_array($raw) ? 0 : (int) $raw;
+  }
   return 6;
 }
 
