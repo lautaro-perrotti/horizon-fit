@@ -9,6 +9,8 @@
  * Events: PageView, ViewContent, AddToCart, InitiateCheckout, AddPaymentInfo,
  * Search, Contact, CompleteRegistration, Subscribe and Purchase.
  * The script is a no-op until a numeric Pixel ID is configured.
+ * With STORE_CONFIG, only that store's metaPixelId is used and only when
+ * trackingEnabled and storefrontOrigin matches the current host.
  */
 (function (window, document) {
   'use strict';
@@ -20,13 +22,26 @@
   var SIZE_TOKENS = {
     XS: 1, S: 1, M: 1, L: 1, XL: 1, XXL: 1, XXXL: 1, U: 1, UNI: 1, UNICO: 1
   };
-  var pixelId = normalizePixelId((storeConfig && storeConfig.metaPixelId) || window.HF_META_PIXEL_ID || metaPixelId());
+  var pixelId = normalizePixelId(storeConfig ? (storeConfig.metaPixelId || '') : (window.HF_META_PIXEL_ID || metaPixelId()));
   var initialized = false;
   var loading = null;
 
+  function storefrontHostMatches() {
+    if (!storeConfig) {
+      return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    }
+    if (!storeConfig.trackingEnabled) return false;
+    var origin = storeConfig.storefrontOrigin || '';
+    if (!origin) return false;
+    try {
+      return new URL(origin).hostname === (window.location.hostname || '');
+    } catch (error) {
+      return false;
+    }
+  }
+
   function isProductionHost() {
-    if (storeConfig) return Boolean(storeConfig.trackingEnabled && storeConfig.storefrontOrigin && new URL(storeConfig.storefrontOrigin).hostname === window.location.hostname);
-    return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    return storefrontHostMatches();
   }
 
   function debugEnabled() {
@@ -56,6 +71,7 @@
 
   function fetchPixelId() {
     if (pixelId) return Promise.resolve(pixelId);
+    if (storeConfig) return Promise.resolve('');
     if (loading) return loading;
     loading = fetch(SETTINGS_SRC, { credentials: 'omit', cache: 'no-store' })
       .then(function (response) {
@@ -349,13 +365,13 @@
     },
     completeRegistration: function (reference) {
       return sendOnce('registration:' + String(reference || 'checkout'), 'CompleteRegistration', {
-        content_name: 'Cuenta Horizon Fit',
+        content_name: storeConfig && storeConfig.name ? ('Cuenta ' + storeConfig.name) : 'Cuenta Horizon Fit',
         status: true
       });
     },
     subscribe: function (source) {
       return sendEvent('Subscribe', {
-        content_name: 'Newsletter Horizon Fit',
+        content_name: storeConfig && storeConfig.name ? ('Newsletter ' + storeConfig.name) : 'Newsletter Horizon Fit',
         content_category: String(source || 'footer'),
         status: true
       });

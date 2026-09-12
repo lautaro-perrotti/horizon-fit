@@ -16,7 +16,9 @@
  *   item_variant = size token (S/M/L/…) or the full variation SKU.
  *
  * Events include the GA4 ecommerce funnel plus search, login, sign_up and leads.
- * Hits are sent only on horizonfit.com.ar. Local / IP hosts expose the same API as a no-op.
+ * Without STORE_CONFIG, hits are sent only on horizonfit.com.ar.
+ * With STORE_CONFIG, hits fire only when trackingEnabled, that store's IDs, and
+ * storefrontOrigin matches the current host. Local / IP hosts expose the same API as a no-op.
  */
 (function (window, document) {
   'use strict';
@@ -36,9 +38,23 @@
     measurementId: MEASUREMENT_ID
   };
 
+  function storefrontHostMatches() {
+    if (!storeConfig) {
+      return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    }
+    if (!storeConfig.trackingEnabled) return false;
+    if (!(MEASUREMENT_ID || storeConfig.googleAdsId)) return false;
+    var origin = storeConfig.storefrontOrigin || '';
+    if (!origin) return false;
+    try {
+      return new URL(origin).hostname === (window.location.hostname || '');
+    } catch (error) {
+      return false;
+    }
+  }
+
   function isProductionHost() {
-    if (storeConfig) return Boolean((MEASUREMENT_ID || storeConfig.googleAdsId) && storeConfig.trackingEnabled && storeConfig.storefrontOrigin && new URL(storeConfig.storefrontOrigin).hostname === window.location.hostname);
-    return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    return storefrontHostMatches();
   }
 
   function debugEnabled() {
