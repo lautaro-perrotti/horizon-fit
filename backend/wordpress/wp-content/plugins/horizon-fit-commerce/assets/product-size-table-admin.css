@@ -1,0 +1,52 @@
+.hf-size-table-editor {
+  padding: 18px 20px !important;
+}
+
+.hf-size-table-editor__scroll {
+  overflow-x: auto;
+  margin-top: 14px;
+}
+
+.hf-size-table-editor__table {
+  min-width: 640px;
+}
+
+.hf-size-table-editor__table th,
+.hf-size-table-editor__table td {
+  position: relative;
+  min-width: 130px;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.hf-size-table-editor__table input {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.hf-size-table-editor__table th input {
+  padding-right: 28px;
+  font-weight: 600;
+}
+
+.hf-size-table-editor__table th [data-hf-remove-column] {
+  position: absolute;
+  top: 15px;
+  right: 16px;
+  font-size: 20px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.hf-size-table-editor__table .hf-size-table-editor__actions {
+  width: 90px;
+  min-width: 90px;
+  text-align: center;
+}
+
+.hf-size-table-editor__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 8px;
+}
