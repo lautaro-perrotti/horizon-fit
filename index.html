@@ -3256,8 +3256,9 @@
 
       [data-product-description] p,
       [data-product-care-text] p {
-        font-family: 'LeagueSpartan', var(--font-sans);
-        font-size: 18px;
+        font-family: var(--hf-pdp-description-font, 'LeagueSpartan', var(--font-sans));
+        font-size: var(--hf-pdp-description-size, 18px);
+        font-weight: var(--hf-pdp-description-weight, 400);
         white-space: pre-line !important;
       }
 

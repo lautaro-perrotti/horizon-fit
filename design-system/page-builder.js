@@ -5607,6 +5607,44 @@ ${renderFeaturedSetPriceHtml(pricing)}
     });
   };
 
+  const applyProductDescriptionTypography = (sectionEl, designSettings) => {
+    const responsive = designSettings?.components?.['product-detail'];
+    if (!sectionEl || !responsive || typeof responsive !== 'object') return;
+
+    const fontStacks = {
+      LeagueSpartan: "'LeagueSpartan', var(--font-sans)",
+      BlauerNue: "'BlauerNue', var(--font-sans)",
+      ArchivoMenu: "'ArchivoMenu', var(--font-sans)",
+      Arial: "Arial, var(--font-sans)",
+      'system-ui': "var(--font-sans)"
+    };
+    const declarations = (values) => {
+      if (!values || typeof values !== 'object') return '';
+      const rules = [];
+      const font = fontStacks[`${values.fontFamily || ''}`];
+      const size = Number(values.textFontSize);
+      const weight = `${values.textFontWeight || ''}`;
+      if (font) rules.push(`--hf-pdp-description-font:${font}`);
+      if (Number.isFinite(size) && size >= 8 && size <= 40) rules.push(`--hf-pdp-description-size:${size}px`);
+      if (/^(300|400|500|600|700|800|900)$/.test(weight)) rules.push(`--hf-pdp-description-weight:${weight}`);
+      return rules.join(';');
+    };
+
+    const desktop = declarations(responsive.desktop);
+    const tablet = declarations(responsive.tablet);
+    const mobile = declarations(responsive.mobile);
+    const rules = [];
+    if (desktop) rules.push(`[data-product-detail]{${desktop}}`);
+    if (tablet) rules.push(`@media (min-width:768px) and (max-width:1024px){[data-product-detail]{${tablet}}}`);
+    if (mobile) rules.push(`@media (max-width:767px){[data-product-detail]{${mobile}}}`);
+    if (!rules.length) return;
+
+    const style = document.createElement('style');
+    style.setAttribute('data-product-typography', '');
+    style.textContent = rules.join('');
+    sectionEl.prepend(style);
+  };
+
   const renderProductPage = async (root, products, html, wpSettings = null) => {
     if (!products || !html) {
       [products, html] = await Promise.all([
@@ -5643,6 +5681,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
 
     document.body.classList.add('hf-product-mode');
     sectionEl.hidden = false;
+    applyProductDescriptionTypography(sectionEl, wpSettings?.get?.('design-system'));
     setupPdpTrustItems(sectionEl, wpSettings?.get?.('trust-bar'));
 
     const $ = (sel, base = sectionEl) => base.querySelector(sel);
@@ -5679,12 +5718,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
     });
 
     const sizeTable = normalizeSizeTable(product);
-    const sizeTitle = $('[data-product-size-title]');
-    const sizeTableHead = $('[data-product-size-table-head]');
-    const sizeTableBody = $('[data-product-size-table-body]');
-    if (sizeTitle) sizeTitle.textContent = sizeTable.title;
-    if (sizeTableHead) sizeTableHead.innerHTML = renderSizeTableHeader(sizeTable.headers);
-    if (sizeTableBody) sizeTableBody.innerHTML = renderSizeTableRows(sizeTable.rows);
+    $$('[data-product-size-title]').forEach(el => { el.textContent = sizeTable.title; });
+    $$('[data-product-size-table-head]').forEach(el => { el.innerHTML = renderSizeTableHeader(sizeTable.headers); });
+    $$('[data-product-size-table-body]').forEach(el => { el.innerHTML = renderSizeTableRows(sizeTable.rows); });
 
     const category = getVisibleCategories(product.categories).map(item => item.name).filter(Boolean).join(' / ') || '';
     setText('[data-product-kicker]', category || 'Seamless collection');

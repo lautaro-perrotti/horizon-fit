@@ -36,6 +36,7 @@ function hf_panel_render() {
         'menu'     => __('Menú de navegación', 'horizon-fit-commerce'),
         'catalogo' => __('Categorías y conjuntos', 'horizon-fit-commerce'),
         'paginas'  => __('Páginas del footer', 'horizon-fit-commerce'),
+        'apariencia' => __('Apariencia', 'horizon-fit-commerce'),
         'seo'      => __('SEO', 'horizon-fit-commerce'),
         'precios'  => __('Productos y precios', 'horizon-fit-commerce'),
     ];
@@ -66,6 +67,9 @@ function hf_panel_render() {
                     break;
                 case 'paginas':
                     hf_panel_tab_paginas();
+                    break;
+                case 'apariencia':
+                    hf_panel_tab_apariencia();
                     break;
                 case 'seo':
                     hf_panel_tab_seo();
@@ -476,6 +480,129 @@ function hf_panel_tab_paginas() {
             </form>
         </div>
     </div>
+    <?php
+}
+
+// ---- Pestaña: Apariencia ----
+function hf_panel_tab_apariencia() {
+    if (!current_user_can('manage_woocommerce') || !function_exists('hf_design_settings_get')) {
+        return;
+    }
+
+    $fonts = [
+        ''              => __('Diseño actual (League Spartan)', 'horizon-fit-commerce'),
+        'LeagueSpartan' => __('League Spartan', 'horizon-fit-commerce'),
+        'BlauerNue'     => __('Blauer Nue', 'horizon-fit-commerce'),
+        'ArchivoMenu'   => __('Archivo', 'horizon-fit-commerce'),
+        'Arial'         => __('Arial', 'horizon-fit-commerce'),
+        'system-ui'     => __('Fuente del sistema', 'horizon-fit-commerce'),
+    ];
+    $breakpoints = [
+        'desktop' => __('Desktop · 1025 px o más', 'horizon-fit-commerce'),
+        'tablet'  => __('Tablet · 768–1024 px', 'horizon-fit-commerce'),
+        'mobile'  => __('Mobile · hasta 767 px', 'horizon-fit-commerce'),
+    ];
+    $weights = ['' => __('Diseño actual', 'horizon-fit-commerce')];
+    foreach (['300', '400', '500', '600', '700', '800', '900'] as $weight) {
+        $weights[$weight] = $weight;
+    }
+
+    $saved = false;
+    $settings = hf_design_settings_get();
+    if (!empty($_POST['hf_product_typography_submit'])) {
+        check_admin_referer('hf_product_typography_action');
+        $submitted = isset($_POST['hf_product_typography']) && is_array($_POST['hf_product_typography'])
+            ? wp_unslash($_POST['hf_product_typography'])
+            : [];
+
+        foreach ($breakpoints as $breakpoint => $label) {
+            $current = $settings['components']['product-detail'][$breakpoint] ?? [];
+            $font = sanitize_text_field((string) ($submitted[$breakpoint]['fontFamily'] ?? ''));
+            $size = absint($submitted[$breakpoint]['textFontSize'] ?? 0);
+            $weight = sanitize_text_field((string) ($submitted[$breakpoint]['textFontWeight'] ?? ''));
+
+            if (!array_key_exists($font, $fonts)) {
+                $font = '';
+            }
+            if ($size < 8 || $size > 40) {
+                $size = 0;
+            }
+            if (!array_key_exists($weight, $weights)) {
+                $weight = '';
+            }
+
+            foreach (['fontFamily', 'textFontSize', 'textFontWeight'] as $field) {
+                unset($current[$field]);
+            }
+            if ($font !== '') {
+                $current['fontFamily'] = $font;
+            }
+            if ($size) {
+                $current['textFontSize'] = (string) $size;
+            }
+            if ($weight !== '') {
+                $current['textFontWeight'] = $weight;
+            }
+
+            if ($current) {
+                $settings['components']['product-detail'][$breakpoint] = $current;
+            } else {
+                unset($settings['components']['product-detail'][$breakpoint]);
+            }
+        }
+
+        $section_id = hf_design_settings_ensure_section();
+        if ($section_id) {
+            update_post_meta($section_id, '_hf_section_settings', wp_json_encode($settings, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            if (function_exists('hf_regenerate_sections_cache')) {
+                hf_regenerate_sections_cache();
+            }
+            $saved = true;
+        }
+    }
+
+    $product_settings = $settings['components']['product-detail'] ?? [];
+    ?>
+    <h1><?php esc_html_e('Tipografía de productos', 'horizon-fit-commerce'); ?></h1>
+    <p class="description"><?php esc_html_e('Cambiá la fuente, el tamaño y el peso del texto de la descripción de todos los productos. No hace falta editar el HTML de cada descripción.', 'horizon-fit-commerce'); ?></p>
+
+    <?php if ($saved) : ?>
+        <div class="notice notice-success inline"><p><?php esc_html_e('Tipografía guardada y caché regenerada.', 'horizon-fit-commerce'); ?></p></div>
+    <?php endif; ?>
+
+    <form method="post" style="max-width:1100px;">
+        <?php wp_nonce_field('hf_product_typography_action'); ?>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:20px;">
+            <?php foreach ($breakpoints as $breakpoint => $label) :
+                $values = $product_settings[$breakpoint] ?? [];
+                ?>
+                <fieldset style="background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:16px;">
+                    <legend style="font-weight:600; padding:0 6px;"><?php echo esc_html($label); ?></legend>
+                    <p>
+                        <label style="display:block; font-weight:600; margin-bottom:5px;"><?php esc_html_e('Fuente de la descripción', 'horizon-fit-commerce'); ?></label>
+                        <select name="hf_product_typography[<?php echo esc_attr($breakpoint); ?>][fontFamily]" style="width:100%;">
+                            <?php foreach ($fonts as $value => $font_label) : ?>
+                                <option value="<?php echo esc_attr($value); ?>" <?php selected($values['fontFamily'] ?? '', $value); ?>><?php echo esc_html($font_label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
+                    <p>
+                        <label style="display:block; font-weight:600; margin-bottom:5px;"><?php esc_html_e('Tamaño del texto', 'horizon-fit-commerce'); ?></label>
+                        <input type="number" min="8" max="40" step="1" name="hf_product_typography[<?php echo esc_attr($breakpoint); ?>][textFontSize]" value="<?php echo esc_attr($values['textFontSize'] ?? ''); ?>" placeholder="18" style="width:100%;">
+                    </p>
+                    <p>
+                        <label style="display:block; font-weight:600; margin-bottom:5px;"><?php esc_html_e('Peso del texto', 'horizon-fit-commerce'); ?></label>
+                        <select name="hf_product_typography[<?php echo esc_attr($breakpoint); ?>][textFontWeight]" style="width:100%;">
+                            <?php foreach ($weights as $value => $weight_label) : ?>
+                                <option value="<?php echo esc_attr($value); ?>" <?php selected($values['textFontWeight'] ?? '', $value); ?>><?php echo esc_html($weight_label); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
+                </fieldset>
+            <?php endforeach; ?>
+        </div>
+        <p class="submit"><button type="submit" name="hf_product_typography_submit" value="1" class="button button-primary"><?php esc_html_e('Guardar tipografía', 'horizon-fit-commerce'); ?></button></p>
+    </form>
     <?php
 }
 
