@@ -213,6 +213,43 @@ export const aiTraces = sqliteTable("ai_traces", {
   at: integer("at").notNull(),
 });
 
+export const customerRfm = sqliteTable(
+  "customer_rfm",
+  {
+    storeId: text("store_id").notNull(),
+    customerKey: text("customer_key").notNull(),
+    firstPurchase: text("first_purchase"),
+    lastPurchase: text("last_purchase"),
+    orders: integer("orders").notNull(),
+    revenue: real("revenue"),
+    aov: real("aov"),
+    frequency: integer("frequency").notNull(),
+    recencyDays: integer("recency_days"),
+    r: integer("r"),
+    f: integer("f"),
+    m: integer("m"),
+    segment: text("segment").notNull(),
+    categoriesJson: text("categories_json"),
+    repeat: integer("repeat").notNull(),
+    discountUsed: integer("discount_used").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.customerKey] })],
+);
+
+export const campaigns = sqliteTable("campaigns", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  channel: text("channel").notNull(),
+  objective: text("objective").notNull(),
+  status: text("status").notNull(),
+  name: text("name").notNull(),
+  orders: integer("orders").notNull(),
+  revenue: real("revenue"),
+  reason: text("reason"),
+  updatedAt: integer("updated_at").notNull(),
+});
+
 export const contentDrafts = sqliteTable("content_drafts", {
   id: text("id").primaryKey(),
   kind: text("kind").notNull(),
@@ -272,5 +309,7 @@ export const schema = {
   aiMessages,
   aiTraces,
   contentDrafts,
+  customerRfm,
+  campaigns,
   syncState,
 };

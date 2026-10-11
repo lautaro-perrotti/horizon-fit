@@ -236,6 +236,42 @@ CREATE TABLE IF NOT EXISTS ai_traces (
   at INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS customer_rfm (
+  store_id TEXT NOT NULL,
+  customer_key TEXT NOT NULL,
+  first_purchase TEXT,
+  last_purchase TEXT,
+  orders INTEGER NOT NULL,
+  revenue REAL,
+  aov REAL,
+  frequency INTEGER NOT NULL,
+  recency_days INTEGER,
+  r INTEGER,
+  f INTEGER,
+  m INTEGER,
+  segment TEXT NOT NULL,
+  categories_json TEXT,
+  repeat INTEGER NOT NULL,
+  discount_used INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  PRIMARY KEY (store_id, customer_key)
+);
+CREATE INDEX IF NOT EXISTS customer_rfm_segment_idx ON customer_rfm(segment, updated_at);
+
+CREATE TABLE IF NOT EXISTS campaigns (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  channel TEXT NOT NULL,
+  objective TEXT NOT NULL,
+  status TEXT NOT NULL,
+  name TEXT NOT NULL,
+  orders INTEGER NOT NULL,
+  revenue REAL,
+  reason TEXT,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS campaigns_store_idx ON campaigns(store_id, channel);
+
 CREATE TABLE IF NOT EXISTS content_drafts (
   id TEXT PRIMARY KEY,
   kind TEXT NOT NULL,

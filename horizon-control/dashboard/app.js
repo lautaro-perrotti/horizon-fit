@@ -875,6 +875,109 @@ async function loadContent() {
   }
 }
 
+let customerSegment = "";
+let selectedCustomer = null;
+
+function renderCustomers(data) {
+  if (!$("customersOut")) return;
+  if (!data.configured) {
+    $("customersOut").innerHTML = emptySource(
+      data.reason || "missing_woo_rest_credentials",
+      "Woo REST no conectado. No se inventan clientes ni RFM.",
+    );
+    if ($("customerDetail")) $("customerDetail").innerHTML = "";
+    return;
+  }
+  const rows = data.customers ?? [];
+  const segments = data.segments ?? {};
+  const counts = Object.entries(segments)
+    .map(([name, count]) => `${name} ${count}`)
+    .join(" · ");
+  $("customersOut").innerHTML = rows.length
+    ? `${counts ? `<p class="src" style="padding:0 20px 8px">${esc(counts)}</p>` : ""}${rows
+        .map(
+          (row) =>
+            `<button type="button" class="opp-row${selectedCustomer?.customer_key === row.customer_key ? " active" : ""}" data-id="${esc(row.customer_key)}">
+              <span class="pip ${row.segment === "champions" || row.segment === "loyal" ? "ok" : ""}"></span>
+              <span><strong>${esc(row.customer_key)}</strong><span class="src">${esc(row.segment)} · ${esc(row.orders)} pedidos · ${money(row.revenue)}</span></span>
+            </button>`,
+        )
+        .join("")}`
+    : `<div class="notice">Sin clientes hasheados en el recorte de órdenes pagas.${counts ? ` ${esc(counts)}` : ""}</div>`;
+  $("customersOut").querySelectorAll("[data-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = rows.find((item) => item.customer_key === btn.dataset.id);
+      if (row) renderCustomerDetail(row);
+    });
+  });
+}
+
+function renderCustomerDetail(row) {
+  selectedCustomer = row;
+  $("customerDetail").innerHTML = `
+    <div style="padding:16px 20px 20px">
+      <p class="src">${esc(row.customer_key)} · ${esc(row.segment)}</p>
+      <div class="metrics">
+        <div><div class="n">${esc(row.orders)}</div><div class="l">pedidos</div></div>
+        <div><div class="n">${money(row.revenue)}</div><div class="l">monetary</div></div>
+        <div><div class="n">${esc(row.recency_days ?? "—")}</div><div class="l">recency días</div></div>
+        <div><div class="n">${esc([row.r, row.f, row.m].map((n) => n ?? "—").join("-"))}</div><div class="l">R-F-M</div></div>
+      </div>
+      <p class="src">${row.repeat ? "repeat" : "single"} · ${row.discount_used ? "usó cupón" : "sin cupón"} · ${esc((row.categories ?? []).join(", ") || "sin SKUs")}</p>
+    </div>`;
+}
+
+async function loadCustomers() {
+  if (!$("customersOut")) return;
+  const q = customerSegment ? `?segment=${encodeURIComponent(customerSegment)}` : "";
+  const data = await api(`/v1/customers${q}`);
+  renderCustomers(data);
+  if (selectedCustomer) {
+    const fresh = (data.customers ?? []).find((row) => row.customer_key === selectedCustomer.customer_key);
+    if (fresh) renderCustomerDetail(fresh);
+  }
+}
+
+function renderCampaigns(data) {
+  if (!$("campaignsOut")) return;
+  if (!data.configured) {
+    $("campaignsOut").innerHTML = emptySource(
+      data.reason || "missing_woo_rest_credentials",
+      "Sin Woo REST no hay promos internas observadas. Ads siguen not_configured.",
+    );
+  } else {
+    const rows = data.campaigns ?? [];
+    $("campaignsOut").innerHTML = rows.length
+      ? rows
+          .map(
+            (row) =>
+              `<div class="item">${pip(row.status === "observed" ? "ok" : "warn")}<span><strong>${esc(row.name)}</strong><span class="src">${esc(row.channel)} · ${esc(row.status)}${row.reason ? ` · ${esc(row.reason)}` : ""} · ${esc(row.orders)} órdenes · ${money(row.revenue)}</span></span></div>`,
+          )
+          .join("")
+      : `<div class="notice">Sin cupones observados en órdenes pagas.</div>`;
+  }
+}
+
+function renderAds(data) {
+  if (!$("adsOut")) return;
+  const google = data.google ?? data;
+  const meta = data.meta ?? {};
+  $("adsOut").innerHTML = [google, meta]
+    .filter((row) => row && row.source)
+    .map(
+      (row) =>
+        `<div class="item">${pip("warn")}<span><strong>${esc(row.source)}</strong><span class="src">${esc(row.reason || "ads_adapter_not_configured")} · configured:${row.configured ? "true" : "false"}</span></span></div>`,
+    )
+    .join("") || emptySource("ads_adapter_not_configured", "Google Ads y Meta Ads no están conectados. No se inventa spend.");
+}
+
+async function loadCampaigns() {
+  if (!$("campaignsOut")) return;
+  const [campaigns, ads] = await Promise.all([api("/v1/campaigns"), api("/v1/ads")]);
+  renderCampaigns(campaigns);
+  renderAds(ads);
+}
+
 function renderCompetitors(data) {
   if (!$("competitorsOut")) return;
   if (!data.configured) {
@@ -1273,6 +1376,16 @@ function showTab(name, cfg) {
       if ($("contentOut")) $("contentOut").innerHTML = notice(esc(error.message));
     });
   }
+  if (name === "clientes") {
+    void loadCustomers().catch((error) => {
+      if ($("customersOut")) $("customersOut").innerHTML = notice(esc(error.message));
+    });
+  }
+  if (name === "campanas") {
+    void loadCampaigns().catch((error) => {
+      if ($("campaignsOut")) $("campaignsOut").innerHTML = notice(esc(error.message));
+    });
+  }
   if (name === "seo") {
     void loadSeo().catch((error) => {
       $("seoPages").innerHTML = notice(esc(error.message));
@@ -1339,6 +1452,15 @@ async function boot() {
   $("chartCompare")?.addEventListener("change", (event) => {
     chartCompare = Boolean(event.target.checked);
     void loadOverview().catch(() => undefined);
+  });
+  $("customerFilters")?.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-segment]");
+    if (!btn) return;
+    customerSegment = btn.dataset.segment || "";
+    $("customerFilters").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
+    void loadCustomers().catch((error) => {
+      if ($("customersOut")) $("customersOut").innerHTML = notice(esc(error.message));
+    });
   });
   $("growthFilters")?.addEventListener("click", (event) => {
     const btn = event.target.closest("[data-status]");

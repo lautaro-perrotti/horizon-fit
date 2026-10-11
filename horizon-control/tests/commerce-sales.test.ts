@@ -89,6 +89,11 @@ describe("commerce.sales SKU rollups", () => {
     expect(calza?.d30.aov).toBe(100000);
 
     expect(sales.recent_orders[0].items).toHaveLength(2);
+    expect(sales.recent_orders[0].customer_key).toBeNull();
+    expect(sales.recent_orders[0].coupon).toBeNull();
+    const paid = await commerce.paidOrders();
+    expect(paid.configured).toBe(true);
+    expect(paid.orders).toHaveLength(1);
     expect(calls[0]).toMatch(/status=processing%2Ccompleted%2Con-hold/);
     expect(calls[0]).toMatch(/after=/);
 

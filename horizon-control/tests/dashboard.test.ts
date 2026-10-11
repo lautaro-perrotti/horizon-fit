@@ -21,6 +21,11 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(html).toMatch(/Competencia/);
     expect(html).toMatch(/Oportunidades/);
     expect(html).toMatch(/Contenido/);
+    expect(html).toMatch(/Clientes/);
+    expect(html).toMatch(/Campañas/);
+    expect(html).toMatch(/customers\.list/);
+    expect(html).toMatch(/campaigns\.list/);
+    expect(html).toMatch(/ads\.status/);
     expect(html).toMatch(/content\.list_drafts/);
     expect(html).toMatch(/growth\.list_opportunities/);
     expect(html).toMatch(/competition\.list/);

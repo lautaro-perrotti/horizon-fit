@@ -16,12 +16,13 @@ const STORE_ID = "horizon-fit";
 const SEO_WARNING_THRESHOLD = 5;
 const SEO_STALE_HOURS = 24;
 const SEO_SCHEDULE_MS = 12 * 3_600_000;
-const SYNC_TTL_MS: Record<"sales.sync" | "ga4.sync" | "gsc.sync" | "competitor.snapshot" | "growth.evaluate", number> = {
+const SYNC_TTL_MS: Record<"sales.sync" | "ga4.sync" | "gsc.sync" | "competitor.snapshot" | "growth.evaluate" | "customers.aggregate", number> = {
   "sales.sync": 2 * 60_000,
   "ga4.sync": 30 * 60_000,
   "gsc.sync": 12 * 3_600_000,
   "competitor.snapshot": 12 * 3_600_000,
   "growth.evaluate": 30 * 60_000,
+  "customers.aggregate": 30 * 60_000,
 };
 
 export type AlertRecord = {
@@ -258,7 +259,7 @@ export function createWarehouse(options: {
         });
       }
 
-      for (const type of ["sales.sync", "ga4.sync", "gsc.sync", "competitor.snapshot", "growth.evaluate"] as const) {
+      for (const type of ["sales.sync", "ga4.sync", "gsc.sync", "competitor.snapshot", "growth.evaluate", "customers.aggregate"] as const) {
         const busy = jobs.some((job) => job.type === type && (job.status === "queued" || job.status === "running"));
         const latest = await options.jobs.latestOfType(type);
         const last = latest?.status === "succeeded" ? latest.finishedAt ?? latest.createdAt : 0;

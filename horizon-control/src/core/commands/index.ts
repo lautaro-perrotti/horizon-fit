@@ -133,6 +133,12 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
     action: z.enum(["approve", "published-externally", "note"]),
     note: z.string().max(500).optional(),
   }),
+  "customers.list": z.object({
+    segment: z.string().max(32).optional(),
+  }),
+  "customers.get": z.object({ id: z.string().min(1).max(32) }),
+  "campaigns.list": emptySchema,
+  "ads.status": emptySchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -176,6 +182,10 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "content.list_drafts": "List content drafts and approval state.",
   "content.get_draft": "Read one draft plus source_context.",
   "content.update_draft": "Approve or mark published-externally. Does not write the catalog or storefront.",
+  "customers.list": "Hashed RFM customers from paid Woo orders. Never returns email or customer_id. configured:false without Woo REST.",
+  "customers.get": "One hashed customer profile. Key is sha256 prefix, never a raw email.",
+  "campaigns.list": "Internal coupon promos observed on paid orders plus Ads shells. Google/Meta stay not_configured.",
+  "ads.status": "Google Ads and Meta Ads adapters. V1 always returns configured:false.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -381,6 +391,20 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
       return row;
     }
+    case "customers.list": {
+      const parsed = TOOL_ARG_SCHEMAS["customers.list"].parse(args) as { segment?: string };
+      return services.customers.list(parsed.segment);
+    }
+    case "customers.get": {
+      const parsed = TOOL_ARG_SCHEMAS["customers.get"].parse(args) as { id: string };
+      const row = await services.customers.get(parsed.id);
+      if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
+    }
+    case "campaigns.list":
+      return services.campaigns.list();
+    case "ads.status":
+      return services.campaigns.ads();
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

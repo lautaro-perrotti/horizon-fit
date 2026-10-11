@@ -272,6 +272,10 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "content.list_drafts": "content.read",
   "content.get_draft": "content.read",
   "content.update_draft": "content.write",
+  "customers.list": "commerce.read",
+  "customers.get": "commerce.read",
+  "campaigns.list": "commerce.read",
+  "ads.status": "analytics.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];

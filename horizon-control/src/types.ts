@@ -62,7 +62,11 @@ export type ToolName =
   | "content.generate"
   | "content.list_drafts"
   | "content.get_draft"
-  | "content.update_draft";
+  | "content.update_draft"
+  | "customers.list"
+  | "customers.get"
+  | "campaigns.list"
+  | "ads.status";
 
 export type AuthPrincipal = {
   token: string;

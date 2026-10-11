@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { allowlistedFetch } from "../http/allowlist.js";
 import { parentSkuFromVariant } from "./product-identity.js";
 
@@ -36,6 +37,8 @@ export type SalesOrder = {
   revenue: number | null;
   date: string;
   items: SalesLineItem[];
+  customer_key: string | null;
+  coupon: string | null;
 };
 
 export type PeriodRollup = {
@@ -113,6 +116,7 @@ export type CommerceAdapter = {
   sales: () => Promise<CommerceSales>;
   dailyBreakdown: () => Promise<DailySalesBreakdown>;
   settings: () => Promise<CommerceSettings>;
+  paidOrders: () => Promise<{ configured: boolean; reason?: string; orders: SalesOrder[] }>;
 };
 
 type WooLine = {
@@ -132,8 +136,19 @@ type WooOrder = {
   date_created?: string;
   date_created_gmt?: string;
   currency?: string;
+  customer_id?: number;
+  billing?: { email?: string };
+  coupon_lines?: Array<{ code?: string }>;
   line_items?: WooLine[];
 };
+
+export function hashCustomerKey(input: { customer_id?: number; email?: string }): string | null {
+  const id = input.customer_id && input.customer_id > 0 ? `id:${input.customer_id}` : null;
+  const email = input.email?.trim().toLowerCase();
+  const raw = id ?? (email ? `email:${email}` : null);
+  if (!raw) return null;
+  return createHash("sha256").update(raw).digest("hex").slice(0, 16);
+}
 
 const GENERAL_SETTING_IDS = new Set([
   "woocommerce_store_address",
@@ -404,6 +419,8 @@ export function createCommerceAdapter(options: {
         revenue: parseMoney(order.total),
         date: String(order.date_created_gmt || order.date_created || ""),
         items: (order.line_items ?? []).map(mapLine).filter((row): row is SalesLineItem => Boolean(row)),
+        customer_key: hashCustomerKey({ customer_id: order.customer_id, email: order.billing?.email }),
+        coupon: order.coupon_lines?.map((row) => row.code).find(Boolean) ?? null,
       }));
 
       const orderCurrency = fetched.orders[0]?.currency || currency;
@@ -583,6 +600,10 @@ export function createCommerceAdapter(options: {
           })),
         payments: paymentRowsOf(payments.json),
       };
+    },
+    async paidOrders() {
+      const sales = await this.sales();
+      return { configured: sales.configured, reason: sales.reason, orders: cache?.orders ?? [] };
     },
   };
 }

@@ -17,6 +17,9 @@ describe("AI tool registry", () => {
     }
     expect(tools).toContain("insights.get_product");
     expect(tools).toContain("growth.list_opportunities");
+    expect(tools).toContain("customers.list");
+    expect(tools).toContain("campaigns.list");
+    expect(tools).toContain("ads.status");
     expect(tools).not.toContain("growth.update_opportunity");
     expect(tools).not.toContain("tests.run");
     expect(tools).not.toContain("assistant.ask");

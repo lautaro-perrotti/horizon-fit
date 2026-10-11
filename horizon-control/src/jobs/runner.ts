@@ -8,6 +8,8 @@ import type { AnalyticsAdapter } from "../adapters/analytics.js";
 import type { HistoryStore } from "../adapters/history.js";
 import type { CompetitionAdapter } from "../adapters/competition.js";
 import type { GrowthAdapter } from "../adapters/growth.js";
+import type { CustomersAdapter } from "../adapters/customers.js";
+import type { CampaignsAdapter } from "../adapters/campaigns.js";
 import { runTypedJob } from "../adapters/process.js";
 import type { AllowedJobType } from "./queue.js";
 import { sanitizeError } from "../auth/redact.js";
@@ -31,6 +33,8 @@ export function createDefaultJobRunner(options: {
   history?: HistoryStore;
   competition?: CompetitionAdapter;
   growth?: GrowthAdapter;
+  customers?: CustomersAdapter;
+  campaigns?: CampaignsAdapter;
 }): JobRunner {
   const repo = options.config.repoPath || process.cwd();
 
@@ -103,6 +107,12 @@ export function createDefaultJobRunner(options: {
       if (!options.growth) throw new Error("growth_adapter_missing");
       const extra = await options.growth.evaluate();
       return { stdout: `open:${extra.open}`, stderr: "", exitCode: 0, extra };
+    }
+    if (type === "customers.aggregate") {
+      if (!options.customers || !options.campaigns) throw new Error("customers_adapter_missing");
+      const customers = await options.customers.aggregate();
+      const campaigns = await options.campaigns.aggregate();
+      return { stdout: `customers:${customers.customers}`, stderr: customers.reason ?? "", exitCode: 0, extra: { customers, campaigns } };
     }
     throw new Error(`unsupported_job_type:${type}`);
   };

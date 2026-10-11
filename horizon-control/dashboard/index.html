@@ -30,6 +30,8 @@
           <button type="button" data-tab="oportunidades">Oportunidades</button>
           <button type="button" data-tab="contenido">Contenido</button>
           <button type="button" data-tab="ventas">Ventas</button>
+          <button type="button" data-tab="clientes">Clientes</button>
+          <button type="button" data-tab="campanas">Campañas</button>
           <button type="button" data-tab="seo">SEO</button>
           <button type="button" data-tab="merchant">Merchant</button>
           <button type="button" data-tab="operaciones">Operaciones</button>
@@ -190,6 +192,49 @@
                 <span class="src">Source: commerce.sales · Woo REST orders · line items / SKU</span>
               </div>
               <div id="salesOut"></div>
+            </article>
+          </section>
+
+          <section id="panel-clientes" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Clientes</h2>
+                <span class="src">Source: customers.list · RFM hasheado · sin email ni customer_id</span>
+              </div>
+              <div class="chart-ranges" id="customerFilters" style="padding:0 20px 12px">
+                <button type="button" data-segment="" class="active">Todos</button>
+                <button type="button" data-segment="champions">Champions</button>
+                <button type="button" data-segment="loyal">Loyal</button>
+                <button type="button" data-segment="at_risk">At risk</button>
+                <button type="button" data-segment="new">New</button>
+                <button type="button" data-segment="dormant">Dormant</button>
+                <button type="button" data-segment="one_time">One time</button>
+              </div>
+              <div id="customersOut"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Detalle</h2>
+                <span class="src">Source: customers.get · clave sha256 · no se envía PII a modelos</span>
+              </div>
+              <div id="customerDetail"></div>
+            </article>
+          </section>
+
+          <section id="panel-campanas" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Campañas</h2>
+                <span class="src">Source: campaigns.list · promos internas de cupones · Ads no configurados</span>
+              </div>
+              <div id="campaignsOut"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Ads</h2>
+                <span class="src">Source: ads.status · Google / Meta · never invents spend</span>
+              </div>
+              <div id="adsOut"></div>
             </article>
           </section>
 
@@ -356,6 +401,6 @@
       </div>
     </div>
     <script src="/app/vendor/echarts.min.js"></script>
-    <script src="/app/app.js?v=p360-b5" type="module"></script>
+    <script src="/app/app.js?v=p360-b11" type="module"></script>
   </body>
 </html>

@@ -162,6 +162,10 @@ export function createHttpApp(services: AppServices) {
     const body = await c.req.json().catch(() => ({}));
     return invoke(c, "content.generate", body);
   });
+  app.get("/v1/customers", (c) => invoke(c, "customers.list", { segment: c.req.query("segment") || undefined }));
+  app.get("/v1/customers/:id", (c) => invoke(c, "customers.get", { id: c.req.param("id") }));
+  app.get("/v1/campaigns", (c) => invoke(c, "campaigns.list", {}));
+  app.get("/v1/ads", (c) => invoke(c, "ads.status", {}));
   app.post("/v1/content/drafts/:id", async (c) => {
     const body = await c.req.json().catch(() => ({}));
     return invoke(c, "content.update_draft", { ...(body as object), id: c.req.param("id") });

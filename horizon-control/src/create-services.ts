@@ -16,6 +16,8 @@ import { createModelGateway, type ModelGateway } from "./ai/gateway.js";
 import { createAiToolRuntime, type AiToolRuntime } from "./ai/tools.js";
 import { createChatAdapter, type ChatAdapter } from "./ai/chat.js";
 import { createContentAdapter, type ContentAdapter } from "./adapters/content.js";
+import { createCustomersAdapter, type CustomersAdapter } from "./adapters/customers.js";
+import { createCampaignsAdapter, type CampaignsAdapter } from "./adapters/campaigns.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
@@ -46,6 +48,8 @@ export type CreateServicesOptions = {
   runtime?: AiToolRuntime;
   chat?: ChatAdapter;
   content?: ContentAdapter;
+  customers?: CustomersAdapter;
+  campaigns?: CampaignsAdapter;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
@@ -137,6 +141,8 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       fetchImpl: options.fetchImpl,
     });
   const history = options.history ?? createHistoryStore(db);
+  const customers = options.customers ?? createCustomersAdapter({ commerce, db });
+  const campaigns = options.campaigns ?? createCampaignsAdapter({ commerce, db });
   const growthBag: { growth?: GrowthAdapter } = {};
   const runner = options.runner ?? createDefaultJobRunner({
     config,
@@ -146,6 +152,8 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     analytics,
     history,
     competition,
+    customers,
+    campaigns,
     get growth() {
       return growthBag.growth;
     },
@@ -262,6 +270,8 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     growth,
     gateway,
     insights,
+    customers,
+    campaigns,
     history,
     storefront,
     merchant,

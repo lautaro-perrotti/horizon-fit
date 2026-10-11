@@ -14,6 +14,8 @@ describe("daily history and metrics.series", () => {
         total: "67000",
         revenue: 67000,
         date: `${isoDay(1)}T15:00:00Z`,
+        customer_key: null,
+        coupon: null,
         items: [
           {
             sku: "004-TOP-BOR-S",
