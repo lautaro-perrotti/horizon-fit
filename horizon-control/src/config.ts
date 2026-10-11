@@ -262,6 +262,7 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "growth.update_opportunity": "commerce.read",
   "ai.models": "ai.read",
   "ai.usage": "ai.read",
+  "ai.tools": "ai.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -297,6 +298,17 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "audit.read",
   ],
   admin: [...ALL_SCOPES],
+  "ai-runtime": [
+    "ops.read",
+    "catalog.read",
+    "storefront.read",
+    "seo.read",
+    "merchant.read",
+    "commerce.read",
+    "metrics.read",
+    "alerts.read",
+    "analytics.read",
+  ],
   dashboard: [
     "ops.read",
     "catalog.read",

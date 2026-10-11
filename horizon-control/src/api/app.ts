@@ -150,6 +150,7 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/growth/opportunities/:id", (c) => invoke(c, "growth.get_opportunity", { id: c.req.param("id") }));
   app.get("/v1/ai/models", (c) => invoke(c, "ai.models", {}));
   app.get("/v1/ai/usage", (c) => invoke(c, "ai.usage", {}));
+  app.get("/v1/ai/tools", (c) => invoke(c, "ai.tools", {}));
   app.post("/v1/growth/opportunities/:id", async (c) => {
     const body = await c.req.json().catch(() => ({}));
     return invoke(c, "growth.update_opportunity", { ...(body as object), id: c.req.param("id") });

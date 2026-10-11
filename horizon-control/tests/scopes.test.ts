@@ -44,6 +44,7 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/insights/products/001-TOP-AZU", { token })).status).toBe(403);
     expect((await request(app, "/v1/growth/opportunities", { token })).status).toBe(403);
     expect((await request(app, "/v1/ai/models", { token })).status).toBe(403);
+    expect((await request(app, "/v1/ai/tools", { token })).status).toBe(403);
   });
 
   it("Cursor can call health, catalog, storefront, repo.status, tests.run", async () => {
@@ -79,7 +80,7 @@ describe("scope matrix", () => {
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const listed = await request(app, "/v1/tools", { token });
     const body = await listed.json();
-    expect(body.tools).toHaveLength(33);
+    expect(body.tools).toHaveLength(34);
   });
 
   it("dashboard client can call health, catalog, commerce, alerts, seo, merchant; not repo", async () => {
@@ -102,6 +103,7 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/growth/opportunities", { token })).status).toBe(200);
     expect((await request(app, "/v1/ai/models", { token })).status).toBe(200);
     expect((await request(app, "/v1/ai/usage", { token })).status).toBe(200);
+    expect((await request(app, "/v1/ai/tools", { token })).status).toBe(200);
     expect((await request(app, "/v1/repo/status", { token })).status).toBe(403);
   });
 });

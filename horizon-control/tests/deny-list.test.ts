@@ -39,8 +39,9 @@ describe("deny list / no arbitrary shell", () => {
       "growth_update_opportunity",
       "ai_models",
       "ai_usage",
+      "ai_tools",
     ]);
-    expect(listRegisteredTools()).toHaveLength(33);
+    expect(listRegisteredTools()).toHaveLength(34);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

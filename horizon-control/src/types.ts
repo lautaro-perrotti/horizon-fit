@@ -52,7 +52,8 @@ export type ToolName =
   | "growth.get_opportunity"
   | "growth.update_opportunity"
   | "ai.models"
-  | "ai.usage";
+  | "ai.usage"
+  | "ai.tools";
 
 export type AuthPrincipal = {
   token: string;

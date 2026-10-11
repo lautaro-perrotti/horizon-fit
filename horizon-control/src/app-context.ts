@@ -21,6 +21,7 @@ import type { HistoryStore } from "./adapters/history.js";
 import type { CompetitionAdapter } from "./adapters/competition.js";
 import type { GrowthAdapter } from "./adapters/growth.js";
 import type { ModelGateway } from "./ai/gateway.js";
+import type { AiToolRuntime } from "./ai/tools.js";
 import type Database from "better-sqlite3";
 
 export type AppServices = {
@@ -39,6 +40,7 @@ export type AppServices = {
   competition: CompetitionAdapter;
   growth: GrowthAdapter;
   gateway: ModelGateway;
+  runtime: AiToolRuntime;
   insights: InsightsAdapter;
   history: HistoryStore;
   storefront: StorefrontAdapter;

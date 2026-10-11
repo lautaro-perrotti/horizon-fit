@@ -6,6 +6,7 @@ import { AuthError } from "../../auth/resource-server.js";
 import { assertSafeToolArgs, UnsafeArgsError } from "../../http/safe-args.js";
 import { compactSeoJob, summaryFromJobResult } from "../../adapters/seo-report.js";
 import type { AuthPrincipal, CommandResult, ToolName } from "../../types.js";
+import { aiRuntimeTools } from "../../ai/principal.js";
 
 const searchSchema = z.object({
   query: z.string().optional(),
@@ -98,6 +99,7 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "growth.update_opportunity": growthUpdateSchema,
   "ai.models": emptySchema,
   "ai.usage": emptySchema,
+  "ai.tools": emptySchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -134,6 +136,7 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "growth.update_opportunity": "Dismiss, snooze, mark done or add a note. Local workspace only — no catalog writes.",
   "ai.models": "List AI models and whether each provider is configured. Never reveals keys.",
   "ai.usage": "Token and cost usage for today plus remaining daily budget. Missing tokens stay null.",
+  "ai.tools": "Tools the internal AI runtime may call. Same registry as MCP/HTTP. No second catalog.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -287,6 +290,14 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       return services.gateway.listModels();
     case "ai.usage":
       return services.gateway.usage();
+    case "ai.tools":
+      return {
+        tools: aiRuntimeTools().map((name) => ({
+          name,
+          description: TOOL_DESCRIPTIONS[name],
+          scope: TOOL_SCOPES[name],
+        })),
+      };
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

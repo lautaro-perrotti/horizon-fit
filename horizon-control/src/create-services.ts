@@ -13,6 +13,7 @@ import { createCompetitionAdapter, type CompetitionAdapter } from "./adapters/co
 import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
 import { createGrowthAdapter, type GrowthAdapter } from "./adapters/growth.js";
 import { createModelGateway, type ModelGateway } from "./ai/gateway.js";
+import { createAiToolRuntime, type AiToolRuntime } from "./ai/tools.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
@@ -40,6 +41,7 @@ export type CreateServicesOptions = {
   insights?: InsightsAdapter;
   growth?: GrowthAdapter;
   gateway?: ModelGateway;
+  runtime?: AiToolRuntime;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
@@ -239,7 +241,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       /* already closed */
     }
   }
-  return {
+  const services = {
     config,
     db,
     sqlite,
@@ -269,5 +271,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     startedAt,
     stopBackground,
     closeDb,
-  };
+  } as AppServices;
+  services.runtime = options.runtime ?? createAiToolRuntime(services);
+  return services;
 }
