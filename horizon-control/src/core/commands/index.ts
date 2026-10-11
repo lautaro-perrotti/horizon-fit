@@ -70,6 +70,7 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "analytics.ga4": emptySchema,
   "analytics.competitors": emptySchema,
   "insights.get_product": productIdSchema,
+  "insights.overview": emptySchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -95,7 +96,8 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "analytics.search_console": "Read Search Console clicks/impressions for horizonfit.com.ar. configured:false without Google credentials.",
   "analytics.ga4": "Read GA4 sessions/users/channels. configured:false without credentials or property id.",
   "analytics.competitors": "Probe env-allowlisted competitor homepages. Agent URLs are ignored. configured:false if HORIZON_COMPETITOR_URLS is empty.",
-  "insights.get_product": "Product 360 join: catalog + SKU sales + GA4/GSC around parent_sku/PDP. Missing sources stay unavailable. Never invents metrics.",
+  "insights.get_product": "Product 360 join: catalog, sales, GA4, GSC, SEO, Merchant and competitor segment. Missing sources stay unavailable. Never invents metrics.",
+  "insights.overview": "Five store blocks: revenue, demand, conversion, opportunities, problems. Conversion omitted unless GA4 sessions and purchases exist.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -215,6 +217,8 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       }
       return insight;
     }
+    case "insights.overview":
+      return services.insights.overview();
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

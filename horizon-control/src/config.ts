@@ -244,6 +244,7 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "analytics.ga4": "analytics.read",
   "analytics.competitors": "analytics.read",
   "insights.get_product": "commerce.read",
+  "insights.overview": "commerce.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -289,6 +290,7 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "seo.read",
     "seo.audit",
     "analytics.read",
+    "merchant.read",
   ],
 };
 

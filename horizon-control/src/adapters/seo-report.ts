@@ -30,8 +30,25 @@ export type SeoLatest = {
   reason?: string;
 };
 
+export type SeoProductPage = {
+  url: string;
+  slug: string;
+  title: string;
+  description: string;
+  h1: string[];
+  canonical: string;
+  indexable: boolean;
+  schema: string[];
+  in_sitemap: boolean;
+  critical: number;
+  warning: number;
+  issues: { critical: SeoIssue[]; warning: SeoIssue[] };
+  generated_at: string | null;
+};
+
 export type SeoReportAdapter = {
   readLatest: () => SeoLatest;
+  pageFor: (slug: string | null, url?: string | null) => SeoProductPage | null;
 };
 
 type RawIssue = { message?: unknown; evidence?: unknown };
@@ -146,21 +163,87 @@ export function resolveSeoReportDir(options: { reportDir?: string; repoPath?: st
   return path.join(process.cwd(), "reports", "seo-audit");
 }
 
+export function resolveSeoReportPath(reportDir: string): string | null {
+  const latestPath = path.join(reportDir, "latest.json");
+  if (fs.existsSync(latestPath) && fs.statSync(latestPath).isFile()) return latestPath;
+  if (!fs.existsSync(reportDir) || !fs.statSync(reportDir).isDirectory()) return null;
+  const stamped = fs
+    .readdirSync(reportDir)
+    .filter((name) => /^seo-audit-.+\.json$/i.test(name))
+    .map((name) => {
+      const file = path.join(reportDir, name);
+      return { file, mtime: fs.statSync(file).mtimeMs };
+    })
+    .sort((a, b) => b.mtime - a.mtime);
+  return stamped[0]?.file ?? null;
+}
+
+export function seoPageFromRaw(page: RawPage, generatedAt: string | null): SeoProductPage | null {
+  const url = String(page.url ?? "");
+  if (!url) return null;
+  const critical = (page.issues?.critical ?? []).map(asIssue).filter((item): item is SeoIssue => Boolean(item));
+  const warning = (page.issues?.warning ?? []).map(asIssue).filter((item): item is SeoIssue => Boolean(item));
+  const h1 = Array.isArray((page as { h1?: unknown }).h1)
+    ? ((page as { h1: unknown[] }).h1).map((row) => String(row ?? "").trim()).filter(Boolean)
+    : String((page as { h1?: unknown }).h1 ?? "").trim()
+      ? [String((page as { h1?: unknown }).h1)]
+      : [];
+  const schema = Array.isArray((page as { schemaTypes?: unknown }).schemaTypes)
+    ? ((page as { schemaTypes: unknown[] }).schemaTypes).map((row) => String(row)).filter(Boolean)
+    : [];
+  const robots = String((page as { robots?: unknown }).robots ?? "");
+  const noindex = /noindex/i.test(robots) || critical.some((issue) => /noindex/i.test(issue.message));
+  return {
+    url,
+    slug: productSlugFromUrl(url),
+    title: String(page.title ?? ""),
+    description: String(page.description ?? ""),
+    h1,
+    canonical: String((page as { canonical?: unknown }).canonical ?? ""),
+    indexable: !noindex,
+    schema,
+    in_sitemap: true,
+    critical: critical.length,
+    warning: warning.length,
+    issues: { critical: critical.slice(0, 8), warning: warning.slice(0, 8) },
+    generated_at: generatedAt,
+  };
+}
+
 export function createSeoReportAdapter(options: { reportDir: string }): SeoReportAdapter {
-  const latestPath = path.join(options.reportDir, "latest.json");
+  function loadRaw(): { raw: unknown; reportPath: string } | null {
+    const reportPath = resolveSeoReportPath(options.reportDir);
+    if (!reportPath) return null;
+    try {
+      return { raw: JSON.parse(fs.readFileSync(reportPath, "utf8")), reportPath };
+    } catch {
+      return null;
+    }
+  }
+
   return {
     readLatest() {
-      if (!fs.existsSync(latestPath) || !fs.statSync(latestPath).isFile()) {
-        return { configured: false, summary: null, reason: "missing_seo_report" };
-      }
-      try {
-        const raw = JSON.parse(fs.readFileSync(latestPath, "utf8"));
-        const summary = summarizeSeoReport(raw, path.relative(process.cwd(), latestPath) || latestPath);
-        if (!summary) return { configured: false, summary: null, reason: "invalid_seo_report" };
-        return { configured: true, summary };
-      } catch {
-        return { configured: false, summary: null, reason: "invalid_seo_report" };
-      }
+      const loaded = loadRaw();
+      if (!loaded) return { configured: false, summary: null, reason: "missing_seo_report" };
+      const summary = summarizeSeoReport(loaded.raw, path.relative(process.cwd(), loaded.reportPath) || loaded.reportPath);
+      if (!summary) return { configured: false, summary: null, reason: "invalid_seo_report" };
+      return { configured: true, summary };
+    },
+    pageFor(slug, url) {
+      const loaded = loadRaw();
+      if (!loaded || !loaded.raw || typeof loaded.raw !== "object") return null;
+      const generatedAt = typeof (loaded.raw as { generatedAt?: unknown }).generatedAt === "string" ? (loaded.raw as { generatedAt: string }).generatedAt : null;
+      const pages = Array.isArray((loaded.raw as { pages?: RawPage[] }).pages) ? (loaded.raw as { pages: RawPage[] }).pages : [];
+      const wantSlug = (slug || "").trim().toLowerCase();
+      const wantUrl = (url || "").replace(/\/+$/, "").toLowerCase();
+      const match = pages.find((page) => {
+        const parsed = seoPageFromRaw(page, generatedAt);
+        if (!parsed) return false;
+        if (wantSlug && parsed.slug.toLowerCase() === wantSlug) return true;
+        if (wantUrl && parsed.url.replace(/\/+$/, "").toLowerCase() === wantUrl) return true;
+        return false;
+      });
+      return match ? seoPageFromRaw(match, generatedAt) : null;
     },
   };
 }

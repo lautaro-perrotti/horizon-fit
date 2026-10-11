@@ -21,8 +21,11 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(html).toMatch(/Competencia/);
     expect(html).toMatch(/Product 360/);
     expect(html).toMatch(/insights\.get_product/);
+    expect(html).toMatch(/insights\.overview/);
+    expect(html).toMatch(/merchant\.get_diagnostics/);
     expect(html).toMatch(/line items \/ SKU/);
     expect(html).not.toMatch(/GA4 no conectado\. No hay adapter/);
+    expect(html).not.toMatch(/Bloqueado hoy/);
     expect(html).toMatch(/\/app\/app\.js/);
     expect(html).not.toMatch(/\$214\.000/);
 
@@ -34,6 +37,7 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.scopes).toMatch(/seo\.read/);
     expect(body.scopes).toMatch(/seo\.audit/);
     expect(body.scopes).toMatch(/analytics\.read/);
+    expect(body.scopes).toMatch(/merchant\.read/);
     expect(body.scopes).toMatch(/openid/);
     expect(body.storefrontUrl).toBe("https://horizonfit.com.ar");
     expect(body.wpAdminUrl).toMatch(/wp-admin/);

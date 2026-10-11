@@ -170,6 +170,10 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       catalog,
       commerce,
       analytics,
+      seo,
+      merchant,
+      competitors,
+      health,
     });
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {

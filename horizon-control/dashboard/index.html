@@ -29,7 +29,7 @@
           <button type="button" data-tab="competencia">Competencia</button>
           <button type="button" data-tab="ventas">Ventas</button>
           <button type="button" data-tab="seo">SEO</button>
-          <button type="button" data-tab="merchant" class="blocked">Merchant</button>
+          <button type="button" data-tab="merchant">Merchant</button>
           <button type="button" data-tab="operaciones">Operaciones</button>
           <button type="button" data-tab="alertas">Alertas</button>
         </nav>
@@ -53,6 +53,8 @@
       <div class="stage">
         <main>
           <section id="panel-overview" class="panel">
+            <p class="src" style="margin:0 0 10px">Source: insights.overview · revenue · demand · conversion · opportunities · problems</p>
+            <div id="overviewBlocks" class="overview-blocks"></div>
             <div class="overview">
               <div class="col">
                 <article class="card">
@@ -87,10 +89,10 @@
                   <div id="overviewAlerts"></div>
                 </article>
                 <article class="card">
-                  <h2>Próximas fases</h2>
+                  <h2>Fuentes</h2>
                   <div class="phase">
                     <div id="overviewSeo">SEO</div>
-                    <div>Merchant — diagnósticos <span class="src">(requiere scope)</span></div>
+                    <div id="overviewMerchant">Merchant</div>
                   </div>
                 </article>
               </div>
@@ -134,7 +136,7 @@
             <article class="card">
               <div class="card-head">
                 <h2 class="title">Product 360</h2>
-                <span class="src">Source: insights.get_product · catalog + sales + GA4/GSC</span>
+                <span class="src">Source: insights.get_product · catalog + sales + GA4/GSC + SEO + merchant + segment</span>
               </div>
               <form id="product360Form" class="table-wrap" style="padding:16px 20px 0">
                 <input id="product360Q" name="q" placeholder="SKU, id, slug o PDP (001-TOP-AZU / top-liso-azul)" autocomplete="off" />
@@ -206,9 +208,12 @@
           </section>
 
           <section id="panel-merchant" class="panel" hidden>
-            <article class="card locked">
-              <h2 class="title">Merchant</h2>
-              <p>Bloqueado hoy: el dashboard no tiene <code>merchant.read</code>. Cuando se amplíe el scope, esta pantalla lee <code>merchant.get_diagnostics</code>.</p>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Merchant</h2>
+                <span class="src">Source: merchant.get_diagnostics</span>
+              </div>
+              <div id="merchantOut"></div>
             </article>
           </section>
 
@@ -264,6 +269,6 @@
         </aside>
       </div>
     </div>
-    <script src="/app/app.js?v=p360-gsc1" type="module"></script>
+    <script src="/app/app.js?v=p360-b3" type="module"></script>
   </body>
 </html>

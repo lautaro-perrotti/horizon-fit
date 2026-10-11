@@ -9,7 +9,7 @@ import type { AppServices } from "../src/app-context.js";
 import type { CatalogProduct } from "../src/types.js";
 import type { CatalogAdapter } from "../src/adapters/woo.js";
 import type { StorefrontAdapter } from "../src/adapters/storefront.js";
-import type { MerchantAdapter } from "../src/adapters/merchant.js";
+import type { MerchantAdapter, MerchantDiagnostics } from "../src/adapters/merchant.js";
 import type { SeoReportAdapter, SeoSummary } from "../src/adapters/seo-report.js";
 import type { AnalyticsAdapter, Ga4ProductReport, Ga4Report, GscProductReport, GscReport } from "../src/adapters/analytics.js";
 import type { CompetitorsAdapter, CompetitorsReport } from "../src/adapters/competitors.js";
@@ -216,6 +216,26 @@ export function mockSeo(summary: SeoSummary | null = null): SeoReportAdapter {
       if (!summary) return { configured: false, summary: null, reason: "missing_seo_report" };
       return { configured: true, summary };
     },
+    pageFor(slug, url) {
+      if (!summary) return null;
+      const page = summary.pages.find((row) => row.slug === slug || row.url === url);
+      if (!page) return null;
+      return {
+        url: page.url,
+        slug: page.slug,
+        title: page.title,
+        description: page.description,
+        h1: page.title ? [page.title] : [],
+        canonical: page.url,
+        indexable: page.critical === 0,
+        schema: ["Product"],
+        in_sitemap: true,
+        critical: page.critical,
+        warning: page.warning,
+        issues: page.issues,
+        generated_at: summary.generatedAt,
+      };
+    },
   };
 }
 
@@ -322,7 +342,7 @@ export function mockCompetitors(report: Partial<CompetitorsReport> = {}): Compet
   };
 }
 
-export function mockMerchant(): MerchantAdapter {
+export function mockMerchant(overrides: Partial<MerchantDiagnostics> = {}): MerchantAdapter {
   return {
     async readDiagnostics() {
       return {
@@ -331,6 +351,7 @@ export function mockMerchant(): MerchantAdapter {
         productsJson: { ready: 1, blocked: 0, items: [] },
         source: "local",
         summary: { ready: 1, blocked: 0, problems: [] },
+        ...overrides,
       };
     },
   };

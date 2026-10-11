@@ -1,8 +1,12 @@
 import type { CatalogProduct } from "../types.js";
 import type { CatalogAdapter } from "./woo.js";
 import type { CommerceAdapter, CommerceSales, ProductSalesRollup } from "./commerce.js";
-import type { AnalyticsAdapter, Ga4ProductReport, GscProductReport } from "./analytics.js";
+import type { AnalyticsAdapter, Ga4ProductReport, Ga4Report, GscProductReport, GscReport } from "./analytics.js";
 import { resolveProductIdentity, type ProductIdentity } from "./product-identity.js";
+import type { SeoReportAdapter, SeoProductPage } from "./seo-report.js";
+import { merchantItemsForProduct, type MerchantAdapter, type MerchantDiagnostics, type MerchantVariantRow } from "./merchant.js";
+import { peersForSegment, segmentForCategories, type CompetitorsAdapter, type CompetitorsReport } from "./competitors.js";
+import type { HealthAdapter } from "./health.js";
 import {
   errorSlice,
   isoDay,
@@ -77,14 +81,48 @@ export type ProductInsight = {
     position: number | null;
     queries: Array<{ query: string; clicks: number; impressions: number; ctr: number; position: number }>;
   }>;
-  seo: SourceSlice<null>;
-  merchant: SourceSlice<null>;
-  competition: SourceSlice<null>;
+  seo: SourceSlice<{
+    title: string;
+    description: string;
+    h1: string[];
+    canonical: string;
+    indexable: boolean;
+    schema: string[];
+    in_sitemap: boolean;
+    critical: number;
+    warning: number;
+    issues: SeoProductPage["issues"];
+    last_audit: string | null;
+  }>;
+  merchant: SourceSlice<{
+    included: boolean;
+    ready: number;
+    blocked: number;
+    variants: MerchantVariantRow[];
+    generated_path: string | null;
+  }>;
+  competition: SourceSlice<{
+    segment: string | null;
+    peers: Array<{ competitor: string; url: string; status: number | null; title: string; ok: boolean }>;
+  }>;
   insights: DeterministicInsight[];
+};
+
+export type OverviewProblem = { type: string; severity: "info" | "warning" | "critical"; title: string };
+
+export type StoreOverview = {
+  store_id: string;
+  fetched_at: string;
+  revenue: SourceSlice<{ currency: string; orders: number; units: number; revenue: number | null; aov: number | null }>;
+  demand: SourceSlice<{ sessions: number | null; users: number | null; clicks: number | null; impressions: number | null }>;
+  conversion: SourceSlice<{ sessions: number | null; purchases: number | null; cvr: number | null }>;
+  opportunities: SourceSlice<{ items: DeterministicInsight[] }>;
+  problems: SourceSlice<{ items: OverviewProblem[] }>;
 };
 
 export type InsightsAdapter = {
   getProduct: (id: string | number) => Promise<ProductInsight | null>;
+  overview: () => Promise<StoreOverview>;
 };
 
 function variantSize(sku: string, parent: string): string | null {
@@ -210,10 +248,140 @@ export function searchSlice(report: GscProductReport, fetched_at: string): Produ
   return activity > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
 }
 
+const SEO_STALE_MS = 36 * 3_600_000;
+
+export function seoSlice(page: SeoProductPage | null, latestConfigured: boolean, reason?: string): ProductInsight["seo"] {
+  const source = "seo_audit";
+  if (!latestConfigured) return notConfiguredSlice(source, reason ?? "missing_seo_report");
+  if (!page) return unknownSlice(source, "seo_page_not_in_audit", { join_confidence: "none" });
+  const data = {
+    title: page.title,
+    description: page.description,
+    h1: page.h1,
+    canonical: page.canonical,
+    indexable: page.indexable,
+    schema: page.schema,
+    in_sitemap: page.in_sitemap,
+    critical: page.critical,
+    warning: page.warning,
+    issues: page.issues,
+    last_audit: page.generated_at,
+  };
+  const meta = { fetched_at: page.generated_at, join_confidence: "exact" as const, stale_after_ms: SEO_STALE_MS };
+  return page.critical + page.warning > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
+}
+
+export function merchantSlice(diag: MerchantDiagnostics, parentSku: string, variantSkus: string[]): ProductInsight["merchant"] {
+  const source = "merchant_feed";
+  if (diag.source === "unavailable") return notConfiguredSlice(source, diag.error ?? "diagnostics_unavailable");
+  const variants = merchantItemsForProduct(diag.productsJson, parentSku, variantSkus);
+  const ready = variants.filter((row) => row.ready).length;
+  const blocked = variants.filter((row) => !row.ready).length;
+  const meta = { fetched_at: new Date().toISOString(), join_confidence: "exact" as const };
+  if (!variants.length) return unknownSlice(source, "merchant_sku_not_in_feed", { ...meta, join_confidence: "none" });
+  const data = { included: true, ready, blocked, variants, generated_path: diag.path };
+  return blocked > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
+}
+
+export function competitionSlice(report: CompetitorsReport, categories: string[]): ProductInsight["competition"] {
+  const source = "competitors";
+  if (!report.configured) return notConfiguredSlice(source, report.reason ?? "missing_competitor_urls");
+  const segment = segmentForCategories(categories);
+  const peers = peersForSegment(report.pages, segment).map((page) => ({
+    competitor: page.host,
+    url: page.url,
+    status: page.status,
+    title: page.title,
+    ok: page.ok,
+  }));
+  const meta = { fetched_at: new Date().toISOString(), join_confidence: "inferred" as const };
+  const data = { segment, peers };
+  return peers.length ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
+}
+
+export function overviewFromSources(input: {
+  sales: CommerceSales;
+  ga4: Ga4Report;
+  gsc: GscReport;
+  seoConfigured: boolean;
+  seoCritical: number;
+  merchantBlocked: number | null;
+  merchantAvailable: boolean;
+  storefrontOk: boolean;
+}): StoreOverview {
+  const fetched_at = new Date().toISOString();
+  const revenue = !input.sales.configured
+    ? notConfiguredSlice<StoreOverview["revenue"] extends SourceSlice<infer T> ? T : never>(
+        "woo_rest_orders",
+        input.sales.reason ?? "missing_woo_rest_credentials",
+      )
+    : okSlice(
+        "woo_rest_orders",
+        {
+          currency: input.sales.currency,
+          orders: input.sales.month.orders,
+          units: input.sales.month.units,
+          revenue: input.sales.month.revenue,
+          aov: input.sales.month.aov,
+        },
+        { fetched_at: input.sales.fetched_at, period: { start: isoDay(30), end: isoDay(0), label: "30d" } },
+      );
+  const demandConfigured = input.ga4.configured || input.gsc.configured;
+  const demand = !demandConfigured
+    ? notConfiguredSlice<StoreOverview["demand"] extends SourceSlice<infer T> ? T : never>(
+        "ga4+gsc",
+        input.ga4.reason ?? input.gsc.reason ?? "missing_google_credentials",
+      )
+    : okSlice(
+        "ga4+gsc",
+        {
+          sessions: input.ga4.ok ? input.ga4.sessions : null,
+          users: input.ga4.ok ? input.ga4.users : null,
+          clicks: input.gsc.ok ? input.gsc.clicks : null,
+          impressions: input.gsc.ok ? input.gsc.impressions : null,
+        },
+        { fetched_at },
+      );
+  const conversion =
+    input.ga4.configured && input.ga4.ok && input.ga4.sessions != null && input.ga4.purchases != null
+      ? input.ga4.sessions > 0
+        ? okSlice(
+            "ga4",
+            { sessions: input.ga4.sessions, purchases: input.ga4.purchases, cvr: input.ga4.purchases / input.ga4.sessions },
+            { fetched_at },
+          )
+        : zeroSlice("ga4", { sessions: input.ga4.sessions, purchases: input.ga4.purchases, cvr: null }, { fetched_at })
+      : unknownSlice<StoreOverview["conversion"] extends SourceSlice<infer T> ? T : never>(
+          "ga4",
+          "conversion_needs_ga4_sessions_and_purchases",
+        );
+  const problems: OverviewProblem[] = [];
+  if (!input.storefrontOk) problems.push({ type: "storefront_down", severity: "critical", title: "Storefront no responde" });
+  if (input.seoConfigured && input.seoCritical > 0) {
+    problems.push({ type: "seo_critical", severity: "critical", title: `${input.seoCritical} issues críticos de SEO` });
+  }
+  if (input.merchantAvailable && (input.merchantBlocked ?? 0) > 0) {
+    problems.push({ type: "merchant_blocked", severity: "warning", title: `${input.merchantBlocked} variantes bloqueadas en Merchant` });
+  }
+  return {
+    store_id: STORE_ID,
+    fetched_at,
+    revenue,
+    demand,
+    conversion,
+    opportunities: notJoinedSlice("growth_engine", "growth_engine_not_shipped"),
+    problems: problems.length ? okSlice("warehouse", { items: problems }, { fetched_at }) : zeroSlice("warehouse", { items: [] }, { fetched_at }),
+  };
+}
+
 export function createInsightsAdapter(options: {
   catalog: CatalogAdapter;
   commerce: CommerceAdapter;
   analytics: AnalyticsAdapter;
+  seo?: SeoReportAdapter;
+  merchant?: MerchantAdapter;
+  competitors?: CompetitorsAdapter;
+  health?: HealthAdapter;
 }): InsightsAdapter {
   return {
     async getProduct(id) {
@@ -226,7 +394,7 @@ export function createInsightsAdapter(options: {
         ...resolved.product.variations.map((row) => row.sku),
         resolved.identity.product_id != null ? String(resolved.identity.product_id) : null,
       ].filter((value): value is string => Boolean(value));
-      const [sales, ga4, gsc] = await Promise.all([
+      const [sales, ga4, gsc, merchant, competitors] = await Promise.all([
         options.commerce.sales(),
         options.analytics.ga4Product({
           parent_sku: resolved.identity.parent_sku,
@@ -237,7 +405,13 @@ export function createInsightsAdapter(options: {
           page_url: resolved.identity.canonical_url,
           slug: resolved.identity.slug,
         }),
+        options.merchant ? options.merchant.readDiagnostics() : Promise.resolve(null),
+        options.competitors ? options.competitors.snapshot() : Promise.resolve(null),
       ]);
+      const seoLatest = options.seo?.readLatest();
+      const seoPage = options.seo?.pageFor(resolved.identity.slug, resolved.identity.canonical_url) ?? null;
+      const categories = resolved.product.categories.map((row) => row.slug || row.name).filter(Boolean);
+      const variantSkus = resolved.product.variations.map((row) => row.sku);
       return {
         found: true,
         store_id: STORE_ID,
@@ -246,11 +420,33 @@ export function createInsightsAdapter(options: {
         sales: withStaleness(salesSlice(sales, resolved.identity.parent_sku)),
         analytics: withStaleness(analyticsSlice(ga4, fetched_at)),
         search: withStaleness(searchSlice(gsc, fetched_at)),
-        seo: notJoinedSlice("seo_audit"),
-        merchant: notJoinedSlice("merchant_feed"),
-        competition: notJoinedSlice("competitors"),
+        seo: withStaleness(seoSlice(seoPage, Boolean(seoLatest?.configured), seoLatest?.reason)),
+        merchant: merchant
+          ? merchantSlice(merchant, resolved.identity.parent_sku, variantSkus)
+          : notJoinedSlice("merchant_feed"),
+        competition: competitors ? competitionSlice(competitors, categories) : notJoinedSlice("competitors"),
         insights: [],
       };
+    },
+    async overview() {
+      const [sales, ga4, gsc, merchant, health] = await Promise.all([
+        options.commerce.sales(),
+        options.analytics.ga4(),
+        options.analytics.searchConsole(),
+        options.merchant ? options.merchant.readDiagnostics() : Promise.resolve(null),
+        options.health ? options.health.report() : Promise.resolve(null),
+      ]);
+      const seo = options.seo?.readLatest();
+      return overviewFromSources({
+        sales,
+        ga4,
+        gsc,
+        seoConfigured: Boolean(seo?.configured),
+        seoCritical: seo?.summary?.totals.critical ?? 0,
+        merchantBlocked: merchant && merchant.source !== "unavailable" ? merchant.summary.blocked : null,
+        merchantAvailable: Boolean(merchant && merchant.source !== "unavailable"),
+        storefrontOk: health?.storefront.ok ?? true,
+      });
     },
   };
 }

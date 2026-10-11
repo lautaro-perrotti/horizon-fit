@@ -27,6 +27,29 @@ export type CompetitorsAdapter = {
   snapshot: () => Promise<CompetitorsReport>;
 };
 
+export const COMPETITOR_SEGMENTS = [
+  { id: "calzas", needles: ["calza", "legging"] },
+  { id: "tops", needles: ["top", "/tops"] },
+  { id: "training-mujer", needles: ["training", "entrenamiento"] },
+] as const;
+
+export function segmentForCategories(categories: string[]): string | null {
+  const hay = categories.join(" ").toLowerCase();
+  for (const segment of COMPETITOR_SEGMENTS) {
+    if (segment.needles.some((needle) => hay.includes(needle)) || hay.includes(segment.id)) return segment.id;
+  }
+  return categories[0] || null;
+}
+
+export function peersForSegment(pages: CompetitorPage[], segment: string | null): CompetitorPage[] {
+  if (!segment) return [];
+  const needles = COMPETITOR_SEGMENTS.find((row) => row.id === segment)?.needles ?? [segment];
+  return pages.filter((page) => {
+    const hay = `${page.url} ${page.title} ${page.h1} ${page.description}`.toLowerCase();
+    return needles.some((needle) => hay.includes(needle));
+  });
+}
+
 export function parseCompetitorUrls(raw: string): string[] {
   const out: string[] = [];
   const seen = new Set<string>();

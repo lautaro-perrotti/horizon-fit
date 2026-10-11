@@ -141,6 +141,7 @@ export function createHttpApp(services: AppServices) {
     return invoke(c, "insights.get_product", { id });
   });
   app.get("/v1/insights/products/:id", (c) => invoke(c, "insights.get_product", { id: c.req.param("id") }));
+  app.get("/v1/insights/overview", (c) => invoke(c, "insights.overview", {}));
   app.get("/v1/tools", (c) =>
     c.json({
       tools: toolsForPrincipal(c.get("principal")),
@@ -173,7 +174,7 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
       storefrontUrl: config.storefrontUrl,
       apiUrl: config.wooBaseUrl,
       wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
-      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read",
+      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read",
     }),
   );
   app.get("/app", (c) => c.redirect("/app/"));

@@ -29,8 +29,9 @@ describe("deny list / no arbitrary shell", () => {
       "analytics_ga4",
       "analytics_competitors",
       "insights_get_product",
+      "insights_overview",
     ]);
-    expect(listRegisteredTools()).toHaveLength(23);
+    expect(listRegisteredTools()).toHaveLength(24);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

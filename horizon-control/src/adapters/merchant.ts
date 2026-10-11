@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { extraAllowedHosts, allowlistedFetch, isAllowedUrl } from "../http/allowlist.js";
 import { PathTraversalError, safeJoin } from "../http/paths.js";
+import { parentSkuFromVariant } from "./product-identity.js";
 
 export type MerchantProblem = {
   sku: string;
@@ -23,6 +24,14 @@ export type MerchantDiagnostics = {
   error?: "diagnostics_unavailable";
 };
 
+export type MerchantVariantRow = {
+  sku: string;
+  parent_sku: string | null;
+  ready: boolean;
+  title: string | null;
+  issues: Array<{ severity?: string; code?: string; message?: string }>;
+};
+
 export type MerchantAdapter = {
   readDiagnostics: () => Promise<MerchantDiagnostics>;
 };
@@ -36,6 +45,46 @@ function unavailable(): MerchantDiagnostics {
     summary: { ready: null, blocked: null, problems: [] },
     error: "diagnostics_unavailable",
   };
+}
+
+function asIssues(raw: unknown): MerchantVariantRow["issues"] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((issue): issue is Record<string, unknown> => Boolean(issue) && typeof issue === "object")
+    .map((issue) => ({
+      severity: typeof issue.severity === "string" ? issue.severity : undefined,
+      code: typeof issue.code === "string" ? issue.code : undefined,
+      message: typeof issue.message === "string" ? issue.message : undefined,
+    }));
+}
+
+export function merchantItemsForProduct(
+  productsJson: unknown,
+  parentSku: string,
+  variantSkus: string[] = [],
+): MerchantVariantRow[] {
+  if (!productsJson || typeof productsJson !== "object") return [];
+  const items = Array.isArray((productsJson as { items?: unknown }).items) ? (productsJson as { items: unknown[] }).items : [];
+  const parent = parentSku.toUpperCase();
+  const variants = new Set(variantSkus.map((sku) => sku.toUpperCase()));
+  const out: MerchantVariantRow[] = [];
+  for (const raw of items) {
+    if (!raw || typeof raw !== "object") continue;
+    const item = raw as Record<string, unknown>;
+    const data = item.data && typeof item.data === "object" ? (item.data as Record<string, unknown>) : {};
+    const sku = String(item.sku ?? data.id ?? "").toUpperCase();
+    const group = String(item.item_group_id ?? data.item_group_id ?? "").toUpperCase();
+    const inferred = sku ? parentSkuFromVariant(sku) : "";
+    if (sku !== parent && group !== parent && inferred !== parent && !variants.has(sku)) continue;
+    out.push({
+      sku: sku || parent,
+      parent_sku: group || inferred || parent,
+      ready: item.ready !== false,
+      title: typeof data.title === "string" ? data.title : typeof item.title === "string" ? item.title : null,
+      issues: asIssues(item.issues),
+    });
+  }
+  return out;
 }
 
 export function summarizeMerchantProblems(productsJson: unknown): MerchantDiagnostics["summary"] {

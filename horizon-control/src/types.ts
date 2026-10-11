@@ -40,7 +40,8 @@ export type ToolName =
   | "analytics.search_console"
   | "analytics.ga4"
   | "analytics.competitors"
-  | "insights.get_product";
+  | "insights.get_product"
+  | "insights.overview";
 
 export type AuthPrincipal = {
   token: string;

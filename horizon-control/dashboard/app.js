@@ -433,6 +433,93 @@ async function loadOverview() {
 
   await loadAnalytics().catch(() => undefined);
   await loadSeo().catch(() => undefined);
+  await loadInsightsOverview().catch((error) => {
+    if ($("overviewBlocks")) $("overviewBlocks").innerHTML = notice(esc(error.message));
+  });
+  await loadMerchant().catch(() => undefined);
+}
+
+function renderOverviewBlocks(data) {
+  if (!$("overviewBlocks")) return;
+  const revenue = data.revenue?.data;
+  const demand = data.demand?.data;
+  const conversion = data.conversion?.data;
+  const opportunities = data.opportunities?.data?.items ?? [];
+  const problems = data.problems?.data?.items ?? [];
+  $("overviewBlocks").innerHTML = `
+    <article class="card">${sliceBlock(
+      "Revenue",
+      data.revenue,
+      revenue
+        ? `<div class="metrics"><div><div class="n">${esc(money(revenue.revenue, revenue.currency))}</div><div class="l">30d · ${esc(revenue.orders)} pedidos</div></div></div>`
+        : "",
+    )}</article>
+    <article class="card">${sliceBlock(
+      "Demand",
+      data.demand,
+      demand
+        ? `<div class="metrics">
+            <div><div class="n">${esc(demand.sessions ?? "—")}</div><div class="l">sesiones</div></div>
+            <div><div class="n">${esc(demand.clicks ?? "—")}</div><div class="l">clicks</div></div>
+          </div>`
+        : "",
+    )}</article>
+    <article class="card">${sliceBlock(
+      "Conversion",
+      data.conversion,
+      conversion
+        ? `<div class="metrics"><div><div class="n">${esc(pct(conversion.cvr))}</div><div class="l">${esc(conversion.purchases ?? "—")} / ${esc(conversion.sessions ?? "—")}</div></div></div>`
+        : "",
+    )}</article>
+    <article class="card">${sliceBlock(
+      "Opportunities",
+      data.opportunities,
+      opportunities.length
+        ? opportunities.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.reason || row.type)}</span></div>`).join("")
+        : "",
+    )}</article>
+    <article class="card">${sliceBlock(
+      "Problems",
+      data.problems,
+      problems.length
+        ? problems.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.title)}</span></div>`).join("")
+        : `<p class="muted">Sin problemas observados.</p>`,
+    )}</article>`;
+}
+
+async function loadInsightsOverview() {
+  if (!$("overviewBlocks")) return;
+  const data = await api("/v1/insights/overview");
+  renderOverviewBlocks(data);
+}
+
+async function loadMerchant() {
+  const data = await api("/v1/merchant/diagnostics");
+  const unavailable = data.source === "unavailable";
+  if ($("overviewMerchant")) {
+    $("overviewMerchant").innerHTML = unavailable
+      ? `Merchant — unavailable <span class="src">(${esc(data.error || "diagnostics_unavailable")})</span>`
+      : `Merchant — ${esc(data.summary?.ready ?? "—")} ready · ${esc(data.summary?.blocked ?? "—")} blocked`;
+  }
+  if (!$("merchantOut")) return;
+  if (unavailable) {
+    $("merchantOut").innerHTML = `<div class="empty-row"><span>unavailable · ${esc(data.error || "diagnostics_unavailable")}</span></div>`;
+    return;
+  }
+  const problems = data.summary?.problems ?? [];
+  $("merchantOut").innerHTML = `<div class="metrics">
+      <div><div class="n">${esc(data.summary?.ready ?? "—")}</div><div class="l">ready</div></div>
+      <div><div class="n ${data.summary?.blocked ? "warn" : ""}">${esc(data.summary?.blocked ?? "—")}</div><div class="l">blocked</div></div>
+    </div>
+    <div class="src">${esc(data.source || "local")}${data.path ? ` · ${esc(data.path)}` : ""}</div>
+    ${
+      problems.length
+        ? problems
+            .map((row) => `<div class="item"><span class="mono">${esc(row.sku)}</span><span>${esc(row.title || "blocked")}</span></div>`)
+            .join("")
+        : ""
+    }
+    <pre class="muted" style="white-space:pre-wrap;margin-top:16px">${esc((data.diagnosticsTxt || "").slice(0, 2000) || "Sin diagnostics.txt")}</pre>`;
 }
 
 function sparkline(values) {
@@ -589,13 +676,71 @@ function insightsPath(ref) {
   return `/v1/insights/products/${encodeURIComponent(trimmed)}`;
 }
 
+function sliceStatusClass(status) {
+  if (status === "ok" || status === "zero") return "ok";
+  if (status === "stale" || status === "unknown") return "warn";
+  if (status === "error") return "bad";
+  return "";
+}
+
 function sliceBlock(title, slice, bodyHtml) {
+  const status = slice?.status || "unknown";
   const fetched = slice?.fetched_at ? ` · ${esc(slice.fetched_at)}` : "";
-  if (!slice || !slice.available) {
-    return `<h3 class="sub" style="margin:18px 0 8px">${esc(title)}</h3>
-      <div class="empty-row"><span>unavailable${slice?.reason ? ` · ${esc(slice.reason)}` : ""}${fetched}</span></div>`;
+  const reason = slice?.reason ? ` · ${esc(slice.reason)}` : "";
+  const head = `<h3 class="sub" style="margin:18px 0 8px">${esc(title)} <span class="slice-status ${sliceStatusClass(status)}">${esc(status)}</span><span class="src">${fetched}</span></h3>`;
+  if (!slice?.available) {
+    return `${head}<div class="empty-row"><span>${esc(status)}${reason}</span></div>`;
   }
-  return `<h3 class="sub" style="margin:18px 0 8px">${esc(title)}<span class="src">${fetched}</span></h3>${bodyHtml}`;
+  return `${head}${bodyHtml || ""}`;
+}
+
+function seoBody(slice) {
+  const seo = slice?.data;
+  if (!seo) return "";
+  const issues = [
+    ...(seo.issues?.critical ?? []).map((row) => ({ sev: "critical", text: row.message || row.code })),
+    ...(seo.issues?.warning ?? []).map((row) => ({ sev: "warning", text: row.message || row.code })),
+  ];
+  return `<div class="metrics">
+      <div><div class="n ${seo.critical ? "bad" : ""}">${esc(seo.critical)}</div><div class="l">críticos</div></div>
+      <div><div class="n ${seo.warning ? "warn" : ""}">${esc(seo.warning)}</div><div class="l">warnings</div></div>
+      <div><div class="n">${seo.indexable ? "sí" : "no"}</div><div class="l">indexable</div></div>
+      <div><div class="n">${seo.in_sitemap ? "sí" : "no"}</div><div class="l">sitemap</div></div>
+    </div>
+    <div class="src">${esc(seo.title || "—")}${seo.canonical ? ` · ${esc(seo.canonical)}` : ""}</div>
+    ${issues.map((row) => `<div class="item">${pip(row.sev)}<span>${esc(row.text || "issue")}</span></div>`).join("")}`;
+}
+
+function merchantBody(slice) {
+  const merchant = slice?.data;
+  if (!merchant) return "";
+  return `<div class="metrics">
+      <div><div class="n">${esc(merchant.ready)}</div><div class="l">ready</div></div>
+      <div><div class="n ${merchant.blocked ? "warn" : ""}">${esc(merchant.blocked)}</div><div class="l">blocked</div></div>
+    </div>
+    ${(merchant.variants ?? [])
+      .map(
+        (row) =>
+          `<div class="item"><span class="mono">${esc(row.sku)}</span><span class="${row.ready ? "ok" : "bad"}">${row.ready ? "ready" : "blocked"}</span></div>`,
+      )
+      .join("")}`;
+}
+
+function competitionBody(slice) {
+  const competition = slice?.data;
+  if (!competition) return "";
+  const peers = competition.peers ?? [];
+  return `<div class="src">segment ${esc(competition.segment || "—")}</div>
+    ${
+      peers.length
+        ? peers
+            .map(
+              (row) =>
+                `<div class="item"><span>${esc(row.competitor)}</span><span class="${row.ok ? "ok" : "bad"}">${esc(row.status ?? "—")}</span></div>`,
+            )
+            .join("")
+        : `<p class="muted">Sin peers en este segmento.</p>`
+    }`;
 }
 
 function renderProduct360(data) {
@@ -668,9 +813,9 @@ function renderProduct360(data) {
               .join("")}`
           : "",
       )}
-      ${sliceBlock("SEO", data.seo, "")}
-      ${sliceBlock("Merchant", data.merchant, "")}
-      ${sliceBlock("Competition", data.competition, "")}
+      ${sliceBlock("SEO", data.seo, seoBody(data.seo))}
+      ${sliceBlock("Merchant", data.merchant, merchantBody(data.merchant))}
+      ${sliceBlock("Competition", data.competition, competitionBody(data.competition))}
     </div>`;
 }
 
@@ -840,6 +985,11 @@ function showTab(name, cfg) {
   if (name === "seo") {
     void loadSeo().catch((error) => {
       $("seoPages").innerHTML = notice(esc(error.message));
+    });
+  }
+  if (name === "merchant") {
+    void loadMerchant().catch((error) => {
+      if ($("merchantOut")) $("merchantOut").innerHTML = notice(esc(error.message));
     });
   }
   if (name === "catalogo") void searchCatalog("").catch((error) => {

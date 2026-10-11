@@ -72,6 +72,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 main { flex: 1; min-width: 0; overflow: auto; padding: 24px 26px 44px; }
 .panel { min-height: 100%; }
 .overview { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; }
+.overview-blocks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.overview-blocks .card { padding: 14px 16px; min-height: 0; }
+.overview-blocks .metrics .n { font-size: 20px; }
+.slice-status { font-family: "IBM Plex Mono", monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
 .col { display: flex; flex-direction: column; gap: 18px; }
 .card {
   background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); padding: 20px 22px;
@@ -180,7 +184,11 @@ main { flex: 1; min-width: 0; overflow: auto; padding: 24px 26px 44px; }
 }
 .chart-svg { display: block; width: 100%; max-width: 280px; height: 72px; }
 #seoAuditBtn { background: var(--violet); color: #fff; }
+@media (max-width: 1100px) {
+  .overview-blocks { grid-template-columns: 1fr 1fr; }
+}
 @media (max-width: 960px) {
   .overview, .sitio-body, .ops-grid { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+  .overview-blocks { grid-template-columns: 1fr; }
   .drawer { width: 100%; }
 }

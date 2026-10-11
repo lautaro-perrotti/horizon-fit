@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES, loadConfig } from "../src/config.js";
-import { AUDIENCE, ISSUER, buildTestApp, mockAnalytics, request, signToken } from "./helpers.js";
+import {
+  AUDIENCE,
+  ISSUER,
+  SAMPLE_SEO_SUMMARY,
+  buildTestApp,
+  mockAnalytics,
+  mockCompetitors,
+  mockMerchant,
+  mockSeo,
+  request,
+  signToken,
+} from "./helpers.js";
 
 describe("Product 360 insights.get_product", () => {
   it("joins catalog and SKU sales around parent_sku without inventing GA4/GSC", async () => {
@@ -70,7 +81,10 @@ describe("Product 360 insights.get_product", () => {
     expect(body.analytics.reason).toBe("missing_google_credentials");
     expect(body.search.status).toBe("not_configured");
     expect(body.search.reason).toBe("missing_google_credentials");
-    expect(body.merchant.status).toBe("not_joined");
+    expect(body.seo.status).toBe("not_configured");
+    expect(body.merchant.status).toBe("unknown");
+    expect(body.merchant.reason).toBe("merchant_sku_not_in_feed");
+    expect(body.competition.status).toBe("not_configured");
     expect(body.merchant.available).toBe(false);
     expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
 
@@ -130,7 +144,8 @@ describe("Product 360 insights.get_product", () => {
     expect(body.search.available).toBe(true);
     expect(body.search.data.impressions).toBe(12480);
     expect(body.search.data.queries[0].query).toBe("top azul");
-    expect(body.seo.reason).toBe("not_joined_yet");
+    expect(body.seo.status).toBe("not_configured");
+    expect(body.seo.reason).toBe("missing_seo_report");
     expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
   });
 
@@ -145,6 +160,59 @@ describe("Product 360 insights.get_product", () => {
     expect(body.sales.configured).toBe(false);
     expect(body.sales.data).toBeNull();
     expect(body.sales.reason).toBe("missing_woo_rest_credentials");
+  });
+
+  it("joins SEO, merchant feed and competitor segment without inventing metrics", async () => {
+    const { app, keys } = await buildTestApp({
+      seo: mockSeo(SAMPLE_SEO_SUMMARY),
+      merchant: mockMerchant({
+        productsJson: {
+          ready: 0,
+          blocked: 1,
+          items: [
+            {
+              sku: "001-TOP-AZU-S",
+              item_group_id: "001-TOP-AZU",
+              ready: false,
+              title: "Top Dynamic blue S",
+              issues: [{ message: "missing gtin" }],
+            },
+          ],
+        },
+        summary: { ready: 0, blocked: 1, problems: [] },
+      }),
+      competitors: mockCompetitors({
+        configured: true,
+        pages: [
+          {
+            url: "https://example.com/tops",
+            host: "example.com",
+            status: 200,
+            latency_ms: 80,
+            title: "Tops training",
+            description: "",
+            h1: "Tops",
+            canonical: "https://example.com/tops",
+            ok: true,
+          },
+        ],
+      }),
+    });
+    const token = await signToken(keys.privateKey, { client: "dashboard", scopes: CLIENT_SCOPES.dashboard });
+    const response = await request(app, "/v1/insights/products/001-TOP-AZU", { token });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(["ok", "stale"]).toContain(body.seo.status);
+    expect(body.seo.available).toBe(true);
+    expect(body.seo.data.critical).toBe(1);
+    expect(body.seo.data.issues.critical[0].message).toBe("H1 vacío");
+    expect(body.merchant.status).toBe("ok");
+    expect(body.merchant.data.blocked).toBe(1);
+    expect(body.merchant.data.variants[0].sku).toBe("001-TOP-AZU-S");
+    expect(body.competition.status).toBe("ok");
+    expect(body.competition.data.segment).toBe("tops");
+    expect(body.competition.data.peers[0].competitor).toBe("example.com");
+    expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
   });
 
   it("Cursor cannot call insights.get_product", async () => {
