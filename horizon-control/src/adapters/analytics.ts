@@ -142,9 +142,9 @@ function metric(row: { metricValues?: Array<{ value?: string }> } | undefined, i
   return Number.isFinite(n) ? n : null;
 }
 
-export function normalizeGscSite(raw: string): string {
+export function normalizeGscSite(raw: string, allowedSites: string[] = GSC_SITE_ALLOWLIST): string {
   const trimmed = raw.trim() || "https://horizonfit.com.ar/";
-  if (GSC_SITE_ALLOWLIST.includes(trimmed) || GSC_SITE_ALLOWLIST.includes(trimmed.replace(/\/$/, ""))) {
+  if (allowedSites.includes(trimmed) || allowedSites.includes(trimmed.replace(/\/$/, ""))) {
     return trimmed.endsWith("/") || trimmed.startsWith("sc-domain:") ? trimmed : `${trimmed}/`;
   }
   return "https://horizonfit.com.ar/";
@@ -222,6 +222,7 @@ function emptyGscProduct(reason: string, site: string, page: string | null): Gsc
 }
 
 export function createAnalyticsAdapter(options: {
+  allowedGscSites?: string[];
   saPath?: string;
   saJson?: string;
   gscSiteUrl?: string;
@@ -231,7 +232,7 @@ export function createAnalyticsAdapter(options: {
   getAccessToken?: (scopes: string[]) => Promise<string>;
 }): AnalyticsAdapter {
   const extraHosts = [...GOOGLE_API_HOSTS, ...(options.extraHosts ?? [])];
-  const site = normalizeGscSite(options.gscSiteUrl ?? "https://horizonfit.com.ar/");
+  const site = normalizeGscSite(options.gscSiteUrl ?? "https://horizonfit.com.ar/", options.allowedGscSites);
   const propertyId = (options.ga4PropertyId ?? "").replace(/^properties\//, "").trim();
   const sa: GoogleServiceAccount | null = loadGoogleServiceAccount(options.saPath ?? "", options.saJson ?? "");
   const fetchImpl = options.fetchImpl ?? fetch;
