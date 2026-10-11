@@ -96,6 +96,8 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "growth.list_opportunities": growthListSchema,
   "growth.get_opportunity": growthGetSchema,
   "growth.update_opportunity": growthUpdateSchema,
+  "ai.models": emptySchema,
+  "ai.usage": emptySchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -130,6 +132,8 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "growth.list_opportunities": "Deterministic growth opportunities. Rules skip when a required slice is not available. Score renormalizes missing domains.",
   "growth.get_opportunity": "One persisted opportunity with evidence, score components and recommended next check.",
   "growth.update_opportunity": "Dismiss, snooze, mark done or add a note. Local workspace only — no catalog writes.",
+  "ai.models": "List AI models and whether each provider is configured. Never reveals keys.",
+  "ai.usage": "Token and cost usage for today plus remaining daily budget. Missing tokens stay null.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -279,6 +283,10 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
       return row;
     }
+    case "ai.models":
+      return services.gateway.listModels();
+    case "ai.usage":
+      return services.gateway.usage();
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

@@ -148,6 +148,8 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/competition/item", (c) => invoke(c, "competition.get", { url: c.req.query("url") || "" }));
   app.get("/v1/growth/opportunities", (c) => invoke(c, "growth.list_opportunities", { status: c.req.query("status") || undefined }));
   app.get("/v1/growth/opportunities/:id", (c) => invoke(c, "growth.get_opportunity", { id: c.req.param("id") }));
+  app.get("/v1/ai/models", (c) => invoke(c, "ai.models", {}));
+  app.get("/v1/ai/usage", (c) => invoke(c, "ai.usage", {}));
   app.post("/v1/growth/opportunities/:id", async (c) => {
     const body = await c.req.json().catch(() => ({}));
     return invoke(c, "growth.update_opportunity", { ...(body as object), id: c.req.param("id") });
@@ -184,7 +186,7 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
       storefrontUrl: config.storefrontUrl,
       apiUrl: config.wooBaseUrl,
       wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
-      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read",
+      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read ai.read",
     }),
   );
   app.get("/app", (c) => c.redirect("/app/"));

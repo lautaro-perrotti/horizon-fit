@@ -37,8 +37,10 @@ describe("deny list / no arbitrary shell", () => {
       "growth_list_opportunities",
       "growth_get_opportunity",
       "growth_update_opportunity",
+      "ai_models",
+      "ai_usage",
     ]);
-    expect(listRegisteredTools()).toHaveLength(31);
+    expect(listRegisteredTools()).toHaveLength(33);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 
@@ -78,6 +80,7 @@ describe("deny list / no arbitrary shell", () => {
     expect(body.tools).not.toContain("analytics.ga4");
     expect(body.tools).not.toContain("insights.get_product");
     expect(body.tools).not.toContain("growth.list_opportunities");
+    expect(body.tools).not.toContain("ai.models");
     expect(body.catalog).not.toContain("cache.regenerate");
     expect(body.catalog).not.toContain("deploy");
     expect(body.catalog).not.toContain("shell.execute");

@@ -16,7 +16,8 @@ export type ScopeName =
   | "metrics.read"
   | "alerts.read"
   | "analytics.read"
-  | "competition.read";
+  | "competition.read"
+  | "ai.read";
 
 export type ToolName =
   | "ops.health"
@@ -49,7 +50,9 @@ export type ToolName =
   | "competition.compare_product"
   | "growth.list_opportunities"
   | "growth.get_opportunity"
-  | "growth.update_opportunity";
+  | "growth.update_opportunity"
+  | "ai.models"
+  | "ai.usage";
 
 export type AuthPrincipal = {
   token: string;

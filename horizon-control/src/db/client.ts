@@ -190,6 +190,20 @@ CREATE TABLE IF NOT EXISTS opportunity_actions (
 );
 CREATE INDEX IF NOT EXISTS opportunity_actions_opp_idx ON opportunity_actions(opportunity_id, at);
 
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id TEXT PRIMARY KEY,
+  day TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  model TEXT NOT NULL,
+  user TEXT NOT NULL,
+  calls INTEGER NOT NULL,
+  input_tokens INTEGER,
+  output_tokens INTEGER,
+  cost_usd REAL,
+  updated_at INTEGER NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS ai_usage_day_model_user_idx ON ai_usage(day, provider, model, user);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   store_id TEXT NOT NULL,
   source TEXT NOT NULL,

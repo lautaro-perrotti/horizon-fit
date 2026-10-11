@@ -40,6 +40,12 @@ const envSchema = z.object({
   HORIZON_GA4_PROPERTY_ID: z.string().default(""),
   HORIZON_GSC_SITE_URL: z.string().default("https://horizonfit.com.ar/"),
   HORIZON_COMPETITOR_URLS: z.string().default(""),
+  HORIZON_OPENAI_API_KEY: z.string().default(""),
+  HORIZON_ANTHROPIC_API_KEY: z.string().default(""),
+  HORIZON_GEMINI_API_KEY: z.string().default(""),
+  HORIZON_OLLAMA_BASE_URL: z.string().default(""),
+  HORIZON_AI_BUDGET_USD_DAILY: z.coerce.number().default(5),
+  HORIZON_AI_BUDGET_TOKENS_USER_DAILY: z.coerce.number().default(100_000),
   PHP_BIN: z.string().default("php"),
   NODE_BIN: z.string().default("node"),
 });
@@ -193,6 +199,7 @@ export const ALL_SCOPES: ScopeName[] = [
   "alerts.read",
   "analytics.read",
   "competition.read",
+  "ai.read",
 ];
 
 /** Historic Auth0 names accepted on inbound JWTs and canonicalized. */
@@ -253,6 +260,8 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "growth.list_opportunities": "commerce.read",
   "growth.get_opportunity": "commerce.read",
   "growth.update_opportunity": "commerce.read",
+  "ai.models": "ai.read",
+  "ai.usage": "ai.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -299,6 +308,7 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "seo.audit",
     "analytics.read",
     "merchant.read",
+    "ai.read",
   ],
 };
 

@@ -12,6 +12,7 @@ import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter 
 import { createCompetitionAdapter, type CompetitionAdapter } from "./adapters/competition.js";
 import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
 import { createGrowthAdapter, type GrowthAdapter } from "./adapters/growth.js";
+import { createModelGateway, type ModelGateway } from "./ai/gateway.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
@@ -38,6 +39,7 @@ export type CreateServicesOptions = {
   competition?: CompetitionAdapter;
   insights?: InsightsAdapter;
   growth?: GrowthAdapter;
+  gateway?: ModelGateway;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
@@ -206,6 +208,17 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     });
   const growth = options.growth ?? createGrowthAdapter({ db, catalog, insights });
   growthBag.growth = growth;
+  const gateway =
+    options.gateway ??
+    createModelGateway({
+      db,
+      openaiKey: config.HORIZON_OPENAI_API_KEY,
+      anthropicKey: config.HORIZON_ANTHROPIC_API_KEY,
+      geminiKey: config.HORIZON_GEMINI_API_KEY,
+      ollamaBaseUrl: config.HORIZON_OLLAMA_BASE_URL,
+      dailyBudgetUsd: config.HORIZON_AI_BUDGET_USD_DAILY,
+      userTokenBudget: config.HORIZON_AI_BUDGET_TOKENS_USER_DAILY,
+    });
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {
     evaluateTimer = setInterval(() => {
@@ -241,6 +254,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     competitors,
     competition,
     growth,
+    gateway,
     insights,
     history,
     storefront,

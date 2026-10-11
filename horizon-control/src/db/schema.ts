@@ -167,6 +167,19 @@ export const growthOpportunities = sqliteTable("growth_opportunities", {
   snoozedUntil: integer("snoozed_until"),
 });
 
+export const aiUsage = sqliteTable("ai_usage", {
+  id: text("id").primaryKey(),
+  day: text("day").notNull(),
+  provider: text("provider").notNull(),
+  model: text("model").notNull(),
+  user: text("user").notNull(),
+  calls: integer("calls").notNull(),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  costUsd: real("cost_usd"),
+  updatedAt: integer("updated_at").notNull(),
+});
+
 export const opportunityActions = sqliteTable("opportunity_actions", {
   id: text("id").primaryKey(),
   opportunityId: text("opportunity_id").notNull(),
@@ -205,5 +218,6 @@ export const schema = {
   competitorProductHistory,
   growthOpportunities,
   opportunityActions,
+  aiUsage,
   syncState,
 };
