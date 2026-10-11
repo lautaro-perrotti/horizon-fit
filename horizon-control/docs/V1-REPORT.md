@@ -30,9 +30,9 @@ B1 deploy landed 2026-10-11 on `/opt/horizon-control-plane` (unit `horizon-contr
 | Customers RFM | 3 hashed keys (no email) |
 | Campaigns | 2 internal promos; Ads `not_configured` |
 | GA4 / GSC | configured + ok (sessions / clicks present) |
-| Product 360 `004-TOP-BOR` | catalog/sales/analytics `ok`; search `zero` |
-| Competitor snapshot | 4 allowlisted pages, robots skip 0 |
-| Growth evaluate | 20 products, 17 open (rules; no invented metrics) |
+| Product 360 `004-TOP-BOR` | catalog/sales/seo/search/analytics `ok`; merchant `zero`; canonical `/producto/top-falda-bordo/` |
+| Competitor snapshot | Touche 200; Adidas 403 (real); alert lists host once |
+| Growth evaluate | 20 products; open `HIGH_TRAFFIC_LOW_CONVERSION` 14 + `PRICE_OUTLIER` 3 |
 | `seo.audit` loop | Fit script exits 1 on críticos; Control treats a written report as complete and backs off 12h. Picked newest stamp over stale `latest.json` (Aug). Pruned 62k loop jobs. |
 | Backup | First live copy in `/var/lib/horizon-control/backups` (0600). Timer 6h. |
 | Dashboard `/app` | SPA live; Auth0 login redirects; JWT needed for `/v1` data |
