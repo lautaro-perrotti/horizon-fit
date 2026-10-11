@@ -1,0 +1,21 @@
+import { test, expect } from '@playwright/test';
+test('crear, seleccionar, editar, pedir un cambio, publicar y recuperar', async ({page}) => {
+  const errors:string[]=[]; page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/');
+  await page.getByLabel('Nombre de la marca').fill('Casa Sur'); await page.getByLabel('Dirección de la tienda').fill('casa-sur'); await page.getByRole('button',{name:'Crear tienda'}).click();
+  const frame=page.frameLocator('iframe[title="Vista previa de la tienda"]');
+  await frame.locator('[data-node-id="headline"]').click();
+  await expect(page.getByLabel('Texto del elemento')).toBeVisible();
+  await page.getByLabel('Texto del elemento').fill('Diseñado para acompañarte.'); await page.getByLabel('Texto del elemento').blur();
+  await expect(frame.locator('[data-node-id="headline"]')).toHaveText('Diseñado para acompañarte.');
+  await page.getByLabel('Instrucción para el asistente').fill('hacé este título más chico'); await page.getByRole('button',{name:'Enviar instrucción'}).click();
+  await expect(page.getByText('Resuelto por el framework · 0 tokens')).toBeVisible();
+  await page.getByRole('button',{name:'Vista móvil'}).click(); await expect(page.locator('iframe')).toHaveClass(/mobile/);
+  await page.getByRole('button',{name:'Publicar',exact:false}).click(); await expect(page.getByRole('status')).toContainText('Diseño publicado');
+  const published=await page.request.get('/shop/casa-sur/'); expect(published.status()).toBe(200); expect(await published.text()).toContain('Diseñado para acompañarte.'); expect(await published.text()).not.toContain('horizon:select');
+  await page.reload(); await expect(frame.locator('[data-node-id="headline"]')).toHaveText('Diseñado para acompañarte.');
+  await page.getByRole('button',{name:'Historial'}).click(); const initial=page.locator('.history-row').filter({has:page.getByText('Versión 1',{exact:true})}); await initial.getByRole('button',{name:'Recuperar'}).click();
+  await expect(frame.locator('[data-node-id="headline"]')).toHaveText('Hecho para tu día.');
+  expect(await (await page.request.get('/shop/casa-sur/')).text()).toContain('Diseñado para acompañarte.');
+  await page.screenshot({path:'reports/platform-editor-desktop.png',fullPage:true}); expect(errors).toEqual([]);
+});
