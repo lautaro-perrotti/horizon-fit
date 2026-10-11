@@ -1,18 +1,26 @@
 import type { CatalogProduct } from "../types.js";
 import type { CatalogAdapter } from "./woo.js";
-import type { CommerceAdapter, ProductSalesRollup } from "./commerce.js";
+import type { CommerceAdapter, CommerceSales, ProductSalesRollup } from "./commerce.js";
 import type { AnalyticsAdapter, Ga4ProductReport, GscProductReport } from "./analytics.js";
 import { resolveProductIdentity, type ProductIdentity } from "./product-identity.js";
+import {
+  errorSlice,
+  isoDay,
+  notConfiguredSlice,
+  notJoinedSlice,
+  okSlice,
+  withStaleness,
+  unknownSlice,
+  zeroSlice,
+  type SourceSlice,
+} from "../core/slice.js";
+
+export type { SourceSlice, SliceStatus, JoinConfidence } from "../core/slice.js";
 
 const STORE_ID = "horizon-fit";
-
-export type SourceSlice<T> = {
-  available: boolean;
-  configured: boolean;
-  reason?: string;
-  fetched_at: string | null;
-  data: T | null;
-};
+const SALES_STALE_MS = 10 * 60_000;
+const GA4_STALE_MS = 2 * 3_600_000;
+const GSC_STALE_MS = 36 * 3_600_000;
 
 export type DeterministicInsight = {
   type: string;
@@ -34,6 +42,7 @@ export type ProductInsight = {
     stock_status: string;
     variants: Array<{ sku: string; size: string | null; in_stock: boolean }>;
     categories: string[];
+    images: string[];
   }>;
   sales: SourceSlice<{
     currency: string;
@@ -78,21 +87,15 @@ export type InsightsAdapter = {
   getProduct: (id: string | number) => Promise<ProductInsight | null>;
 };
 
-function unavailable(reason: string): SourceSlice<null> {
-  return { available: false, configured: false, reason, fetched_at: null, data: null };
-}
-
 function variantSize(sku: string, parent: string): string | null {
   if (!sku.startsWith(parent) || sku.length <= parent.length + 1) return null;
   return sku.slice(parent.length + 1) || null;
 }
 
-function catalogSlice(product: CatalogProduct, fetched_at: string): ProductInsight["catalog"] {
-  return {
-    available: true,
-    configured: true,
-    fetched_at,
-    data: {
+export function catalogSlice(product: CatalogProduct, fetched_at: string): ProductInsight["catalog"] {
+  return okSlice(
+    "woo_store_api",
+    {
       name: product.name,
       price: { amount: product.price.amount, currency: product.price.currency },
       stock_status: product.stock_status,
@@ -102,65 +105,109 @@ function catalogSlice(product: CatalogProduct, fetched_at: string): ProductInsig
         in_stock: row.in_stock,
       })),
       categories: product.categories.map((row) => row.slug || row.name).filter(Boolean),
+      images: product.images,
     },
-  };
+    { fetched_at, join_confidence: "exact" },
+  );
 }
 
-function analyticsSlice(report: Ga4ProductReport, fetched_at: string): ProductInsight["analytics"] {
-  if (!report.configured) {
-    return {
-      available: false,
-      configured: false,
-      reason: report.reason ?? "missing_google_credentials",
-      fetched_at: null,
-      data: null,
-    };
+export function salesSlice(sales: CommerceSales, parentSku: string): ProductInsight["sales"] {
+  const source = "woo_rest_orders";
+  const period = { start: isoDay(90), end: isoDay(0), label: "90d con ventanas d7/d30/d90" };
+  if (!sales.configured) return notConfiguredSlice(source, sales.reason ?? "missing_woo_rest_credentials");
+  if (sales.reason && !sales.fetched_at) return errorSlice(source, sales.reason, { period });
+  const rollup = (sales.products ?? []).find((row) => row.parent_sku === parentSku) ?? null;
+  const meta = { fetched_at: sales.fetched_at, period, join_confidence: "exact" as const, stale_after_ms: SALES_STALE_MS };
+  if (!rollup) {
+    if (sales.incomplete) {
+      return unknownSlice(source, "orders_page_cap", { ...meta, join_confidence: "none" });
+    }
+    return zeroSlice(
+      source,
+      {
+        currency: sales.currency,
+        d7: null,
+        d30: null,
+        d90: null,
+        last_sale_at: null,
+        velocity_30d: null,
+        orders: 0,
+        units: 0,
+        revenue: 0,
+        aov: null,
+      },
+      meta,
+    );
   }
-  return {
-    available: true,
-    configured: true,
-    reason: report.ok ? undefined : report.reason,
-    fetched_at,
-    data: {
-      period: report.period,
-      join: report.join,
-      pdp_views: report.pdp_views,
-      view_item: report.view_item,
-      add_to_cart: report.add_to_cart,
-      begin_checkout: report.begin_checkout,
-      purchase: report.purchase,
-      purchase_revenue: report.purchase_revenue,
-      atc_rate: report.atc_rate,
-      checkout_rate: report.checkout_rate,
-      cvr: report.cvr,
-    },
+  const data = {
+    currency: sales.currency,
+    d7: rollup.d7,
+    d30: rollup.d30,
+    d90: rollup.d90,
+    last_sale_at: rollup.last_sale_at,
+    velocity_30d: rollup.velocity_30d,
+    orders: rollup.d30.orders,
+    units: rollup.d30.units,
+    revenue: rollup.d30.revenue,
+    aov: rollup.d30.aov,
   };
+  const anyActivity = rollup.d90.units > 0 || rollup.d90.orders > 0;
+  return anyActivity ? okSlice(source, data, { ...meta, reason: sales.reason }) : zeroSlice(source, data, meta);
 }
 
-function searchSlice(report: GscProductReport, fetched_at: string): ProductInsight["search"] {
-  if (!report.configured) {
-    return {
-      available: false,
-      configured: false,
-      reason: report.reason ?? "missing_google_credentials",
-      fetched_at: null,
-      data: null,
-    };
+export function analyticsSlice(report: Ga4ProductReport, fetched_at: string): ProductInsight["analytics"] {
+  const source = "ga4";
+  const period = { start: isoDay(28), end: isoDay(0), label: "28d" };
+  if (!report.configured) return notConfiguredSlice(source, report.reason ?? "missing_google_credentials");
+  if (!report.ok && report.pdp_views == null && report.view_item == null) {
+    return errorSlice(source, report.reason ?? "ga4_error", { fetched_at, period });
   }
-  return {
-    available: true,
-    configured: true,
-    reason: report.ok ? undefined : report.reason,
-    fetched_at,
-    data: {
-      page: report.page,
-      clicks: report.clicks,
-      impressions: report.impressions,
-      ctr: report.ctr,
-      position: report.position,
-      queries: report.queries,
-    },
+  if (!report.join.item_id && !report.join.page_path) {
+    return unknownSlice(source, report.reason ?? "ga4_join_unavailable", { fetched_at, period });
+  }
+  const data = {
+    period: report.period,
+    join: report.join,
+    pdp_views: report.pdp_views,
+    view_item: report.view_item,
+    add_to_cart: report.add_to_cart,
+    begin_checkout: report.begin_checkout,
+    purchase: report.purchase,
+    purchase_revenue: report.purchase_revenue,
+    atc_rate: report.atc_rate,
+    checkout_rate: report.checkout_rate,
+    cvr: report.cvr,
   };
+  const meta = {
+    fetched_at,
+    period,
+    join_confidence: (report.join.item_id ? "exact" : "inferred") as "exact" | "inferred",
+    stale_after_ms: GA4_STALE_MS,
+    reason: report.ok ? undefined : report.reason,
+  };
+  const activity = (report.pdp_views ?? 0) + (report.view_item ?? 0) + (report.add_to_cart ?? 0) + (report.purchase ?? 0);
+  return activity > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
+}
+
+export function searchSlice(report: GscProductReport, fetched_at: string): ProductInsight["search"] {
+  const source = "gsc";
+  const period = { start: report.start_date, end: report.end_date, label: "28d" };
+  if (!report.configured) return notConfiguredSlice(source, report.reason ?? "missing_google_credentials");
+  if (!report.ok) {
+    if (report.reason === "missing_canonical_url") return unknownSlice(source, report.reason, { fetched_at, period });
+    return errorSlice(source, report.reason ?? "gsc_error", { fetched_at, period });
+  }
+  const data = {
+    page: report.page,
+    clicks: report.clicks,
+    impressions: report.impressions,
+    ctr: report.ctr,
+    position: report.position,
+    queries: report.queries,
+  };
+  const meta = { fetched_at, period, join_confidence: "exact" as const, stale_after_ms: GSC_STALE_MS };
+  const activity = (report.clicks ?? 0) + (report.impressions ?? 0);
+  return activity > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
 }
 
 export function createInsightsAdapter(options: {
@@ -191,43 +238,17 @@ export function createInsightsAdapter(options: {
           slug: resolved.identity.slug,
         }),
       ]);
-      const rollup = (sales.products ?? []).find((row) => row.parent_sku === resolved.identity.parent_sku) ?? null;
-      const salesSlice: ProductInsight["sales"] = !sales.configured
-        ? {
-            available: false,
-            configured: false,
-            reason: sales.reason ?? "missing_woo_rest_credentials",
-            fetched_at: sales.fetched_at,
-            data: null,
-          }
-        : {
-            available: true,
-            configured: true,
-            fetched_at: sales.fetched_at,
-            data: {
-              currency: sales.currency,
-              d7: rollup?.d7 ?? null,
-              d30: rollup?.d30 ?? null,
-              d90: rollup?.d90 ?? null,
-              last_sale_at: rollup?.last_sale_at ?? null,
-              velocity_30d: rollup?.velocity_30d ?? null,
-              orders: rollup?.d30.orders ?? 0,
-              units: rollup?.d30.units ?? 0,
-              revenue: rollup?.d30.revenue ?? null,
-              aov: rollup?.d30.aov ?? null,
-            },
-          };
       return {
         found: true,
         store_id: STORE_ID,
         keys: resolved.identity,
         catalog: catalogSlice(resolved.product, fetched_at),
-        sales: salesSlice,
-        analytics: analyticsSlice(ga4, fetched_at),
-        search: searchSlice(gsc, fetched_at),
-        seo: unavailable("not_joined_yet"),
-        merchant: unavailable("not_joined_yet"),
-        competition: unavailable("not_joined_yet"),
+        sales: withStaleness(salesSlice(sales, resolved.identity.parent_sku)),
+        analytics: withStaleness(analyticsSlice(ga4, fetched_at)),
+        search: withStaleness(searchSlice(gsc, fetched_at)),
+        seo: notJoinedSlice("seo_audit"),
+        merchant: notJoinedSlice("merchant_feed"),
+        competition: notJoinedSlice("competitors"),
         insights: [],
       };
     },

@@ -21,6 +21,7 @@ describe("deny list / no arbitrary shell", () => {
       "commerce_sales",
       "commerce_settings",
       "metrics_snapshots",
+      "metrics_series",
       "alerts_list",
       "alerts_evaluate",
       "assistant_ask",
@@ -29,7 +30,7 @@ describe("deny list / no arbitrary shell", () => {
       "analytics_competitors",
       "insights_get_product",
     ]);
-    expect(listRegisteredTools()).toHaveLength(22);
+    expect(listRegisteredTools()).toHaveLength(23);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

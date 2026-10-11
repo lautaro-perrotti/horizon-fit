@@ -10,6 +10,7 @@ import { createSeoReportAdapter, type SeoReportAdapter } from "./adapters/seo-re
 import { createAnalyticsAdapter, type AnalyticsAdapter } from "./adapters/analytics.js";
 import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter } from "./adapters/competitors.js";
 import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
+import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
 import { createHealthAdapter } from "./adapters/health.js";
@@ -33,6 +34,7 @@ export type CreateServicesOptions = {
   analytics?: AnalyticsAdapter;
   competitors?: CompetitorsAdapter;
   insights?: InsightsAdapter;
+  history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
   git?: GitAdapter;
@@ -113,7 +115,8 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       urls: parseCompetitorUrls(config.HORIZON_COMPETITOR_URLS),
       fetchImpl: options.fetchImpl,
     });
-  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo });
+  const history = options.history ?? createHistoryStore(db);
+  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo, commerce, analytics, history });
   const worker = startJobWorker({
     queue: jobs,
     runner,
@@ -202,6 +205,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     analytics,
     competitors,
     insights,
+    history,
     storefront,
     merchant,
     health,

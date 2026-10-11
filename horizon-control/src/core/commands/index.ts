@@ -36,6 +36,15 @@ const snapshotsSchema = z.object({
   limit: z.number().int().min(1).max(50).optional(),
   kpi: z.string().min(1).max(64).optional(),
 });
+const seriesSchema = z.object({
+  metric: z.string().min(1).max(64),
+  entity: z.string().min(1).max(80).optional(),
+  source: z.string().min(1).max(64).optional(),
+  range: z.enum(["7d", "28d", "90d", "ytd", "custom"]).optional(),
+  start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  compare: z.enum(["previous", "none"]).optional(),
+});
 
 export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "ops.health": emptySchema,
@@ -53,6 +62,7 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "commerce.sales": emptySchema,
   "commerce.settings": emptySchema,
   "metrics.snapshots": snapshotsSchema,
+  "metrics.series": seriesSchema,
   "alerts.list": emptySchema,
   "alerts.evaluate": emptySchema,
   "assistant.ask": askSchema,
@@ -78,6 +88,7 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "commerce.sales": "Read Woo REST paid orders (90d) with line items and SKU rollups. configured:false without keys. Never invents revenue.",
   "commerce.settings": "Read allowlisted Woo general settings and payment gateways. No secrets.",
   "metrics.snapshots": "List recent metric snapshots from the local warehouse.",
+  "metrics.series": "Read daily history for a store or product metric with an equal-length previous window. Missing days stay unknown, never a fabricated zero.",
   "alerts.list": "List warehouse alerts (open and resolved).",
   "alerts.evaluate": "Run deterministic alert rules (storefront, stock sample, failed jobs, SEO).",
   "assistant.ask": "Deterministic consult over health, catalog (max 10), sales, SEO, GA4/GSC, competitors, allowlisted charts, or alerts. No LLM.",
@@ -171,6 +182,10 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
     case "metrics.snapshots": {
       const parsed = snapshotsSchema.parse(args);
       return { snapshots: services.warehouse.snapshots(parsed.limit, parsed.kpi) };
+    }
+    case "metrics.series": {
+      const parsed = seriesSchema.parse(args);
+      return services.history.series(parsed);
     }
     case "alerts.list":
       return { alerts: services.warehouse.listAlerts() };

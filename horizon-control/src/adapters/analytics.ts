@@ -88,11 +88,29 @@ export type GscProductReport = {
   queries: GscQueryRow[];
 };
 
+export type DailyMetricPoint = {
+  day: string;
+  metrics: Record<string, number | null>;
+  status: "ok" | "zero" | "error";
+  reason?: string;
+};
+
+export type DailyAnalyticsReport = {
+  configured: boolean;
+  ok: boolean;
+  reason?: string;
+  source: "ga4" | "gsc";
+  fetched_at: string | null;
+  points: DailyMetricPoint[];
+};
+
 export type AnalyticsAdapter = {
   searchConsole: () => Promise<GscReport>;
   ga4: () => Promise<Ga4Report>;
   ga4Product: (ref: Ga4ProductRef) => Promise<Ga4ProductReport>;
   gscProduct: (ref: GscProductRef) => Promise<GscProductReport>;
+  ga4Daily: (days?: number) => Promise<DailyAnalyticsReport>;
+  gscDaily: (days?: number) => Promise<DailyAnalyticsReport>;
 };
 
 const GA4_PRODUCT_TTL_MS = 30 * 60 * 1000;
@@ -162,6 +180,16 @@ export function pagePathFromUrl(raw: string | null | undefined): string | null {
     const normalized = path.endsWith("/") ? path : `${path}/`;
     return normalized.startsWith("/product/") ? normalized : null;
   }
+}
+
+function ga4Day(raw: string): string {
+  const digits = raw.replace(/-/g, "");
+  if (/^\d{8}$/.test(digits)) return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
+  return raw.slice(0, 10);
+}
+
+function emptyDaily(source: "ga4" | "gsc", reason: string, configured = false): DailyAnalyticsReport {
+  return { configured, ok: false, reason, source, fetched_at: configured ? new Date().toISOString() : null, points: [] };
 }
 
 function uniqueIds(values: Array<string | number | null | undefined>): string[] {
@@ -608,6 +636,88 @@ export function createAnalyticsAdapter(options: {
       } catch (error) {
         const message = error instanceof Error ? error.message : "gsc_error";
         return { ...emptyGscProduct(message, site, page || needle), configured: googleReady, start_date: start, end_date: end };
+      }
+    },
+
+    async ga4Daily(days = 90) {
+      const window = Math.min(90, Math.max(1, days));
+      if (!googleReady) return emptyDaily("ga4", "missing_google_credentials");
+      if (!propertyId) return emptyDaily("ga4", "missing_ga4_property_id", true);
+      try {
+        const access = await token([GA4_READONLY]);
+        const url = `https://analyticsdata.googleapis.com/v1beta/properties/${encodeURIComponent(propertyId)}:runReport`;
+        const response = await allowlistedFetch(
+          url,
+          extraHosts,
+          {
+            method: "POST",
+            headers: { authorization: `Bearer ${access}`, "content-type": "application/json" },
+            body: JSON.stringify({
+              dateRanges: [{ startDate: `${window}daysAgo`, endDate: "today" }],
+              dimensions: [{ name: "date" }],
+              metrics: [{ name: "sessions" }, { name: "activeUsers" }, { name: "ecommercePurchases" }],
+              limit: 400,
+            }),
+            timeoutMs: 20_000,
+          },
+          fetchImpl,
+        );
+        if (!response.ok) return emptyDaily("ga4", `ga4_http_${response.status}`, true);
+        const json = (await response.json()) as {
+          rows?: Array<{ dimensionValues?: Array<{ value?: string }>; metricValues?: Array<{ value?: string }> }>;
+        };
+        const points: DailyMetricPoint[] = (json.rows ?? []).map((row) => {
+          const sessions = metric(row, 0) ?? 0;
+          const users = metric(row, 1) ?? 0;
+          const purchases = metric(row, 2) ?? 0;
+          return {
+            day: ga4Day(String(row.dimensionValues?.[0]?.value ?? "")),
+            metrics: { sessions, users, purchases },
+            status: sessions + users + purchases > 0 ? "ok" : "zero",
+          };
+        });
+        return { configured: true, ok: true, source: "ga4", fetched_at: new Date().toISOString(), points };
+      } catch (error) {
+        return emptyDaily("ga4", error instanceof Error ? error.message : "ga4_error", true);
+      }
+    },
+
+    async gscDaily(days = 90) {
+      const window = Math.min(90, Math.max(1, days));
+      if (!googleReady) return emptyDaily("gsc", "missing_google_credentials");
+      const start = isoDate(window);
+      const end = isoDate(0);
+      try {
+        const access = await token([GSC_READONLY]);
+        const encoded = encodeURIComponent(site);
+        const url = `https://searchconsole.googleapis.com/webmasters/v3/sites/${encoded}/searchAnalytics/query`;
+        const response = await allowlistedFetch(
+          url,
+          extraHosts,
+          {
+            method: "POST",
+            headers: { authorization: `Bearer ${access}`, "content-type": "application/json" },
+            body: JSON.stringify({ startDate: start, endDate: end, dimensions: ["date"], rowLimit: 250 }),
+            timeoutMs: 20_000,
+          },
+          fetchImpl,
+        );
+        if (!response.ok) return emptyDaily("gsc", `gsc_http_${response.status}`, true);
+        const json = (await response.json()) as {
+          rows?: Array<{ keys?: string[]; clicks?: number; impressions?: number; ctr?: number; position?: number }>;
+        };
+        const points: DailyMetricPoint[] = (json.rows ?? []).map((row) => {
+          const clicks = Number(row.clicks) || 0;
+          const impressions = Number(row.impressions) || 0;
+          return {
+            day: String(row.keys?.[0] ?? "").slice(0, 10),
+            metrics: { clicks, impressions, ctr: row.ctr ?? null, position: row.position ?? null },
+            status: clicks + impressions > 0 ? "ok" : "zero",
+          };
+        });
+        return { configured: true, ok: true, source: "gsc", fetched_at: new Date().toISOString(), points };
+      } catch (error) {
+        return emptyDaily("gsc", error instanceof Error ? error.message : "gsc_error", true);
       }
     },
   };

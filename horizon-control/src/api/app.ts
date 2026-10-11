@@ -118,6 +118,18 @@ export function createHttpApp(services: AppServices) {
       kpi: kpi || undefined,
     });
   });
+  app.get("/v1/metrics/series", (c) => {
+    const query = c.req.query();
+    return invoke(c, "metrics.series", {
+      metric: query.metric,
+      entity: query.entity || query.sku || undefined,
+      source: query.source || undefined,
+      range: query.range || undefined,
+      start: query.start || undefined,
+      end: query.end || undefined,
+      compare: query.compare || undefined,
+    });
+  });
   app.get("/v1/alerts", (c) => invoke(c, "alerts.list", {}));
   app.post("/v1/alerts/evaluate", (c) => invoke(c, "alerts.evaluate", {}));
   app.post("/v1/assistant/ask", async (c) => invoke(c, "assistant.ask", await c.req.json().catch(() => ({}))));

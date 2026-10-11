@@ -85,6 +85,44 @@ CREATE TABLE IF NOT EXISTS alerts (
 );
 CREATE INDEX IF NOT EXISTS alerts_status_idx ON alerts(status);
 CREATE UNIQUE INDEX IF NOT EXISTS alerts_store_rule_idx ON alerts(store_id, rule_id);
+
+-- Daily history (B2). One row per store/source/metric/day; REAL so CTR/position/revenue fit.
+CREATE TABLE IF NOT EXISTS daily_store_metrics (
+  store_id TEXT NOT NULL,
+  day TEXT NOT NULL,
+  source TEXT NOT NULL,
+  metric TEXT NOT NULL,
+  value REAL,
+  status TEXT NOT NULL DEFAULT 'ok',
+  synced_at INTEGER NOT NULL,
+  PRIMARY KEY (store_id, day, source, metric)
+);
+CREATE INDEX IF NOT EXISTS daily_store_metrics_lookup_idx ON daily_store_metrics(store_id, source, metric, day);
+
+CREATE TABLE IF NOT EXISTS daily_product_metrics (
+  store_id TEXT NOT NULL,
+  day TEXT NOT NULL,
+  parent_sku TEXT NOT NULL,
+  source TEXT NOT NULL,
+  metric TEXT NOT NULL,
+  value REAL,
+  status TEXT NOT NULL DEFAULT 'ok',
+  synced_at INTEGER NOT NULL,
+  PRIMARY KEY (store_id, day, parent_sku, source, metric)
+);
+CREATE INDEX IF NOT EXISTS daily_product_metrics_lookup_idx ON daily_product_metrics(store_id, parent_sku, source, metric, day);
+
+CREATE TABLE IF NOT EXISTS sync_state (
+  store_id TEXT NOT NULL,
+  source TEXT NOT NULL,
+  last_synced_at INTEGER,
+  last_success_at INTEGER,
+  covered_from TEXT,
+  covered_to TEXT,
+  last_status TEXT,
+  last_reason TEXT,
+  PRIMARY KEY (store_id, source)
+);
 `;
 
 function addColumn(sqlite: Database.Database, table: string, column: string, definition: string) {

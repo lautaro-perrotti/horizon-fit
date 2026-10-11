@@ -80,6 +80,37 @@ function sampleProduct(overrides: Partial<CatalogProduct> = {}): CatalogProduct 
   };
 }
 
+export const SAMPLE_TOP_BOR: CatalogProduct = {
+  id: 204,
+  parent_sku: "004-TOP-BOR",
+  sku: "004-TOP-BOR",
+  slug: "top-bordeaux",
+  name: "Top Bordeaux",
+  status: "publish",
+  categories: [{ name: "Tops", slug: "tops" }],
+  description: "Top Bordeaux",
+  short_description: "Top Bordeaux",
+  images: [],
+  attributes: { Talle: ["S", "M"], Color: ["Bordeaux"] },
+  variations: [
+    {
+      id: 205,
+      sku: "004-TOP-BOR-S",
+      name: "Top Bordeaux",
+      parent: 204,
+      in_stock: true,
+      price: { amount: "67000.00", currency: "ARS", raw: "6700000" },
+      attributes: [
+        { name: "Talle", value: "S" },
+        { name: "Color", value: "Bordeaux" },
+      ],
+      image: null,
+    },
+  ],
+  price: { amount: "67000.00", currency: "ARS", raw: "6700000" },
+  stock_status: "instock",
+};
+
 export const SAMPLE_TOP_AZU: CatalogProduct = {
   id: 99,
   parent_sku: "001-TOP-AZU",
@@ -115,7 +146,7 @@ export const SAMPLE_TOP_AZU: CatalogProduct = {
 };
 
 export function mockWoo(): CatalogAdapter {
-  const catalog = [sampleProduct(), sampleProduct({ id: 2, sku: "HF-T1", parent_sku: "HF-T1", slug: "top-test", name: "Top Test" }), SAMPLE_TOP_AZU];
+  const catalog = [sampleProduct(), sampleProduct({ id: 2, sku: "HF-T1", parent_sku: "HF-T1", slug: "top-test", name: "Top Test" }), SAMPLE_TOP_AZU, SAMPLE_TOP_BOR];
   return {
     async searchProducts(filters) {
       const q = (filters.query ?? "").toLowerCase();
@@ -140,7 +171,7 @@ export function mockWoo(): CatalogAdapter {
             item.sku === key ||
             item.parent_sku === key ||
             item.slug === key ||
-            item.variations.some((variation: { sku: string }) => variation.sku === key),
+            item.variations.some((variation: { sku: string; id: number }) => variation.sku === key || String(variation.id) === key),
         ) ?? null
       );
     },
@@ -267,6 +298,12 @@ export function mockAnalytics(
     },
     async gscProduct() {
       return { ...EMPTY_GSC_PRODUCT, ...extra.gscProduct };
+    },
+    async ga4Daily() {
+      return { configured: false, ok: false, reason: "missing_google_credentials", source: "ga4" as const, fetched_at: null, points: [] };
+    },
+    async gscDaily() {
+      return { configured: false, ok: false, reason: "missing_google_credentials", source: "gsc" as const, fetched_at: null, points: [] };
     },
   };
 }

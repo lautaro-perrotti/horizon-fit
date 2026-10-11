@@ -77,7 +77,7 @@ describe("scope matrix", () => {
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const listed = await request(app, "/v1/tools", { token });
     const body = await listed.json();
-    expect(body.tools).toHaveLength(22);
+    expect(body.tools).toHaveLength(23);
   });
 
   it("dashboard client can call health, catalog, commerce, alerts, seo; not merchant or repo", async () => {

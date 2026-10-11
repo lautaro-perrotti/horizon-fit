@@ -58,15 +58,19 @@ describe("Product 360 insights.get_product", () => {
     const body = await byVariant.json();
     expect(body.keys.parent_sku).toBe("001-TOP-AZU");
     expect(body.keys.kind).toBe("variant_sku");
+    expect(body.catalog.status).toBe("ok");
     expect(body.catalog.available).toBe(true);
     expect(body.catalog.data.stock_status).toBe("instock");
+    expect(body.sales.status).toBe("ok");
     expect(body.sales.available).toBe(true);
     expect(body.sales.data.units).toBe(1);
     expect(body.sales.data.revenue).toBe(67000);
+    expect(body.analytics.status).toBe("not_configured");
     expect(body.analytics.available).toBe(false);
     expect(body.analytics.reason).toBe("missing_google_credentials");
-    expect(body.search.available).toBe(false);
+    expect(body.search.status).toBe("not_configured");
     expect(body.search.reason).toBe("missing_google_credentials");
+    expect(body.merchant.status).toBe("not_joined");
     expect(body.merchant.available).toBe(false);
     expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
 
@@ -119,6 +123,7 @@ describe("Product 360 insights.get_product", () => {
     const response = await request(app, "/v1/insights/products/001-TOP-AZU", { token });
     expect(response.status).toBe(200);
     const body = await response.json();
+    expect(body.analytics.status).toBe("ok");
     expect(body.analytics.available).toBe(true);
     expect(body.analytics.data.pdp_views).toBe(1420);
     expect(body.analytics.data.add_to_cart).toBe(86);
@@ -136,6 +141,7 @@ describe("Product 360 insights.get_product", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.catalog.available).toBe(true);
+    expect(body.sales.status).toBe("not_configured");
     expect(body.sales.configured).toBe(false);
     expect(body.sales.data).toBeNull();
     expect(body.sales.reason).toBe("missing_woo_rest_credentials");

@@ -97,8 +97,21 @@ export type CommerceSettings = {
   payments: CommercePayment[];
 };
 
+export type DailySalesRow = { day: string; orders: number; units: number; revenue: number };
+export type DailyProductSalesRow = DailySalesRow & { parent_sku: string };
+
+export type DailySalesBreakdown = {
+  configured: boolean;
+  reason?: string;
+  fetched_at: string | null;
+  incomplete: boolean;
+  store: DailySalesRow[];
+  products: DailyProductSalesRow[];
+};
+
 export type CommerceAdapter = {
   sales: () => Promise<CommerceSales>;
+  dailyBreakdown: () => Promise<DailySalesBreakdown>;
   settings: () => Promise<CommerceSettings>;
 };
 
@@ -142,6 +155,49 @@ const GENERAL_SETTING_IDS = new Set([
 
 function emptyBucket(currency: string): SalesBucket {
   return { orders: 0, units: 0, revenue: null, aov: null, currency };
+}
+
+function emptyDaily(reason: string, configured: boolean, fetched_at: string | null = null): DailySalesBreakdown {
+  return { configured, reason, fetched_at, incomplete: false, store: [], products: [] };
+}
+
+function utcDay(iso: string): string | null {
+  const ms = Date.parse(iso.includes("T") ? (iso.endsWith("Z") || iso.includes("+") ? iso : `${iso}Z`) : `${iso}T00:00:00Z`);
+  if (!Number.isFinite(ms)) return null;
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+export function dailyFromOrders(orders: SalesOrder[]): { store: DailySalesRow[]; products: DailyProductSalesRow[] } {
+  const store = new Map<string, { orderIds: Set<number>; units: number; revenue: number }>();
+  const products = new Map<string, { orderIds: Set<number>; units: number; revenue: number }>();
+  for (const order of orders) {
+    const day = utcDay(order.date);
+    if (!day) continue;
+    const storeRow = store.get(day) ?? { orderIds: new Set<number>(), units: 0, revenue: 0 };
+    storeRow.orderIds.add(order.id);
+    storeRow.units += order.items.reduce((sum, line) => sum + line.quantity, 0);
+    storeRow.revenue += order.revenue ?? 0;
+    store.set(day, storeRow);
+    for (const line of order.items) {
+      const key = `${day}\t${line.parent_sku}`;
+      const row = products.get(key) ?? { orderIds: new Set<number>(), units: 0, revenue: 0 };
+      row.orderIds.add(order.id);
+      row.units += line.quantity;
+      row.revenue += line.line_total ?? 0;
+      products.set(key, row);
+    }
+  }
+  return {
+    store: [...store.entries()]
+      .map(([day, row]) => ({ day, orders: row.orderIds.size, units: row.units, revenue: row.revenue }))
+      .sort((a, b) => a.day.localeCompare(b.day)),
+    products: [...products.entries()]
+      .map(([key, row]) => {
+        const [day, parent_sku] = key.split("\t");
+        return { day, parent_sku, orders: row.orderIds.size, units: row.units, revenue: row.revenue };
+      })
+      .sort((a, b) => a.day.localeCompare(b.day) || a.parent_sku.localeCompare(b.parent_sku)),
+  };
 }
 
 function emptySales(reason: string, configured: boolean, currency = "ARS"): CommerceSales {
@@ -272,7 +328,7 @@ export function createCommerceAdapter(options: {
   const secret = options.secret?.trim() ?? "";
   const user = options.user?.trim() ?? "";
   const appPassword = options.appPassword?.trim() ?? "";
-  let cache: { at: number; value: CommerceSales } | null = null;
+  let cache: { at: number; value: CommerceSales; orders: SalesOrder[] } | null = null;
 
   function credentials(): { header: string } | null {
     if (key && secret) return { header: basicAuth(key, secret) };
@@ -462,8 +518,22 @@ export function createCommerceAdapter(options: {
         recent_orders: mapped.slice(0, 10),
         products: rollups,
       };
-      cache = { at: Date.now(), value };
+      cache = { at: Date.now(), value, orders: mapped };
       return value;
+    },
+    async dailyBreakdown() {
+      const sales = await this.sales();
+      if (!sales.configured) return emptyDaily(sales.reason ?? "missing_woo_rest_credentials", false);
+      if (sales.reason && !cache?.orders.length) return emptyDaily(sales.reason, true, sales.fetched_at);
+      const buckets = dailyFromOrders(cache?.orders ?? []);
+      return {
+        configured: true,
+        reason: sales.reason,
+        fetched_at: sales.fetched_at,
+        incomplete: sales.incomplete,
+        store: buckets.store,
+        products: buckets.products,
+      };
     },
     async settings() {
       const blank: CommerceSettings = {

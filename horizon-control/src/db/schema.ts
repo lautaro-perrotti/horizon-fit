@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, primaryKey } from "drizzle-orm/sqlite-core";
 
 export const jobs = sqliteTable("jobs", {
   id: text("id").primaryKey(),
@@ -73,4 +73,58 @@ export const alerts = sqliteTable("alerts", {
   updatedAt: integer("updated_at").notNull(),
 });
 
-export const schema = { jobs, auditEvents, idempotencyKeys, stores, metricSnapshots, alerts };
+export const dailyStoreMetrics = sqliteTable(
+  "daily_store_metrics",
+  {
+    storeId: text("store_id").notNull(),
+    day: text("day").notNull(),
+    source: text("source").notNull(),
+    metric: text("metric").notNull(),
+    value: real("value"),
+    status: text("status").notNull(),
+    syncedAt: integer("synced_at").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.day, table.source, table.metric] })],
+);
+
+export const dailyProductMetrics = sqliteTable(
+  "daily_product_metrics",
+  {
+    storeId: text("store_id").notNull(),
+    day: text("day").notNull(),
+    parentSku: text("parent_sku").notNull(),
+    source: text("source").notNull(),
+    metric: text("metric").notNull(),
+    value: real("value"),
+    status: text("status").notNull(),
+    syncedAt: integer("synced_at").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.day, table.parentSku, table.source, table.metric] })],
+);
+
+export const syncState = sqliteTable(
+  "sync_state",
+  {
+    storeId: text("store_id").notNull(),
+    source: text("source").notNull(),
+    lastSyncedAt: integer("last_synced_at"),
+    lastSuccessAt: integer("last_success_at"),
+    coveredFrom: text("covered_from"),
+    coveredTo: text("covered_to"),
+    lastStatus: text("last_status"),
+    lastReason: text("last_reason"),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.source] })],
+);
+
+export const schema = {
+  jobs,
+  auditEvents,
+  idempotencyKeys,
+  stores,
+  metricSnapshots,
+  alerts,
+  dailyStoreMetrics,
+  dailyProductMetrics,
+  syncState,
+};

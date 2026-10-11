@@ -24,6 +24,7 @@ export type ProductIdentity = {
   parent_sku: string;
   variant_sku: string | null;
   product_id: number | null;
+  variation_id: number | null;
   slug: string | null;
   canonical_url: string | null;
 };
@@ -68,7 +69,7 @@ export function parseProductRef(raw: string): ParsedProductRef | null {
       return null;
     }
     const host = parsed.hostname.replace(/^www\./i, "").toLowerCase();
-    if (host !== "horizonfit.com.ar") return null;
+    if (host !== "horizonfit.com.ar" && host !== "api.horizonfit.com.ar") return null;
     const slug = slugFromPath(parsed.pathname);
     if (!slug) return null;
     return {
@@ -153,13 +154,21 @@ export async function resolveProductIdentity(
   const product = await catalog.getProduct(parsed.lookup);
   if (!product) return null;
   const slug = product.slug || parsed.slug_hint;
+  // A numeric ref may be a variation id: the catalog resolves it to the parent, we keep the variant.
+  const variation =
+    parsed.kind === "product_id" && parsed.product_id != null && parsed.product_id !== product.id
+      ? product.variations.find((row) => row.id === parsed.product_id) ?? null
+      : parsed.variant_sku
+        ? product.variations.find((row) => row.sku.toUpperCase() === parsed.variant_sku!.toUpperCase()) ?? null
+        : null;
   return {
     identity: {
       input: parsed.input,
       kind: parsed.kind,
-      parent_sku: product.parent_sku || parsed.parent_sku_hint || product.sku,
-      variant_sku: parsed.variant_sku,
+      parent_sku: (product.parent_sku || parsed.parent_sku_hint || product.sku).toUpperCase(),
+      variant_sku: variation?.sku || parsed.variant_sku,
       product_id: product.id || parsed.product_id,
+      variation_id: variation?.id ?? null,
       slug: slug || null,
       canonical_url: canonicalUrl(slug),
     },

@@ -25,13 +25,16 @@ function rowToJob(row: typeof jobs.$inferSelect): JobRecord {
   };
 }
 
-export const ALLOWED_JOB_TYPES = ["seo.audit", "tests.run", "merchant.audit"] as const;
+export const ALLOWED_JOB_TYPES = ["seo.audit", "tests.run", "merchant.audit", "sales.sync", "ga4.sync", "gsc.sync"] as const;
 export type AllowedJobType = (typeof ALLOWED_JOB_TYPES)[number];
 
 const DEFAULTS: Record<AllowedJobType, { timeoutMs: number; maxAttempts: number }> = {
   "seo.audit": { timeoutMs: 600_000, maxAttempts: 1 },
   "tests.run": { timeoutMs: 120_000, maxAttempts: 1 },
   "merchant.audit": { timeoutMs: 15_000, maxAttempts: 1 },
+  "sales.sync": { timeoutMs: 60_000, maxAttempts: 1 },
+  "ga4.sync": { timeoutMs: 45_000, maxAttempts: 1 },
+  "gsc.sync": { timeoutMs: 45_000, maxAttempts: 1 },
 };
 
 export function createJobQueue(db: HorizonDb) {

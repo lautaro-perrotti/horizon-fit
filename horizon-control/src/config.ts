@@ -236,6 +236,7 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "commerce.sales": "commerce.read",
   "commerce.settings": "commerce.read",
   "metrics.snapshots": "metrics.read",
+  "metrics.series": "metrics.read",
   "alerts.list": "alerts.read",
   "alerts.evaluate": "alerts.read",
   "assistant.ask": "alerts.read",

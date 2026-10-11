@@ -33,6 +33,7 @@ export type ToolName =
   | "commerce.sales"
   | "commerce.settings"
   | "metrics.snapshots"
+  | "metrics.series"
   | "alerts.list"
   | "alerts.evaluate"
   | "assistant.ask"

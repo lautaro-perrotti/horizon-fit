@@ -6,7 +6,7 @@ import { alerts, metricSnapshots } from "../db/schema.js";
 import type { CatalogAdapter } from "./woo.js";
 import type { CommerceAdapter, CommerceSales } from "./commerce.js";
 import type { HealthAdapter } from "./health.js";
-import type { JobQueue } from "../jobs/queue.js";
+import type { AllowedJobType, JobQueue } from "../jobs/queue.js";
 import type { SeoReportAdapter, SeoSummary } from "./seo-report.js";
 import { summaryFromJobResult } from "./seo-report.js";
 import type { AnalyticsAdapter, Ga4Report, GscReport } from "./analytics.js";
@@ -16,6 +16,11 @@ const STORE_ID = "horizon-fit";
 const SEO_WARNING_THRESHOLD = 5;
 const SEO_STALE_HOURS = 24;
 const SEO_SCHEDULE_MS = 12 * 3_600_000;
+const SYNC_TTL_MS: Record<"sales.sync" | "ga4.sync" | "gsc.sync", number> = {
+  "sales.sync": 2 * 60_000,
+  "ga4.sync": 30 * 60_000,
+  "gsc.sync": 12 * 3_600_000,
+};
 
 export type AlertRecord = {
   id: string;
@@ -249,6 +254,20 @@ export function createWarehouse(options: {
           actor: "worker",
           clientId: "horizon-control",
         });
+      }
+
+      for (const type of ["sales.sync", "ga4.sync", "gsc.sync"] as const) {
+        const busy = jobs.some((job) => job.type === type && (job.status === "queued" || job.status === "running"));
+        const latest = await options.jobs.latestOfType(type);
+        const last = latest?.status === "succeeded" ? latest.finishedAt ?? latest.createdAt : 0;
+        if (!busy && (!last || Date.now() - last > SYNC_TTL_MS[type])) {
+          await options.jobs.enqueue({
+            type: type as AllowedJobType,
+            args: { scheduled: true },
+            actor: "worker",
+            clientId: "horizon-control",
+          });
+        }
       }
 
       const [gsc, ga4, competitors] = await Promise.all([

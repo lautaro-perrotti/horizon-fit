@@ -2,6 +2,34 @@ import { describe, expect, it } from "vitest";
 import { parseProductRef, parentSkuFromVariant, resolveProductIdentity } from "../src/adapters/product-identity.js";
 import { mockWoo } from "./helpers.js";
 
+describe("004-TOP-BOR identity regression", () => {
+  it("resolves parent SKU, variant SKU, Woo id, variation id, slug, and PDP URL to one parent", async () => {
+    const catalog = mockWoo();
+    const refs = [
+      "004-TOP-BOR",
+      "004-TOP-BOR-S",
+      "204",
+      "205",
+      "top-bordeaux",
+      "https://horizonfit.com.ar/product/top-bordeaux/",
+    ];
+    for (const ref of refs) {
+      const resolved = await resolveProductIdentity(catalog, ref);
+      expect(resolved?.identity.parent_sku, ref).toBe("004-TOP-BOR");
+      expect(resolved?.identity.slug, ref).toBe("top-bordeaux");
+      expect(resolved?.identity.canonical_url, ref).toBe("https://horizonfit.com.ar/product/top-bordeaux/");
+      expect(resolved?.identity.product_id, ref).toBe(204);
+    }
+    const variant = await resolveProductIdentity(catalog, "004-TOP-BOR-S");
+    expect(variant?.identity.kind).toBe("variant_sku");
+    expect(variant?.identity.variant_sku).toBe("004-TOP-BOR-S");
+    const byVariationId = await resolveProductIdentity(catalog, "205");
+    expect(byVariationId?.identity.kind).toBe("product_id");
+    expect(byVariationId?.identity.variation_id).toBe(205);
+    expect(byVariationId?.identity.variant_sku).toBe("004-TOP-BOR-S");
+  });
+});
+
 describe("resolveProductIdentity", () => {
   it("maps variation SKU, parent SKU, Woo id, slug, and PDP URL onto 001-TOP-AZU", async () => {
     expect(parentSkuFromVariant("001-TOP-AZU-S")).toBe("001-TOP-AZU");

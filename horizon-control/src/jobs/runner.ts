@@ -2,6 +2,10 @@ import { SEO_AUDIT_ORIGIN } from "../config.js";
 import type { Config } from "../config.js";
 import type { MerchantAdapter } from "../adapters/merchant.js";
 import type { SeoReportAdapter } from "../adapters/seo-report.js";
+import { runGa4Sync, runGscSync, runSalesSync } from "../adapters/sync.js";
+import type { CommerceAdapter } from "../adapters/commerce.js";
+import type { AnalyticsAdapter } from "../adapters/analytics.js";
+import type { HistoryStore } from "../adapters/history.js";
 import { runTypedJob } from "../adapters/process.js";
 import type { AllowedJobType } from "./queue.js";
 import { sanitizeError } from "../auth/redact.js";
@@ -20,6 +24,9 @@ export function createDefaultJobRunner(options: {
   config: Config;
   merchant: MerchantAdapter;
   seo?: SeoReportAdapter;
+  commerce?: CommerceAdapter;
+  analytics?: AnalyticsAdapter;
+  history?: HistoryStore;
 }): JobRunner {
   const repo = options.config.repoPath || process.cwd();
 
@@ -72,6 +79,16 @@ export function createDefaultJobRunner(options: {
           error: snapshot.error,
         },
       };
+    }
+    if (type === "sales.sync" || type === "ga4.sync" || type === "gsc.sync") {
+      if (!options.history || !options.commerce || !options.analytics) throw new Error("sync_adapters_missing");
+      const extra =
+        type === "sales.sync"
+          ? await runSalesSync(options.commerce, options.history)
+          : type === "ga4.sync"
+            ? await runGa4Sync(options.analytics, options.history)
+            : await runGscSync(options.analytics, options.history);
+      return { stdout: extra.status, stderr: extra.reason ?? "", exitCode: 0, extra };
     }
     throw new Error(`unsupported_job_type:${type}`);
   };
