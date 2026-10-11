@@ -28,6 +28,8 @@ import { createAuditLog } from "./audit/log.js";
 import { createJobQueue } from "./jobs/queue.js";
 import { createDefaultJobRunner, startJobWorker, type JobRunner } from "./jobs/runner.js";
 import type { AppServices } from "./app-context.js";
+import { backupControl } from "./observability/backup.js";
+import { logJson } from "./observability/log.js";
 
 export type CreateServicesOptions = {
   config?: Config;
@@ -234,16 +236,29 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       userTokenBudget: config.HORIZON_AI_BUDGET_TOKENS_USER_DAILY,
     });
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
+  let backupTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {
     evaluateTimer = setInterval(() => {
       void warehouse.evaluate().catch(() => undefined);
     }, 60_000);
     evaluateTimer.unref?.();
+    if (config.HORIZON_BACKUP_DIR.trim() && config.sqlitePath !== ":memory:") {
+      backupTimer = setInterval(() => {
+        void backupControl({ sqlitePath: config.sqlitePath, destDir: config.HORIZON_BACKUP_DIR, envPath: process.env.HORIZON_ENV_FILE }).then((result) => {
+          logJson(result.ok ? "info" : "warn", "backup", { ok: result.ok, reason: result.reason ?? null });
+        });
+      }, 6 * 3_600_000);
+      backupTimer.unref?.();
+    }
   }
   function stopBackground() {
     if (evaluateTimer) {
       clearInterval(evaluateTimer);
       evaluateTimer = null;
+    }
+    if (backupTimer) {
+      clearInterval(backupTimer);
+      backupTimer = null;
     }
   }
   function closeDb() {

@@ -9,6 +9,7 @@ import { protectedResourceMetadata, wwwAuthenticate } from "../auth/metadata.js"
 import { dispatchCommand } from "../core/commands/index.js";
 import { toolsForPrincipal } from "../auth/scopes.js";
 import type { AuthPrincipal, ToolName } from "../types.js";
+import { logJson, requestIdFrom } from "../observability/log.js";
 
 type Variables = { principal: AuthPrincipal };
 
@@ -25,11 +26,39 @@ export function createHttpApp(services: AppServices) {
   app.get("/.well-known/oauth-protected-resource", (c) => c.json(protectedResourceMetadata(config)));
   app.get("/.well-known/oauth-protected-resource/mcp", (c) => c.json(protectedResourceMetadata(config)));
 
+  app.use("*", async (c, next) => {
+    const id = requestIdFrom(c.req.header("x-request-id"));
+    c.header("x-request-id", id);
+    const started = Date.now();
+    await next();
+    logJson("info", "http", {
+      request_id: id,
+      method: c.req.method,
+      path: c.req.path,
+      status: c.res.status,
+      ms: Date.now() - started,
+    });
+  });
+
   app.get("/healthz", (c) =>
     c.json({
       ok: true,
       service: "horizon-control",
       bind: config.HORIZON_BIND,
+      request_id: c.res.headers.get("x-request-id"),
+      mcp: { path: "/mcp", advertised: true },
+      worker: { last_tick_at: services.worker.lastTickAt, stopped: services.worker.stopped },
+      integrations: {
+        woo: Boolean(config.HORIZON_WOO_KEY && config.HORIZON_WOO_SECRET),
+        google: Boolean(config.HORIZON_GOOGLE_SA_PATH || config.HORIZON_GOOGLE_SA_JSON),
+        ga4: Boolean(config.HORIZON_GA4_PROPERTY_ID),
+        competitors: Boolean(config.HORIZON_COMPETITOR_URLS.trim()),
+        ai: services.gateway.listModels().configured,
+      },
+      gateway: {
+        configured: services.gateway.listModels().configured,
+        reason: services.gateway.listModels().reason ?? null,
+      },
     }),
   );
   app.get("/health", (c) =>

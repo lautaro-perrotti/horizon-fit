@@ -46,6 +46,7 @@ const envSchema = z.object({
   HORIZON_OLLAMA_BASE_URL: z.string().default(""),
   HORIZON_AI_BUDGET_USD_DAILY: z.coerce.number().default(5),
   HORIZON_AI_BUDGET_TOKENS_USER_DAILY: z.coerce.number().default(100_000),
+  HORIZON_BACKUP_DIR: z.string().default(""),
   PHP_BIN: z.string().default("php"),
   NODE_BIN: z.string().default("node"),
 });

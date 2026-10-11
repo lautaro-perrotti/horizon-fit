@@ -107,6 +107,16 @@ curl -sS "$HORIZON_CONTROL_URL/mcp" \
 
 CLI equivalent (HTTP `/v1`, still JWT): `HORIZON_CONTROL_TOKEN=$HORIZON_E2E_TOKEN npm run cli -- catalog get 001-TOP-AZU`
 
+## Deploy / rollback (Control only)
+
+1. Pull `feat/horizon-control` on the control-plane worktree. Do not touch `/root/horizon-fit` `main`.
+2. `cd horizon-control && npm ci && npm test && npm run typecheck`
+3. `systemctl restart horizon-control`
+4. `curl -fsS http://127.0.0.1:8787/healthz` then `npm run smoke` from a tailnet PC with `HORIZON_CONTROL_URL` and Admin JWT.
+5. Rollback: `git checkout` the previous Control commit, `npm ci`, restart the unit. Shop compose and public nginx stay untouched.
+
+Backup: `HORIZON_BACKUP_DIR=/var/lib/horizon-control/backups HORIZON_ENV_FILE=/etc/horizon-control.env npm run backup`. In-process timer runs every 6h when `HORIZON_BACKUP_DIR` is set. Restore: copy the `.sqlite` over the live file after stopping the unit, then start and `npm run smoke`.
+
 ## Limits (Phase 2)
 
 Public Store API has no drafts. Variations may require a second fetch. Hero/marquee may be `unavailable`. Merchant may need `HORIZON_MERCHANT_DIAGNOSTICS_PATH`. Repo ahead/behind is stale unless `HORIZON_GIT_FETCH=1`.

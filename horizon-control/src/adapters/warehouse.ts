@@ -210,6 +210,15 @@ export function createWarehouse(options: {
         payload: { ids: failed.map((job) => job.id) },
         open: failed.length > 0,
       });
+      const refresh = await options.jobs.latestOfType("sales.sync");
+      const refreshAge = refresh?.finishedAt ? Date.now() - refresh.finishedAt : null;
+      upsertAlert({
+        ruleId: "refresh_stale_sales",
+        severity: "warning",
+        title: refresh?.status === "failed" ? "sales.sync falló" : "Refresh de ventas",
+        payload: { status: refresh?.status ?? null, age_ms: refreshAge },
+        open: Boolean(refresh && (refresh.status === "failed" || (refreshAge != null && refreshAge > 6 * 3_600_000))),
+      });
 
       const latestSeoJob = await options.jobs.latestOfType("seo.audit");
       const fromJob = summaryFromJobResult(latestSeoJob?.result);
