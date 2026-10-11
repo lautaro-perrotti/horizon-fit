@@ -180,14 +180,20 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
   app.get("/app", (c) => c.redirect("/app/"));
   app.get("/app/", (c) => dashboardFile(c, "index.html"));
   app.get("/app/callback", (c) => dashboardFile(c, "index.html"));
+  app.get("/app/vendor/:file", (c) => dashboardFile(c, path.join("vendor", c.req.param("file"))));
   app.get("/app/:file", (c) => dashboardFile(c, c.req.param("file")));
 }
 
 function dashboardFile(c: Context, name: string) {
-  const file = name === "callback" || name === "" ? "index.html" : path.basename(name);
-  if (!file || file.includes("..")) return c.json({ error: "not_found" }, 404);
+  const raw = name === "callback" || name === "" ? "index.html" : name.replaceAll("\\", "/");
+  const parts = raw.split("/").filter(Boolean);
+  if (!parts.length || parts.some((part) => part === ".." || part === "." || part.startsWith("."))) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  if (parts.length > 2) return c.json({ error: "not_found" }, 404);
+  if (parts.length === 2 && parts[0] !== "vendor") return c.json({ error: "not_found" }, 404);
   const root = path.resolve(DASHBOARD_DIR);
-  const resolved = path.resolve(root, file);
+  const resolved = path.resolve(root, ...parts);
   if (resolved !== root && !resolved.startsWith(root + path.sep)) {
     return c.json({ error: "not_found" }, 404);
   }

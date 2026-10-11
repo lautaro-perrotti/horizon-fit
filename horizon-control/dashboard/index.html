@@ -54,7 +54,18 @@
         <main>
           <section id="panel-overview" class="panel">
             <p class="src" style="margin:0 0 10px">Source: insights.overview · revenue · demand · conversion · opportunities · problems</p>
+            <div id="execAnswers" class="exec-answers"></div>
             <div id="overviewBlocks" class="overview-blocks"></div>
+            <div class="chart-toolbar">
+              <span class="src">HorizonChart · /v1/metrics/series · ECharts vendored</span>
+              <div class="chart-ranges" id="chartRanges">
+                <button type="button" data-range="7d">7d</button>
+                <button type="button" data-range="28d" class="active">28d</button>
+                <button type="button" data-range="90d">90d</button>
+              </div>
+              <label class="src"><input id="chartCompare" type="checkbox" checked /> comparar ventana previa</label>
+            </div>
+            <div id="chartGrid" class="chart-grid"></div>
             <div class="overview">
               <div class="col">
                 <article class="card">
@@ -269,6 +280,7 @@
         </aside>
       </div>
     </div>
-    <script src="/app/app.js?v=p360-b3" type="module"></script>
+    <script src="/app/vendor/echarts.min.js"></script>
+    <script src="/app/app.js?v=p360-b4" type="module"></script>
   </body>
 </html>

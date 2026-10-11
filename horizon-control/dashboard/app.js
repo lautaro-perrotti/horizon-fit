@@ -1,3 +1,5 @@
+import { CHART_CATALOG, executiveAnswers, renderHorizonChart } from "./charts.js";
+
 const TOKEN_KEY = "horizon_dashboard_token";
 const DEFAULT_STOREFRONT = "https://horizonfit.com.ar";
 const COLLECTION_PATH = "/coleccion/";
@@ -487,10 +489,65 @@ function renderOverviewBlocks(data) {
     )}</article>`;
 }
 
+let chartRange = "28d";
+let chartCompare = true;
+
+function renderExecutive(overview, changes) {
+  if (!$("execAnswers")) return;
+  const answers = executiveAnswers({
+    revenueStatus: overview.revenue?.status || "unknown",
+    demandStatus: overview.demand?.status || "unknown",
+    conversionStatus: overview.conversion?.status || "unknown",
+    problems: overview.problems?.data?.items ?? [],
+    opportunitiesStatus: overview.opportunities?.status || "not_joined",
+    changes,
+  });
+  const card = (title, body) =>
+    `<article class="card"><h2>${esc(title)}</h2>${
+      Array.isArray(body) ? `<ul>${body.map((row) => `<li>${esc(row)}</li>`).join("")}</ul>` : `<p>${esc(body)}</p>`
+    }</article>`;
+  $("execAnswers").innerHTML = [
+    card("Cómo vamos", answers.how_are_we_doing),
+    card("Qué cambió", answers.what_changed),
+    card("Qué está mal", answers.what_is_wrong),
+    card("Qué funciona", answers.what_works),
+    card("Qué hacer hoy", answers.what_to_do_today),
+  ].join("");
+}
+
+async function loadCharts(overview) {
+  if (!$("chartGrid")) return;
+  const compare = chartCompare ? "previous" : "none";
+  const echarts = window.echarts;
+  $("chartGrid").innerHTML = CHART_CATALOG.map((spec) => `<article class="card" data-chart="${esc(spec.id)}"></article>`).join("");
+  const changes = [];
+  for (const spec of CHART_CATALOG) {
+    const node = $("chartGrid").querySelector(`[data-chart="${spec.id}"]`);
+    if (spec.kind === "deferred") {
+      renderHorizonChart(node, spec, null, echarts);
+      continue;
+    }
+    if (spec.kind === "funnel") {
+      const ga4 = await api("/v1/analytics/ga4").catch(() => null);
+      renderHorizonChart(node, spec, ga4, echarts);
+      continue;
+    }
+    const series = await api(`/v1/metrics/series?metric=${encodeURIComponent(spec.metric)}&range=${chartRange}&compare=${compare}`).catch(
+      () => null,
+    );
+    renderHorizonChart(node, spec, series, echarts);
+    if (series) {
+      changes.push({ title: spec.title, delta: series.delta, delta_pct: series.delta_pct, status: series.current?.status });
+    }
+  }
+  if (overview) renderExecutive(overview, changes);
+}
+
 async function loadInsightsOverview() {
   if (!$("overviewBlocks")) return;
   const data = await api("/v1/insights/overview");
   renderOverviewBlocks(data);
+  await loadCharts(data);
 }
 
 async function loadMerchant() {
@@ -1027,6 +1084,17 @@ async function boot() {
   $("logoutBtn").addEventListener("click", () => {
     setToken("");
     location.href = "/app/";
+  });
+  $("chartRanges")?.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-range]");
+    if (!btn) return;
+    chartRange = btn.dataset.range;
+    $("chartRanges").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
+    void loadOverview().catch(() => undefined);
+  });
+  $("chartCompare")?.addEventListener("change", (event) => {
+    chartCompare = Boolean(event.target.checked);
+    void loadOverview().catch(() => undefined);
   });
   $("tabNav").addEventListener("click", (event) => {
     const btn = event.target.closest("[data-tab]");
