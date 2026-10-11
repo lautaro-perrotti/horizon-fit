@@ -71,9 +71,12 @@ describe("HorizonChart states", () => {
     const page = await request(app, "/app/");
     const html = await page.text();
     expect(html).toMatch(/\/app\/vendor\/echarts\.min\.js/);
-    expect(html).toMatch(/HorizonChart/);
-    expect(html).toMatch(/Cómo vamos|execAnswers/);
     expect(html).not.toMatch(/\$214\.000/);
+    const hoy = await (await request(app, "/app/views/hoy.js")).text();
+    expect(hoy).toMatch(/Cómo vamos/);
+    expect(hoy).toMatch(/Qué hacer hoy/);
+    const chart = await (await request(app, "/app/ui/chart.js")).text();
+    expect(chart).toMatch(/connectNulls: false/);
   });
 
   it("series used by charts still leaves gaps as unknown", async () => {

@@ -8,39 +8,38 @@ describe("dashboard SPA + commerce warehouse", () => {
     const page = await request(app, "/app/");
     expect(page.status).toBe(200);
     const html = await page.text();
-    expect(html).toMatch(/Overview/);
-    expect(html).toMatch(/Sitio/);
-    expect(html).toMatch(/Salud general/);
-    expect(html).toMatch(/Catálogo/);
-    expect(html).toMatch(/Operaciones/);
-    expect(html).toMatch(/Consulta/);
-    expect(html).toMatch(/siteFrame/);
-    expect(html).toMatch(/Horizon Fit/);
-    expect(html).toMatch(/Plus\+Jakarta\+Sans/);
-    expect(html).toMatch(/Auditar ahora/);
-    expect(html).toMatch(/Competencia/);
-    expect(html).toMatch(/Oportunidades/);
-    expect(html).toMatch(/Contenido/);
-    expect(html).toMatch(/Clientes/);
-    expect(html).toMatch(/Campañas/);
-    expect(html).toMatch(/customers\.list/);
-    expect(html).toMatch(/campaigns\.list/);
-    expect(html).toMatch(/ads\.status/);
-    expect(html).toMatch(/content\.list_drafts/);
-    expect(html).toMatch(/growth\.list_opportunities/);
-    expect(html).toMatch(/competition\.list/);
-    expect(html).toMatch(/competition\.changes/);
-    expect(html).toMatch(/Product 360/);
-    expect(html).toMatch(/insights\.get_product/);
-    expect(html).toMatch(/insights\.overview/);
-    expect(html).toMatch(/HorizonChart/);
+    for (const id of ['id="rail"', 'id="topbar"', 'id="view"', 'id="consulta"', 'id="login"', 'id="palette-root"']) {
+      expect(html).toContain(id);
+    }
+    expect(html).toMatch(/\/app\/tokens\.css/);
     expect(html).toMatch(/\/app\/vendor\/echarts\.min\.js/);
-    expect(html).toMatch(/merchant\.get_diagnostics/);
-    expect(html).toMatch(/line items \/ SKU/);
-    expect(html).not.toMatch(/GA4 no conectado\. No hay adapter/);
-    expect(html).not.toMatch(/Bloqueado hoy/);
     expect(html).toMatch(/\/app\/app\.js/);
+    expect(html).not.toMatch(/fonts\.googleapis|Plus\+Jakarta\+Sans/);
+    expect(html).not.toMatch(/<script>(?!<)/);
     expect(html).not.toMatch(/\$214\.000/);
+
+    // Every screen and the tools it reads come from one registry module.
+    const registry = await (await request(app, "/app/core/views.js")).text();
+    for (const label of ["Hoy", "Oportunidades", "Alertas", "Catálogo", "Product 360", "Sitio", "Contenido", "Demanda", "SEO", "Merchant", "Competencia", "Ventas", "Clientes", "Campañas", "Operaciones"]) {
+      expect(registry).toContain(`label: "${label}"`);
+    }
+    for (const tool of [
+      "customers.list",
+      "campaigns.list",
+      "ads.status",
+      "content.list_drafts",
+      "growth.list_opportunities",
+      "competition.list",
+      "competition.changes",
+      "insights.get_product",
+      "insights.overview",
+      "merchant.get_diagnostics",
+      "seo.audit",
+      "commerce.sales",
+      "storefront.get_config",
+    ]) {
+      expect(registry).toContain(`"${tool}"`);
+    }
 
     const cfg = await request(app, "/app/config.json");
     expect(cfg.status).toBe(200);
@@ -57,6 +56,7 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.scopes).toMatch(/openid/);
     expect(body.storefrontUrl).toBe("https://horizonfit.com.ar");
     expect(body.wpAdminUrl).toMatch(/wp-admin/);
+    expect(body.fixtures).toBe(false);
   });
 
   it("sales returns configured:false when Woo REST keys are missing", async () => {

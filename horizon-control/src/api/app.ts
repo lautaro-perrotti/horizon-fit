@@ -221,9 +221,50 @@ const DASHBOARD_MIME: Record<string, string> = {
   ".js": "text/javascript; charset=utf-8",
   ".svg": "image/svg+xml",
   ".json": "application/json",
+  ".woff2": "font/woff2",
+  ".png": "image/png",
 };
+/** Subfolders the SPA may load from. `dev/` (fixtures) is added only in local fixture mode. */
+const DASHBOARD_DIRS = new Set(["vendor", "core", "ui", "views", "fonts"]);
+const DASHBOARD_BINARY = new Set([".woff2", ".png"]);
+const DASHBOARD_LONG_CACHE = new Set(["vendor", "fonts"]);
+
+type DashboardOptions = { fixtures: boolean; csp: string };
+
+function originOf(raw: string): string | null {
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return null;
+  }
+}
+
+/** Strict CSP for /app: own scripts only, storefront in the Sitio frame, Auth0 for the token exchange. */
+export function dashboardCsp(config: AppServices["config"]): string {
+  const storefront = originOf(config.storefrontUrl);
+  const api = originOf(config.wooBaseUrl);
+  const issuer = originOf(config.HORIZON_OIDC_ISSUER);
+  const images = ["'self'", "data:", storefront, api].filter(Boolean).join(" ");
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    `img-src ${images}`,
+    "font-src 'self'",
+    `connect-src ${["'self'", issuer].filter(Boolean).join(" ")}`,
+    `frame-src ${storefront ?? "'none'"}`,
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+  ].join("; ");
+}
 
 function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices["config"]) {
+  const options: DashboardOptions = {
+    fixtures: config.HORIZON_DASHBOARD_FIXTURES === "1" && config.NODE_ENV !== "production",
+    csp: dashboardCsp(config),
+  };
   app.get("/app/config.json", (c) =>
     c.json({
       issuer: config.HORIZON_OIDC_ISSUER,
@@ -236,35 +277,42 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
       apiUrl: config.wooBaseUrl,
       wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
       scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read ai.read ai.chat content.read content.write",
+      fixtures: options.fixtures,
     }),
   );
   app.get("/app", (c) => c.redirect("/app/"));
-  app.get("/app/", (c) => dashboardFile(c, "index.html"));
-  app.get("/app/callback", (c) => dashboardFile(c, "index.html"));
-  app.get("/app/vendor/:file", (c) => dashboardFile(c, path.join("vendor", c.req.param("file"))));
-  app.get("/app/:file", (c) => dashboardFile(c, c.req.param("file")));
+  app.get("/app/", (c) => dashboardFile(c, "index.html", options));
+  app.get("/app/callback", (c) => dashboardFile(c, "index.html", options));
+  app.get("/app/:dir/:file", (c) => dashboardFile(c, `${c.req.param("dir")}/${c.req.param("file")}`, options));
+  app.get("/app/:file", (c) => dashboardFile(c, c.req.param("file"), options));
 }
 
-function dashboardFile(c: Context, name: string) {
+function dashboardFile(c: Context, name: string, options: DashboardOptions) {
+  const notFound = () => c.json({ error: "not_found" }, 404);
   const raw = name === "callback" || name === "" ? "index.html" : name.replaceAll("\\", "/");
   const parts = raw.split("/").filter(Boolean);
-  if (!parts.length || parts.some((part) => part === ".." || part === "." || part.startsWith("."))) {
-    return c.json({ error: "not_found" }, 404);
-  }
-  if (parts.length > 2) return c.json({ error: "not_found" }, 404);
-  if (parts.length === 2 && parts[0] !== "vendor") return c.json({ error: "not_found" }, 404);
+  if (!parts.length || parts.some((part) => part === ".." || part === "." || part.startsWith("."))) return notFound();
+  if (parts.length > 2) return notFound();
+  if (parts.length === 2 && !DASHBOARD_DIRS.has(parts[0]) && !(options.fixtures && parts[0] === "dev")) return notFound();
   const root = path.resolve(DASHBOARD_DIR);
   const resolved = path.resolve(root, ...parts);
-  if (resolved !== root && !resolved.startsWith(root + path.sep)) {
-    return c.json({ error: "not_found" }, 404);
-  }
-  if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) {
-    return c.json({ error: "not_found" }, 404);
-  }
-  const ext = path.extname(resolved);
-  const text = fs.readFileSync(resolved, "utf8");
-  if (ext === ".html") return c.html(text);
-  if (ext === ".css") return c.text(text, 200, { "content-type": "text/css; charset=utf-8" });
-  if (ext === ".js") return c.text(text, 200, { "content-type": "text/javascript; charset=utf-8" });
-  return c.text(text, 200, { "content-type": DASHBOARD_MIME[ext] ?? "text/plain; charset=utf-8" });
+  if (resolved !== root && !resolved.startsWith(root + path.sep)) return notFound();
+  if (!fs.existsSync(resolved)) return notFound();
+  const stat = fs.statSync(resolved);
+  if (!stat.isFile()) return notFound();
+  const ext = path.extname(resolved).toLowerCase();
+  const type = DASHBOARD_MIME[ext];
+  if (!type) return notFound();
+  const etag = `W/"${stat.size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
+  const headers: Record<string, string> = {
+    "content-type": type,
+    etag,
+    "cache-control": parts.length === 2 && DASHBOARD_LONG_CACHE.has(parts[0]) ? "public, max-age=604800" : "no-cache",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "no-referrer",
+  };
+  if (ext === ".html") headers["content-security-policy"] = options.csp;
+  if (c.req.header("if-none-match") === etag) return c.body(null, 304, headers);
+  if (DASHBOARD_BINARY.has(ext)) return c.body(new Uint8Array(fs.readFileSync(resolved)), 200, headers);
+  return c.body(fs.readFileSync(resolved, "utf8"), 200, headers);
 }

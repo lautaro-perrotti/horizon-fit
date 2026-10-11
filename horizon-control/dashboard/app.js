@@ -1,1599 +1,383 @@
-import { CHART_CATALOG, executiveAnswers, renderHorizonChart } from "./charts.js";
+// Horizon Control SPA entry. Hash routes, one module per view (core/views.js), persistent chrome.
+import { api, attempt, clearCache, configureApi } from "./core/api.js";
+import * as auth from "./core/auth.js";
+import { html, mount } from "./core/html.js";
+import { createViewContext, toast } from "./core/kit.js";
+import * as prefs from "./core/prefs.js";
+import { matchRoute, navigate, parseHash, setQuery } from "./core/router.js";
+import { VIEWS, hrefFor } from "./core/views.js";
+import { renderRail, renderTopbar, updatePulse } from "./ui/shell.js";
+import { ask, focusConsulta, initConsulta, refreshConsulta } from "./ui/consulta.js";
+import { closePalette, initPalette, isPaletteOpen, openPalette } from "./ui/palette.js";
+import { empty } from "./ui/components.js";
+import { renderLogin } from "./views/login.js";
 
-const TOKEN_KEY = "horizon_dashboard_token";
-const DEFAULT_STOREFRONT = "https://horizonfit.com.ar";
-const COLLECTION_PATH = "/coleccion/";
-const HINTS = [
-  "¿Cuál es el precio del SKU 001-TOP-AZU?",
-  "¿Cómo está el SEO?",
-  "¿Cómo está el tráfico?",
-  "¿Cómo está la competencia?",
-  "Generá un gráfico de sesiones GA4",
-  "¿Hay alertas abiertas?",
-  "¿Qué oportunidades hay?",
-];
+const $ = (id) => document.getElementById(id);
+const app = {
+  cfg: null,
+  fixtures: false,
+  allowed: null,
+  current: null,
+  pulse: null,
+  badges: {},
+  consultaOpen: false,
+  user: null,
+  routeSeq: 0,
+};
 
-function $(id) {
-  return document.getElementById(id);
+function can(tool) {
+  return app.allowed ? app.allowed.has(tool) : true;
 }
 
-function esc(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+function shell() {
+  return $("app");
 }
 
-function pct(value) {
-  if (value == null || value === "") return "—";
-  const n = Number(value);
-  if (!Number.isFinite(n)) return "—";
-  return `${Math.round(n * 1000) / 10}%`;
+function setConsulta(open) {
+  app.consultaOpen = open;
+  shell().dataset.consulta = open ? "open" : "closed";
+  try {
+    localStorage.setItem("hc_consulta", open ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+  drawChrome();
+  if (open) {
+    refreshConsulta();
+    setTimeout(() => focusConsulta(), 0);
+  }
 }
 
-function money(value, currency = "ARS") {
-  if (value == null || value === "") return "—";
-  const n = Number(value);
-  if (!Number.isFinite(n)) return `${value} ${currency}`;
-  return `$${Math.round(n).toLocaleString("es-AR")} ${currency}`;
+function consultaContext() {
+  const cur = app.current;
+  const sku = cur?.view.id === "producto" && cur.params.ref ? String(cur.params.ref).toUpperCase() : null;
+  return { sku, w: cur?.win?.w };
 }
 
-function b64url(bytes) {
-  return btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+const consultaApi = {
+  open(question, context) {
+    setConsulta(true);
+    if (question) setTimeout(() => focusConsulta(context ? `${question}` : question), 0);
+  },
+  ask(question) {
+    setConsulta(true);
+    void ask(question);
+  },
+};
+
+function drawChrome() {
+  const cur = app.current;
+  renderRail($("rail"), {
+    active: cur?.view.id,
+    activeParam: cur?.view.id === "producto" ? String(cur?.params.ref ?? "").toUpperCase() : null,
+    badges: app.badges,
+    recent: prefs.recentSkus(),
+    theme: prefs.theme(),
+    user: app.user,
+    fixtures: app.fixtures,
+  });
+  renderTopbar($("topbar"), {
+    crumb: cur?.crumb ?? "Hoy",
+    win: cur?.win ?? prefs.windowFrom({}),
+    pulse: app.pulse,
+    consultaOpen: app.consultaOpen,
+    fixtures: app.fixtures,
+  });
 }
 
-function sha256bytes(msg) {
-  const K = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01,
-    0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
-    0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08,
-    0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+async function route() {
+  const seq = ++app.routeSeq;
+  const parsed = parseHash();
+  const match = matchRoute(VIEWS, parsed.segments);
+  if (!match) {
+    navigate("/", parsed.query, { replace: true });
+    return;
+  }
+  const win = prefs.windowFrom(parsed.query);
+  prefs.rememberWindow(win);
+  app.current?.ctx?.destroy();
+  const { view, params } = match;
+  const root = $("view");
+  app.current = { view, params, win, crumb: view.label, ctx: null };
+  drawChrome();
+  let mod;
+  try {
+    mod = await view.load();
+  } catch (error) {
+    mount(root, empty({ status: "error", title: "No se pudo cargar la vista", reason: String(error?.message ?? error) }));
+    return;
+  }
+  if (seq !== app.routeSeq) return;
+  const crumb = mod.crumb ? mod.crumb(params) : view.label;
+  app.current.crumb = crumb;
+  document.title = `${crumb} — Horizon Control`;
+  drawChrome();
+  mount(root, "");
+  window.scrollTo(0, 0);
+  const ctx = createViewContext({
+    root,
+    params,
+    query: parsed.query,
+    win,
+    cfg: app.cfg,
+    can,
+    nav: { go: (path, query) => navigate(path, { ...query, w: win.w, cmp: win.cmp ? undefined : "0" }), setQuery, hrefFor },
+    consulta: consultaApi,
+    setCrumb: (text) => {
+      if (!app.current || app.current.ctx !== ctx) return;
+      app.current.crumb = text;
+      document.title = `${text} — Horizon Control`;
+      drawChrome();
+    },
+    refreshBadges: () => void refreshBadges(),
+  });
+  app.current.ctx = ctx;
+  try {
+    await mod.render(ctx);
+  } catch (error) {
+    if (ctx.alive()) mount(root, empty({ status: "error", title: "La vista falló al dibujarse", reason: String(error?.message ?? error) }));
+  }
+  if (view.id === "producto" || app.consultaOpen) refreshConsulta();
+}
+
+async function refreshPulse() {
+  const [healthz, health, alerts] = await Promise.all([
+    api("/healthz", { fresh: true }).catch(() => null),
+    attempt("/v1/health", { fresh: true }),
+    attempt("/v1/alerts", { fresh: true }),
+  ]);
+  const open = alerts.ok ? (alerts.data.alerts ?? []).filter((row) => row.status === "open") : null;
+  app.pulse = {
+    site: health.ok ? health.data.storefront : null,
+    api: health.ok ? health.data.api : null,
+    control: health.ok ? health.data.status : healthz?.ok ? "healthy" : null,
+    workerAt: healthz?.worker?.last_tick_at ?? health.data?.control_plane?.worker?.last_tick_at ?? null,
+    alerts: open ? open.length : null,
+    critical: open ? open.some((row) => row.severity === "critical") : false,
+  };
+  if (open) app.badges.alerts = { count: open.length, tone: app.pulse.critical ? "bad" : "warn" };
+  updatePulse($("topbar"), app.pulse);
+}
+
+async function refreshBadges() {
+  const [opps, seo, comp] = await Promise.all([
+    can("growth.list_opportunities") ? attempt("/v1/growth/opportunities?status=open") : null,
+    can("seo.get_latest_audit") ? attempt("/v1/seo/audits/latest") : null,
+    can("competition.list") ? attempt("/v1/competition") : null,
+  ]);
+  if (opps?.ok) app.badges.opportunities = { count: (opps.data.opportunities ?? []).length };
+  if (seo?.ok) {
+    const critical = seo.data.summary?.totals?.critical ?? 0;
+    app.badges.seo = { count: critical, tone: critical ? "bad" : "" };
+  }
+  if (comp?.ok) {
+    const down = (comp.data.snapshots ?? []).filter((row) => row.error || (row.status != null && row.status >= 400)).length;
+    app.badges.competitors = { count: down, tone: "warn" };
+  }
+  drawChrome();
+}
+
+function paletteActions() {
+  const sku = consultaContext().sku;
+  return [
+    {
+      label: "Auditar SEO ahora",
+      tool: "seo.audit",
+      run: async () => {
+        try {
+          const job = await api("/v1/seo/audit", { method: "POST", body: {} });
+          toast(`Auditoría SEO ${job.status === "queued" ? "en cola" : job.status}.`);
+          location.hash = hrefFor("seo");
+        } catch (error) {
+          toast(`No se pudo auditar: ${error.message}`);
+        }
+      },
+    },
+    {
+      label: "Evaluar alertas ahora",
+      tool: "alerts.evaluate",
+      run: async () => {
+        try {
+          await api("/v1/alerts/evaluate", { method: "POST", body: {} });
+          toast("Alertas evaluadas.");
+          void refreshPulse();
+        } catch (error) {
+          toast(`No se pudo evaluar: ${error.message}`);
+        }
+      },
+    },
+    ...(sku
+      ? [
+          {
+            label: `Generar meta description para ${sku}`,
+            tool: "content.generate",
+            run: async () => {
+              try {
+                const draft = await api("/v1/content/generate", { method: "POST", body: { kind: "seo_meta", parent_sku: sku } });
+                location.hash = hrefFor("contenido", draft.id);
+              } catch (error) {
+                toast(`No se pudo generar: ${error.message}`);
+              }
+            },
+          },
+        ]
+      : []),
+    { label: prefs.theme() === "dawn" ? "Cambiar a tema Dusk" : "Cambiar a tema Dawn", run: () => toggleTheme() },
+    { label: "Colapsar o abrir el rail", run: () => toggleRail() },
   ];
-  const rotr = (n, x) => (x >>> n) | (x << (32 - n));
-  const h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-  const l = msg.length;
-  const pad = (64 - ((l + 1 + 8) % 64)) % 64;
-  const total = l + 1 + pad + 8;
-  const bytes = new Uint8Array(total);
-  bytes.set(msg);
-  bytes[l] = 0x80;
-  const view = new DataView(bytes.buffer);
-  view.setUint32(total - 8, Math.floor(l / 0x20000000), false);
-  view.setUint32(total - 4, l << 3, false);
-  const w = new Uint32Array(64);
-  for (let i = 0; i < total; i += 64) {
-    for (let t = 0; t < 16; t++) w[t] = view.getUint32(i + t * 4, false);
-    for (let t = 16; t < 64; t++) {
-      const s0 = rotr(7, w[t - 15]) ^ rotr(18, w[t - 15]) ^ (w[t - 15] >>> 3);
-      const s1 = rotr(17, w[t - 2]) ^ rotr(19, w[t - 2]) ^ (w[t - 2] >>> 10);
-      w[t] = (w[t - 16] + s0 + w[t - 7] + s1) >>> 0;
-    }
-    let a = h[0],
-      b = h[1],
-      c = h[2],
-      d = h[3],
-      e = h[4],
-      f = h[5],
-      g = h[6],
-      hh = h[7];
-    for (let t = 0; t < 64; t++) {
-      const S1 = rotr(6, e) ^ rotr(11, e) ^ rotr(25, e);
-      const ch = (e & f) ^ (~e & g);
-      const temp1 = (hh + S1 + ch + K[t] + w[t]) >>> 0;
-      const S0 = rotr(2, a) ^ rotr(13, a) ^ rotr(22, a);
-      const maj = (a & b) ^ (a & c) ^ (b & c);
-      hh = g;
-      g = f;
-      f = e;
-      e = (d + temp1) >>> 0;
-      d = c;
-      c = b;
-      b = a;
-      a = (temp1 + ((S0 + maj) >>> 0)) >>> 0;
-    }
-    h[0] = (h[0] + a) >>> 0;
-    h[1] = (h[1] + b) >>> 0;
-    h[2] = (h[2] + c) >>> 0;
-    h[3] = (h[3] + d) >>> 0;
-    h[4] = (h[4] + e) >>> 0;
-    h[5] = (h[5] + f) >>> 0;
-    h[6] = (h[6] + g) >>> 0;
-    h[7] = (h[7] + hh) >>> 0;
-  }
-  const out = new Uint8Array(32);
-  const ov = new DataView(out.buffer);
-  for (let i = 0; i < 8; i++) ov.setUint32(i * 4, h[i], false);
-  return out;
 }
 
-async function sha256(buffer) {
-  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-  return b64url(sha256bytes(bytes));
+function toggleTheme(value) {
+  prefs.setTheme(value ?? (prefs.theme() === "dawn" ? "dusk" : "dawn"));
+  void route();
 }
 
-function randomString() {
-  const bytes = crypto.getRandomValues(new Uint8Array(32));
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+function toggleRail() {
+  const next = !prefs.railCollapsed();
+  prefs.setRailCollapsed(next);
+  shell().dataset.rail = next ? "collapsed" : "open";
 }
 
-async function loadConfig() {
-  const response = await fetch("/app/config.json");
-  return response.json();
-}
-
-function token() {
-  return sessionStorage.getItem(TOKEN_KEY);
-}
-
-function setToken(value) {
-  if (value) sessionStorage.setItem(TOKEN_KEY, value);
-  else sessionStorage.removeItem(TOKEN_KEY);
-  renderAuth();
-}
-
-function renderAuth() {
-  const logged = Boolean(token());
-  $("authState").textContent = logged ? "sesión activa" : "sin sesión";
-  $("sessionDot").classList.toggle("on", logged);
-  $("loginBtn").hidden = logged;
-  $("logoutBtn").hidden = !logged;
-}
-
-async function api(path, options = {}) {
-  const headers = { accept: "application/json", ...(options.headers ?? {}) };
-  const jwt = token();
-  if (jwt) headers.authorization = `Bearer ${jwt}`;
-  const payload =
-    options.body === undefined ? undefined : typeof options.body === "string" ? options.body : JSON.stringify(options.body);
-  if (payload !== undefined) headers["content-type"] = "application/json";
-  const response = await fetch(path, { method: options.method ?? "GET", headers, body: payload });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(body.error_description || body.error || `http_${response.status}`);
-  }
-  return body;
-}
-
-function storefrontOrigin(cfg) {
-  try {
-    return new URL(cfg.storefrontUrl || DEFAULT_STOREFRONT).origin;
-  } catch {
-    return DEFAULT_STOREFRONT;
-  }
-}
-
-function safeEmbedUrl(raw, origin) {
-  try {
-    const url = new URL(raw, origin);
-    if (url.origin !== origin || (url.protocol !== "https:" && url.protocol !== "http:")) return `${origin}/`;
-    return url.toString();
-  } catch {
-    return `${origin}/`;
-  }
-}
-
-function setEmbed(cfg, pathOrUrl) {
-  const origin = storefrontOrigin(cfg);
-  const url = safeEmbedUrl(pathOrUrl || "/", origin);
-  $("siteFrame").src = url;
-  $("siteUrl").value = url;
-  $("siteOpen").href = url;
-}
-
-function renderTabs(active) {
-  $("tabNav").querySelectorAll("[data-tab]").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.tab === active);
-  });
-}
-
-function setDrawer(open) {
-  $("drawer").classList.toggle("open", open);
-  $("drawer").setAttribute("aria-hidden", open ? "false" : "true");
-  $("drawerBtn").classList.toggle("open", open);
-}
-
-function notice(text) {
-  return `<div class="notice">${text}</div>`;
-}
-
-function pip(severity) {
-  const cls = severity === "critical" ? "bad" : severity === "warning" ? "warn" : "ok";
-  return `<span class="pip ${cls}"></span>`;
-}
-
-let selectedProduct = null;
-let cfgRef = null;
-let seoSummary = null;
-
-function seoChip(slug) {
-  const page = slug && seoSummary?.pages?.find((row) => row.slug === slug || String(row.url || "").includes(`/producto/${slug}`) || String(row.url || "").includes(`/product/${slug}`));
-  if (!page) return { label: "—", cls: "scope" };
-  if (page.critical) return { label: "Error", cls: "bad" };
-  if (page.warning) return { label: "Warning", cls: "warn" };
-  return { label: "—", cls: "scope" };
-}
-
-function productRow(product) {
-  const sku = product.sku || product.parent_sku || "";
-  const category = product.categories?.[0]?.name || "—";
-  const color = product.attributes?.Color?.[0] || product.attributes?.color?.[0] || "—";
-  const seo = seoChip(product.slug);
-  return `<button type="button" class="table-row${selectedProduct?.sku === sku ? " active" : ""}" data-sku="${esc(sku)}">
-    <span style="font-weight:600">${esc(product.name)}</span>
-    <span class="mono">${esc(sku)}</span>
-    <span>${esc(category)}</span>
-    <span>${esc(color)}</span>
-    <span class="mono">${esc(product.price?.amount ?? "—")}</span>
-    <span class="${product.stock_status === "outofstock" ? "bad" : "ok"}">${product.stock_status === "outofstock" ? "Sin stock" : "Disponible"}</span>
-    <span class="${seo.cls}">${esc(seo.label)}</span>
-    <span class="scope">—</span>
-  </button>`;
-}
-
-function productMeta(product) {
-  const sku = product.sku || product.parent_sku;
-  const sizes = product.attributes?.Talle || product.attributes?.talle || [];
-  return {
-    sku,
-    category: product.categories?.[0]?.name || "—",
-    color: product.attributes?.Color?.[0] || product.attributes?.color?.[0] || "—",
-    sizes: sizes.join(" / ") || "—",
-    slug: product.slug || "",
-  };
-}
-
-function openAsk(question, context) {
-  setDrawer(true);
-  if (context) {
-    $("drawerContext").hidden = false;
-    $("drawerContext").textContent = `viendo: ${context}`;
-  }
-  $("askForm").querySelector("input").value = question;
-}
-
-function renderInspector(product) {
-  if (!product) {
-    $("siteInspector").innerHTML =
-      `<p class="muted">Elegí un producto en Catálogo para ver su inspector acá, o navegá el sitio con la barra de arriba.</p>`;
-    $("catalogDetail").innerHTML = "";
-    return;
-  }
-  const meta = productMeta(product);
-  const seo = seoChip(meta.slug);
-  $("siteInspector").innerHTML = `<div>
-    <div style="font-size:16px;font-weight:800;margin-bottom:2px">${esc(product.name)}</div>
-    <div class="mono" style="margin-bottom:16px">${esc(meta.sku)}</div>
-    <div class="item"><span class="muted">Precio</span><span class="mono">${esc(product.price?.amount ?? "—")} ${esc(product.price?.currency ?? "")}</span></div>
-    <div class="item"><span class="muted">Stock</span><span class="${product.stock_status === "outofstock" ? "bad" : "ok"}">${product.stock_status === "outofstock" ? "Sin stock" : "Disponible"}</span></div>
-    <div class="item"><span class="muted">SEO</span><span class="${seo.cls}">${esc(seo.label)}</span></div>
-    <div class="item"><span class="muted">Merchant</span><span class="scope">requiere scope</span></div>
-    <button type="button" class="ask-selected" style="margin-top:18px;width:100%;background:var(--violet);color:#fff">Preguntar a Horizon</button>
-  </div>`;
-  $("catalogDetail").innerHTML = `<article class="card detail">
-    <div class="card-head">
-      <div><span class="title">${esc(product.name)}</span> <span class="mono">${esc(meta.sku)}</span></div>
-      <span class="mono" style="font-size:21px;font-weight:700">${esc(product.price?.amount ?? "—")} ${esc(product.price?.currency ?? "")}</span>
-    </div>
-    <div class="detail-grid">
-      <div><div class="muted">Categoría</div><div style="font-weight:600">${esc(meta.category)}</div></div>
-      <div><div class="muted">Color</div><div style="font-weight:600">${esc(meta.color)}</div></div>
-      <div><div class="muted">Talles</div><div style="font-weight:600">${esc(meta.sizes)}</div></div>
-      <div><div class="muted">Stock</div><span class="${product.stock_status === "outofstock" ? "bad" : "ok"}">${product.stock_status === "outofstock" ? "Sin stock" : "Disponible"}</span></div>
-    </div>
-    <div class="detail-actions">
-      <button type="button" id="view360">Product 360</button>
-      <button type="button" id="viewPdp" style="background:var(--violet);color:#fff">Ver PDP</button>
-      <button type="button" id="askSeo">Analizar SEO</button>
-      <button type="button" id="askMerchant">Ver Merchant</button>
-      <button type="button" class="ask-selected">Preguntar a Horizon</button>
-    </div>
-  </article>`;
-  document.querySelectorAll(".ask-selected").forEach((btn) => {
-    btn.addEventListener("click", () => openAsk(`¿Cómo está ${product.name}?`, product.name));
-  });
-  $("askSeo")?.addEventListener("click", () => openAsk("¿Cómo está el SEO de este producto?", product.name));
-  $("askMerchant")?.addEventListener("click", () => openAsk("¿Tiene problemas de Merchant este producto?", product.name));
-  $("view360")?.addEventListener("click", () => {
-    const sku = meta.sku || product.parent_sku;
-    if ($("product360Q")) $("product360Q").value = sku;
-    showTab("product360", cfgRef);
-    void loadProduct360(sku).catch((error) => {
-      if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
-    });
-  });
-  $("viewPdp")?.addEventListener("click", () => {
-    if (!cfgRef) return;
-    showTab("sitio", cfgRef);
-    setEmbed(cfgRef, meta.slug ? `/producto/${meta.slug}/` : "/");
-  });
-}
-
-async function loadHealthStrip() {
-  const data = await api("/v1/health");
-  const host = (() => {
-    try {
-      return new URL(data.storefront.url || DEFAULT_STOREFRONT).host;
-    } catch {
-      return "horizonfit.com.ar";
-    }
-  })();
-  const ok = (node, label, part) => {
-    const color = part.ok ? "var(--ok)" : "var(--bad)";
-    $(node).innerHTML = `${label} <span style="color:${color}">· ${part.status ?? "—"} · ${part.latency_ms ?? "—"}ms</span>`;
-  };
-  ok("announceSite", host, data.storefront);
-  ok("announceApi", "API", data.api);
-  const cpOk = data.status === "healthy";
-  $("announceCp").innerHTML = `Control Plane <span style="color:${cpOk ? "var(--ok)" : "var(--warn)"}">· ${esc(data.status)}</span>`;
-  return data;
-}
-
-async function loadOverview() {
-  const health = await loadHealthStrip();
-  const parts = [health.storefront.ok, health.api.ok, health.db?.healthy].filter((v) => v != null);
-  const score = parts.length ? Math.round((parts.filter(Boolean).length / parts.length) * 100) : 0;
-  $("overviewHealth").innerHTML = `<svg width="120" height="70" viewBox="0 0 120 70" aria-hidden="true">
-      <path d="M10,65 A50,50 0 0 1 110,65" fill="none" stroke="oklch(0.3 0.02 75 / 0.12)" stroke-width="10" stroke-linecap="round" />
-      <path d="M10,65 A50,50 0 0 1 110,65" fill="none" stroke="oklch(0.6 0.13 150)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="${score} 100" />
-    </svg>
-    <div class="gauge-val">${score}%</div>
-    <div class="sub">${esc(health.status)} · storefront + API + DB</div>`;
-  $("healthGrid").innerHTML = [
-    ["Storefront", health.storefront.status, `${health.storefront.latency_ms ?? "—"}ms`, health.storefront.ok],
-    ["API", health.api.status, `${health.api.latency_ms ?? "—"}ms`, health.api.ok],
-    ["Control Plane", health.status, health.db?.healthy ? "DB ok" : "DB down", health.status === "healthy"],
-  ]
-    .map(
-      ([label, value, sub, good]) =>
-        `<div><div class="sub">${esc(label)}</div><div class="n ${good ? "ok" : "bad"}">${esc(value)}</div><div class="sub">${esc(sub)}</div></div>`,
-    )
-    .join("");
-
-  try {
-    const sales = await api("/v1/commerce/sales");
-    const html = !sales.configured
-      ? `<div class="empty-row"><span>Woo REST no configurado — faltan credenciales.</span><button type="button" disabled>Conectar fuente</button></div>`
-      : `<div class="metrics">
-          <div><div class="n">${esc(money(sales.today.revenue, sales.currency))}</div><div class="l">hoy · ${esc(sales.today.orders)} pedidos · ${esc(sales.today.units ?? 0)} u</div></div>
-          <div><div class="n">${esc(money(sales.week.revenue, sales.currency))}</div><div class="l">7d · ${esc(sales.week.orders)} · AOV ${esc(money(sales.week.aov, sales.currency))}</div></div>
-          <div><div class="n">${esc(money(sales.month.revenue, sales.currency))}</div><div class="l">30d · ${esc(sales.month.orders)} · ${esc(sales.month.units ?? 0)} u</div></div>
-          <div><div class="n">${esc(money(sales.ninety?.revenue, sales.currency))}</div><div class="l">90d · ${esc(sales.ninety?.orders ?? 0)}</div></div>
-        </div>`;
-    $("overviewSales").innerHTML = html;
-    const fetched = sales.fetched_at ? `<div class="src" style="margin:8px 0 0">Woo orders · ${esc(sales.fetched_at)}${sales.incomplete ? " · incomplete (page cap)" : ""}</div>` : "";
-    const products = (sales.products ?? [])
-      .slice(0, 20)
-      .map(
-        (row) =>
-          `<div class="item"><span class="mono">${esc(row.parent_sku)}</span><span>${esc(row.d30.units)} u / 30d · AOV ${esc(money(row.d30.aov, sales.currency))}</span><span class="mono">${esc(money(row.d30.revenue, sales.currency))}</span></div>`,
-      )
-      .join("");
-    $("salesOut").innerHTML = !sales.configured
-      ? `<div class="notice">Acceso a pedidos no habilitado — faltan <code>HORIZON_WOO_KEY</code> / <code>HORIZON_WOO_SECRET</code> en el Control Plane.</div>`
-      : html +
-        fetched +
-        (products ? `<h3 class="sub" style="margin:22px 0 8px">Por SKU (30d, line items)</h3>${products}` : "") +
-        `<h3 class="sub" style="margin:22px 0 8px">Pedidos recientes</h3>${(sales.recent_orders ?? [])
-          .map((order) => {
-            const skus = (order.items ?? []).map((item) => item.parent_sku || item.sku).join(" · ");
-            return `<div class="item"><span class="mono">#${esc(order.id)}</span><span class="muted">${esc(order.status)}${skus ? ` · ${esc(skus)}` : ""}</span><span class="mono">${esc(order.total)}</span></div>`;
-          })
-          .join("")}`;
-  } catch (error) {
-    $("overviewSales").innerHTML = notice(esc(error.message));
-    $("salesOut").innerHTML = notice(esc(error.message));
-  }
-
-  try {
-    const [all, out] = await Promise.all([
-      api("/v1/catalog/products?limit=10"),
-      api("/v1/catalog/products?stock_status=outofstock&limit=10"),
-    ]);
-    const n = all.products?.length ?? 0;
-    const o = out.products?.length ?? 0;
-    $("overviewCatalog").innerHTML = `<div><span class="n">${n}</span><span class="sub"> SKUs (muestra)</span></div>
-      <div><span class="n" style="color:var(--warn)">${o}</span><span class="sub"> sin stock (muestra)</span></div>
-      <button type="button" data-tab="catalogo">Ver sin stock →</button>`;
-    $("overviewCatalog").querySelector("[data-tab]")?.addEventListener("click", () => showTab("catalogo", cfgRef));
-  } catch (error) {
-    $("overviewCatalog").innerHTML = notice(esc(error.message));
-  }
-
-  try {
-    const alerts = await api("/v1/alerts");
-    const rows = alerts.alerts ?? [];
-    const open = rows.filter((row) => row.status === "open");
-    $("announceAlerts").textContent = open.length ? `${open.length} alertas abiertas` : "";
-    const list = (target, items) => {
-      $(target).innerHTML = items.length
-        ? items
-            .map(
-              (alert) =>
-                `<button type="button" class="alert-row" data-q="${esc(`¿Qué pasa con ${alert.rule_id}?`)}">${pip(alert.severity)}<span style="flex:1">${esc(alert.title)}</span><span class="src">${esc(alert.rule_id)}</span></button>`,
-            )
-            .join("")
-        : `<p class="muted">Sin alertas</p>`;
-      $(target).querySelectorAll("[data-q]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          setDrawer(true);
-          $("askForm").querySelector("input").value = btn.dataset.q;
-        });
-      });
-    };
-    list("overviewAlerts", open.slice(0, 5));
-    list("alertsOut", rows);
-  } catch (error) {
-    $("overviewAlerts").innerHTML = notice(esc(error.message));
-    $("alertsOut").innerHTML = notice(esc(error.message));
-  }
-
-  await loadAnalytics().catch(() => undefined);
-  await loadSeo().catch(() => undefined);
-  await loadInsightsOverview().catch((error) => {
-    if ($("overviewBlocks")) $("overviewBlocks").innerHTML = notice(esc(error.message));
-  });
-  await loadMerchant().catch(() => undefined);
-}
-
-function renderOverviewBlocks(data) {
-  if (!$("overviewBlocks")) return;
-  const revenue = data.revenue?.data;
-  const demand = data.demand?.data;
-  const conversion = data.conversion?.data;
-  const opportunities = data.opportunities?.data?.items ?? [];
-  const problems = data.problems?.data?.items ?? [];
-  $("overviewBlocks").innerHTML = `
-    <article class="card">${sliceBlock(
-      "Revenue",
-      data.revenue,
-      revenue
-        ? `<div class="metrics"><div><div class="n">${esc(money(revenue.revenue, revenue.currency))}</div><div class="l">30d · ${esc(revenue.orders)} pedidos</div></div></div>`
-        : "",
-    )}</article>
-    <article class="card">${sliceBlock(
-      "Demand",
-      data.demand,
-      demand
-        ? `<div class="metrics">
-            <div><div class="n">${esc(demand.sessions ?? "—")}</div><div class="l">sesiones</div></div>
-            <div><div class="n">${esc(demand.clicks ?? "—")}</div><div class="l">clicks</div></div>
-          </div>`
-        : "",
-    )}</article>
-    <article class="card">${sliceBlock(
-      "Conversion",
-      data.conversion,
-      conversion
-        ? `<div class="metrics"><div><div class="n">${esc(pct(conversion.cvr))}</div><div class="l">${esc(conversion.purchases ?? "—")} / ${esc(conversion.sessions ?? "—")}</div></div></div>`
-        : "",
-    )}</article>
-    <article class="card">${sliceBlock(
-      "Opportunities",
-      data.opportunities,
-      opportunities.length
-        ? `${opportunities.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.reason || row.type)}</span></div>`).join("")}<button type="button" data-tab="oportunidades">Ver workspace →</button>`
-        : `<p class="muted">Sin oportunidades abiertas. Las reglas omiten filas si falta un slice.</p><button type="button" data-tab="oportunidades">Workspace →</button>`,
-    )}</article>
-    <article class="card">${sliceBlock(
-      "Problems",
-      data.problems,
-      problems.length
-        ? problems.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.title)}</span></div>`).join("")
-        : `<p class="muted">Sin problemas observados.</p>`,
-    )}</article>`;
-  $("overviewBlocks").querySelectorAll("[data-tab]").forEach((btn) => {
-    btn.addEventListener("click", () => showTab(btn.dataset.tab, cfgRef));
-  });
-}
-
-let chartRange = "28d";
-let chartCompare = true;
-
-function renderExecutive(overview, changes) {
-  if (!$("execAnswers")) return;
-  const answers = executiveAnswers({
-    revenueStatus: overview.revenue?.status || "unknown",
-    demandStatus: overview.demand?.status || "unknown",
-    conversionStatus: overview.conversion?.status || "unknown",
-    problems: overview.problems?.data?.items ?? [],
-    opportunitiesStatus: overview.opportunities?.status || "zero",
-    opportunityTitles: (overview.opportunities?.data?.items ?? []).map((row) => row.reason || row.type),
-    changes,
-  });
-  const card = (title, body) =>
-    `<article class="card"><h2>${esc(title)}</h2>${
-      Array.isArray(body) ? `<ul>${body.map((row) => `<li>${esc(row)}</li>`).join("")}</ul>` : `<p>${esc(body)}</p>`
-    }</article>`;
-  $("execAnswers").innerHTML = [
-    card("Cómo vamos", answers.how_are_we_doing),
-    card("Qué cambió", answers.what_changed),
-    card("Qué está mal", answers.what_is_wrong),
-    card("Qué funciona", answers.what_works),
-    card("Qué hacer hoy", answers.what_to_do_today),
-  ].join("");
-}
-
-async function loadCharts(overview) {
-  if (!$("chartGrid")) return;
-  const compare = chartCompare ? "previous" : "none";
-  const echarts = window.echarts;
-  $("chartGrid").innerHTML = CHART_CATALOG.map((spec) => `<article class="card" data-chart="${esc(spec.id)}"></article>`).join("");
-  const changes = [];
-  for (const spec of CHART_CATALOG) {
-    const node = $("chartGrid").querySelector(`[data-chart="${spec.id}"]`);
-    if (spec.kind === "deferred") {
-      renderHorizonChart(node, spec, null, echarts);
-      continue;
-    }
-    if (spec.kind === "funnel") {
-      const ga4 = await api("/v1/analytics/ga4").catch(() => null);
-      renderHorizonChart(node, spec, ga4, echarts);
-      continue;
-    }
-    const series = await api(`/v1/metrics/series?metric=${encodeURIComponent(spec.metric)}&range=${chartRange}&compare=${compare}`).catch(
-      () => null,
-    );
-    renderHorizonChart(node, spec, series, echarts);
-    if (series) {
-      changes.push({ title: spec.title, delta: series.delta, delta_pct: series.delta_pct, status: series.current?.status });
-    }
-  }
-  if (overview) renderExecutive(overview, changes);
-}
-
-async function loadInsightsOverview() {
-  if (!$("overviewBlocks")) return;
-  const data = await api("/v1/insights/overview");
-  renderOverviewBlocks(data);
-  await loadCharts(data);
-}
-
-async function loadMerchant() {
-  const data = await api("/v1/merchant/diagnostics");
-  const unavailable = data.source === "unavailable";
-  if ($("overviewMerchant")) {
-    $("overviewMerchant").innerHTML = unavailable
-      ? `Merchant — unavailable <span class="src">(${esc(data.error || "diagnostics_unavailable")})</span>`
-      : `Merchant — ${esc(data.summary?.ready ?? "—")} ready · ${esc(data.summary?.blocked ?? "—")} blocked`;
-  }
-  if (!$("merchantOut")) return;
-  if (unavailable) {
-    $("merchantOut").innerHTML = `<div class="empty-row"><span>unavailable · ${esc(data.error || "diagnostics_unavailable")}</span></div>`;
-    return;
-  }
-  const problems = data.summary?.problems ?? [];
-  $("merchantOut").innerHTML = `<div class="metrics">
-      <div><div class="n">${esc(data.summary?.ready ?? "—")}</div><div class="l">ready</div></div>
-      <div><div class="n ${data.summary?.blocked ? "warn" : ""}">${esc(data.summary?.blocked ?? "—")}</div><div class="l">blocked</div></div>
-    </div>
-    <div class="src">${esc(data.source || "local")}${data.path ? ` · ${esc(data.path)}` : ""}</div>
-    ${
-      problems.length
-        ? problems
-            .map((row) => `<div class="item"><span class="mono">${esc(row.sku)}</span><span>${esc(row.title || "blocked")}</span></div>`)
-            .join("")
-        : ""
-    }
-    <pre class="muted" style="white-space:pre-wrap;margin-top:16px">${esc((data.diagnosticsTxt || "").slice(0, 2000) || "Sin diagnostics.txt")}</pre>`;
-}
-
-function sparkline(values) {
-  const nums = values.filter((value) => Number.isFinite(value));
-  if (nums.length < 2) return `<p class="muted">Sin serie todavía. Corre una auditoría o esperá el próximo evaluate.</p>`;
-  const max = Math.max(...nums, 1);
-  const min = Math.min(...nums, 0);
-  const span = max - min || 1;
-  const points = nums
-    .map((value, i) => {
-      const x = (i / (nums.length - 1)) * 120;
-      const y = 36 - ((value - min) / span) * 28;
-      return `${x},${y}`;
-    })
-    .join(" ");
-  return `<svg class="chart-svg spark" viewBox="0 0 120 40" aria-hidden="true"><polyline points="${points}" fill="none" stroke="oklch(0.32 0.15 300)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /></svg>`;
-}
-
-function renderSeoPanel(data, snaps) {
-  seoSummary = data.summary;
-  const job = data.job;
-  const busy = job && (job.status === "queued" || job.status === "running");
-  if ($("seoAuditBtn")) $("seoAuditBtn").disabled = Boolean(busy);
-  if ($("overviewSeo")) {
-    $("overviewSeo").innerHTML = !data.configured
-      ? `SEO — sin auditoría <span class="src">(${esc(data.reason || "missing_seo_report")})</span>`
-      : `SEO — ${esc(data.summary.totals.critical)} críticos · ${esc(data.summary.totals.warning)} warnings <span class="src">${esc(data.summary.age_h != null ? `${Math.round(data.summary.age_h)}h` : "")}</span>`;
-  }
-  if (!$("seoCards")) return;
-  if (!data.configured) {
-    $("seoStatus").textContent = job ? `Job ${job.status}` : "Sin reporte SEO.";
-    $("seoCards").innerHTML = `<div class="empty-row"><span>Sin auditoría SEO. No se inventan issues.</span></div>`;
-    $("seoSpark").innerHTML = "";
-    $("seoPages").innerHTML = `<p class="muted">Corré Auditar ahora o esperá el job programado (12h).</p>`;
-    return;
-  }
-  const s = data.summary;
-  $("seoStatus").textContent = [job ? `Job ${job.status}` : null, s.generatedAt ? `audit ${s.generatedAt}` : null].filter(Boolean).join(" · ");
-  $("seoCards").innerHTML = `<div><span class="n">${esc(s.auditedCount)}</span><span class="sub"> páginas</span></div>
-    <div><span class="n bad">${esc(s.totals.critical)}</span><span class="sub"> críticos</span></div>
-    <div><span class="n" style="color:var(--warn)">${esc(s.totals.warning)}</span><span class="sub"> warnings</span></div>
-    <div><span class="n">${s.age_h == null ? "—" : `${Math.round(s.age_h)}h`}</span><span class="sub"> antigüedad</span></div>`;
-  $("seoSpark").innerHTML = sparkline((snaps ?? []).map((row) => Number(row.value)).filter((value) => Number.isFinite(value)).reverse());
-  $("seoPages").innerHTML = (s.pages ?? []).length
-    ? s.pages
-        .map((page) => {
-          const title = page.title || page.url;
-          const desc = page.description || "";
-          return `<div class="seo-page">
-            <div style="font-weight:700">${esc(title)}</div>
-            <div class="mono">${esc(page.url)}</div>
-            ${desc ? `<div class="muted">${esc(desc)}</div>` : ""}
-            <div><span class="${page.critical ? "bad" : "ok"}">${esc(page.critical)} críticos</span> · <span class="${page.warning ? "warn" : "muted"}">${esc(page.warning)} warnings</span></div>
-          </div>`;
-        })
-        .join("")
-    : `<p class="muted">Sin páginas con issues en el summary.</p>`;
-}
-
-async function loadSeo() {
-  const [data, snaps] = await Promise.all([
-    api("/v1/seo/audits/latest"),
-    api("/v1/metrics/snapshots?kpi=seo_warning&limit=20").catch(() => ({ snapshots: [] })),
-  ]);
-  renderSeoPanel(data, snaps.snapshots ?? []);
-  return data;
-}
-
-function emptySource(reason, hint) {
-  return `<div class="empty-row"><span>${esc(hint)} <span class="src">(${esc(reason)})</span></span></div>`;
-}
-
-function renderGa4(data) {
-  const metrics = !data.configured
-    ? emptySource(data.reason || "missing_google_credentials", "GA4 no conectado. No se inventan sesiones.")
-    : `<div class="metrics">
-        <div><div class="n">${esc(data.sessions ?? "—")}</div><div class="l">sesiones · 28d</div></div>
-        <div><div class="n">${esc(data.users ?? "—")}</div><div class="l">usuarios</div></div>
-        <div><div class="n">${esc(data.purchases ?? "—")}</div><div class="l">compras</div></div>
-      </div>`;
-  if ($("overviewTraffic")) $("overviewTraffic").innerHTML = metrics;
-  if ($("ga4Out")) {
-    $("ga4Out").innerHTML =
-      metrics +
-      (data.configured
-        ? (data.channels ?? [])
-            .map((row) => `<div class="item"><span>${esc(row.channel)}</span><span class="mono">${esc(row.sessions)}</span></div>`)
-            .join("")
-        : "");
-  }
-}
-
-function renderGsc(data) {
-  if (!$("gscOut")) return;
-  if (!data.configured) {
-    $("gscOut").innerHTML = emptySource(data.reason || "missing_google_credentials", "Search Console no conectado. No se inventan clicks.");
-    return;
-  }
-  $("gscOut").innerHTML = `<div class="metrics">
-      <div><div class="n">${esc(data.clicks ?? "—")}</div><div class="l">clicks · 28d</div></div>
-      <div><div class="n">${esc(data.impressions ?? "—")}</div><div class="l">impresiones</div></div>
-      <div><div class="n">${data.ctr == null ? "—" : `${Math.round(Number(data.ctr) * 1000) / 10}%`}</div><div class="l">CTR</div></div>
-      <div><div class="n">${data.position == null ? "—" : Number(data.position).toFixed(1)}</div><div class="l">posición</div></div>
-    </div>
-    ${(data.queries ?? [])
-      .map(
-        (row) =>
-          `<div class="item"><span>${esc(row.query)}</span><span class="mono">${esc(row.clicks)} / ${esc(row.impressions)}</span></div>`,
-      )
-      .join("")}`;
-}
-
-async function loadAnalytics() {
-  const [ga4, gsc] = await Promise.all([
-    api("/v1/analytics/ga4"),
-    api("/v1/analytics/search-console"),
-  ]);
-  renderGa4(ga4);
-  renderGsc(gsc);
-  return { ga4, gsc };
-}
-
-let growthStatus = "open";
-let selectedOpportunity = null;
-let chatSessionId = "";
-
-function scoreParts(row) {
-  const components = row.components ?? {};
-  const weights = row.weights_used ?? {};
-  return Object.keys(components)
-    .map((key) => {
-      const weight = weights[key] == null ? "" : ` · w ${Math.round(Number(weights[key]) * 100)}%`;
-      return `<div class="item"><span class="muted">${esc(key)}</span><span class="mono">${esc(Math.round(Number(components[key])))}${weight}</span></div>`;
-    })
-    .join("");
-}
-
-function renderGrowth(data) {
-  if (!$("growthOut")) return;
-  const rows = data.opportunities ?? [];
-  if (!rows.length) {
-    $("growthOut").innerHTML = `<div class="notice">Sin oportunidades ${esc(growthStatus)}. Las reglas no emiten fila si falta un slice requerido. El score no rellena componentes missing.</div>`;
-  } else {
-    $("growthOut").innerHTML = rows
-      .map(
-        (row) =>
-          `<button type="button" class="opp-row${selectedOpportunity?.id === row.id ? " active" : ""}" data-id="${esc(row.id)}">
-            ${pip(row.severity)}
-            <span>
-              <strong>${esc(row.type)}</strong>
-              <span class="src">${esc(row.parent_sku)} · ${esc(row.product || "")}</span>
-            </span>
-            <span class="mono">${esc(row.score)}</span>
-          </button>`,
-      )
-      .join("");
-    $("growthOut").querySelectorAll("[data-id]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const row = rows.find((item) => item.id === btn.dataset.id);
-        if (row) renderGrowthDetail(row);
-      });
-    });
-  }
-  if (selectedOpportunity && rows.some((row) => row.id === selectedOpportunity.id)) {
-    renderGrowthDetail(rows.find((row) => row.id === selectedOpportunity.id));
-  } else if (!selectedOpportunity) {
-    $("growthDetail").innerHTML = `<p class="muted" style="padding:16px 20px">Elegí una oportunidad. El número no es mágico: cada componente 0–100 y el peso renormalizado están a la vista.</p>`;
-  }
-}
-
-function renderGrowthDetail(row) {
-  selectedOpportunity = row;
-  $("growthOut")
-    ?.querySelectorAll(".opp-row")
-    .forEach((node) => node.classList.toggle("active", node.dataset.id === row.id));
-  const evidence = (row.evidence ?? []).map((item) => `<li>${esc(item)}</li>`).join("");
-  $("growthDetail").innerHTML = `
-    <div style="padding:16px 20px 20px">
-      <div class="card-head" style="padding:0 0 12px">
-        <h3 style="margin:0">${esc(row.type)}</h3>
-        <span class="src">${esc(row.severity)} · ${esc(row.source)} · ${esc(row.period)}</span>
-      </div>
-      <button type="button" class="ask-selected" data-sku="${esc(row.parent_sku)}">${esc(row.parent_sku)} · Product 360 →</button>
-      <div class="score-line"><span class="mono">${esc(row.score)}</span><div class="score-bar"><i style="width:${Math.max(0, Math.min(100, Number(row.score) || 0))}%"></i></div></div>
-      <p class="src">${esc(row.score_caption || "score uses available components only")}</p>
-      ${scoreParts(row)}
-      <p>${esc(row.reason)}</p>
-      <p><strong>${esc(row.recommended_action)}</strong></p>
-      ${evidence ? `<ul>${evidence}</ul>` : ""}
-      <div class="detail-actions">
-        <button type="button" data-action="dismiss">Descartar</button>
-        <button type="button" data-action="snooze">Snooze 7d</button>
-        <button type="button" data-action="done">Hecha</button>
-      </div>
-      <form id="growthNoteForm" class="table-wrap" style="padding:12px 0 0;box-shadow:none">
-        <input name="note" placeholder="Nota (solo workspace local)" maxlength="500" />
-      </form>
-    </div>`;
-  $("growthDetail").querySelector("[data-sku]")?.addEventListener("click", () => {
-    if ($("product360Q")) $("product360Q").value = row.parent_sku;
-    showTab("product360", cfgRef);
-  });
-  $("growthDetail").querySelectorAll("[data-action]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      void updateOpportunity(row.id, { action: btn.dataset.action, snooze_days: btn.dataset.action === "snooze" ? 7 : undefined }).catch(
-        (error) => {
-          $("growthDetail").innerHTML = notice(esc(error.message));
-        },
-      );
-    });
-  });
-  $("growthNoteForm")?.addEventListener("submit", (event) => {
+let pendingG = 0;
+function onKey(event) {
+  const mod = event.metaKey || event.ctrlKey;
+  const key = event.key.toLowerCase();
+  if (mod && key === "k") {
     event.preventDefault();
-    const note = String(new FormData(event.target).get("note") || "").trim();
-    if (!note) return;
-    void updateOpportunity(row.id, { action: "note", note }).catch((error) => {
-      $("growthDetail").innerHTML = notice(esc(error.message));
-    });
-  });
-}
-
-async function updateOpportunity(id, body) {
-  const row = await api(`/v1/growth/opportunities/${encodeURIComponent(id)}`, { method: "POST", body });
-  selectedOpportunity = row;
-  await loadGrowth();
-}
-
-async function loadGrowth() {
-  if (!$("growthOut")) return;
-  const data = await api(`/v1/growth/opportunities?status=${encodeURIComponent(growthStatus)}`);
-  renderGrowth(data);
-}
-
-let selectedDraft = null;
-
-function renderContent(data) {
-  if (!$("contentOut")) return;
-  const rows = data.drafts ?? [];
-  $("contentOut").innerHTML = rows.length
-    ? rows
-        .map(
-          (row) =>
-            `<button type="button" class="opp-row${selectedDraft?.id === row.id ? " active" : ""}" data-id="${esc(row.id)}">
-              <span class="pip ${row.status === "approved" ? "ok" : ""}"></span>
-              <span><strong>${esc(row.kind)}</strong><span class="src">${esc(row.parent_sku || "—")} · ${esc(row.status)}</span></span>
-            </button>`,
-        )
-        .join("")
-    : `<div class="notice">Sin drafts. Generá desde un SKU. No se publica a horizonfit.com.ar.</div>`;
-  $("contentOut").querySelectorAll("[data-id]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const row = rows.find((item) => item.id === btn.dataset.id);
-      if (row) renderContentDetail(row);
-    });
-  });
-}
-
-function renderContentDetail(row) {
-  selectedDraft = row;
-  $("contentDetail").innerHTML = `
-    <div style="padding:16px 20px 20px">
-      <p class="src">${esc(row.status)} · ${esc(row.prompt_version)} · ${esc(row.model || "deterministic")}</p>
-      <pre style="white-space:pre-wrap;font:inherit">${esc(row.body)}</pre>
-      <p class="src">${esc(row.notes)}</p>
-      <div class="detail-actions">
-        <button type="button" data-action="approve" ${row.status !== "draft" ? "disabled" : ""}>Aprobar</button>
-        <button type="button" data-action="published-externally" ${row.status !== "approved" ? "disabled" : ""}>Marcar publicado afuera</button>
-      </div>
-    </div>`;
-  $("contentDetail").querySelectorAll("[data-action]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      void api(`/v1/content/drafts/${encodeURIComponent(row.id)}`, { method: "POST", body: { action: btn.dataset.action } })
-        .then((updated) => {
-          selectedDraft = updated;
-          return loadContent();
-        })
-        .catch((error) => {
-          $("contentDetail").innerHTML = notice(esc(error.message));
-        });
-    });
-  });
-}
-
-async function loadContent() {
-  if (!$("contentOut")) return;
-  const data = await api("/v1/content/drafts");
-  renderContent(data);
-  if (selectedDraft) {
-    const fresh = (data.drafts ?? []).find((row) => row.id === selectedDraft.id);
-    if (fresh) renderContentDetail(fresh);
-  }
-}
-
-let customerSegment = "";
-let selectedCustomer = null;
-
-function renderCustomers(data) {
-  if (!$("customersOut")) return;
-  if (!data.configured) {
-    $("customersOut").innerHTML = emptySource(
-      data.reason || "missing_woo_rest_credentials",
-      "Woo REST no conectado. No se inventan clientes ni RFM.",
-    );
-    if ($("customerDetail")) $("customerDetail").innerHTML = "";
+    if (isPaletteOpen()) closePalette();
+    else openPalette();
     return;
   }
-  const rows = data.customers ?? [];
-  const segments = data.segments ?? {};
-  const counts = Object.entries(segments)
-    .map(([name, count]) => `${name} ${count}`)
-    .join(" · ");
-  $("customersOut").innerHTML = rows.length
-    ? `${counts ? `<p class="src" style="padding:0 20px 8px">${esc(counts)}</p>` : ""}${rows
-        .map(
-          (row) =>
-            `<button type="button" class="opp-row${selectedCustomer?.customer_key === row.customer_key ? " active" : ""}" data-id="${esc(row.customer_key)}">
-              <span class="pip ${row.segment === "champions" || row.segment === "loyal" ? "ok" : ""}"></span>
-              <span><strong>${esc(row.customer_key)}</strong><span class="src">${esc(row.segment)} · ${esc(row.orders)} pedidos · ${money(row.revenue)}</span></span>
-            </button>`,
-        )
-        .join("")}`
-    : `<div class="notice">Sin clientes hasheados en el recorte de órdenes pagas.${counts ? ` ${esc(counts)}` : ""}</div>`;
-  $("customersOut").querySelectorAll("[data-id]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const row = rows.find((item) => item.customer_key === btn.dataset.id);
-      if (row) renderCustomerDetail(row);
-    });
-  });
-}
-
-function renderCustomerDetail(row) {
-  selectedCustomer = row;
-  $("customerDetail").innerHTML = `
-    <div style="padding:16px 20px 20px">
-      <p class="src">${esc(row.customer_key)} · ${esc(row.segment)}</p>
-      <div class="metrics">
-        <div><div class="n">${esc(row.orders)}</div><div class="l">pedidos</div></div>
-        <div><div class="n">${money(row.revenue)}</div><div class="l">monetary</div></div>
-        <div><div class="n">${esc(row.recency_days ?? "—")}</div><div class="l">recency días</div></div>
-        <div><div class="n">${esc([row.r, row.f, row.m].map((n) => n ?? "—").join("-"))}</div><div class="l">R-F-M</div></div>
-      </div>
-      <p class="src">${row.repeat ? "repeat" : "single"} · ${row.discount_used ? "usó cupón" : "sin cupón"} · ${esc((row.categories ?? []).join(", ") || "sin SKUs")}</p>
-    </div>`;
-}
-
-async function loadCustomers() {
-  if (!$("customersOut")) return;
-  const q = customerSegment ? `?segment=${encodeURIComponent(customerSegment)}` : "";
-  const data = await api(`/v1/customers${q}`);
-  renderCustomers(data);
-  if (selectedCustomer) {
-    const fresh = (data.customers ?? []).find((row) => row.customer_key === selectedCustomer.customer_key);
-    if (fresh) renderCustomerDetail(fresh);
-  }
-}
-
-function renderCampaigns(data) {
-  if (!$("campaignsOut")) return;
-  if (!data.configured) {
-    $("campaignsOut").innerHTML = emptySource(
-      data.reason || "missing_woo_rest_credentials",
-      "Sin Woo REST no hay promos internas observadas. Ads siguen not_configured.",
-    );
-  } else {
-    const rows = data.campaigns ?? [];
-    $("campaignsOut").innerHTML = rows.length
-      ? rows
-          .map(
-            (row) =>
-              `<div class="item">${pip(row.status === "observed" ? "ok" : "warn")}<span><strong>${esc(row.name)}</strong><span class="src">${esc(row.channel)} · ${esc(row.status)}${row.reason ? ` · ${esc(row.reason)}` : ""} · ${esc(row.orders)} órdenes · ${money(row.revenue)}</span></span></div>`,
-          )
-          .join("")
-      : `<div class="notice">Sin cupones observados en órdenes pagas.</div>`;
-  }
-}
-
-function renderAds(data) {
-  if (!$("adsOut")) return;
-  const google = data.google ?? data;
-  const meta = data.meta ?? {};
-  $("adsOut").innerHTML = [google, meta]
-    .filter((row) => row && row.source)
-    .map(
-      (row) =>
-        `<div class="item">${pip("warn")}<span><strong>${esc(row.source)}</strong><span class="src">${esc(row.reason || "ads_adapter_not_configured")} · configured:${row.configured ? "true" : "false"}</span></span></div>`,
-    )
-    .join("") || emptySource("ads_adapter_not_configured", "Google Ads y Meta Ads no están conectados. No se inventa spend.");
-}
-
-async function loadCampaigns() {
-  if (!$("campaignsOut")) return;
-  const [campaigns, ads] = await Promise.all([api("/v1/campaigns"), api("/v1/ads")]);
-  renderCampaigns(campaigns);
-  renderAds(ads);
-}
-
-function renderCompetitors(data) {
-  if (!$("competitorsOut")) return;
-  if (!data.configured) {
-    $("competitorsOut").innerHTML = emptySource(
-      data.reason || "missing_competitor_urls",
-      "Sin URLs en HORIZON_COMPETITOR_URLS. No se inventan competidores.",
-    );
+  if (mod && key === "j") {
+    event.preventDefault();
+    setConsulta(!app.consultaOpen);
     return;
   }
-  const snaps = data.snapshots ?? data.pages ?? [];
-  $("competitorsOut").innerHTML = snaps.length
-    ? snaps
-        .map((page) => {
-          const status = page.status ?? "—";
-          const cls = page.error || (page.status != null && page.status >= 400) ? "bad" : "ok";
-          const prices =
-            page.price_min != null || page.price_max != null
-              ? ` · ${esc(page.price_min ?? "—")}–${esc(page.price_max ?? "—")}`
-              : "";
-          return `<div class="seo-page">
-            <div style="font-weight:700">${esc(page.title || page.competitor || page.host)}</div>
-            <div class="mono">${esc(page.url)}</div>
-            <div><span class="${cls}">${esc(status)}</span>${page.segment ? ` · ${esc(page.segment)}` : ""}${page.product_count != null ? ` · ${esc(page.product_count)} productos` : ""}${prices}</div>
-            ${page.robots_allowed === false ? `<div class="muted">robots disallow</div>` : ""}
-            ${page.h1 ? `<div class="muted">H1 ${esc(page.h1)}</div>` : ""}
-            ${page.error ? `<div class="muted">${esc(page.error)}</div>` : ""}
-          </div>`;
-        })
-        .join("")
-    : `<p class="muted">Sin snapshots todavía. El job competitor.snapshot corre cada 12h.</p>`;
-}
-
-function renderCompetitionChanges(data) {
-  if (!$("competitionChanges")) return;
-  const rows = data.changes ?? [];
-  $("competitionChanges").innerHTML = rows.length
-    ? rows
-        .slice(0, 40)
-        .map(
-          (row) =>
-            `<div class="item"><span>${esc(row.type)}</span><span class="muted">${esc(row.title || row.url)}</span><span class="mono">${esc(row.before ?? "—")} → ${esc(row.after ?? "—")}</span></div>`,
-        )
-        .join("")
-    : `<p class="muted">Sin diffs. Hace falta un snapshot anterior.</p>`;
-}
-
-function renderCompetitionCompare(data) {
-  if (!$("competitionCompare")) return;
-  if (!data.found) {
-    $("competitionCompare").innerHTML = `<p class="muted">SKU no encontrado. No se inventa un índice.</p>`;
-    return;
-  }
-  const idx = data.price_index;
-  $("competitionCompare").innerHTML = `
-    <div class="src">${esc(data.parent_sku)} · segment ${esc(data.segment || "—")}</div>
-    <div class="metrics">
-      <div><div class="n">${esc(data.horizon_price ?? "—")}</div><div class="l">precio Horizon</div></div>
-      <div><div class="n">${idx?.index == null ? "—" : Number(idx.index).toFixed(2)}</div><div class="l">índice vs mediana (${esc(idx?.n ?? 0)})</div></div>
-    </div>
-    ${(data.peers ?? [])
-      .slice(0, 12)
-      .map((row) => `<div class="item"><span>${esc(row.title)}</span><span class="mono">${esc(row.price ?? "—")}</span></div>`)
-      .join("") || `<p class="muted">Sin precios de pares en este segmento.</p>`}`;
-}
-
-async function loadCompetitors() {
-  const [list, changes] = await Promise.all([
-    api("/v1/competition"),
-    api("/v1/competition/changes").catch(() => ({ changes: [] })),
-  ]);
-  renderCompetitors(list);
-  renderCompetitionChanges(changes);
-}
-
-function insightsPath(ref) {
-  const trimmed = String(ref || "").trim();
-  if (/^https?:\/\//i.test(trimmed) || trimmed.includes("/")) {
-    return `/v1/insights/products?id=${encodeURIComponent(trimmed)}`;
-  }
-  return `/v1/insights/products/${encodeURIComponent(trimmed)}`;
-}
-
-function sliceStatusClass(status) {
-  if (status === "ok" || status === "zero") return "ok";
-  if (status === "stale" || status === "unknown") return "warn";
-  if (status === "error") return "bad";
-  return "";
-}
-
-function sliceBlock(title, slice, bodyHtml) {
-  const status = slice?.status || "unknown";
-  const fetched = slice?.fetched_at ? ` · ${esc(slice.fetched_at)}` : "";
-  const reason = slice?.reason ? ` · ${esc(slice.reason)}` : "";
-  const head = `<h3 class="sub" style="margin:18px 0 8px">${esc(title)} <span class="slice-status ${sliceStatusClass(status)}">${esc(status)}</span><span class="src">${fetched}</span></h3>`;
-  if (!slice?.available) {
-    return `${head}<div class="empty-row"><span>${esc(status)}${reason}</span></div>`;
-  }
-  return `${head}${bodyHtml || ""}`;
-}
-
-function seoBody(slice) {
-  const seo = slice?.data;
-  if (!seo) return "";
-  const issues = [
-    ...(seo.issues?.critical ?? []).map((row) => ({ sev: "critical", text: row.message || row.code })),
-    ...(seo.issues?.warning ?? []).map((row) => ({ sev: "warning", text: row.message || row.code })),
-  ];
-  return `<div class="metrics">
-      <div><div class="n ${seo.critical ? "bad" : ""}">${esc(seo.critical)}</div><div class="l">críticos</div></div>
-      <div><div class="n ${seo.warning ? "warn" : ""}">${esc(seo.warning)}</div><div class="l">warnings</div></div>
-      <div><div class="n">${seo.indexable ? "sí" : "no"}</div><div class="l">indexable</div></div>
-      <div><div class="n">${seo.in_sitemap ? "sí" : "no"}</div><div class="l">sitemap</div></div>
-    </div>
-    <div class="src">${esc(seo.title || "—")}${seo.canonical ? ` · ${esc(seo.canonical)}` : ""}</div>
-    ${issues.map((row) => `<div class="item">${pip(row.sev)}<span>${esc(row.text || "issue")}</span></div>`).join("")}`;
-}
-
-function merchantBody(slice) {
-  const merchant = slice?.data;
-  if (!merchant) return "";
-  return `<div class="metrics">
-      <div><div class="n">${esc(merchant.ready)}</div><div class="l">ready</div></div>
-      <div><div class="n ${merchant.blocked ? "warn" : ""}">${esc(merchant.blocked)}</div><div class="l">blocked</div></div>
-    </div>
-    ${(merchant.variants ?? [])
-      .map(
-        (row) =>
-          `<div class="item"><span class="mono">${esc(row.sku)}</span><span class="${row.ready ? "ok" : "bad"}">${row.ready ? "ready" : "blocked"}</span></div>`,
-      )
-      .join("")}`;
-}
-
-function competitionBody(slice) {
-  const competition = slice?.data;
-  if (!competition) return "";
-  const peers = competition.peers ?? [];
-  return `<div class="src">segment ${esc(competition.segment || "—")}</div>
-    ${
-      peers.length
-        ? peers
-            .map(
-              (row) =>
-                `<div class="item"><span>${esc(row.competitor)}</span><span class="${row.ok ? "ok" : "bad"}">${esc(row.status ?? "—")}</span></div>`,
-            )
-            .join("")
-        : `<p class="muted">Sin peers en este segmento.</p>`
-    }`;
-}
-
-function renderProduct360(data) {
-  if (!$("product360Out")) return;
-  if (!data?.found && !data?.keys) {
-    $("product360Out").innerHTML = `<p class="muted" style="padding:16px 20px">Producto no encontrado. No se inventan métricas.</p>`;
-    return;
-  }
-  const keys = data.keys ?? {};
-  const cat = data.catalog?.data;
-  const sales = data.sales?.data;
-  const analytics = data.analytics?.data;
-  const search = data.search?.data;
-  $("product360Out").innerHTML = `
-    <div style="padding:8px 20px 20px">
-      <div class="mono">${esc(keys.parent_sku || "—")}${keys.variant_sku ? ` · ${esc(keys.variant_sku)}` : ""}</div>
-      <div style="font-size:16px;font-weight:800;margin:4px 0 8px">${esc(cat?.name || "—")}</div>
-      <div class="src">via ${esc(keys.kind || "—")}${keys.canonical_url ? ` · ${esc(keys.canonical_url)}` : ""}</div>
-      ${sliceBlock(
-        "Catalog",
-        data.catalog,
-        `<div class="metrics">
-          <div><div class="n">${esc(money(cat?.price?.amount, cat?.price?.currency))}</div><div class="l">precio</div></div>
-          <div><div class="n ${cat?.stock_status === "outofstock" ? "bad" : "ok"}">${esc(cat?.stock_status || "—")}</div><div class="l">${esc((cat?.variants ?? []).map((row) => row.size || row.sku).join(" / ") || "—")}</div></div>
-        </div>`,
-      )}
-      ${sliceBlock(
-        "Sales",
-        data.sales,
-        sales
-          ? `<div class="metrics">
-              <div><div class="n">${esc(money(sales.revenue, sales.currency))}</div><div class="l">revenue 30d · line items</div></div>
-              <div><div class="n">${esc(sales.units ?? "—")}</div><div class="l">unidades 30d</div></div>
-              <div><div class="n">${esc(money(sales.aov, sales.currency))}</div><div class="l">AOV pedidos</div></div>
-              <div><div class="n">${sales.velocity_30d == null ? "—" : Number(sales.velocity_30d).toFixed(2)}</div><div class="l">u / día 30d</div></div>
-            </div>`
-          : "",
-      )}
-      ${sliceBlock(
-        "Analytics · 28d",
-        data.analytics,
-        analytics
-          ? `<div class="metrics">
-              <div><div class="n">${esc(analytics.pdp_views ?? "—")}</div><div class="l">PDP views</div></div>
-              <div><div class="n">${esc(analytics.view_item ?? "—")}</div><div class="l">view_item</div></div>
-              <div><div class="n">${esc(analytics.add_to_cart ?? "—")}</div><div class="l">add_to_cart</div></div>
-              <div><div class="n">${esc(analytics.begin_checkout ?? "—")}</div><div class="l">checkout</div></div>
-              <div><div class="n">${esc(analytics.purchase ?? "—")}</div><div class="l">purchase</div></div>
-              <div><div class="n">${esc(pct(analytics.cvr))}</div><div class="l">CVR</div></div>
-            </div>
-            <div class="src">${analytics.join?.item_id ? `itemId ${esc(analytics.join.item_id)}` : "sin itemId"}${analytics.join?.page_path ? ` · ${esc(analytics.join.page_path)}` : ""}</div>`
-          : "",
-      )}
-      ${sliceBlock(
-        "Search · 28d",
-        data.search,
-        search
-          ? `<div class="metrics">
-              <div><div class="n">${esc(search.impressions ?? "—")}</div><div class="l">impresiones</div></div>
-              <div><div class="n">${esc(search.clicks ?? "—")}</div><div class="l">clicks</div></div>
-              <div><div class="n">${search.ctr == null ? "—" : pct(search.ctr)}</div><div class="l">CTR</div></div>
-              <div><div class="n">${search.position == null ? "—" : Number(search.position).toFixed(1)}</div><div class="l">posición</div></div>
-            </div>
-            ${(search.queries ?? [])
-              .slice(0, 8)
-              .map(
-                (row) =>
-                  `<div class="item"><span>${esc(row.query)}</span><span class="mono">${esc(row.clicks)} / ${esc(row.impressions)}</span></div>`,
-              )
-              .join("")}`
-          : "",
-      )}
-      ${sliceBlock("SEO", data.seo, seoBody(data.seo))}
-      ${sliceBlock("Merchant", data.merchant, merchantBody(data.merchant))}
-      ${sliceBlock("Competition", data.competition, competitionBody(data.competition))}
-    </div>`;
-}
-
-async function loadProduct360(ref) {
-  if (!$("product360Out")) return;
-  const trimmed = String(ref || "").trim();
-  if (!trimmed) {
-    $("product360Out").innerHTML = `<p class="muted" style="padding:16px 20px">Ingresá un parent SKU, variante, id Woo, slug o URL de PDP.</p>`;
-    return;
-  }
-  const data = await api(insightsPath(trimmed));
-  renderProduct360(data);
-  return data;
-}
-
-async function searchCatalog(query) {
-  const sku = /^\d{3}-[A-Z]{3}-[A-Z]{3}/i.test((query || "").trim()) ? query.trim() : "";
-  const path = sku
-    ? `/v1/catalog/products/${encodeURIComponent(sku)}`
-    : `/v1/catalog/products?q=${encodeURIComponent(query || "")}&limit=10`;
-  const data = await api(path);
-  const products = data.products ?? (data.sku ? [data] : []);
-  $("catalogOut").innerHTML = products.length ? products.map(productRow).join("") : `<p class="muted" style="padding:16px 20px">Sin resultados</p>`;
-  $("catalogOut").querySelectorAll("[data-sku]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const product = await api(`/v1/catalog/products/${encodeURIComponent(btn.dataset.sku)}`);
-      selectedProduct = product;
-      renderInspector(product);
-      searchCatalog(query).catch(() => undefined);
-    });
-  });
-}
-
-function replyText(data) {
-  if (data.intent === "product" && data.data?.name) {
-    return `${data.data.name} · ${data.data.price?.amount ?? "—"} ${data.data.price?.currency ?? ""}`.trim();
-  }
-  if (data.intent === "health" && data.data?.status) return `Storefront ${data.data.storefront?.status ?? "—"} · API ${data.data.api?.status ?? "—"} · ${data.data.status}`;
-  if (data.intent === "sales" && data.data) {
-    if (data.data.configured === false) return data.data.reason || "Falta HORIZON_WOO_KEY";
-    if (data.data.product) {
-      const p = data.data.product;
-      return `${data.data.parent_sku} · ${p.d30?.units ?? 0} u / 30d · ${money(p.d30?.revenue, "ARS")}`;
+  const typing = /^(input|textarea|select)$/i.test(event.target.tagName) || event.target.isContentEditable;
+  if (typing || mod || event.altKey || isPaletteOpen()) return;
+  if (key === "[") {
+    toggleRail();
+  } else if (key === "/") {
+    const search = $("view").querySelector("[data-search]");
+    if (search) {
+      event.preventDefault();
+      search.focus();
     }
-    if (data.data.parent_sku && !data.data.product) return `${data.data.parent_sku} · sin ventas en la ventana`;
-    return `Hoy ${data.data.today?.orders ?? 0} pedidos · ${money(data.data.today?.revenue, data.data.currency)}`;
+  } else if (key === "g") {
+    pendingG = Date.now();
+  } else if (pendingG && Date.now() - pendingG < 1200) {
+    pendingG = 0;
+    const view = VIEWS.find((row) => row.keys === key);
+    if (view) location.hash = hrefFor(view.id);
   }
-  if (data.intent === "alerts") {
-    const rows = data.data?.alerts ?? [];
-    return rows.length ? rows.map((row) => row.title).slice(0, 3).join(" · ") : "Sin alertas";
+}
+
+function onChromeClick(event) {
+  const target = event.target.closest("[data-act]");
+  if (!target) return;
+  const act = target.dataset.act;
+  if (act === "theme") toggleTheme(target.dataset.v);
+  if (act === "rail-toggle") toggleRail();
+  if (act === "logout") auth.logout();
+  if (act === "palette") openPalette();
+  if (act === "consulta") setConsulta(!app.consultaOpen);
+  if (act === "window") {
+    const win = { ...prefs.windowFrom(parseHash().query), w: target.dataset.v };
+    prefs.rememberWindow(win);
+    setQuery({ w: win.w });
   }
-  if (data.intent === "seo") {
-    if (data.data?.configured === false) return data.data.reason || "Sin auditoría SEO";
-    const totals = data.data?.summary?.totals;
-    return `SEO · ${totals?.critical ?? 0} críticos · ${totals?.warning ?? 0} warnings · ${data.data?.summary?.auditedCount ?? 0} páginas`;
+  if (act === "relogin") void auth.login(app.cfg).catch((error) => toast(error.message));
+}
+
+function onChromeChange(event) {
+  if (event.target.dataset?.act !== "compare") return;
+  const cmp = event.target.checked;
+  prefs.rememberWindow({ ...prefs.windowFrom(parseHash().query), cmp });
+  setQuery({ cmp: cmp ? "1" : "0" });
+}
+
+function sessionExpired() {
+  mount(
+    $("banner"),
+    html`<div class="banner" style="margin: 16px 32px 0;">
+      <span class="chip" data-s="session">sesión vencida</span>
+      <span>Tu sesión de Auth0 venció. Entrá de nuevo y volvés a esta misma vista.</span>
+      <button type="button" class="btn btn-act btn-sm push" data-act="relogin">Entrar de nuevo</button>
+    </div>`,
+  );
+}
+
+function userFromClaims() {
+  if (app.fixtures) return { name: "Fixtures locales", initial: "F" };
+  const claims = auth.claims() ?? {};
+  const name = claims.name || claims.nickname || claims.email || "Operador";
+  const scopes = String(claims.scope ?? "").split(" ").filter((s) => s && s !== "openid").length || (claims.permissions ?? []).length || null;
+  return { name, initial: name.slice(0, 1), scopes };
+}
+
+async function showApp() {
+  $("login").hidden = true;
+  shell().hidden = false;
+  shell().dataset.rail = prefs.railCollapsed() ? "collapsed" : "open";
+  app.user = userFromClaims();
+  drawChrome();
+  mount($("view"), html`<div class="loading-block"><span class="sk" style="height: 52px; width: 50%;"></span><span class="sk" style="height: 14px; width: 70%;"></span></div>`);
+  const tools = await attempt("/v1/tools");
+  if (tools.ok && Array.isArray(tools.data.tools)) app.allowed = new Set(tools.data.tools);
+  initConsulta($("consulta"), { can, getContext: consultaContext, close: () => setConsulta(false) });
+  initPalette($("palette-root"), { can, actions: paletteActions, ask: (q) => consultaApi.ask(q) });
+  let open = false;
+  try {
+    open = localStorage.getItem("hc_consulta") === "1";
+  } catch {
+    open = false;
   }
-  if (data.intent === "ga4") {
-    if (data.data?.configured === false) return data.data.reason || "GA4 no conectado";
-    return `GA4 · ${data.data?.sessions ?? 0} sesiones · ${data.data?.users ?? 0} usuarios`;
-  }
-  if (data.intent === "gsc") {
-    if (data.data?.configured === false) return data.data.reason || "Search Console no conectado";
-    return `GSC · ${data.data?.clicks ?? 0} clicks · ${data.data?.impressions ?? 0} impresiones`;
-  }
-  if (data.intent === "competitors") {
-    if (data.data?.configured === false) return data.data.reason || "Sin URLs de competencia";
-    const pages = data.data?.pages ?? [];
-    const down = pages.filter((row) => !row.ok).length;
-    return `Competencia · ${pages.length} sitios · ${down} caídos`;
-  }
-  if (data.intent === "chart") {
-    if (!data.data?.chart) {
-      const names = (data.data?.available ?? []).map((row) => row.title || row.kpi).join(", ");
-      return names ? `KPIs allowlisteados: ${names}` : "No hay gráfico para esa pregunta.";
+  shell().dataset.consulta = open ? "open" : "closed";
+  app.consultaOpen = open;
+  document.addEventListener("click", onChromeClick);
+  document.addEventListener("change", onChromeChange);
+  document.addEventListener("keydown", onKey);
+  window.addEventListener("hashchange", () => void route());
+  await route();
+  void refreshPulse();
+  void refreshBadges();
+  setInterval(() => {
+    if (document.visibilityState === "visible") void refreshPulse();
+  }, 60_000);
+  setInterval(() => {
+    if (document.visibilityState === "visible") {
+      clearCache("/v1/growth");
+      void refreshBadges();
     }
-    return data.data.chart.title;
-  }
-  return JSON.stringify(data.data ?? data, null, 2).slice(0, 600);
-}
-
-function appendChart(chart, series) {
-  const wrap = document.createElement("div");
-  wrap.className = "bubble bubble--a";
-  wrap.innerHTML = `<div style="font-weight:700;margin-bottom:8px">${esc(chart.title)}</div>${sparkline((series ?? []).map((row) => Number(row.value)))}`;
-  $("askLog").appendChild(wrap);
-  $("askLog").scrollTop = $("askLog").scrollHeight;
-}
-
-function appendBubble(role, text) {
-  $("askHints").hidden = true;
-  const bubble = document.createElement("div");
-  bubble.className = `bubble bubble--${role}`;
-  bubble.textContent = text;
-  $("askLog").appendChild(bubble);
-  $("askLog").scrollTop = $("askLog").scrollHeight;
-}
-
-async function login(cfg) {
-  if (!cfg.clientId) {
-    $("banner").hidden = false;
-    $("banner").textContent = "Falta HORIZON_DASHBOARD_CLIENT_ID en el env del Control Plane.";
-    return;
-  }
-  const verifier = randomString();
-  const challenge = await sha256(new TextEncoder().encode(verifier));
-  sessionStorage.setItem("pkce_verifier", verifier);
-  const params = new URLSearchParams({
-    response_type: "code",
-    client_id: cfg.clientId,
-    redirect_uri: cfg.redirectUri,
-    scope: cfg.scopes,
-    audience: cfg.audience,
-    resource: cfg.resource,
-    code_challenge: challenge,
-    code_challenge_method: "S256",
-    prompt: "consent",
-  });
-  location.href = `${cfg.issuer}authorize?${params}`;
-}
-
-async function exchange(cfg) {
-  const url = new URL(location.href);
-  const code = url.searchParams.get("code");
-  if (!code) return;
-  const verifier = sessionStorage.getItem("pkce_verifier");
-  const body = new URLSearchParams({
-    grant_type: "authorization_code",
-    client_id: cfg.clientId,
-    code,
-    redirect_uri: cfg.redirectUri,
-    code_verifier: verifier ?? "",
-  });
-  const response = await fetch(`${cfg.issuer}oauth/token`, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body,
-  });
-  const json = await response.json();
-  if (!response.ok) throw new Error(json.error_description || json.error || "token_error");
-  setToken(json.access_token);
-  history.replaceState({}, "", "/app/");
-}
-
-function showTab(name, cfg) {
-  renderTabs(name);
-  document.querySelectorAll(".panel").forEach((panel) => {
-    panel.hidden = panel.id !== `panel-${name}`;
-  });
-  if (name === "sitio") setEmbed(cfg, $("siteUrl").value || "/");
-  if (!token()) return;
-  if (name === "overview" || name === "operaciones" || name === "ventas" || name === "alertas") {
-    void loadOverview().catch((error) => {
-      $("banner").hidden = false;
-      $("banner").textContent = error.message;
-    });
-  }
-  if (name === "analytics") {
-    void loadAnalytics().catch((error) => {
-      if ($("ga4Out")) $("ga4Out").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "competencia") {
-    void loadCompetitors().catch((error) => {
-      if ($("competitorsOut")) $("competitorsOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "oportunidades") {
-    void loadGrowth().catch((error) => {
-      if ($("growthOut")) $("growthOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "contenido") {
-    void loadContent().catch((error) => {
-      if ($("contentOut")) $("contentOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "clientes") {
-    void loadCustomers().catch((error) => {
-      if ($("customersOut")) $("customersOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "campanas") {
-    void loadCampaigns().catch((error) => {
-      if ($("campaignsOut")) $("campaignsOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "seo") {
-    void loadSeo().catch((error) => {
-      $("seoPages").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "merchant") {
-    void loadMerchant().catch((error) => {
-      if ($("merchantOut")) $("merchantOut").innerHTML = notice(esc(error.message));
-    });
-  }
-  if (name === "catalogo") void searchCatalog("").catch((error) => {
-    $("catalogOut").innerHTML = notice(esc(error.message));
-  });
-  if (name === "product360") {
-    const q = $("product360Q")?.value?.trim();
-    if (q) {
-      void loadProduct360(q).catch((error) => {
-        if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
-      });
-    }
-  }
+  }, 300_000);
 }
 
 async function boot() {
-  renderAuth();
-  renderTabs("overview");
-  $("askHints").innerHTML = `<span class="src" style="text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Probá</span>${HINTS.map((text) => `<button type="button" data-hint="${esc(text)}">${esc(text)}</button>`).join("")}`;
-  const cfg = await loadConfig();
-  cfgRef = cfg;
-  setEmbed(cfg, "/");
+  prefs.setTheme(prefs.theme());
+  const cfg = await fetch("/app/config.json").then((res) => res.json());
+  app.cfg = cfg;
+  if (cfg.fixtures) {
+    const mod = await import("./dev/fixtures.js");
+    const scenario = new URLSearchParams(location.search).get("scenario") || "hoy";
+    configureApi({ fixtures: mod.createFixtures(scenario) });
+    app.fixtures = true;
+    await showApp();
+    return;
+  }
+  configureApi({ getToken: auth.getToken, onSessionExpired: sessionExpired });
+  let loginError = null;
   try {
-    await exchange(cfg);
+    await auth.completeLogin(cfg);
   } catch (error) {
-    $("banner").hidden = false;
-    $("banner").textContent = String(error.message || error);
+    loginError = String(error?.message ?? error);
   }
-  $("loginBtn").addEventListener("click", () => {
-    login(cfg).catch((error) => {
-      $("banner").hidden = false;
-      $("banner").textContent = String(error.message || error);
-    });
-  });
-  $("logoutBtn").addEventListener("click", () => {
-    setToken("");
-    location.href = "/app/";
-  });
-  $("competitionCompareForm")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const id = String(new FormData(event.target).get("id") || "").trim();
-    if (!id) return;
-    void api(`/v1/competition/compare?id=${encodeURIComponent(id)}`)
-      .then(renderCompetitionCompare)
-      .catch((error) => {
-        if ($("competitionCompare")) $("competitionCompare").innerHTML = notice(esc(error.message));
-      });
-  });
-  $("chartRanges")?.addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-range]");
-    if (!btn) return;
-    chartRange = btn.dataset.range;
-    $("chartRanges").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
-    void loadOverview().catch(() => undefined);
-  });
-  $("chartCompare")?.addEventListener("change", (event) => {
-    chartCompare = Boolean(event.target.checked);
-    void loadOverview().catch(() => undefined);
-  });
-  $("customerFilters")?.addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-segment]");
-    if (!btn) return;
-    customerSegment = btn.dataset.segment || "";
-    $("customerFilters").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
-    void loadCustomers().catch((error) => {
-      if ($("customersOut")) $("customersOut").innerHTML = notice(esc(error.message));
-    });
-  });
-  $("growthFilters")?.addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-status]");
-    if (!btn) return;
-    growthStatus = btn.dataset.status;
-    $("growthFilters").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
-    void loadGrowth().catch((error) => {
-      if ($("growthOut")) $("growthOut").innerHTML = notice(esc(error.message));
-    });
-  });
-  $("tabNav").addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-tab]");
-    if (btn) showTab(btn.dataset.tab, cfg);
-  });
-  $("drawerBtn").addEventListener("click", () => setDrawer(!$("drawer").classList.contains("open")));
-  $("drawerClose").addEventListener("click", () => setDrawer(false));
-  document.addEventListener("keydown", (event) => {
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-      event.preventDefault();
-      setDrawer(true);
-      $("askForm").querySelector("input").focus();
-    }
-  });
-  $("siteGo").addEventListener("click", () => setEmbed(cfg, $("siteUrl").value));
-  $("siteUrl").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      setEmbed(cfg, $("siteUrl").value);
-    }
-  });
-  $("siteHome").addEventListener("click", () => setEmbed(cfg, "/"));
-  $("sitePdp").addEventListener("click", () => setEmbed(cfg, COLLECTION_PATH));
-  $("catalogForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    void searchCatalog(String(new FormData(event.target).get("q") || "")).catch((error) => {
-      $("catalogOut").innerHTML = notice(esc(error.message));
-    });
-  });
-  $("contentForm")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const form = new FormData(event.target);
-    void api("/v1/content/generate", {
-      method: "POST",
-      body: { kind: String(form.get("kind") || "seo_title"), parent_sku: String(form.get("sku") || "").trim() || undefined },
-    })
-      .then((row) => {
-        selectedDraft = row;
-        return loadContent();
-      })
-      .catch((error) => {
-        if ($("contentOut")) $("contentOut").innerHTML = notice(esc(error.message));
-      });
-  });
-  $("product360Form")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const q = String(new FormData(event.target).get("q") || "");
-    void loadProduct360(q).catch((error) => {
-      if ($("product360Out")) $("product360Out").innerHTML = notice(esc(error.message));
-    });
-  });
-  $("evalAlerts").addEventListener("click", () => {
-    void api("/v1/alerts/evaluate", { method: "POST", body: {} })
-      .then(() => loadOverview())
-      .catch((error) => {
-        $("alertsOut").innerHTML = notice(esc(error.message));
-      });
-  });
-  $("seoAuditBtn").addEventListener("click", () => {
-    $("seoAuditBtn").disabled = true;
-    void api("/v1/seo/audit", { method: "POST", body: {} })
-      .then((job) => {
-        $("seoStatus").textContent = `Job ${job.status || "queued"}`;
-        return loadSeo();
-      })
-      .catch((error) => {
-        $("seoAuditBtn").disabled = false;
-        $("seoPages").innerHTML = notice(esc(error.message));
-      });
-  });
-  $("askHints").addEventListener("click", (event) => {
-    const btn = event.target.closest("[data-hint]");
-    if (!btn) return;
-    $("askForm").querySelector("input").value = btn.dataset.hint;
-    $("askForm").requestSubmit();
-  });
-  $("askForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const question = String(new FormData(event.target).get("question") || "");
-    if (!question.trim()) return;
-    appendBubble("q", question);
-    void api("/v1/ai/chat", {
-      method: "POST",
-      body: { message: question, session_id: chatSessionId || undefined },
-    })
-      .then((data) => {
-        if (data.session_id) chatSessionId = data.session_id;
-        if (data.configured === false) {
-          appendBubble("a", data.reason === "missing_ai_provider_keys" ? "IA no conectada. Uso la consulta determinística." : data.reason || "IA no configurada");
-          return api("/v1/assistant/ask", { method: "POST", body: { question } }).then((legacy) => {
-            appendBubble("a", replyText(legacy));
-            if (legacy.intent === "chart" && legacy.data?.chart) appendChart(legacy.data.chart, legacy.data.series);
-          });
-        }
-        const evidence = (data.evidence ?? []).filter((row) => row.source || row.status).slice(0, 6);
-        const meta = [data.trace_id ? `trace ${data.trace_id.slice(0, 8)}` : null, data.model, data.usage?.cost_usd != null ? `USD ${data.usage.cost_usd}` : null]
-          .filter(Boolean)
-          .join(" · ");
-        appendBubble("a", `${data.text || "Sin texto del modelo."}${evidence.length ? `\n${evidence.map((row) => `${row.source || "source"} · ${row.status || "—"}`).join("\n")}` : ""}${meta ? `\n${meta}` : ""}`);
-      })
-      .catch((error) => appendBubble("a", error.message));
-    event.target.reset();
-  });
-  const poll = () => {
-    if (!token() || document.visibilityState !== "visible") return;
-    void Promise.all([
-      api("/v1/alerts").then((alerts) => {
-        const open = (alerts.alerts ?? []).filter((row) => row.status === "open");
-        $("announceAlerts").textContent = open.length ? `${open.length} alertas abiertas` : "";
-      }),
-      loadSeo(),
-      loadAnalytics(),
-    ]).catch(() => undefined);
-  };
-  setInterval(poll, 15_000);
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") poll();
-  });
-  if (token()) {
-    void loadOverview().catch((error) => {
-      $("banner").hidden = false;
-      $("banner").textContent = error.message;
-    });
+  if (!auth.getToken()) {
+    shell().hidden = true;
+    $("login").hidden = false;
+    renderLogin($("login"), { cfg, expired: auth.hadSession(), error: loginError });
+    return;
   }
+  await showApp();
 }
 
 void boot();

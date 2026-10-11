@@ -22,6 +22,7 @@
     "typecheck": "tsc --noEmit",
     "backup": "tsx scripts/backup.ts",
     "smoke": "tsx scripts/smoke.ts",
+    "dashboard:dev": "tsx scripts/dashboard-dev.ts",
     "platform:start": "tsx src/platform/main.ts",
     "platform:dev": "tsx scripts/platform-dev.ts",
     "editor:dev": "vite --config editor/vite.config.ts editor",
