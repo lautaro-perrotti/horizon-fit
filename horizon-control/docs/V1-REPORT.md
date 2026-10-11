@@ -16,7 +16,7 @@ Horizon Control is the internal OS for Horizon Fit: join, cache, jobs, scopes, a
 | B12 | Studio on ModelGateway | Local only. |
 | B13 | Health, JSON logs, backup, smoke | This document. |
 
-B1 deploy is still blocked on SSH. MCP from Cursor is authenticated (2026-10-11). Live CP is the **pre-B2** process.
+B1 deploy landed 2026-10-11 on `/opt/horizon-control-plane` (unit `horizon-control`). Backup at `/root/horizon-control-b1-20261011-093419`. Fit `main` `0396deae` untouched. `:8787` still binds Tailscale only.
 
 ## Live baseline (2026-10-11, Tailscale)
 
