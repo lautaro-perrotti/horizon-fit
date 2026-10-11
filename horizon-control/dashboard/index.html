@@ -28,6 +28,7 @@
           <button type="button" data-tab="analytics">Analytics</button>
           <button type="button" data-tab="competencia">Competencia</button>
           <button type="button" data-tab="oportunidades">Oportunidades</button>
+          <button type="button" data-tab="contenido">Contenido</button>
           <button type="button" data-tab="ventas">Ventas</button>
           <button type="button" data-tab="seo">SEO</button>
           <button type="button" data-tab="merchant">Merchant</button>
@@ -293,6 +294,39 @@
                 <span class="src">Source: growth.get_opportunity · componentes 0–100 · pesos renormalizados</span>
               </div>
               <div id="growthDetail"></div>
+            </article>
+          </section>
+
+          <section id="panel-contenido" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Drafts</h2>
+                <span class="src">Source: content.list_drafts · anclado a Product 360 · no publica a Horizon Fit</span>
+              </div>
+              <form id="contentForm" class="table-wrap" style="padding:16px 20px 12px">
+                <input name="sku" placeholder="001-TOP-AZU" autocomplete="off" />
+                <select name="kind">
+                  <option value="seo_title">SEO title</option>
+                  <option value="seo_meta">SEO meta</option>
+                  <option value="product_description">Descripción</option>
+                  <option value="collection_copy">Colección</option>
+                  <option value="ad_copy">Ad copy</option>
+                  <option value="email_subject">Email subject</option>
+                  <option value="email_body">Email body</option>
+                  <option value="instagram_caption">Instagram</option>
+                  <option value="creative_brief">Creative brief</option>
+                  <option value="image_prompt">Image prompt</option>
+                </select>
+                <button type="submit">Generar draft</button>
+              </form>
+              <div id="contentOut"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Detalle</h2>
+                <span class="src">Source: content.get_draft · draft → approved → published-externally</span>
+              </div>
+              <div id="contentDetail"></div>
             </article>
           </section>
 

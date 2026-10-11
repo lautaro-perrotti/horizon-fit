@@ -815,6 +815,66 @@ async function loadGrowth() {
   renderGrowth(data);
 }
 
+let selectedDraft = null;
+
+function renderContent(data) {
+  if (!$("contentOut")) return;
+  const rows = data.drafts ?? [];
+  $("contentOut").innerHTML = rows.length
+    ? rows
+        .map(
+          (row) =>
+            `<button type="button" class="opp-row${selectedDraft?.id === row.id ? " active" : ""}" data-id="${esc(row.id)}">
+              <span class="pip ${row.status === "approved" ? "ok" : ""}"></span>
+              <span><strong>${esc(row.kind)}</strong><span class="src">${esc(row.parent_sku || "—")} · ${esc(row.status)}</span></span>
+            </button>`,
+        )
+        .join("")
+    : `<div class="notice">Sin drafts. Generá desde un SKU. No se publica a horizonfit.com.ar.</div>`;
+  $("contentOut").querySelectorAll("[data-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const row = rows.find((item) => item.id === btn.dataset.id);
+      if (row) renderContentDetail(row);
+    });
+  });
+}
+
+function renderContentDetail(row) {
+  selectedDraft = row;
+  $("contentDetail").innerHTML = `
+    <div style="padding:16px 20px 20px">
+      <p class="src">${esc(row.status)} · ${esc(row.prompt_version)} · ${esc(row.model || "deterministic")}</p>
+      <pre style="white-space:pre-wrap;font:inherit">${esc(row.body)}</pre>
+      <p class="src">${esc(row.notes)}</p>
+      <div class="detail-actions">
+        <button type="button" data-action="approve" ${row.status !== "draft" ? "disabled" : ""}>Aprobar</button>
+        <button type="button" data-action="published-externally" ${row.status !== "approved" ? "disabled" : ""}>Marcar publicado afuera</button>
+      </div>
+    </div>`;
+  $("contentDetail").querySelectorAll("[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      void api(`/v1/content/drafts/${encodeURIComponent(row.id)}`, { method: "POST", body: { action: btn.dataset.action } })
+        .then((updated) => {
+          selectedDraft = updated;
+          return loadContent();
+        })
+        .catch((error) => {
+          $("contentDetail").innerHTML = notice(esc(error.message));
+        });
+    });
+  });
+}
+
+async function loadContent() {
+  if (!$("contentOut")) return;
+  const data = await api("/v1/content/drafts");
+  renderContent(data);
+  if (selectedDraft) {
+    const fresh = (data.drafts ?? []).find((row) => row.id === selectedDraft.id);
+    if (fresh) renderContentDetail(fresh);
+  }
+}
+
 function renderCompetitors(data) {
   if (!$("competitorsOut")) return;
   if (!data.configured) {
@@ -1208,6 +1268,11 @@ function showTab(name, cfg) {
       if ($("growthOut")) $("growthOut").innerHTML = notice(esc(error.message));
     });
   }
+  if (name === "contenido") {
+    void loadContent().catch((error) => {
+      if ($("contentOut")) $("contentOut").innerHTML = notice(esc(error.message));
+    });
+  }
   if (name === "seo") {
     void loadSeo().catch((error) => {
       $("seoPages").innerHTML = notice(esc(error.message));
@@ -1311,6 +1376,21 @@ async function boot() {
     void searchCatalog(String(new FormData(event.target).get("q") || "")).catch((error) => {
       $("catalogOut").innerHTML = notice(esc(error.message));
     });
+  });
+  $("contentForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    void api("/v1/content/generate", {
+      method: "POST",
+      body: { kind: String(form.get("kind") || "seo_title"), parent_sku: String(form.get("sku") || "").trim() || undefined },
+    })
+      .then((row) => {
+        selectedDraft = row;
+        return loadContent();
+      })
+      .catch((error) => {
+        if ($("contentOut")) $("contentOut").innerHTML = notice(esc(error.message));
+      });
   });
   $("product360Form")?.addEventListener("submit", (event) => {
     event.preventDefault();

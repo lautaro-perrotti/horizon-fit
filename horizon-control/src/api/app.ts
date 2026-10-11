@@ -156,6 +156,16 @@ export function createHttpApp(services: AppServices) {
     return invoke(c, "ai.chat", body);
   });
   app.get("/v1/ai/sessions/:id", (c) => invoke(c, "ai.get_session", { id: c.req.param("id") }));
+  app.get("/v1/content/drafts", (c) => invoke(c, "content.list_drafts", { status: c.req.query("status") || undefined }));
+  app.get("/v1/content/drafts/:id", (c) => invoke(c, "content.get_draft", { id: c.req.param("id") }));
+  app.post("/v1/content/generate", async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+    return invoke(c, "content.generate", body);
+  });
+  app.post("/v1/content/drafts/:id", async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+    return invoke(c, "content.update_draft", { ...(body as object), id: c.req.param("id") });
+  });
   app.post("/v1/growth/opportunities/:id", async (c) => {
     const body = await c.req.json().catch(() => ({}));
     return invoke(c, "growth.update_opportunity", { ...(body as object), id: c.req.param("id") });
@@ -192,7 +202,7 @@ function mountDashboard(app: Hono<{ Variables: Variables }>, config: AppServices
       storefrontUrl: config.storefrontUrl,
       apiUrl: config.wooBaseUrl,
       wpAdminUrl: `${config.wooBaseUrl.replace(/\/$/, "")}/wp-admin`,
-      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read ai.read ai.chat",
+      scopes: "openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read ai.read ai.chat content.read content.write",
     }),
   );
   app.get("/app", (c) => c.redirect("/app/"));

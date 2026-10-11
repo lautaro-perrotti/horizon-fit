@@ -213,6 +213,22 @@ export const aiTraces = sqliteTable("ai_traces", {
   at: integer("at").notNull(),
 });
 
+export const contentDrafts = sqliteTable("content_drafts", {
+  id: text("id").primaryKey(),
+  kind: text("kind").notNull(),
+  parentSku: text("parent_sku"),
+  opportunityId: text("opportunity_id"),
+  status: text("status").notNull(),
+  body: text("body").notNull(),
+  notes: text("notes"),
+  model: text("model"),
+  promptVersion: text("prompt_version").notNull(),
+  sourceContextJson: text("source_context_json"),
+  author: text("author").notNull(),
+  createdAt: integer("created_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
+
 export const opportunityActions = sqliteTable("opportunity_actions", {
   id: text("id").primaryKey(),
   opportunityId: text("opportunity_id").notNull(),
@@ -255,5 +271,6 @@ export const schema = {
   aiSessions,
   aiMessages,
   aiTraces,
+  contentDrafts,
   syncState,
 };

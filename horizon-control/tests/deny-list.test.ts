@@ -42,8 +42,12 @@ describe("deny list / no arbitrary shell", () => {
       "ai_tools",
       "ai_chat",
       "ai_get_session",
+      "content_generate",
+      "content_list_drafts",
+      "content_get_draft",
+      "content_update_draft",
     ]);
-    expect(listRegisteredTools()).toHaveLength(36);
+    expect(listRegisteredTools()).toHaveLength(40);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

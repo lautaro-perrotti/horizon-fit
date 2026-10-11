@@ -20,6 +20,8 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(html).toMatch(/Auditar ahora/);
     expect(html).toMatch(/Competencia/);
     expect(html).toMatch(/Oportunidades/);
+    expect(html).toMatch(/Contenido/);
+    expect(html).toMatch(/content\.list_drafts/);
     expect(html).toMatch(/growth\.list_opportunities/);
     expect(html).toMatch(/competition\.list/);
     expect(html).toMatch(/competition\.changes/);
@@ -46,6 +48,7 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.scopes).toMatch(/merchant\.read/);
     expect(body.scopes).toMatch(/ai\.read/);
     expect(body.scopes).toMatch(/ai\.chat/);
+    expect(body.scopes).toMatch(/content\.read/);
     expect(body.scopes).toMatch(/openid/);
     expect(body.storefrontUrl).toBe("https://horizonfit.com.ar");
     expect(body.wpAdminUrl).toMatch(/wp-admin/);

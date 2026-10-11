@@ -108,6 +108,31 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
     range: z.string().max(16).optional(),
   }),
   "ai.get_session": z.object({ id: z.string().min(1) }),
+  "content.generate": z.object({
+    kind: z.enum([
+      "seo_title",
+      "seo_meta",
+      "product_description",
+      "collection_copy",
+      "ad_copy",
+      "email_subject",
+      "email_body",
+      "instagram_caption",
+      "creative_brief",
+      "image_prompt",
+    ]),
+    parent_sku: z.string().max(80).optional(),
+    opportunity_id: z.string().max(80).optional(),
+  }),
+  "content.list_drafts": z.object({
+    status: z.enum(["draft", "approved", "published-externally"]).optional(),
+  }),
+  "content.get_draft": z.object({ id: z.string().min(1) }),
+  "content.update_draft": z.object({
+    id: z.string().min(1),
+    action: z.enum(["approve", "published-externally", "note"]),
+    note: z.string().max(500).optional(),
+  }),
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -147,6 +172,10 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "ai.tools": "Tools the internal AI runtime may call. Same registry as MCP/HTTP. No second catalog.",
   "ai.chat": "Native chat turn. Calls tools through the shared registry. Does not invent metrics when a slice is missing.",
   "ai.get_session": "Read a persisted chat session and its messages/evidence.",
+  "content.generate": "Draft copy grounded in Product 360, GSC queries and open opportunities. Never publishes to Horizon Fit.",
+  "content.list_drafts": "List content drafts and approval state.",
+  "content.get_draft": "Read one draft plus source_context.",
+  "content.update_draft": "Approve or mark published-externally. Does not write the catalog or storefront.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -322,6 +351,34 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
       const parsed = TOOL_ARG_SCHEMAS["ai.get_session"].parse(args) as { id: string };
       const row = services.chat.get(parsed.id);
       if (!row.session) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
+    }
+    case "content.generate": {
+      const parsed = TOOL_ARG_SCHEMAS["content.generate"].parse(args) as {
+        kind: "seo_title" | "seo_meta" | "product_description" | "collection_copy" | "ad_copy" | "email_subject" | "email_body" | "instagram_caption" | "creative_brief" | "image_prompt";
+        parent_sku?: string;
+        opportunity_id?: string;
+      };
+      return services.content.generate({ ...parsed, author: principal.subject });
+    }
+    case "content.list_drafts": {
+      const parsed = TOOL_ARG_SCHEMAS["content.list_drafts"].parse(args) as { status?: "draft" | "approved" | "published-externally" };
+      return { drafts: services.content.list(parsed.status) };
+    }
+    case "content.get_draft": {
+      const parsed = TOOL_ARG_SCHEMAS["content.get_draft"].parse(args) as { id: string };
+      const row = services.content.get(parsed.id);
+      if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
+    }
+    case "content.update_draft": {
+      const parsed = TOOL_ARG_SCHEMAS["content.update_draft"].parse(args) as {
+        id: string;
+        action: "approve" | "published-externally" | "note";
+        note?: string;
+      };
+      const row = services.content.update({ ...parsed, actor: principal.subject });
+      if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
       return row;
     }
     default: {

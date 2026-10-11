@@ -236,6 +236,23 @@ CREATE TABLE IF NOT EXISTS ai_traces (
   at INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS content_drafts (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL,
+  parent_sku TEXT,
+  opportunity_id TEXT,
+  status TEXT NOT NULL,
+  body TEXT NOT NULL,
+  notes TEXT,
+  model TEXT,
+  prompt_version TEXT NOT NULL,
+  source_context_json TEXT,
+  author TEXT NOT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS content_drafts_status_idx ON content_drafts(status, updated_at);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   store_id TEXT NOT NULL,
   source TEXT NOT NULL,

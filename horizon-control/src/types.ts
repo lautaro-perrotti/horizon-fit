@@ -18,7 +18,9 @@ export type ScopeName =
   | "analytics.read"
   | "competition.read"
   | "ai.read"
-  | "ai.chat";
+  | "ai.chat"
+  | "content.read"
+  | "content.write";
 
 export type ToolName =
   | "ops.health"
@@ -56,7 +58,11 @@ export type ToolName =
   | "ai.usage"
   | "ai.tools"
   | "ai.chat"
-  | "ai.get_session";
+  | "ai.get_session"
+  | "content.generate"
+  | "content.list_drafts"
+  | "content.get_draft"
+  | "content.update_draft";
 
 export type AuthPrincipal = {
   token: string;
