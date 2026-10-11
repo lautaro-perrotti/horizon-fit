@@ -14,6 +14,7 @@ import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights
 import { createGrowthAdapter, type GrowthAdapter } from "./adapters/growth.js";
 import { createModelGateway, type ModelGateway } from "./ai/gateway.js";
 import { createAiToolRuntime, type AiToolRuntime } from "./ai/tools.js";
+import { createChatAdapter, type ChatAdapter } from "./ai/chat.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
@@ -42,6 +43,7 @@ export type CreateServicesOptions = {
   growth?: GrowthAdapter;
   gateway?: ModelGateway;
   runtime?: AiToolRuntime;
+  chat?: ChatAdapter;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
@@ -273,5 +275,6 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     closeDb,
   } as AppServices;
   services.runtime = options.runtime ?? createAiToolRuntime(services);
+  services.chat = options.chat ?? createChatAdapter({ db, gateway, runtime: services.runtime });
   return services;
 }

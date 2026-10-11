@@ -180,6 +180,39 @@ export const aiUsage = sqliteTable("ai_usage", {
   updatedAt: integer("updated_at").notNull(),
 });
 
+export const aiSessions = sqliteTable("ai_sessions", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  subject: text("subject").notNull(),
+  model: text("model"),
+  status: text("status").notNull(),
+  contextJson: text("context_json"),
+  createdAt: integer("created_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
+
+export const aiMessages = sqliteTable("ai_messages", {
+  id: text("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
+  evidenceJson: text("evidence_json"),
+  at: integer("at").notNull(),
+});
+
+export const aiTraces = sqliteTable("ai_traces", {
+  id: text("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  messageId: text("message_id"),
+  provider: text("provider"),
+  model: text("model"),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  costUsd: real("cost_usd"),
+  toolsJson: text("tools_json"),
+  at: integer("at").notNull(),
+});
+
 export const opportunityActions = sqliteTable("opportunity_actions", {
   id: text("id").primaryKey(),
   opportunityId: text("opportunity_id").notNull(),
@@ -219,5 +252,8 @@ export const schema = {
   growthOpportunities,
   opportunityActions,
   aiUsage,
+  aiSessions,
+  aiMessages,
+  aiTraces,
   syncState,
 };

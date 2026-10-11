@@ -45,6 +45,7 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(body.scopes).toMatch(/analytics\.read/);
     expect(body.scopes).toMatch(/merchant\.read/);
     expect(body.scopes).toMatch(/ai\.read/);
+    expect(body.scopes).toMatch(/ai\.chat/);
     expect(body.scopes).toMatch(/openid/);
     expect(body.storefrontUrl).toBe("https://horizonfit.com.ar");
     expect(body.wpAdminUrl).toMatch(/wp-admin/);

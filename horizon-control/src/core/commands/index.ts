@@ -100,6 +100,14 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "ai.models": emptySchema,
   "ai.usage": emptySchema,
   "ai.tools": emptySchema,
+  "ai.chat": z.object({
+    message: z.string().min(1).max(4000),
+    session_id: z.string().min(1).optional(),
+    model: z.string().max(80).optional(),
+    parent_sku: z.string().max(80).optional(),
+    range: z.string().max(16).optional(),
+  }),
+  "ai.get_session": z.object({ id: z.string().min(1) }),
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -137,6 +145,8 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "ai.models": "List AI models and whether each provider is configured. Never reveals keys.",
   "ai.usage": "Token and cost usage for today plus remaining daily budget. Missing tokens stay null.",
   "ai.tools": "Tools the internal AI runtime may call. Same registry as MCP/HTTP. No second catalog.",
+  "ai.chat": "Native chat turn. Calls tools through the shared registry. Does not invent metrics when a slice is missing.",
+  "ai.get_session": "Read a persisted chat session and its messages/evidence.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -298,6 +308,22 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
           scope: TOOL_SCOPES[name],
         })),
       };
+    case "ai.chat": {
+      const parsed = TOOL_ARG_SCHEMAS["ai.chat"].parse(args) as {
+        message: string;
+        session_id?: string;
+        model?: string;
+        parent_sku?: string;
+        range?: string;
+      };
+      return services.chat.chat({ ...parsed, subject: principal.subject });
+    }
+    case "ai.get_session": {
+      const parsed = TOOL_ARG_SCHEMAS["ai.get_session"].parse(args) as { id: string };
+      const row = services.chat.get(parsed.id);
+      if (!row.session) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
+    }
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

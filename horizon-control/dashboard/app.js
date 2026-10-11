@@ -706,6 +706,7 @@ async function loadAnalytics() {
 
 let growthStatus = "open";
 let selectedOpportunity = null;
+let chatSessionId = "";
 
 function scoreParts(row) {
   const components = row.components ?? {};
@@ -1348,10 +1349,24 @@ async function boot() {
     const question = String(new FormData(event.target).get("question") || "");
     if (!question.trim()) return;
     appendBubble("q", question);
-    void api("/v1/assistant/ask", { method: "POST", body: { question } })
+    void api("/v1/ai/chat", {
+      method: "POST",
+      body: { message: question, session_id: chatSessionId || undefined },
+    })
       .then((data) => {
-        appendBubble("a", replyText(data));
-        if (data.intent === "chart" && data.data?.chart) appendChart(data.data.chart, data.data.series);
+        if (data.session_id) chatSessionId = data.session_id;
+        if (data.configured === false) {
+          appendBubble("a", data.reason === "missing_ai_provider_keys" ? "IA no conectada. Uso la consulta determinística." : data.reason || "IA no configurada");
+          return api("/v1/assistant/ask", { method: "POST", body: { question } }).then((legacy) => {
+            appendBubble("a", replyText(legacy));
+            if (legacy.intent === "chart" && legacy.data?.chart) appendChart(legacy.data.chart, legacy.data.series);
+          });
+        }
+        const evidence = (data.evidence ?? []).filter((row) => row.source || row.status).slice(0, 6);
+        const meta = [data.trace_id ? `trace ${data.trace_id.slice(0, 8)}` : null, data.model, data.usage?.cost_usd != null ? `USD ${data.usage.cost_usd}` : null]
+          .filter(Boolean)
+          .join(" · ");
+        appendBubble("a", `${data.text || "Sin texto del modelo."}${evidence.length ? `\n${evidence.map((row) => `${row.source || "source"} · ${row.status || "—"}`).join("\n")}` : ""}${meta ? `\n${meta}` : ""}`);
       })
       .catch((error) => appendBubble("a", error.message));
     event.target.reset();

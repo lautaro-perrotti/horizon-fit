@@ -200,6 +200,7 @@ export const ALL_SCOPES: ScopeName[] = [
   "analytics.read",
   "competition.read",
   "ai.read",
+  "ai.chat",
 ];
 
 /** Historic Auth0 names accepted on inbound JWTs and canonicalized. */
@@ -263,6 +264,8 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "ai.models": "ai.read",
   "ai.usage": "ai.read",
   "ai.tools": "ai.read",
+  "ai.chat": "ai.chat",
+  "ai.get_session": "ai.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];
@@ -321,6 +324,7 @@ export const CLIENT_SCOPES: Record<string, ScopeName[]> = {
     "analytics.read",
     "merchant.read",
     "ai.read",
+    "ai.chat",
   ],
 };
 

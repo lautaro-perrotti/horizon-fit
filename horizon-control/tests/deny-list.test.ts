@@ -40,8 +40,10 @@ describe("deny list / no arbitrary shell", () => {
       "ai_models",
       "ai_usage",
       "ai_tools",
+      "ai_chat",
+      "ai_get_session",
     ]);
-    expect(listRegisteredTools()).toHaveLength(34);
+    expect(listRegisteredTools()).toHaveLength(36);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

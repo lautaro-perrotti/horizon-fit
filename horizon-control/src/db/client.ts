@@ -204,6 +204,38 @@ CREATE TABLE IF NOT EXISTS ai_usage (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS ai_usage_day_model_user_idx ON ai_usage(day, provider, model, user);
 
+CREATE TABLE IF NOT EXISTS ai_sessions (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  model TEXT,
+  status TEXT NOT NULL,
+  context_json TEXT,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS ai_messages (
+  id TEXT PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  evidence_json TEXT,
+  at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ai_messages_session_idx ON ai_messages(session_id, at);
+CREATE TABLE IF NOT EXISTS ai_traces (
+  id TEXT PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  message_id TEXT,
+  provider TEXT,
+  model TEXT,
+  input_tokens INTEGER,
+  output_tokens INTEGER,
+  cost_usd REAL,
+  tools_json TEXT,
+  at INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   store_id TEXT NOT NULL,
   source TEXT NOT NULL,

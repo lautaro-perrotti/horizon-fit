@@ -28,6 +28,8 @@ export const AI_RUNTIME_DENIED = new Set<ToolName>([
   "ai.models",
   "ai.usage",
   "ai.tools",
+  "ai.chat",
+  "ai.get_session",
 ]);
 
 export function isAiRuntimeTool(tool: string): tool is ToolName {
