@@ -28,10 +28,13 @@ export function executiveAnswers(input) {
     input.demandStatus === "ok" ? "Demand (GA4/GSC) respondió" : null,
     input.conversionStatus === "ok" ? "Conversion calculada con sesiones y purchases" : null,
   ].filter(Boolean);
+  const opportunityTitles = input.opportunityTitles ?? [];
   const what_to_do_today =
     input.opportunitiesStatus === "not_joined"
       ? [...what_is_wrong, "Growth Engine todavía no está shipped — no hay acciones priorizadas"]
-      : what_is_wrong;
+      : opportunityTitles.length
+        ? opportunityTitles
+        : what_is_wrong;
   return {
     how_are_we_doing: how,
     what_changed: what_changed.length ? what_changed : ["Sin comparación: faltan observaciones en la ventana previa"],

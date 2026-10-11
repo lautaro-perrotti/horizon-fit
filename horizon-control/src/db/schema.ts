@@ -154,6 +154,28 @@ export const competitorProductHistory = sqliteTable(
   (table) => [primaryKey({ columns: [table.storeId, table.competitor, table.productKey, table.checkedAt] })],
 );
 
+export const growthOpportunities = sqliteTable("growth_opportunities", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  ruleId: text("rule_id").notNull(),
+  parentSku: text("parent_sku").notNull(),
+  status: text("status").notNull(),
+  score: real("score"),
+  payloadJson: text("payload_json"),
+  detectedAt: integer("detected_at").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+  snoozedUntil: integer("snoozed_until"),
+});
+
+export const opportunityActions = sqliteTable("opportunity_actions", {
+  id: text("id").primaryKey(),
+  opportunityId: text("opportunity_id").notNull(),
+  action: text("action").notNull(),
+  note: text("note"),
+  actor: text("actor"),
+  at: integer("at").notNull(),
+});
+
 export const syncState = sqliteTable(
   "sync_state",
   {
@@ -181,5 +203,7 @@ export const schema = {
   competitorSnapshots,
   competitorProducts,
   competitorProductHistory,
+  growthOpportunities,
+  opportunityActions,
   syncState,
 };

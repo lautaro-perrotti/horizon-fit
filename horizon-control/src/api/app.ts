@@ -146,6 +146,12 @@ export function createHttpApp(services: AppServices) {
   app.get("/v1/competition/changes", (c) => invoke(c, "competition.changes", {}));
   app.get("/v1/competition/compare", (c) => invoke(c, "competition.compare_product", { id: c.req.query("id") || "" }));
   app.get("/v1/competition/item", (c) => invoke(c, "competition.get", { url: c.req.query("url") || "" }));
+  app.get("/v1/growth/opportunities", (c) => invoke(c, "growth.list_opportunities", { status: c.req.query("status") || undefined }));
+  app.get("/v1/growth/opportunities/:id", (c) => invoke(c, "growth.get_opportunity", { id: c.req.param("id") }));
+  app.post("/v1/growth/opportunities/:id", async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+    return invoke(c, "growth.update_opportunity", { ...(body as object), id: c.req.param("id") });
+  });
   app.get("/v1/tools", (c) =>
     c.json({
       tools: toolsForPrincipal(c.get("principal")),

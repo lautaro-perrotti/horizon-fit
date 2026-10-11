@@ -19,6 +19,8 @@ describe("dashboard SPA + commerce warehouse", () => {
     expect(html).toMatch(/Plus\+Jakarta\+Sans/);
     expect(html).toMatch(/Auditar ahora/);
     expect(html).toMatch(/Competencia/);
+    expect(html).toMatch(/Oportunidades/);
+    expect(html).toMatch(/growth\.list_opportunities/);
     expect(html).toMatch(/competition\.list/);
     expect(html).toMatch(/competition\.changes/);
     expect(html).toMatch(/Product 360/);

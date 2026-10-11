@@ -7,6 +7,7 @@ import type { SeoReportAdapter, SeoProductPage } from "./seo-report.js";
 import { merchantItemsForProduct, type MerchantAdapter, type MerchantDiagnostics, type MerchantVariantRow } from "./merchant.js";
 import { peersForSegment, segmentForCategories, type CompetitorsAdapter, type CompetitorsReport } from "./competitors.js";
 import type { CompetitionAdapter } from "./competition.js";
+import type { GrowthAdapter } from "./growth.js";
 import type { HealthAdapter } from "./health.js";
 import {
   errorSlice,
@@ -310,6 +311,7 @@ export function overviewFromSources(input: {
   merchantBlocked: number | null;
   merchantAvailable: boolean;
   storefrontOk: boolean;
+  opportunities?: DeterministicInsight[];
 }): StoreOverview {
   const fetched_at = new Date().toISOString();
   const revenue = !input.sales.configured
@@ -371,7 +373,9 @@ export function overviewFromSources(input: {
     revenue,
     demand,
     conversion,
-    opportunities: notJoinedSlice("growth_engine", "growth_engine_not_shipped"),
+    opportunities: (input.opportunities ?? []).length
+      ? okSlice("growth_engine", { items: input.opportunities ?? [] }, { fetched_at })
+      : zeroSlice("growth_engine", { items: [] }, { fetched_at, reason: "no_open_opportunities" }),
     problems: problems.length ? okSlice("warehouse", { items: problems }, { fetched_at }) : zeroSlice("warehouse", { items: [] }, { fetched_at }),
   };
 }
@@ -384,6 +388,7 @@ export function createInsightsAdapter(options: {
   merchant?: MerchantAdapter;
   competitors?: CompetitorsAdapter;
   competition?: CompetitionAdapter;
+  growth?: GrowthAdapter;
   health?: HealthAdapter;
 }): InsightsAdapter {
   return {
@@ -435,7 +440,7 @@ export function createInsightsAdapter(options: {
           ? merchantSlice(merchant, resolved.identity.parent_sku, variantSkus)
           : notJoinedSlice("merchant_feed"),
         competition,
-        insights: [],
+        insights: options.growth ? options.growth.asInsights(options.growth.listForSku(resolved.identity.parent_sku)) : [],
       };
     },
     async overview() {
@@ -447,6 +452,7 @@ export function createInsightsAdapter(options: {
         options.health ? options.health.report() : Promise.resolve(null),
       ]);
       const seo = options.seo?.readLatest();
+      const opportunities = options.growth ? options.growth.asInsights(options.growth.list("open")) : [];
       return overviewFromSources({
         sales,
         ga4,
@@ -456,6 +462,7 @@ export function createInsightsAdapter(options: {
         merchantBlocked: merchant && merchant.source !== "unavailable" ? merchant.summary.blocked : null,
         merchantAvailable: Boolean(merchant && merchant.source !== "unavailable"),
         storefrontOk: health?.storefront.ok ?? true,
+        opportunities,
       });
     },
   };

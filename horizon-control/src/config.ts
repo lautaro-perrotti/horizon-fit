@@ -250,6 +250,9 @@ export const TOOL_SCOPES: Record<ToolName, ScopeName> = {
   "competition.get": "analytics.read",
   "competition.changes": "analytics.read",
   "competition.compare_product": "analytics.read",
+  "growth.list_opportunities": "commerce.read",
+  "growth.get_opportunity": "commerce.read",
+  "growth.update_opportunity": "commerce.read",
 };
 
 export const ALL_TOOLS = Object.keys(TOOL_SCOPES) as ToolName[];

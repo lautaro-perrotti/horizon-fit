@@ -10,6 +10,7 @@ const HINTS = [
   "¿Cómo está la competencia?",
   "Generá un gráfico de sesiones GA4",
   "¿Hay alertas abiertas?",
+  "¿Qué oportunidades hay?",
 ];
 
 function $(id) {
@@ -477,8 +478,8 @@ function renderOverviewBlocks(data) {
       "Opportunities",
       data.opportunities,
       opportunities.length
-        ? opportunities.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.reason || row.type)}</span></div>`).join("")
-        : "",
+        ? `${opportunities.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.reason || row.type)}</span></div>`).join("")}<button type="button" data-tab="oportunidades">Ver workspace →</button>`
+        : `<p class="muted">Sin oportunidades abiertas. Las reglas omiten filas si falta un slice.</p><button type="button" data-tab="oportunidades">Workspace →</button>`,
     )}</article>
     <article class="card">${sliceBlock(
       "Problems",
@@ -487,6 +488,9 @@ function renderOverviewBlocks(data) {
         ? problems.map((row) => `<div class="item">${pip(row.severity)}<span>${esc(row.title)}</span></div>`).join("")
         : `<p class="muted">Sin problemas observados.</p>`,
     )}</article>`;
+  $("overviewBlocks").querySelectorAll("[data-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => showTab(btn.dataset.tab, cfgRef));
+  });
 }
 
 let chartRange = "28d";
@@ -499,7 +503,8 @@ function renderExecutive(overview, changes) {
     demandStatus: overview.demand?.status || "unknown",
     conversionStatus: overview.conversion?.status || "unknown",
     problems: overview.problems?.data?.items ?? [],
-    opportunitiesStatus: overview.opportunities?.status || "not_joined",
+    opportunitiesStatus: overview.opportunities?.status || "zero",
+    opportunityTitles: (overview.opportunities?.data?.items ?? []).map((row) => row.reason || row.type),
     changes,
   });
   const card = (title, body) =>
@@ -697,6 +702,116 @@ async function loadAnalytics() {
   renderGa4(ga4);
   renderGsc(gsc);
   return { ga4, gsc };
+}
+
+let growthStatus = "open";
+let selectedOpportunity = null;
+
+function scoreParts(row) {
+  const components = row.components ?? {};
+  const weights = row.weights_used ?? {};
+  return Object.keys(components)
+    .map((key) => {
+      const weight = weights[key] == null ? "" : ` · w ${Math.round(Number(weights[key]) * 100)}%`;
+      return `<div class="item"><span class="muted">${esc(key)}</span><span class="mono">${esc(Math.round(Number(components[key])))}${weight}</span></div>`;
+    })
+    .join("");
+}
+
+function renderGrowth(data) {
+  if (!$("growthOut")) return;
+  const rows = data.opportunities ?? [];
+  if (!rows.length) {
+    $("growthOut").innerHTML = `<div class="notice">Sin oportunidades ${esc(growthStatus)}. Las reglas no emiten fila si falta un slice requerido. El score no rellena componentes missing.</div>`;
+  } else {
+    $("growthOut").innerHTML = rows
+      .map(
+        (row) =>
+          `<button type="button" class="opp-row${selectedOpportunity?.id === row.id ? " active" : ""}" data-id="${esc(row.id)}">
+            ${pip(row.severity)}
+            <span>
+              <strong>${esc(row.type)}</strong>
+              <span class="src">${esc(row.parent_sku)} · ${esc(row.product || "")}</span>
+            </span>
+            <span class="mono">${esc(row.score)}</span>
+          </button>`,
+      )
+      .join("");
+    $("growthOut").querySelectorAll("[data-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = rows.find((item) => item.id === btn.dataset.id);
+        if (row) renderGrowthDetail(row);
+      });
+    });
+  }
+  if (selectedOpportunity && rows.some((row) => row.id === selectedOpportunity.id)) {
+    renderGrowthDetail(rows.find((row) => row.id === selectedOpportunity.id));
+  } else if (!selectedOpportunity) {
+    $("growthDetail").innerHTML = `<p class="muted" style="padding:16px 20px">Elegí una oportunidad. El número no es mágico: cada componente 0–100 y el peso renormalizado están a la vista.</p>`;
+  }
+}
+
+function renderGrowthDetail(row) {
+  selectedOpportunity = row;
+  $("growthOut")
+    ?.querySelectorAll(".opp-row")
+    .forEach((node) => node.classList.toggle("active", node.dataset.id === row.id));
+  const evidence = (row.evidence ?? []).map((item) => `<li>${esc(item)}</li>`).join("");
+  $("growthDetail").innerHTML = `
+    <div style="padding:16px 20px 20px">
+      <div class="card-head" style="padding:0 0 12px">
+        <h3 style="margin:0">${esc(row.type)}</h3>
+        <span class="src">${esc(row.severity)} · ${esc(row.source)} · ${esc(row.period)}</span>
+      </div>
+      <button type="button" class="ask-selected" data-sku="${esc(row.parent_sku)}">${esc(row.parent_sku)} · Product 360 →</button>
+      <div class="score-line"><span class="mono">${esc(row.score)}</span><div class="score-bar"><i style="width:${Math.max(0, Math.min(100, Number(row.score) || 0))}%"></i></div></div>
+      <p class="src">${esc(row.score_caption || "score uses available components only")}</p>
+      ${scoreParts(row)}
+      <p>${esc(row.reason)}</p>
+      <p><strong>${esc(row.recommended_action)}</strong></p>
+      ${evidence ? `<ul>${evidence}</ul>` : ""}
+      <div class="detail-actions">
+        <button type="button" data-action="dismiss">Descartar</button>
+        <button type="button" data-action="snooze">Snooze 7d</button>
+        <button type="button" data-action="done">Hecha</button>
+      </div>
+      <form id="growthNoteForm" class="table-wrap" style="padding:12px 0 0;box-shadow:none">
+        <input name="note" placeholder="Nota (solo workspace local)" maxlength="500" />
+      </form>
+    </div>`;
+  $("growthDetail").querySelector("[data-sku]")?.addEventListener("click", () => {
+    if ($("product360Q")) $("product360Q").value = row.parent_sku;
+    showTab("product360", cfgRef);
+  });
+  $("growthDetail").querySelectorAll("[data-action]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      void updateOpportunity(row.id, { action: btn.dataset.action, snooze_days: btn.dataset.action === "snooze" ? 7 : undefined }).catch(
+        (error) => {
+          $("growthDetail").innerHTML = notice(esc(error.message));
+        },
+      );
+    });
+  });
+  $("growthNoteForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const note = String(new FormData(event.target).get("note") || "").trim();
+    if (!note) return;
+    void updateOpportunity(row.id, { action: "note", note }).catch((error) => {
+      $("growthDetail").innerHTML = notice(esc(error.message));
+    });
+  });
+}
+
+async function updateOpportunity(id, body) {
+  const row = await api(`/v1/growth/opportunities/${encodeURIComponent(id)}`, { method: "POST", body });
+  selectedOpportunity = row;
+  await loadGrowth();
+}
+
+async function loadGrowth() {
+  if (!$("growthOut")) return;
+  const data = await api(`/v1/growth/opportunities?status=${encodeURIComponent(growthStatus)}`);
+  renderGrowth(data);
 }
 
 function renderCompetitors(data) {
@@ -1087,6 +1202,11 @@ function showTab(name, cfg) {
       if ($("competitorsOut")) $("competitorsOut").innerHTML = notice(esc(error.message));
     });
   }
+  if (name === "oportunidades") {
+    void loadGrowth().catch((error) => {
+      if ($("growthOut")) $("growthOut").innerHTML = notice(esc(error.message));
+    });
+  }
   if (name === "seo") {
     void loadSeo().catch((error) => {
       $("seoPages").innerHTML = notice(esc(error.message));
@@ -1153,6 +1273,15 @@ async function boot() {
   $("chartCompare")?.addEventListener("change", (event) => {
     chartCompare = Boolean(event.target.checked);
     void loadOverview().catch(() => undefined);
+  });
+  $("growthFilters")?.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-status]");
+    if (!btn) return;
+    growthStatus = btn.dataset.status;
+    $("growthFilters").querySelectorAll("button").forEach((node) => node.classList.toggle("active", node === btn));
+    void loadGrowth().catch((error) => {
+      if ($("growthOut")) $("growthOut").innerHTML = notice(esc(error.message));
+    });
   });
   $("tabNav").addEventListener("click", (event) => {
     const btn = event.target.closest("[data-tab]");

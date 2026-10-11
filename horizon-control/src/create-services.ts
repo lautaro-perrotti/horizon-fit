@@ -11,6 +11,7 @@ import { createAnalyticsAdapter, type AnalyticsAdapter } from "./adapters/analyt
 import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter } from "./adapters/competitors.js";
 import { createCompetitionAdapter, type CompetitionAdapter } from "./adapters/competition.js";
 import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
+import { createGrowthAdapter, type GrowthAdapter } from "./adapters/growth.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
 import { createMerchantAdapter, type MerchantAdapter } from "./adapters/merchant.js";
@@ -36,6 +37,7 @@ export type CreateServicesOptions = {
   competitors?: CompetitorsAdapter;
   competition?: CompetitionAdapter;
   insights?: InsightsAdapter;
+  growth?: GrowthAdapter;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
   merchant?: MerchantAdapter;
@@ -127,7 +129,19 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       fetchImpl: options.fetchImpl,
     });
   const history = options.history ?? createHistoryStore(db);
-  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo, commerce, analytics, history, competition });
+  const growthBag: { growth?: GrowthAdapter } = {};
+  const runner = options.runner ?? createDefaultJobRunner({
+    config,
+    merchant,
+    seo,
+    commerce,
+    analytics,
+    history,
+    competition,
+    get growth() {
+      return growthBag.growth;
+    },
+  });
   const worker = startJobWorker({
     queue: jobs,
     runner,
@@ -186,7 +200,12 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       competitors,
       competition,
       health,
+      get growth() {
+        return growthBag.growth;
+      },
     });
+  const growth = options.growth ?? createGrowthAdapter({ db, catalog, insights });
+  growthBag.growth = growth;
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
   if (options.startWorker !== false) {
     evaluateTimer = setInterval(() => {
@@ -221,6 +240,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     analytics,
     competitors,
     competition,
+    growth,
     insights,
     history,
     storefront,

@@ -66,7 +66,8 @@ describe("insights.overview and product slices", () => {
     expect(overview.demand.status).toBe("not_configured");
     expect(overview.conversion.status).toBe("unknown");
     expect(overview.conversion.reason).toBe("conversion_needs_ga4_sessions_and_purchases");
-    expect(overview.opportunities.status).toBe("not_joined");
+    expect(overview.opportunities.status).toBe("zero");
+    expect(overview.opportunities.reason).toBe("no_open_opportunities");
     expect(overview.problems.status).toBe("zero");
   });
 
@@ -88,7 +89,7 @@ describe("insights.overview and product slices", () => {
     expect(overview.conversion.data?.cvr).toBeCloseTo(0.021);
     expect(overview.problems.status).toBe("ok");
     expect(overview.problems.data?.items.map((row) => row.type)).toEqual(["seo_critical", "merchant_blocked"]);
-    expect(overview.opportunities.status).toBe("not_joined");
+    expect(overview.opportunities.status).toBe("zero");
   });
 
   it("seoSlice and merchantSlice stay honest when the page or SKU is missing", () => {
@@ -120,8 +121,9 @@ describe("insights.overview and product slices", () => {
     expect(body.revenue.status).toBe("not_configured");
     expect(body.demand.status).toBe("not_configured");
     expect(body.conversion.status).toBe("unknown");
-    expect(body.opportunities.status).toBe("not_joined");
-    expect(body.opportunities.reason).toBe("growth_engine_not_shipped");
+    expect(body.opportunities.status).toBe("zero");
+    expect(body.opportunities.reason).toBe("no_open_opportunities");
+    expect(body.opportunities.data.items).toEqual([]);
     expect(JSON.stringify(body)).not.toMatch(/\$214\.000/);
   });
 

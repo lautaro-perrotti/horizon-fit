@@ -27,6 +27,7 @@
           <button type="button" data-tab="product360">Product 360</button>
           <button type="button" data-tab="analytics">Analytics</button>
           <button type="button" data-tab="competencia">Competencia</button>
+          <button type="button" data-tab="oportunidades">Oportunidades</button>
           <button type="button" data-tab="ventas">Ventas</button>
           <button type="button" data-tab="seo">SEO</button>
           <button type="button" data-tab="merchant">Merchant</button>
@@ -269,6 +270,29 @@
                 <input id="competitionCompareQ" name="id" placeholder="001-TOP-AZU" autocomplete="off" />
               </form>
               <div id="competitionCompare"></div>
+            </article>
+          </section>
+
+          <section id="panel-oportunidades" class="panel" hidden>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Oportunidades</h2>
+                <span class="src">Source: growth.list_opportunities · reglas determinísticas · score visible · no se inventan métricas</span>
+              </div>
+              <div class="chart-ranges" id="growthFilters" style="padding:0 20px 12px">
+                <button type="button" data-status="open" class="active">Abiertas</button>
+                <button type="button" data-status="snoozed">Snoozed</button>
+                <button type="button" data-status="dismissed">Descartadas</button>
+                <button type="button" data-status="done">Hechas</button>
+              </div>
+              <div id="growthOut"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Detalle</h2>
+                <span class="src">Source: growth.get_opportunity · componentes 0–100 · pesos renormalizados</span>
+              </div>
+              <div id="growthDetail"></div>
             </article>
           </section>
 

@@ -46,7 +46,10 @@ export type ToolName =
   | "competition.list"
   | "competition.get"
   | "competition.changes"
-  | "competition.compare_product";
+  | "competition.compare_product"
+  | "growth.list_opportunities"
+  | "growth.get_opportunity"
+  | "growth.update_opportunity";
 
 export type AuthPrincipal = {
   token: string;

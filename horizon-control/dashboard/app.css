@@ -158,6 +158,16 @@ main { flex: 1; min-width: 0; overflow: auto; padding: 24px 26px 44px; }
 .locked { max-width: 560px; }
 .locked p { font-size: 13px; color: oklch(0.22 0.02 300 / 0.65); line-height: 1.6; }
 .muted { color: oklch(0.22 0.02 300 / 0.5); font-size: 12.5px; }
+.opp-row {
+  all: unset; display: grid; grid-template-columns: 12px 1fr auto; gap: 10px; align-items: center;
+  width: 100%; box-sizing: border-box; padding: 12px 20px; border-bottom: 1px solid var(--hair);
+  cursor: pointer; font: inherit;
+}
+.opp-row:hover, .opp-row.active { background: var(--sand); }
+.opp-row strong { display: block; font-size: 12.5px; }
+.score-line { display: flex; align-items: center; gap: 12px; margin: 14px 0 6px; }
+.score-bar { flex: 1; height: 8px; border-radius: 999px; background: var(--sand); overflow: hidden; }
+.score-bar i { display: block; height: 100%; background: var(--violet); }
 .drawer {
   position: absolute; top: 0; right: 0; bottom: 0; width: 340px;
   background: var(--paper); border-left: 1px solid oklch(0.3 0.02 75 / 0.1);

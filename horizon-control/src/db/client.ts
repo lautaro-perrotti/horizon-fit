@@ -165,6 +165,31 @@ CREATE TABLE IF NOT EXISTS competitor_product_history (
   PRIMARY KEY (store_id, competitor, product_key, checked_at)
 );
 
+CREATE TABLE IF NOT EXISTS growth_opportunities (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  rule_id TEXT NOT NULL,
+  parent_sku TEXT NOT NULL,
+  status TEXT NOT NULL,
+  score REAL,
+  payload_json TEXT,
+  detected_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  snoozed_until INTEGER
+);
+CREATE UNIQUE INDEX IF NOT EXISTS growth_opportunities_rule_sku_idx ON growth_opportunities(store_id, rule_id, parent_sku);
+CREATE INDEX IF NOT EXISTS growth_opportunities_status_idx ON growth_opportunities(status, score);
+
+CREATE TABLE IF NOT EXISTS opportunity_actions (
+  id TEXT PRIMARY KEY,
+  opportunity_id TEXT NOT NULL,
+  action TEXT NOT NULL,
+  note TEXT,
+  actor TEXT,
+  at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS opportunity_actions_opp_idx ON opportunity_actions(opportunity_id, at);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   store_id TEXT NOT NULL,
   source TEXT NOT NULL,

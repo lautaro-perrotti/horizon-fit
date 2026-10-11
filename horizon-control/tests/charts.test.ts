@@ -47,6 +47,16 @@ describe("HorizonChart states", () => {
     });
     expect(answers.what_works[0]).toMatch(/Ninguna fuente/);
     expect(answers.what_to_do_today[0]).toMatch(/Growth Engine/);
+    const shipped = executiveAnswers({
+      revenueStatus: "not_configured",
+      demandStatus: "not_configured",
+      conversionStatus: "unknown",
+      problems: [],
+      opportunitiesStatus: "zero",
+      opportunityTitles: [],
+      changes: [],
+    });
+    expect(shipped.what_to_do_today[0]).not.toMatch(/Growth Engine todavía no está shipped/);
     expect(HORIZON_CHARTS.filter((row) => row.kind === "deferred").every((row) => row.status === "not_joined")).toBe(true);
   });
 

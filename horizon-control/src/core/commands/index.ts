@@ -51,6 +51,18 @@ const competitionGetSchema = z.object({
 const competitionCompareSchema = z.object({
   id: z.union([z.string(), z.number()]),
 });
+const growthGetSchema = z.object({
+  id: z.string().min(1),
+});
+const growthUpdateSchema = z.object({
+  id: z.string().min(1),
+  action: z.enum(["dismiss", "snooze", "done", "note"]),
+  note: z.string().max(500).optional(),
+  snooze_days: z.number().int().min(1).max(90).optional(),
+});
+const growthListSchema = z.object({
+  status: z.enum(["open", "dismissed", "snoozed", "done"]).optional(),
+});
 
 export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "ops.health": emptySchema,
@@ -81,6 +93,9 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "competition.get": competitionGetSchema,
   "competition.changes": emptySchema,
   "competition.compare_product": competitionCompareSchema,
+  "growth.list_opportunities": growthListSchema,
+  "growth.get_opportunity": growthGetSchema,
+  "growth.update_opportunity": growthUpdateSchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -112,6 +127,9 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "competition.get": "One persisted snapshot and extracted products by URL.",
   "competition.changes": "Diff vs previous snapshot: new, removed, price up/down, promo, title/h1. Empty if only one snapshot exists.",
   "competition.compare_product": "Horizon SKU vs latest competitor products in the same segment. Price index is null without observed prices.",
+  "growth.list_opportunities": "Deterministic growth opportunities. Rules skip when a required slice is not available. Score renormalizes missing domains.",
+  "growth.get_opportunity": "One persisted opportunity with evidence, score components and recommended next check.",
+  "growth.update_opportunity": "Dismiss, snooze, mark done or add a note. Local workspace only — no catalog writes.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -244,6 +262,22 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
     case "competition.compare_product": {
       const parsed = competitionCompareSchema.parse(args);
       return services.competition.compareProduct(String(parsed.id));
+    }
+    case "growth.list_opportunities": {
+      const parsed = growthListSchema.parse(args);
+      return { opportunities: services.growth.list(parsed.status) };
+    }
+    case "growth.get_opportunity": {
+      const parsed = growthGetSchema.parse(args);
+      const row = services.growth.get(parsed.id);
+      if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
+    }
+    case "growth.update_opportunity": {
+      const parsed = growthUpdateSchema.parse(args);
+      const row = services.growth.update({ ...parsed, actor: principal.subject });
+      if (!row) throw Object.assign(new Error("not_found"), { status: 404 });
+      return row;
     }
     default: {
       const exhaustive: never = tool;
