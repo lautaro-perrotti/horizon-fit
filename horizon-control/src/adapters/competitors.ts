@@ -2,6 +2,7 @@ import { allowlistedFetch, extraAllowedHosts } from "../http/allowlist.js";
 
 const STORE_ID = "horizon-fit";
 const MAX_COMPETITORS = 8;
+const UA = "HorizonControl/0.1 (+https://horizonfit.com.ar)";
 
 export type CompetitorPage = {
   url: string;
@@ -123,12 +124,22 @@ export function createCompetitorsAdapter(options: {
       for (const url of urls) {
         const started = Date.now();
         try {
-          let response = await allowlistedFetch(url, extraHosts, { timeoutMs: 12_000, redirect: "manual" }, fetchImpl);
+          let response = await allowlistedFetch(
+            url,
+            extraHosts,
+            { timeoutMs: 12_000, redirect: "manual", headers: { "user-agent": UA } },
+            fetchImpl,
+          );
           if (response.status >= 300 && response.status < 400) {
             const location = response.headers.get("location");
             if (location) {
               const next = new URL(location, url).toString();
-              response = await allowlistedFetch(next, extraHosts, { timeoutMs: 12_000, redirect: "manual" }, fetchImpl);
+              response = await allowlistedFetch(
+                next,
+                extraHosts,
+                { timeoutMs: 12_000, redirect: "manual", headers: { "user-agent": UA } },
+                fetchImpl,
+              );
             }
           }
           const html = (await response.text()).slice(0, 400_000);

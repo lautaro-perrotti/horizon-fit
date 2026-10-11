@@ -164,18 +164,17 @@ export function resolveSeoReportDir(options: { reportDir?: string; repoPath?: st
 }
 
 export function resolveSeoReportPath(reportDir: string): string | null {
-  const latestPath = path.join(reportDir, "latest.json");
-  if (fs.existsSync(latestPath) && fs.statSync(latestPath).isFile()) return latestPath;
   if (!fs.existsSync(reportDir) || !fs.statSync(reportDir).isDirectory()) return null;
-  const stamped = fs
+  const candidates = fs
     .readdirSync(reportDir)
-    .filter((name) => /^seo-audit-.+\.json$/i.test(name))
+    .filter((name) => name === "latest.json" || /^seo-audit-.+\.json$/i.test(name))
     .map((name) => {
       const file = path.join(reportDir, name);
       return { file, mtime: fs.statSync(file).mtimeMs };
     })
+    .filter((row) => fs.statSync(row.file).isFile())
     .sort((a, b) => b.mtime - a.mtime);
-  return stamped[0]?.file ?? null;
+  return candidates[0]?.file ?? null;
 }
 
 export function seoPageFromRaw(page: RawPage, generatedAt: string | null): SeoProductPage | null {

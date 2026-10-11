@@ -11,11 +11,41 @@ import type { SeoReportAdapter, SeoSummary } from "./seo-report.js";
 import { summaryFromJobResult } from "./seo-report.js";
 import type { AnalyticsAdapter, Ga4Report, GscReport } from "./analytics.js";
 import type { CompetitorsAdapter } from "./competitors.js";
+import type { CompetitionAdapter } from "./competition.js";
 
 const STORE_ID = "horizon-fit";
 const SEO_WARNING_THRESHOLD = 5;
 const SEO_STALE_HOURS = 24;
-const SEO_SCHEDULE_MS = 12 * 3_600_000;
+export const SEO_SCHEDULE_MS = 12 * 3_600_000;
+
+export function isInfraJobFailure(job: { type: string; status: string; error?: string | null }): boolean {
+  if (job.status !== "failed") return false;
+  if (job.type === "seo.audit" && (job.error === "exit_1" || job.error === "cancelled_reschedule_loop")) return false;
+  return true;
+}
+
+export function shouldRefreshMetric(lastAt: number | null, now: number, ttlMs: number): boolean {
+  return lastAt == null || now - lastAt > ttlMs;
+}
+
+export function shouldScheduleSeoAudit(input: {
+  busy: boolean;
+  lastJob?: { status: string; finishedAt?: number | null; createdAt: number } | null;
+  reportGeneratedAt?: string | null;
+  now?: number;
+  intervalMs?: number;
+}): boolean {
+  if (input.busy) return false;
+  const now = input.now ?? Date.now();
+  const interval = input.intervalMs ?? SEO_SCHEDULE_MS;
+  const lastJobAt =
+    input.lastJob && (input.lastJob.status === "succeeded" || input.lastJob.status === "failed")
+      ? input.lastJob.finishedAt ?? input.lastJob.createdAt
+      : 0;
+  const reportAt = input.reportGeneratedAt ? Date.parse(input.reportGeneratedAt) : Number.NaN;
+  const lastAt = Math.max(lastJobAt, Number.isFinite(reportAt) ? reportAt : 0);
+  return !lastAt || now - lastAt > interval;
+}
 const SYNC_TTL_MS: Record<"sales.sync" | "ga4.sync" | "gsc.sync" | "competitor.snapshot" | "growth.evaluate" | "customers.aggregate", number> = {
   "sales.sync": 2 * 60_000,
   "ga4.sync": 30 * 60_000,
@@ -79,6 +109,7 @@ export function createWarehouse(options: {
   seo: SeoReportAdapter;
   analytics: AnalyticsAdapter;
   competitors: CompetitorsAdapter;
+  competition?: CompetitionAdapter;
 }): Warehouse {
   const { db } = options;
 
@@ -94,7 +125,12 @@ export function createWarehouse(options: {
     if (!input.open) {
       if (existing && existing.status === "open") {
         db.update(alerts)
-          .set({ status: "resolved", updatedAt: now, payloadJson: JSON.stringify(input.payload) })
+          .set({
+            status: "resolved",
+            title: input.title,
+            updatedAt: now,
+            payloadJson: JSON.stringify(input.payload),
+          })
           .where(eq(alerts.id, existing.id))
           .run();
       }
@@ -126,6 +162,17 @@ export function createWarehouse(options: {
         updatedAt: now,
       })
       .run();
+  }
+
+  function lastSnapshotAt(kpi: string): number | null {
+    const row = db
+      .select({ at: metricSnapshots.at })
+      .from(metricSnapshots)
+      .where(eq(metricSnapshots.kpi, kpi))
+      .orderBy(desc(metricSnapshots.at))
+      .limit(1)
+      .get();
+    return row?.at ?? null;
   }
 
   function writeSnapshot(period: string, kpi: string, value: number | null, unit: string, payload?: unknown) {
@@ -202,7 +249,7 @@ export function createWarehouse(options: {
         payload: { skus: out.map((product) => product.sku || product.parent_sku), count: out.length },
         open: out.length > 0,
       });
-      const failed = jobs.filter((job) => job.status === "failed").slice(0, 5);
+      const failed = jobs.filter(isInfraJobFailure).slice(0, 5);
       upsertAlert({
         ruleId: "job_failed",
         severity: "warning",
@@ -258,8 +305,13 @@ export function createWarehouse(options: {
       });
 
       const seoBusy = jobs.some((job) => job.type === "seo.audit" && (job.status === "queued" || job.status === "running"));
-      const lastOk = latestSeoJob?.status === "succeeded" ? latestSeoJob.finishedAt ?? latestSeoJob.createdAt : 0;
-      if (!seoBusy && (!lastOk || Date.now() - lastOk > SEO_SCHEDULE_MS)) {
+      if (
+        shouldScheduleSeoAudit({
+          busy: seoBusy,
+          lastJob: latestSeoJob,
+          reportGeneratedAt: fromDisk.summary?.generatedAt ?? summary?.generatedAt ?? null,
+        })
+      ) {
         await options.jobs.enqueue({
           type: "seo.audit",
           args: { target: SEO_AUDIT_ORIGIN, scheduled: true },
@@ -282,21 +334,27 @@ export function createWarehouse(options: {
         }
       }
 
-      const [gsc, ga4, competitors] = await Promise.all([
-        options.analytics.searchConsole(),
-        options.analytics.ga4(),
-        options.competitors.snapshot(),
+      const stored = options.competition?.latestPages();
+      const now = Date.now();
+      const lastGsc = lastSnapshotAt("gsc_clicks");
+      const lastGa4 = lastSnapshotAt("ga4_sessions");
+      const [gsc, ga4, liveCompetitors] = await Promise.all([
+        shouldRefreshMetric(lastGsc, now, SYNC_TTL_MS["gsc.sync"]) ? options.analytics.searchConsole() : Promise.resolve(null),
+        shouldRefreshMetric(lastGa4, now, SYNC_TTL_MS["ga4.sync"]) ? options.analytics.ga4() : Promise.resolve(null),
+        stored?.pages.length ? Promise.resolve(null) : options.competitors.snapshot(),
       ]);
-      if (gsc.configured && gsc.ok) {
+      if (gsc?.configured && gsc.ok) {
         writeSnapshot("28d", "gsc_clicks", gsc.clicks, "count", { site_url: gsc.site_url });
         writeSnapshot("28d", "gsc_impressions", gsc.impressions, "count");
       }
-      if (ga4.configured && ga4.ok) {
+      if (ga4?.configured && ga4.ok) {
         writeSnapshot("28d", "ga4_sessions", ga4.sessions, "count", { property_id: ga4.property_id });
         writeSnapshot("28d", "ga4_users", ga4.users, "count");
       }
-      const down = competitors.configured
-        ? competitors.pages.filter((page) => !page.ok || (page.status != null && page.status >= 400))
+      const competitorPages = stored?.pages.length ? stored.pages : liveCompetitors?.configured ? liveCompetitors.pages : [];
+      const competitorsConfigured = Boolean(stored?.pages.length || liveCompetitors?.configured);
+      const down = competitorsConfigured
+        ? competitorPages.filter((page) => !page.ok || (page.status != null && page.status >= 400))
         : [];
       upsertAlert({
         ruleId: "competitor_down",

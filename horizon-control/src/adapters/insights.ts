@@ -6,7 +6,7 @@ import { resolveProductIdentity, type ProductIdentity } from "./product-identity
 import type { SeoReportAdapter, SeoProductPage } from "./seo-report.js";
 import { merchantItemsForProduct, type MerchantAdapter, type MerchantDiagnostics, type MerchantVariantRow } from "./merchant.js";
 import { peersForSegment, segmentForCategories, type CompetitorsAdapter, type CompetitorsReport } from "./competitors.js";
-import type { CompetitionAdapter } from "./competition.js";
+import type { CompetitionAdapter, CompetitionList } from "./competition.js";
 import type { GrowthAdapter } from "./growth.js";
 import type { HealthAdapter } from "./health.js";
 import {
@@ -286,6 +286,33 @@ export function merchantSlice(diag: MerchantDiagnostics, parentSku: string, vari
   return blocked > 0 ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
 }
 
+export function reportFromCompetitionList(list: CompetitionList): CompetitorsReport {
+  return {
+    configured: list.configured,
+    reason: list.reason,
+    store_id: list.store_id,
+    pages: list.snapshots.map((row) => {
+      let host = row.competitor;
+      try {
+        host = new URL(row.url).host;
+      } catch {
+        /* keep competitor label */
+      }
+      return {
+        url: row.url,
+        host,
+        status: row.status,
+        latency_ms: null,
+        title: row.title,
+        description: row.description,
+        h1: row.h1,
+        canonical: "",
+        ok: !row.error && (row.status == null || row.status < 400),
+      };
+    }),
+  };
+}
+
 export function competitionSlice(report: CompetitorsReport, categories: string[]): ProductInsight["competition"] {
   const source = "competitors";
   if (!report.configured) return notConfiguredSlice(source, report.reason ?? "missing_competitor_urls");
@@ -402,7 +429,8 @@ export function createInsightsAdapter(options: {
         ...resolved.product.variations.map((row) => row.sku),
         resolved.identity.product_id != null ? String(resolved.identity.product_id) : null,
       ].filter((value): value is string => Boolean(value));
-      const [sales, ga4, gsc, merchant, competitors] = await Promise.all([
+      const storedCompetition = options.competition?.list();
+      const [sales, ga4, gsc, merchant, liveCompetitors] = await Promise.all([
         options.commerce.sales(),
         options.analytics.ga4Product({
           parent_sku: resolved.identity.parent_sku,
@@ -414,8 +442,15 @@ export function createInsightsAdapter(options: {
           slug: resolved.identity.slug,
         }),
         options.merchant ? options.merchant.readDiagnostics() : Promise.resolve(null),
-        options.competitors ? options.competitors.snapshot() : Promise.resolve(null),
+        storedCompetition?.snapshots.length
+          ? Promise.resolve(null)
+          : options.competitors
+            ? options.competitors.snapshot()
+            : Promise.resolve(null),
       ]);
+      const competitors = storedCompetition?.snapshots.length
+        ? reportFromCompetitionList(storedCompetition)
+        : liveCompetitors;
       const seoLatest = options.seo?.readLatest();
       const seoPage = options.seo?.pageFor(resolved.identity.slug, resolved.identity.canonical_url) ?? null;
       const categories = resolved.product.categories.map((row) => row.slug || row.name).filter(Boolean);

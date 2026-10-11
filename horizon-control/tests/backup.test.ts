@@ -4,7 +4,7 @@ import path from "node:path";
 import Database from "better-sqlite3";
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES } from "../src/config.js";
-import { backupControl, restoreSqlite } from "../src/observability/backup.js";
+import { backupControl, pruneBackups, restoreSqlite } from "../src/observability/backup.js";
 import { buildTestApp, request, signToken } from "./helpers.js";
 
 describe("backup and extended healthz", () => {
@@ -24,6 +24,22 @@ describe("backup and extended healthz", () => {
     const copy = new Database(restored, { readonly: true });
     expect(copy.prepare("SELECT n FROM probe WHERE id=?").get("row-1")).toEqual({ n: 7 });
     copy.close();
+  });
+
+  it("prunes older sqlite backups and matching env copies", () => {
+    const destDir = fs.mkdtempSync(path.join(os.tmpdir(), "hc-bak-prune-"));
+    for (let i = 0; i < 10; i += 1) {
+      const stamp = `2026-10-11T0${i}-00-00-000Z`;
+      const sqlite = path.join(destDir, `horizon-control-${stamp}.sqlite`);
+      const envFile = path.join(destDir, `horizon-control.env-${stamp}`);
+      fs.writeFileSync(sqlite, "x");
+      fs.writeFileSync(envFile, "y");
+      const at = Date.now() - (10 - i) * 1000;
+      fs.utimesSync(sqlite, at / 1000, at / 1000);
+    }
+    expect(pruneBackups(destDir, 3)).toBe(7);
+    expect(fs.readdirSync(destDir).filter((name) => name.endsWith(".sqlite"))).toHaveLength(3);
+    expect(fs.readdirSync(destDir).filter((name) => name.includes(".env-"))).toHaveLength(3);
   });
 
   it("refuses to backup :memory: and keeps healthz unauthenticated", async () => {

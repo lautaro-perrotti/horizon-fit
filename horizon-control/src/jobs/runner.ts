@@ -47,11 +47,14 @@ export function createDefaultJobRunner(options: {
         cwd: repo,
       });
       const latest = options.seo?.readLatest();
+      const wrote = Boolean(latest?.summary);
       return {
         ...run,
+        exitCode: wrote ? 0 : run.exitCode,
         extra: {
-          summary: run.exitCode === 0 ? latest?.summary ?? null : null,
+          summary: latest?.summary ?? null,
           reportPath: latest?.summary?.reportPath ?? null,
+          script_exit: run.exitCode,
         },
       };
     }

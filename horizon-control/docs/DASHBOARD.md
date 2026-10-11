@@ -28,15 +28,19 @@ Auth0 API identifier / JWT `aud` stays `http://100.123.37.74:8787/mcp`. Create a
 | Overview | health + sales + catalog sample + alerts + SEO totals + GA4 if connected | `ops.read` `commerce.read` `catalog.read` `alerts.read` `seo.read` `analytics.read` |
 | Sitio | iframe storefront (`horizonfit.com.ar`) | — (public embed) |
 | Catálogo | `catalog.search_products` / `catalog.get_product` + SEO chip by slug | `catalog.read` `seo.read` |
-| Product 360 | `insights.get_product` (catalog + SKU sales; other slices unavailable) | `commerce.read` |
+| Product 360 | `insights.get_product` (catalog + sales + GA4/GSC/merchant/competitor joins) | `commerce.read` |
 | Analytics | `analytics.ga4` + `analytics.search_console` | `analytics.read` |
-| Competencia | `analytics.competitors` (env URLs only) | `analytics.read` |
+| Competencia | `competition.list` / probes from `HORIZON_COMPETITOR_URLS` only | `analytics.read` |
+| Oportunidades | `growth.list_opportunities` (rules skip missing slices) | `commerce.read` |
+| Contenido | `content.list_drafts` / generate (grounded; no publish to Fit) | `content.read` `content.write` |
 | Ventas | `commerce.sales` (orders + line-item SKU rollups) | `commerce.read` |
+| Clientes | `customers.list` (RFM hashed; no email) | `commerce.read` |
+| Campañas | `campaigns.list` + Ads `{ configured:false }` | `commerce.read` `analytics.read` |
 | Operaciones | `ops.health`; repo/jobs/audit locked | `ops.read` |
 | Alertas | `alerts.list` / `alerts.evaluate` | `alerts.read` |
 | SEO | `seo.get_latest_audit` / `seo.audit` | `seo.read` `seo.audit` |
-| Consulta | drawer `assistant.ask` (⌘K), allowlisted charts | `alerts.read` |
-| Merchant | blocked copy only | not granted |
+| Consulta | drawer `assistant.ask` (⌘K) + chat if keys exist | `alerts.read` `ai.chat` |
+| Merchant | `merchant.get_diagnostics` | `merchant.read` |
 
 If Woo REST keys are missing, ventas returns `{ configured: false }` — never invent revenue.
 If the Google service account or GA4 property is missing, Analytics returns `{ configured: false }` — never invent sessions or clicks.
@@ -88,10 +92,10 @@ Empty → `{ configured: false }`. Do not hardcode other stores in git.
 
 1. Applications → Create Application → **Single Page Application**. Name: Horizon Dashboard.
 2. Callbacks / logout / web origins: `http://100.123.37.74:8787/app`, `http://100.123.37.74:8787/app/callback`, plus `http://127.0.0.1:8787/app` for local.
-3. Authorize this app on API **Horizon Control MCP**. Grant: `openid`, `ops.read`, `catalog.read`, `storefront.read`, `commerce.read`, `metrics.read`, `alerts.read`, `seo.read`, `seo.audit`, `analytics.read`. The SPA authorize URL includes `openid` plus those API scopes.
+3. Authorize this app on API **Horizon Control MCP**. Grant: `openid`, `ops.read`, `catalog.read`, `storefront.read`, `commerce.read`, `metrics.read`, `alerts.read`, `seo.read`, `seo.audit`, `analytics.read`, `merchant.read`, `ai.read`, `ai.chat`, `content.read`, `content.write`. The SPA authorize URL includes `openid` plus those API scopes. Customers / campañas / growth ride on `commerce.read`.
 4. Token Sender-Constraining: **Never**. Do not enable DPoP.
 5. Put the **public** Client ID in `HORIZON_DASHBOARD_CLIENT_ID` on the VPS env. Not a secret.
-6. Add API permissions `commerce.read`, `metrics.read`, `alerts.read`, `seo.read`, `seo.audit`, `analytics.read` (same names as CP scopes).
+6. Add API permissions `commerce.read`, `metrics.read`, `alerts.read`, `seo.read`, `seo.audit`, `analytics.read`, `merchant.read`, `ai.read`, `ai.chat`, `content.read`, `content.write` (same names as CP scopes).
 
 RBAC: either leave **Enable RBAC OFF** for this API (scopes on the authorize URL land on the JWT) **or** assign a user role that includes those permissions. Granting an application 7/11 is not enough if RBAC is on and the user has no role.
 
@@ -105,9 +109,9 @@ RBAC: either leave **Enable RBAC OFF** for this API (scopes on the authorize URL
 | `seo_critical` | latest SEO summary `totals.critical > 0` |
 | `seo_warnings` | latest SEO summary `totals.warning > 5` |
 | `seo_stale` | no SEO report, or older than 24h |
-| `competitor_down` | an env-allowlisted competitor probe is ≥400 or failed |
+| `competitor_down` | last `competitor.snapshot` (12h) has a page ≥400 or failed — evaluate does not re-probe every minute |
 
-Missing Google credentials do **not** open an alert. `POST /v1/alerts/evaluate` runs rules and upserts. The in-process worker also ticks evaluate on an interval when the process starts. If the last successful `seo.audit` is older than 12h (and none is queued/running), the worker enqueues another allowlisted crawl. When GSC/GA4 are configured, evaluate also snapshots `gsc_clicks`, `gsc_impressions`, `ga4_sessions`, `ga4_users`.
+Missing Google credentials do **not** open an alert. `POST /v1/alerts/evaluate` runs rules and upserts. The in-process worker also ticks evaluate on an interval when the process starts. If the last completed `seo.audit` (or on-disk report) is older than 12h and none is queued/running, the worker enqueues another allowlisted crawl. A script exit 1 from findings is not a failed crawl. When GSC/GA4 are configured, evaluate snapshots `gsc_clicks`, `gsc_impressions`, `ga4_sessions`, `ga4_users` only if the last warehouse row is older than the sync TTL (GSC 12h, GA4 30m). Dashboard `/v1/analytics/*` still reads live.
 
 ## Assistant
 

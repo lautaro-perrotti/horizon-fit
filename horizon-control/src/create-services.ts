@@ -197,6 +197,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       seo,
       analytics,
       competitors,
+      competition,
     });
   const assistant = createAssistantAdapter({
     health,
@@ -244,7 +245,11 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     evaluateTimer.unref?.();
     if (config.HORIZON_BACKUP_DIR.trim() && config.sqlitePath !== ":memory:") {
       backupTimer = setInterval(() => {
-        void backupControl({ sqlitePath: config.sqlitePath, destDir: config.HORIZON_BACKUP_DIR, envPath: process.env.HORIZON_ENV_FILE }).then((result) => {
+        void backupControl({
+          sqlitePath: config.sqlitePath,
+          destDir: config.HORIZON_BACKUP_DIR,
+          envPath: process.env.HORIZON_ENV_FILE || "/etc/horizon-control.env",
+        }).then((result) => {
           logJson(result.ok ? "info" : "warn", "backup", { ok: result.ok, reason: result.reason ?? null });
         });
       }, 6 * 3_600_000);

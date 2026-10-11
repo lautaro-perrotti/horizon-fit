@@ -1,9 +1,57 @@
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES } from "../src/config.js";
-import { productSlugFromUrl, summarizeSeoReport } from "../src/adapters/seo-report.js";
+import { isInfraJobFailure, shouldRefreshMetric, shouldScheduleSeoAudit } from "../src/adapters/warehouse.js";
+import { productSlugFromUrl, resolveSeoReportPath, summarizeSeoReport } from "../src/adapters/seo-report.js";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { buildTestApp, mockSeo, request, SAMPLE_SEO_SUMMARY, signToken } from "./helpers.js";
 
 describe("SEO warehouse", () => {
+  it("prefers the newest SEO report over a stale latest.json", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hc-seo-"));
+    fs.writeFileSync(path.join(dir, "latest.json"), "{\"generatedAt\":\"2026-08-28T00:00:00.000Z\"}\n");
+    const stamped = path.join(dir, "seo-audit-20261011-094357.json");
+    fs.writeFileSync(stamped, "{\"generatedAt\":\"2026-10-11T09:43:57.000Z\"}\n");
+    const older = Date.now() - 86_400_000;
+    const newer = Date.now();
+    fs.utimesSync(path.join(dir, "latest.json"), older / 1000, older / 1000);
+    fs.utimesSync(stamped, newer / 1000, newer / 1000);
+    expect(resolveSeoReportPath(dir)).toBe(stamped);
+  });
+
+  it("refreshes GA4/GSC warehouse metrics only after TTL", () => {
+    const now = 1_000_000;
+    expect(shouldRefreshMetric(null, now, 30 * 60_000)).toBe(true);
+    expect(shouldRefreshMetric(now - 60_000, now, 30 * 60_000)).toBe(false);
+    expect(shouldRefreshMetric(now - 31 * 60_000, now, 30 * 60_000)).toBe(true);
+  });
+
+  it("does not treat seo.audit findings exit as infra failure", () => {
+    expect(isInfraJobFailure({ type: "seo.audit", status: "failed", error: "exit_1" })).toBe(false);
+    expect(isInfraJobFailure({ type: "sales.sync", status: "failed", error: "timeout" })).toBe(true);
+  });
+
+  it("does not re-enqueue seo.audit when a failed job already wrote a fresh report", () => {
+    const now = Date.parse("2026-10-11T12:00:00.000Z");
+    expect(
+      shouldScheduleSeoAudit({
+        busy: false,
+        lastJob: { status: "failed", createdAt: now - 60_000, finishedAt: now - 30_000 },
+        reportGeneratedAt: "2026-10-11T11:59:00.000Z",
+        now,
+      }),
+    ).toBe(false);
+    expect(
+      shouldScheduleSeoAudit({
+        busy: false,
+        lastJob: { status: "failed", createdAt: now - 13 * 3_600_000, finishedAt: now - 13 * 3_600_000 },
+        reportGeneratedAt: "2026-10-10T20:00:00.000Z",
+        now,
+      }),
+    ).toBe(true);
+  });
+
   it("summarizeSeoReport keeps only pages with issues and product slugs", () => {
     const summary = summarizeSeoReport(
       {

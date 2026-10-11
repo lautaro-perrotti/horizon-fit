@@ -54,10 +54,14 @@ API → **Permissions**. Add exactly these (name + description), same set as the
 | `metrics.read` | Local metric snapshots |
 | `alerts.read` | Alerts + deterministic assistant |
 | `analytics.read` | GSC, GA4, env-allowlisted competitor probes |
+| `ai.read` | Model list, usage, sessions, tool catalog |
+| `ai.chat` | Dashboard chat (tools + traces; no invented metrics) |
+| `content.read` | Read grounded content drafts |
+| `content.write` | Generate / update drafts (never publishes to Fit) |
 
 Do **not** create write/deploy/shell scopes.
 
-Dashboard SPA (Tailscale `/app`): create Auth0 **Single Page Application** “Horizon Dashboard”, callbacks `http://<tailscale-ip>:8787/app` and `/app/callback`, grant `openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read`. Set `HORIZON_DASHBOARD_CLIENT_ID` in `/etc/horizon-control.env`. Details: `docs/DASHBOARD.md`.
+Dashboard SPA (Tailscale `/app`): create Auth0 **Single Page Application** “Horizon Dashboard”, callbacks `http://<tailscale-ip>:8787/app` and `/app/callback`, grant `openid ops.read catalog.read storefront.read commerce.read metrics.read alerts.read seo.read seo.audit analytics.read merchant.read ai.read ai.chat content.read content.write`. Customers, campañas and growth reuse `commerce.read`. Set `HORIZON_DASHBOARD_CLIENT_ID` in `/etc/horizon-control.env`. Details: `docs/DASHBOARD.md`.
 
 ## 3. Authorize Horizon Cursor (7 scopes)
 
@@ -71,7 +75,7 @@ On the new API, authorize application **Horizon Cursor** (Client ID `SI2VlbjDYP7
 - `jobs.read`
 - `audit.read`
 
-Do **not** grant `seo.read`, `seo.audit`, `merchant.read`, `merchant.audit`, `commerce.read`, `alerts.read`, or `analytics.read` to Cursor.
+Do **not** grant `seo.read`, `seo.audit`, `merchant.read`, `merchant.audit`, `commerce.read`, `alerts.read`, `analytics.read`, `ai.read`, `ai.chat`, `content.read`, or `content.write` to Cursor.
 
 Client IDs are not secrets. Do not put client secrets in git.
 
