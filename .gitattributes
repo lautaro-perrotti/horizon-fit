@@ -2,3 +2,10 @@
 # Si git los convierte a CRLF, fallan en Linux con "bad interpreter".
 *.sh text eol=lf
 docker/wordpress/entrypoint.sh text eol=lf
+
+# Horizon Control y ops: siempre LF en el repo para que Windows no genere diffs de solo CRLF.
+horizon-control/** text=auto eol=lf
+ops/** text=auto eol=lf
+horizon-control/**/*.png binary
+horizon-control/**/*.jpg binary
+horizon-control/**/*.woff2 binary
