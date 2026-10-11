@@ -35,6 +35,8 @@ const envSchema = z.object({
   HORIZON_WOO_KEY: z.string().default(""),
   HORIZON_WOO_SECRET: z.string().default(""),
   HORIZON_DASHBOARD_CLIENT_ID: z.string().default(""),
+  /** "1" serves /app with local fixtures and no Auth0. Ignored when NODE_ENV=production. */
+  HORIZON_DASHBOARD_FIXTURES: z.string().default(""),
   HORIZON_GOOGLE_SA_PATH: z.string().default(""),
   HORIZON_GOOGLE_SA_JSON: z.string().default(""),
   HORIZON_GA4_PROPERTY_ID: z.string().default(""),

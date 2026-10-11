@@ -1,0 +1,85 @@
+/* Horizon Control — tokens. Dusk (default) y Dawn comparten nombres; data-theme en <html> cambia todo. */
+
+@font-face { font-family: "Archivo"; src: url("/app/fonts/archivo-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("/app/fonts/archivo-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("/app/fonts/archivo-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("/app/fonts/archivo-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Archivo Narrow"; src: url("/app/fonts/archivo-narrow-var.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+
+:root,
+[data-theme="dusk"] {
+  --bg: #0C0820;
+  --s1: #130E2B;
+  --s2: #1B1540;
+  --s3: #251C55;
+  --sel: #2A1E63;
+  --hair: rgba(251, 243, 232, 0.07);
+  --line: rgba(251, 243, 232, 0.14);
+  --ink: #FBF3E8;
+  --ink-2: rgba(251, 243, 232, 0.76);
+  --ink-3: rgba(251, 243, 232, 0.56);
+  --ink-4: rgba(251, 243, 232, 0.34);
+  --act: #758AFD;
+  --act-2: #A9B6FE;
+  --act-ink: #0C0820;
+  --act-soft: rgba(117, 138, 253, 0.15);
+  --ok: #A9C66A;
+  --ok-soft: rgba(169, 198, 106, 0.13);
+  --warn: #E6B05A;
+  --warn-soft: rgba(230, 176, 90, 0.13);
+  --bad: #F2704A;
+  --bad-soft: rgba(242, 112, 74, 0.15);
+  --join: #A592F2;
+  --violet: #35006D;
+  --coral: #ED562D;
+  --prev: rgba(251, 243, 232, 0.30);
+  --scrim: rgba(5, 3, 15, 0.62);
+  --glow: linear-gradient(90deg, rgba(237, 86, 45, 0) 0%, rgba(237, 86, 45, 0.9) 34%, rgba(122, 76, 230, 0.8) 64%, rgba(53, 0, 109, 0) 100%);
+  --shadow-pop: 0 30px 80px rgba(0, 0, 0, 0.45);
+  --shadow-monitor: 0 24px 60px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+[data-theme="dawn"] {
+  --bg: #FBF3E8;
+  --s1: #FFFDF9;
+  --s2: #F4E9DB;
+  --s3: #EADCCB;
+  --sel: #EBE1F7;
+  --hair: rgba(11, 11, 15, 0.07);
+  --line: rgba(11, 11, 15, 0.14);
+  --ink: #0B0B0F;
+  --ink-2: rgba(11, 11, 15, 0.76);
+  --ink-3: rgba(11, 11, 15, 0.60);
+  --ink-4: rgba(11, 11, 15, 0.38);
+  --act: #3F57E8;
+  --act-2: #8C9BF2;
+  --act-ink: #FFFFFF;
+  --act-soft: rgba(63, 87, 232, 0.10);
+  --ok: #4A7A16;
+  --ok-soft: rgba(74, 122, 22, 0.10);
+  --warn: #8F5A00;
+  --warn-soft: rgba(176, 112, 0, 0.11);
+  --bad: #C2401A;
+  --bad-soft: rgba(194, 64, 26, 0.10);
+  --join: #5B3FC4;
+  --prev: rgba(11, 11, 15, 0.28);
+  --scrim: rgba(11, 11, 15, 0.32);
+  --glow: linear-gradient(90deg, rgba(237, 86, 45, 0) 0%, rgba(237, 86, 45, 0.75) 34%, rgba(53, 0, 109, 0.6) 64%, rgba(53, 0, 109, 0) 100%);
+  --shadow-pop: 0 24px 60px rgba(40, 20, 60, 0.18);
+  --shadow-monitor: 0 18px 50px rgba(0, 0, 0, 0.10);
+  color-scheme: light;
+}
+
+:root {
+  --f: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --f-disp: "Archivo Narrow", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  --rail: 224px;
+  --rail-collapsed: 64px;
+  --topbar: 53px;
+  --consulta: 380px;
+  --r-ctl: 6px;
+  --r-panel: 10px;
+  --r-monitor: 14px;
+}

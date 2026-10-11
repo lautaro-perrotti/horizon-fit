@@ -21,26 +21,42 @@ Control Plane
 
 Auth0 API identifier / JWT `aud` stays `http://100.123.37.74:8787/mcp`. Create a **separate Application** (SPA, PKCE). Do not reuse Horizon Cursor’s Native client.
 
-## MVP (this branch)
+## Routes (hash router)
 
-| Page | Source | Scope |
-| --- | --- | --- |
-| Overview | health + sales + catalog sample + alerts + SEO totals + GA4 if connected | `ops.read` `commerce.read` `catalog.read` `alerts.read` `seo.read` `analytics.read` |
-| Sitio | iframe storefront (`horizonfit.com.ar`) | — (public embed) |
-| Catálogo | `catalog.search_products` / `catalog.get_product` + SEO chip by slug | `catalog.read` `seo.read` |
-| Product 360 | `insights.get_product` (catalog + sales + GA4/GSC/merchant/competitor joins) | `commerce.read` |
-| Analytics | `analytics.ga4` + `analytics.search_console` | `analytics.read` |
-| Competencia | `competition.list` / probes from `HORIZON_COMPETITOR_URLS` only | `analytics.read` |
-| Oportunidades | `growth.list_opportunities` (rules skip missing slices) | `commerce.read` |
-| Contenido | `content.list_drafts` / generate (grounded; no publish to Fit) | `content.read` `content.write` |
-| Ventas | `commerce.sales` (orders + line-item SKU rollups) | `commerce.read` |
-| Clientes | `customers.list` (RFM hashed; no email) | `commerce.read` |
-| Campañas | `campaigns.list` + Ads `{ configured:false }` | `commerce.read` `analytics.read` |
-| Operaciones | `ops.health`; repo/jobs/audit locked | `ops.read` |
-| Alertas | `alerts.list` / `alerts.evaluate` | `alerts.read` |
-| SEO | `seo.get_latest_audit` / `seo.audit` | `seo.read` `seo.audit` |
-| Consulta | drawer `assistant.ask` (⌘K) + chat if keys exist | `alerts.read` `ai.chat` |
-| Merchant | `merchant.get_diagnostics` | `merchant.read` |
+Visual system and rules: [`dashboard/DESIGN.md`](../dashboard/DESIGN.md). Every view is one entry in `dashboard/core/views.js` (route, group, label, tools, keys); the rail, the Ctrl/⌘K palette and the `g`+key shortcuts are generated from it. The global window travels in the hash query (`?w=7d|28d|90d|ytd&cmp=0|1`) so every link is shareable.
+
+| Group | Route | Source tools | Scope |
+| --- | --- | --- | --- |
+| Decidir | `#/` Hoy | `insights.overview`, `commerce.sales`, `metrics.series`, `growth.list_opportunities`, `alerts.list` | `commerce.read` `metrics.read` `alerts.read` |
+| Decidir | `#/oportunidades/:id?` | `growth.list_opportunities` / `get_opportunity` / `update_opportunity`, `content.generate` | `commerce.read` `content.write` |
+| Decidir | `#/alertas` | `alerts.list` / `alerts.evaluate` | `alerts.read` |
+| Producto | `#/catalogo` | `catalog.search_products`, joined with SEO, Merchant and Growth | `catalog.read` |
+| Producto | `#/producto/:ref?` Product 360 | `insights.get_product`, per-SKU `metrics.series`, drafts | `commerce.read` `metrics.read` |
+| Producto | `#/sitio?u=/producto/...` | storefront iframe + `storefront.get_config` | `storefront.read` |
+| Producto | `#/contenido/:id?` | `content.*` (never publishes to Fit) | `content.read` `content.write` |
+| Demanda | `#/demanda` | `analytics.ga4`, `analytics.search_console`, `metrics.series` | `analytics.read` `metrics.read` |
+| Demanda | `#/seo` | `seo.get_latest_audit`, `seo.audit`, `metrics.snapshots` | `seo.read` `seo.audit` |
+| Demanda | `#/merchant` | `merchant.get_diagnostics` (audit needs `merchant.audit`) | `merchant.read` |
+| Demanda | `#/competencia` | `competition.list` / `changes` / `compare_product` / `get` | `analytics.read` |
+| Plata | `#/ventas` | `commerce.sales`, revenue `metrics.series` | `commerce.read` |
+| Plata | `#/clientes/:key?` | `customers.list` / `customers.get` (hashed keys) | `commerce.read` |
+| Plata | `#/campanas` | `campaigns.list` (+ Ads `not_configured`) | `commerce.read` |
+| Sistema | `#/operaciones` | `ops.health`, `/healthz`, sync state from `metrics.series`, `commerce.settings`, `ai.usage`/`ai.models`; repo/jobs/audit render a 403 state until those scopes exist | `ops.read` `ai.read` |
+| — | Consulta panel (Ctrl/⌘J) | `ai.chat` with SKU + window context; falls back to `assistant.ask` without model keys | `ai.chat` `alerts.read` |
+
+The SPA reads `/v1/tools` once per session and hides actions the token cannot call; anything else that returns 403 renders a "falta scope" state instead of an error.
+
+## Local preview with fixtures
+
+```bash
+npm run dashboard:dev   # http://127.0.0.1:8797/app/  (no Auth0, no worker, no outbound jobs)
+```
+
+`?scenario=cold` (nothing configured) and `?scenario=errors` (failures and 403s) exercise the empty and error states. Fixtures live in `dashboard/dev/fixtures.js` and are served only when `HORIZON_DASHBOARD_FIXTURES=1` and `NODE_ENV` is not `production`.
+
+## Static serving
+
+`/app` files come straight from `dashboard/` (no build). Allowed folders: `core`, `ui`, `views`, `fonts`, `vendor` (plus `dev` in fixture mode). HTML and JS/CSS are `no-cache` with an ETag; fonts and vendor are cached for a week. The shell carries a strict CSP: own scripts only, the storefront as the only frame, Auth0 as the only extra `connect-src`, and storefront/API hosts for product images. Fonts are the brand's Archivo and Archivo Narrow, subset to woff2 (SIL OFL).
 
 If Woo REST keys are missing, ventas returns `{ configured: false }` — never invent revenue.
 If the Google service account or GA4 property is missing, Analytics returns `{ configured: false }` — never invent sessions or clicks.
@@ -109,6 +125,7 @@ RBAC: either leave **Enable RBAC OFF** for this API (scopes on the authorize URL
 | `seo_critical` | latest SEO summary `totals.critical > 0` |
 | `seo_warnings` | latest SEO summary `totals.warning > 5` |
 | `seo_stale` | no SEO report, or older than 24h |
+| `refresh_stale_sales` | last sales sync failed or is older than 6h |
 | `competitor_down` | last `competitor.snapshot` (12h) has a page ≥400 or failed — evaluate does not re-probe every minute |
 
 Missing Google credentials do **not** open an alert. `POST /v1/alerts/evaluate` runs rules and upserts. The in-process worker also ticks evaluate on an interval when the process starts. If the last completed `seo.audit` (or on-disk report) is older than 12h and none is queued/running, the worker enqueues another allowlisted crawl. A script exit 1 from findings is not a failed crawl. When GSC/GA4 are configured, evaluate snapshots `gsc_clicks`, `gsc_impressions`, `ga4_sessions`, `ga4_users` only if the last warehouse row is older than the sync TTL (GSC 12h, GA4 30m). Dashboard `/v1/analytics/*` still reads live.
