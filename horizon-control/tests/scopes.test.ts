@@ -77,7 +77,7 @@ describe("scope matrix", () => {
     const token = await signToken(keys.privateKey, { client: "admin", scopes: CLIENT_SCOPES.admin });
     const listed = await request(app, "/v1/tools", { token });
     const body = await listed.json();
-    expect(body.tools).toHaveLength(24);
+    expect(body.tools).toHaveLength(28);
   });
 
   it("dashboard client can call health, catalog, commerce, alerts, seo, merchant; not repo", async () => {
@@ -96,6 +96,7 @@ describe("scope matrix", () => {
     expect((await request(app, "/v1/analytics/competitors", { token })).status).toBe(200);
     expect((await request(app, "/v1/merchant/diagnostics", { token })).status).toBe(200);
     expect((await request(app, "/v1/insights/overview", { token })).status).toBe(200);
+    expect((await request(app, "/v1/competition", { token })).status).toBe(200);
     expect((await request(app, "/v1/repo/status", { token })).status).toBe(403);
   });
 });

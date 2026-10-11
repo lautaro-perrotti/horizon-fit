@@ -112,6 +112,59 @@ CREATE TABLE IF NOT EXISTS daily_product_metrics (
 );
 CREATE INDEX IF NOT EXISTS daily_product_metrics_lookup_idx ON daily_product_metrics(store_id, parent_sku, source, metric, day);
 
+CREATE TABLE IF NOT EXISTS competitor_snapshots (
+  id TEXT PRIMARY KEY,
+  store_id TEXT NOT NULL,
+  competitor TEXT NOT NULL,
+  segment TEXT,
+  url TEXT NOT NULL,
+  checked_at INTEGER NOT NULL,
+  status INTEGER,
+  title TEXT,
+  description TEXT,
+  h1 TEXT,
+  product_count INTEGER,
+  price_min REAL,
+  price_max REAL,
+  robots_allowed INTEGER,
+  extractor TEXT,
+  error TEXT
+);
+CREATE INDEX IF NOT EXISTS competitor_snapshots_url_idx ON competitor_snapshots(url, checked_at);
+CREATE INDEX IF NOT EXISTS competitor_snapshots_segment_idx ON competitor_snapshots(store_id, segment, checked_at);
+
+CREATE TABLE IF NOT EXISTS competitor_products (
+  id TEXT PRIMARY KEY,
+  snapshot_id TEXT NOT NULL,
+  store_id TEXT NOT NULL,
+  competitor TEXT NOT NULL,
+  segment TEXT,
+  url TEXT NOT NULL,
+  product_url TEXT,
+  product_id TEXT,
+  title TEXT,
+  price REAL,
+  compare_at REAL,
+  currency TEXT,
+  in_stock INTEGER,
+  checked_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS competitor_products_snapshot_idx ON competitor_products(snapshot_id);
+CREATE INDEX IF NOT EXISTS competitor_products_segment_idx ON competitor_products(store_id, segment, checked_at);
+
+CREATE TABLE IF NOT EXISTS competitor_product_history (
+  store_id TEXT NOT NULL,
+  competitor TEXT NOT NULL,
+  product_key TEXT NOT NULL,
+  checked_at INTEGER NOT NULL,
+  title TEXT,
+  price REAL,
+  compare_at REAL,
+  currency TEXT,
+  in_stock INTEGER,
+  PRIMARY KEY (store_id, competitor, product_key, checked_at)
+);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   store_id TEXT NOT NULL,
   source TEXT NOT NULL,

@@ -249,9 +249,26 @@
             <article class="card">
               <div class="card-head">
                 <h2 class="title">Competencia</h2>
-                <span class="src">Source: analytics.competitors · URLs del env</span>
+                <span class="src">Source: competition.list · snapshots persistidos · no se inventan rivales</span>
               </div>
               <div id="competitorsOut"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Cambios</h2>
+                <span class="src">Source: competition.changes</span>
+              </div>
+              <div id="competitionChanges"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h2 class="title">Comparar SKU</h2>
+                <span class="src">Source: competition.compare_product</span>
+              </div>
+              <form id="competitionCompareForm" class="table-wrap" style="padding:0 0 12px">
+                <input id="competitionCompareQ" name="id" placeholder="001-TOP-AZU" autocomplete="off" />
+              </form>
+              <div id="competitionCompare"></div>
             </article>
           </section>
 
@@ -281,6 +298,6 @@
       </div>
     </div>
     <script src="/app/vendor/echarts.min.js"></script>
-    <script src="/app/app.js?v=p360-b4" type="module"></script>
+    <script src="/app/app.js?v=p360-b5" type="module"></script>
   </body>
 </html>

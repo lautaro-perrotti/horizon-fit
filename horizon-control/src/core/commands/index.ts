@@ -45,6 +45,12 @@ const seriesSchema = z.object({
   end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   compare: z.enum(["previous", "none"]).optional(),
 });
+const competitionGetSchema = z.object({
+  url: z.string().min(1).max(400),
+});
+const competitionCompareSchema = z.object({
+  id: z.union([z.string(), z.number()]),
+});
 
 export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "ops.health": emptySchema,
@@ -71,6 +77,10 @@ export const TOOL_ARG_SCHEMAS: Record<ToolName, z.ZodType> = {
   "analytics.competitors": emptySchema,
   "insights.get_product": productIdSchema,
   "insights.overview": emptySchema,
+  "competition.list": emptySchema,
+  "competition.get": competitionGetSchema,
+  "competition.changes": emptySchema,
+  "competition.compare_product": competitionCompareSchema,
 };
 
 export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
@@ -98,6 +108,10 @@ export const TOOL_DESCRIPTIONS: Record<ToolName, string> = {
   "analytics.competitors": "Probe env-allowlisted competitor homepages. Agent URLs are ignored. configured:false if HORIZON_COMPETITOR_URLS is empty.",
   "insights.get_product": "Product 360 join: catalog, sales, GA4, GSC, SEO, Merchant and competitor segment. Missing sources stay unavailable. Never invents metrics.",
   "insights.overview": "Five store blocks: revenue, demand, conversion, opportunities, problems. Conversion omitted unless GA4 sessions and purchases exist.",
+  "competition.list": "Latest persisted competitor snapshots (segment URLs). configured:false without HORIZON_COMPETITOR_URLS. Never invents rivals.",
+  "competition.get": "One persisted snapshot and extracted products by URL.",
+  "competition.changes": "Diff vs previous snapshot: new, removed, price up/down, promo, title/h1. Empty if only one snapshot exists.",
+  "competition.compare_product": "Horizon SKU vs latest competitor products in the same segment. Price index is null without observed prices.",
 };
 
 async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, principal: AuthPrincipal) {
@@ -219,6 +233,18 @@ async function runTool(services: AppServices, tool: ToolName, rawArgs: unknown, 
     }
     case "insights.overview":
       return services.insights.overview();
+    case "competition.list":
+      return services.competition.list();
+    case "competition.get": {
+      const parsed = competitionGetSchema.parse(args);
+      return services.competition.get(parsed.url);
+    }
+    case "competition.changes":
+      return services.competition.changes();
+    case "competition.compare_product": {
+      const parsed = competitionCompareSchema.parse(args);
+      return services.competition.compareProduct(String(parsed.id));
+    }
     default: {
       const exhaustive: never = tool;
       throw new Error(`unknown_tool:${exhaustive}`);

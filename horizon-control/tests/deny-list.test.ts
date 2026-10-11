@@ -30,8 +30,12 @@ describe("deny list / no arbitrary shell", () => {
       "analytics_competitors",
       "insights_get_product",
       "insights_overview",
+      "competition_list",
+      "competition_get",
+      "competition_changes",
+      "competition_compare_product",
     ]);
-    expect(listRegisteredTools()).toHaveLength(24);
+    expect(listRegisteredTools()).toHaveLength(28);
     expect(listRegisteredTools()).not.toEqual(ALL_TOOLS);
   });
 

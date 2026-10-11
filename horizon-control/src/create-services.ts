@@ -9,6 +9,7 @@ import { createAssistantAdapter } from "./adapters/assistant.js";
 import { createSeoReportAdapter, type SeoReportAdapter } from "./adapters/seo-report.js";
 import { createAnalyticsAdapter, type AnalyticsAdapter } from "./adapters/analytics.js";
 import { createCompetitorsAdapter, parseCompetitorUrls, type CompetitorsAdapter } from "./adapters/competitors.js";
+import { createCompetitionAdapter, type CompetitionAdapter } from "./adapters/competition.js";
 import { createInsightsAdapter, type InsightsAdapter } from "./adapters/insights.js";
 import { createHistoryStore, type HistoryStore } from "./adapters/history.js";
 import { createStorefrontAdapter, type StorefrontAdapter } from "./adapters/storefront.js";
@@ -33,6 +34,7 @@ export type CreateServicesOptions = {
   seo?: SeoReportAdapter;
   analytics?: AnalyticsAdapter;
   competitors?: CompetitorsAdapter;
+  competition?: CompetitionAdapter;
   insights?: InsightsAdapter;
   history?: HistoryStore;
   storefront?: StorefrontAdapter;
@@ -109,14 +111,23 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       extraHosts,
       fetchImpl: options.fetchImpl,
     });
+  const competitorUrls = parseCompetitorUrls(config.HORIZON_COMPETITOR_URLS);
   const competitors =
     options.competitors ??
     createCompetitorsAdapter({
-      urls: parseCompetitorUrls(config.HORIZON_COMPETITOR_URLS),
+      urls: competitorUrls,
+      fetchImpl: options.fetchImpl,
+    });
+  const competition =
+    options.competition ??
+    createCompetitionAdapter({
+      db,
+      urls: competitorUrls,
+      catalog,
       fetchImpl: options.fetchImpl,
     });
   const history = options.history ?? createHistoryStore(db);
-  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo, commerce, analytics, history });
+  const runner = options.runner ?? createDefaultJobRunner({ config, merchant, seo, commerce, analytics, history, competition });
   const worker = startJobWorker({
     queue: jobs,
     runner,
@@ -173,6 +184,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
       seo,
       merchant,
       competitors,
+      competition,
       health,
     });
   let evaluateTimer: ReturnType<typeof setInterval> | null = null;
@@ -208,6 +220,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     seo,
     analytics,
     competitors,
+    competition,
     insights,
     history,
     storefront,

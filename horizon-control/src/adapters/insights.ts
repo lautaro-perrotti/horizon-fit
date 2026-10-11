@@ -6,6 +6,7 @@ import { resolveProductIdentity, type ProductIdentity } from "./product-identity
 import type { SeoReportAdapter, SeoProductPage } from "./seo-report.js";
 import { merchantItemsForProduct, type MerchantAdapter, type MerchantDiagnostics, type MerchantVariantRow } from "./merchant.js";
 import { peersForSegment, segmentForCategories, type CompetitorsAdapter, type CompetitorsReport } from "./competitors.js";
+import type { CompetitionAdapter } from "./competition.js";
 import type { HealthAdapter } from "./health.js";
 import {
   errorSlice,
@@ -104,6 +105,7 @@ export type ProductInsight = {
   competition: SourceSlice<{
     segment: string | null;
     peers: Array<{ competitor: string; url: string; status: number | null; title: string; ok: boolean }>;
+    price_index: { horizon: number | null; median: number | null; index: number | null; n: number } | null;
   }>;
   insights: DeterministicInsight[];
 };
@@ -295,7 +297,7 @@ export function competitionSlice(report: CompetitorsReport, categories: string[]
     ok: page.ok,
   }));
   const meta = { fetched_at: new Date().toISOString(), join_confidence: "inferred" as const };
-  const data = { segment, peers };
+  const data = { segment, peers, price_index: null };
   return peers.length ? okSlice(source, data, meta) : zeroSlice(source, data, meta);
 }
 
@@ -381,6 +383,7 @@ export function createInsightsAdapter(options: {
   seo?: SeoReportAdapter;
   merchant?: MerchantAdapter;
   competitors?: CompetitorsAdapter;
+  competition?: CompetitionAdapter;
   health?: HealthAdapter;
 }): InsightsAdapter {
   return {
@@ -412,6 +415,13 @@ export function createInsightsAdapter(options: {
       const seoPage = options.seo?.pageFor(resolved.identity.slug, resolved.identity.canonical_url) ?? null;
       const categories = resolved.product.categories.map((row) => row.slug || row.name).filter(Boolean);
       const variantSkus = resolved.product.variations.map((row) => row.sku);
+      const compared = options.competition ? await options.competition.compareProduct(resolved.identity.parent_sku) : null;
+      const competition = competitors
+        ? competitionSlice(competitors, categories)
+        : notJoinedSlice<NonNullable<ProductInsight["competition"]["data"]>>("competitors");
+      if (competition.data && compared?.price_index) {
+        competition.data = { ...competition.data, price_index: compared.price_index };
+      }
       return {
         found: true,
         store_id: STORE_ID,
@@ -424,7 +434,7 @@ export function createInsightsAdapter(options: {
         merchant: merchant
           ? merchantSlice(merchant, resolved.identity.parent_sku, variantSkus)
           : notJoinedSlice("merchant_feed"),
-        competition: competitors ? competitionSlice(competitors, categories) : notJoinedSlice("competitors"),
+        competition,
         insights: [],
       };
     },

@@ -15,7 +15,8 @@ export type ScopeName =
   | "commerce.read"
   | "metrics.read"
   | "alerts.read"
-  | "analytics.read";
+  | "analytics.read"
+  | "competition.read";
 
 export type ToolName =
   | "ops.health"
@@ -41,7 +42,11 @@ export type ToolName =
   | "analytics.ga4"
   | "analytics.competitors"
   | "insights.get_product"
-  | "insights.overview";
+  | "insights.overview"
+  | "competition.list"
+  | "competition.get"
+  | "competition.changes"
+  | "competition.compare_product";
 
 export type AuthPrincipal = {
   token: string;

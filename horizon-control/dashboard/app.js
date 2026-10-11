@@ -708,21 +708,69 @@ function renderCompetitors(data) {
     );
     return;
   }
-  $("competitorsOut").innerHTML = (data.pages ?? []).length
-    ? data.pages
+  const snaps = data.snapshots ?? data.pages ?? [];
+  $("competitorsOut").innerHTML = snaps.length
+    ? snaps
         .map((page) => {
           const status = page.status ?? "—";
-          const cls = page.ok ? "ok" : "bad";
+          const cls = page.error || (page.status != null && page.status >= 400) ? "bad" : "ok";
+          const prices =
+            page.price_min != null || page.price_max != null
+              ? ` · ${esc(page.price_min ?? "—")}–${esc(page.price_max ?? "—")}`
+              : "";
           return `<div class="seo-page">
-            <div style="font-weight:700">${esc(page.title || page.host)}</div>
+            <div style="font-weight:700">${esc(page.title || page.competitor || page.host)}</div>
             <div class="mono">${esc(page.url)}</div>
-            <div><span class="${cls}">${esc(status)}</span> · ${esc(page.latency_ms ?? "—")}ms${page.error ? ` · ${esc(page.error)}` : ""}</div>
+            <div><span class="${cls}">${esc(status)}</span>${page.segment ? ` · ${esc(page.segment)}` : ""}${page.product_count != null ? ` · ${esc(page.product_count)} productos` : ""}${prices}</div>
+            ${page.robots_allowed === false ? `<div class="muted">robots disallow</div>` : ""}
             ${page.h1 ? `<div class="muted">H1 ${esc(page.h1)}</div>` : ""}
-            ${page.description ? `<div class="muted">${esc(page.description)}</div>` : ""}
+            ${page.error ? `<div class="muted">${esc(page.error)}</div>` : ""}
           </div>`;
         })
         .join("")
-    : `<p class="muted">Sin páginas.</p>`;
+    : `<p class="muted">Sin snapshots todavía. El job competitor.snapshot corre cada 12h.</p>`;
+}
+
+function renderCompetitionChanges(data) {
+  if (!$("competitionChanges")) return;
+  const rows = data.changes ?? [];
+  $("competitionChanges").innerHTML = rows.length
+    ? rows
+        .slice(0, 40)
+        .map(
+          (row) =>
+            `<div class="item"><span>${esc(row.type)}</span><span class="muted">${esc(row.title || row.url)}</span><span class="mono">${esc(row.before ?? "—")} → ${esc(row.after ?? "—")}</span></div>`,
+        )
+        .join("")
+    : `<p class="muted">Sin diffs. Hace falta un snapshot anterior.</p>`;
+}
+
+function renderCompetitionCompare(data) {
+  if (!$("competitionCompare")) return;
+  if (!data.found) {
+    $("competitionCompare").innerHTML = `<p class="muted">SKU no encontrado. No se inventa un índice.</p>`;
+    return;
+  }
+  const idx = data.price_index;
+  $("competitionCompare").innerHTML = `
+    <div class="src">${esc(data.parent_sku)} · segment ${esc(data.segment || "—")}</div>
+    <div class="metrics">
+      <div><div class="n">${esc(data.horizon_price ?? "—")}</div><div class="l">precio Horizon</div></div>
+      <div><div class="n">${idx?.index == null ? "—" : Number(idx.index).toFixed(2)}</div><div class="l">índice vs mediana (${esc(idx?.n ?? 0)})</div></div>
+    </div>
+    ${(data.peers ?? [])
+      .slice(0, 12)
+      .map((row) => `<div class="item"><span>${esc(row.title)}</span><span class="mono">${esc(row.price ?? "—")}</span></div>`)
+      .join("") || `<p class="muted">Sin precios de pares en este segmento.</p>`}`;
+}
+
+async function loadCompetitors() {
+  const [list, changes] = await Promise.all([
+    api("/v1/competition"),
+    api("/v1/competition/changes").catch(() => ({ changes: [] })),
+  ]);
+  renderCompetitors(list);
+  renderCompetitionChanges(changes);
 }
 
 function insightsPath(ref) {
@@ -1084,6 +1132,16 @@ async function boot() {
   $("logoutBtn").addEventListener("click", () => {
     setToken("");
     location.href = "/app/";
+  });
+  $("competitionCompareForm")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const id = String(new FormData(event.target).get("id") || "").trim();
+    if (!id) return;
+    void api(`/v1/competition/compare?id=${encodeURIComponent(id)}`)
+      .then(renderCompetitionCompare)
+      .catch((error) => {
+        if ($("competitionCompare")) $("competitionCompare").innerHTML = notice(esc(error.message));
+      });
   });
   $("chartRanges")?.addEventListener("click", (event) => {
     const btn = event.target.closest("[data-range]");

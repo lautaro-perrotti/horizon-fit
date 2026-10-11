@@ -95,7 +95,7 @@ export const HORIZON_CHARTS: HorizonChartSpec[] = [
     source: "not_joined",
     definition: "Espera Competitor 360 (snapshots). No se inventa un índice.",
     status: "not_joined",
-    reason: "competitor_snapshots_not_shipped",
+    reason: "competitor_price_series_not_joined",
   },
   {
     id: "category_performance",

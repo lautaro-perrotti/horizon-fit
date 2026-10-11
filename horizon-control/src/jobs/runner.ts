@@ -6,6 +6,7 @@ import { runGa4Sync, runGscSync, runSalesSync } from "../adapters/sync.js";
 import type { CommerceAdapter } from "../adapters/commerce.js";
 import type { AnalyticsAdapter } from "../adapters/analytics.js";
 import type { HistoryStore } from "../adapters/history.js";
+import type { CompetitionAdapter } from "../adapters/competition.js";
 import { runTypedJob } from "../adapters/process.js";
 import type { AllowedJobType } from "./queue.js";
 import { sanitizeError } from "../auth/redact.js";
@@ -27,6 +28,7 @@ export function createDefaultJobRunner(options: {
   commerce?: CommerceAdapter;
   analytics?: AnalyticsAdapter;
   history?: HistoryStore;
+  competition?: CompetitionAdapter;
 }): JobRunner {
   const repo = options.config.repoPath || process.cwd();
 
@@ -88,6 +90,11 @@ export function createDefaultJobRunner(options: {
           : type === "ga4.sync"
             ? await runGa4Sync(options.analytics, options.history)
             : await runGscSync(options.analytics, options.history);
+      return { stdout: extra.status, stderr: extra.reason ?? "", exitCode: 0, extra };
+    }
+    if (type === "competitor.snapshot") {
+      if (!options.competition) throw new Error("competition_adapter_missing");
+      const extra = await options.competition.runSnapshot();
       return { stdout: extra.status, stderr: extra.reason ?? "", exitCode: 0, extra };
     }
     throw new Error(`unsupported_job_type:${type}`);

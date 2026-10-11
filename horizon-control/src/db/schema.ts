@@ -102,6 +102,58 @@ export const dailyProductMetrics = sqliteTable(
   (table) => [primaryKey({ columns: [table.storeId, table.day, table.parentSku, table.source, table.metric] })],
 );
 
+export const competitorSnapshots = sqliteTable("competitor_snapshots", {
+  id: text("id").primaryKey(),
+  storeId: text("store_id").notNull(),
+  competitor: text("competitor").notNull(),
+  segment: text("segment"),
+  url: text("url").notNull(),
+  checkedAt: integer("checked_at").notNull(),
+  status: integer("status"),
+  title: text("title"),
+  description: text("description"),
+  h1: text("h1"),
+  productCount: integer("product_count"),
+  priceMin: real("price_min"),
+  priceMax: real("price_max"),
+  robotsAllowed: integer("robots_allowed"),
+  extractor: text("extractor"),
+  error: text("error"),
+});
+
+export const competitorProducts = sqliteTable("competitor_products", {
+  id: text("id").primaryKey(),
+  snapshotId: text("snapshot_id").notNull(),
+  storeId: text("store_id").notNull(),
+  competitor: text("competitor").notNull(),
+  segment: text("segment"),
+  url: text("url").notNull(),
+  productUrl: text("product_url"),
+  productId: text("product_id"),
+  title: text("title"),
+  price: real("price"),
+  compareAt: real("compare_at"),
+  currency: text("currency"),
+  inStock: integer("in_stock"),
+  checkedAt: integer("checked_at").notNull(),
+});
+
+export const competitorProductHistory = sqliteTable(
+  "competitor_product_history",
+  {
+    storeId: text("store_id").notNull(),
+    competitor: text("competitor").notNull(),
+    productKey: text("product_key").notNull(),
+    checkedAt: integer("checked_at").notNull(),
+    title: text("title"),
+    price: real("price"),
+    compareAt: real("compare_at"),
+    currency: text("currency"),
+    inStock: integer("in_stock"),
+  },
+  (table) => [primaryKey({ columns: [table.storeId, table.competitor, table.productKey, table.checkedAt] })],
+);
+
 export const syncState = sqliteTable(
   "sync_state",
   {
@@ -126,5 +178,8 @@ export const schema = {
   alerts,
   dailyStoreMetrics,
   dailyProductMetrics,
+  competitorSnapshots,
+  competitorProducts,
+  competitorProductHistory,
   syncState,
 };
