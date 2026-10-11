@@ -4,7 +4,7 @@ import type { CatalogAdapter } from "./woo.js";
 const STOREFRONT_ORIGIN = "https://horizonfit.com.ar";
 const SIZE_SUFFIX = /-(XS|S|M|L|XL|XXL)$/i;
 const HORIZON_SKU = /^(\d{3}-[A-Z]{3}-[A-Z]{3})(?:-(XS|S|M|L|XL|XXL))?$/i;
-const PRODUCT_PATH = /\/product\/([^/?#]+)\/?$/i;
+export const PDP_PATH = /\/(?:product|producto)\/([^/?#]+)\/?$/i;
 
 export type IdentityKind = "parent_sku" | "variant_sku" | "product_id" | "slug" | "url";
 
@@ -42,19 +42,31 @@ export function parentSkuFromVariant(sku: string): string {
   return trimmed.replace(SIZE_SUFFIX, "") || trimmed;
 }
 
-function canonicalUrl(slug: string | null): string | null {
+export function pdpCanonicalUrl(slug: string | null): string | null {
   if (!slug) return null;
-  return `${STOREFRONT_ORIGIN}/product/${slug.replace(/^\/+|\/+$/g, "")}/`;
+  return `${STOREFRONT_ORIGIN}/producto/${slug.replace(/^\/+|\/+$/g, "")}/`;
 }
 
-function slugFromPath(pathname: string): string | null {
-  const match = pathname.match(PRODUCT_PATH);
+export function pdpSlugFromPath(pathname: string): string | null {
+  const match = pathname.match(PDP_PATH);
   if (!match) return null;
   try {
     return decodeURIComponent(match[1]).trim() || null;
   } catch {
     return match[1].trim() || null;
   }
+}
+
+export function isPdpPath(pathname: string): boolean {
+  return PDP_PATH.test(pathname.split("?")[0] ?? pathname);
+}
+
+function canonicalUrl(slug: string | null): string | null {
+  return pdpCanonicalUrl(slug);
+}
+
+function slugFromPath(pathname: string): string | null {
+  return pdpSlugFromPath(pathname);
 }
 
 export function parseProductRef(raw: string): ParsedProductRef | null {
@@ -84,7 +96,7 @@ export function parseProductRef(raw: string): ParsedProductRef | null {
   }
 
   const pathSlug = slugFromPath(input.startsWith("/") ? input : `/${input}`);
-  if (pathSlug && /product\//i.test(input)) {
+  if (pathSlug) {
     return {
       input,
       kind: "url",

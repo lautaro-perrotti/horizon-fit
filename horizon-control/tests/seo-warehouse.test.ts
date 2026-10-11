@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CLIENT_SCOPES } from "../src/config.js";
-import { isInfraJobFailure, shouldRefreshMetric, shouldScheduleSeoAudit } from "../src/adapters/warehouse.js";
+import { isInfraJobFailure, shouldRefreshMetric, shouldScheduleSeoAudit, uniqueHosts } from "../src/adapters/warehouse.js";
 import { productSlugFromUrl, resolveSeoReportPath, summarizeSeoReport } from "../src/adapters/seo-report.js";
 import fs from "node:fs";
 import os from "node:os";
@@ -18,6 +18,13 @@ describe("SEO warehouse", () => {
     fs.utimesSync(path.join(dir, "latest.json"), older / 1000, older / 1000);
     fs.utimesSync(stamped, newer / 1000, newer / 1000);
     expect(resolveSeoReportPath(dir)).toBe(stamped);
+  });
+
+  it("deduplicates competitor_down hosts", () => {
+    expect(uniqueHosts([{ host: "www.adidas.com.ar" }, { host: "www.adidas.com.ar" }, { host: "touchesport.com" }])).toEqual([
+      "www.adidas.com.ar",
+      "touchesport.com",
+    ]);
   });
 
   it("refreshes GA4/GSC warehouse metrics only after TTL", () => {
@@ -76,6 +83,7 @@ describe("SEO warehouse", () => {
     );
     expect(summary?.pages).toHaveLength(2);
     expect(productSlugFromUrl("https://horizonfit.com.ar/product/top-liso-azul/")).toBe("top-liso-azul");
+    expect(productSlugFromUrl("https://horizonfit.com.ar/producto/top-falda-bordo/")).toBe("top-falda-bordo");
     expect(summary?.pages[0].slug).toBe("top-liso-azul");
     expect(summary?.totals.critical).toBe(1);
   });

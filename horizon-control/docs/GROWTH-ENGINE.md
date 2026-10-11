@@ -101,7 +101,7 @@ Missing slice → `available: false`, never a guess. Conversion only if **both**
 | Woo sales | `line.sku` → `parent_sku` | already |
 | GA4 | `itemId` **if** parent SKU; else `pagePath` → slug | identity; else `unavailable` |
 | GSC | `page` URL → slug | identity |
-| SEO | `/product/{slug}/` | identity |
+| SEO | `/producto/{slug}/` | identity |
 | Merchant | variant SKU | identity |
 | Competition | `segment` = category slug (`calzas` / `tops` / `training-mujer`) | not SKU-level |
 

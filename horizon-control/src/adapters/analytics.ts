@@ -170,15 +170,17 @@ export function normalizeGscSite(raw: string, allowedSites: string[] = GSC_SITE_
 
 export function pagePathFromUrl(raw: string | null | undefined): string | null {
   if (!raw) return null;
+  const asPath = (pathname: string): string | null => {
+    const path = pathname.endsWith("/") ? pathname : `${pathname}/`;
+    return /\/(?:product|producto)\//i.test(path) ? path : null;
+  };
   try {
     const url = new URL(raw);
     if (!url.hostname.toLowerCase().endsWith("horizonfit.com.ar")) return null;
-    const path = url.pathname.endsWith("/") ? url.pathname : `${url.pathname}/`;
-    return path.startsWith("/product/") ? path : null;
+    return asPath(url.pathname);
   } catch {
     const path = raw.startsWith("/") ? raw : `/${raw}`;
-    const normalized = path.endsWith("/") ? path : `${path}/`;
-    return normalized.startsWith("/product/") ? normalized : null;
+    return asPath(path);
   }
 }
 
@@ -404,7 +406,9 @@ export function createAnalyticsAdapter(options: {
     },
 
     async ga4Product(ref) {
-      const pagePath = pagePathFromUrl(ref.page_path) ?? (ref.page_path?.startsWith("/product/") ? ref.page_path : null);
+      const pagePath =
+        pagePathFromUrl(ref.page_path) ??
+        (ref.page_path && /\/(?:product|producto)\//i.test(ref.page_path) ? ref.page_path : null);
       const itemIds = uniqueIds([ref.parent_sku, ...(ref.item_ids ?? [])]);
       const cacheKey = `${propertyId}:${ref.parent_sku}:${pagePath ?? ""}:${itemIds.join(",")}`;
       const hit = ga4ProductCache.get(cacheKey);
@@ -547,8 +551,9 @@ export function createAnalyticsAdapter(options: {
     },
 
     async gscProduct(ref) {
-      const page = ref.page_url?.trim() || (ref.slug ? `https://horizonfit.com.ar/product/${ref.slug.replace(/^\/+|\/+$/g, "")}/` : "");
-      const needle = ref.slug ? `/product/${ref.slug.replace(/^\/+|\/+$/g, "")}` : pagePathFromUrl(page);
+      const slug = ref.slug?.replace(/^\/+|\/+$/g, "") ?? "";
+      const page = ref.page_url?.trim() || (slug ? `https://horizonfit.com.ar/producto/${slug}/` : "");
+      const needle = slug ? `/producto/${slug}` : pagePathFromUrl(page);
       const cacheKey = `${site}:${needle ?? page}`;
       const hit = gscProductCache.get(cacheKey);
       if (hit && hit.exp > Date.now()) return hit.value;

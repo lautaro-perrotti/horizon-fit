@@ -213,7 +213,7 @@ let cfgRef = null;
 let seoSummary = null;
 
 function seoChip(slug) {
-  const page = slug && seoSummary?.pages?.find((row) => row.slug === slug || String(row.url || "").includes(`/product/${slug}`));
+  const page = slug && seoSummary?.pages?.find((row) => row.slug === slug || String(row.url || "").includes(`/producto/${slug}`) || String(row.url || "").includes(`/product/${slug}`));
   if (!page) return { label: "—", cls: "scope" };
   if (page.critical) return { label: "Error", cls: "bad" };
   if (page.warning) return { label: "Warning", cls: "warn" };
@@ -311,7 +311,7 @@ function renderInspector(product) {
   $("viewPdp")?.addEventListener("click", () => {
     if (!cfgRef) return;
     showTab("sitio", cfgRef);
-    setEmbed(cfgRef, meta.slug ? `/product/${meta.slug}/` : "/");
+    setEmbed(cfgRef, meta.slug ? `/producto/${meta.slug}/` : "/");
   });
 }
 

@@ -21,7 +21,7 @@ Live VPS (2026-08-28): `feat/horizon-control` @ `9386cf8f`. Storefront and API h
 | Search Console | `analytics.ts` `searchConsole()` | 28d site totals + top 10 queries. Code on VPS. | Credentials. `page`, `date`, device, country, previous 28d, page→slug→SKU, `fetched_at`. | **Extend same adapter.** One Google SA. |
 | Merchant | `merchant.ts` local `merchant-diagnostics.txt` + `merchant-products.json` | Ready/blocked counts + blocked SKU issues when path is set. Job `merchant.audit` does **not** regenerate. | Dashboard scope (`merchant.read` not on SPA). Per-variant chip. Join to catalog. | **Unlock dashboard + join.** No Merchant Content API this phase. |
 | Competition | `competitors.ts` allowlisted GET | HTML title/H1/meta/status/latency. Empty env → `configured: false`. | Touche/Adidas **segment** URLs in env. Product count, price range, `segment`, historical rows. | **Extend adapter.** No new crawler, no anti-bot. |
-| SEO | `seo-report.ts` + job `seo.audit` | On-page crawl of `horizonfit.com.ar`: pages with issues, totals, slug from `/product/{slug}/`. | GSC overlap (impressions on issue URLs). | **Keep crawl.** GSC is demand; crawl is on-page. |
+| SEO | `seo-report.ts` + job `seo.audit` | On-page crawl of `horizonfit.com.ar`: pages with issues, totals, slug from `/producto/{slug}/` (`/product/` still parsed). | GSC overlap (impressions on issue URLs). | **Keep crawl.** GSC is demand; crawl is on-page. |
 | Repo | `git.ts` | Local HEAD/branch/dirty. Live. | Fetch/ahead unless `HORIZON_GIT_FETCH=1`. | **Keep.** Cursor-only. |
 | Health | `health.ts` | Storefront HTTP, API HTTP, DB, worker. Live. | — | **Keep.** |
 
@@ -75,7 +75,7 @@ Join keys for Horizon Fit:
 | `variant_sku` | `001-TOP-AZU-S` | Woo variation, Merchant variant |
 | `product_id` | `99` | Woo Store API id |
 | `slug` | `top-liso-azul` | Woo, SEO report, PDP path |
-| `canonical_url` | `https://horizonfit.com.ar/product/top-liso-azul/` | Storefront, GSC `page`, SEO |
+| `canonical_url` | `https://horizonfit.com.ar/producto/top-liso-azul/` | Storefront, GSC `page`, SEO |
 | `category` | `calzas` | Woo term slug; competitor `segment` |
 | `date` | `2026-08-27` | All time series (UTC day) |
 

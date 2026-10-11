@@ -17,7 +17,7 @@ describe("004-TOP-BOR identity regression", () => {
       const resolved = await resolveProductIdentity(catalog, ref);
       expect(resolved?.identity.parent_sku, ref).toBe("004-TOP-BOR");
       expect(resolved?.identity.slug, ref).toBe("top-bordeaux");
-      expect(resolved?.identity.canonical_url, ref).toBe("https://horizonfit.com.ar/product/top-bordeaux/");
+      expect(resolved?.identity.canonical_url, ref).toBe("https://horizonfit.com.ar/producto/top-bordeaux/");
       expect(resolved?.identity.product_id, ref).toBe(204);
     }
     const variant = await resolveProductIdentity(catalog, "004-TOP-BOR-S");
@@ -38,7 +38,9 @@ describe("resolveProductIdentity", () => {
     expect(parseProductRef("99")?.kind).toBe("product_id");
     expect(parseProductRef("top-liso-azul")?.kind).toBe("slug");
     expect(parseProductRef("https://horizonfit.com.ar/product/top-liso-azul/")?.kind).toBe("url");
+    expect(parseProductRef("https://horizonfit.com.ar/producto/top-liso-azul/")?.kind).toBe("url");
     expect(parseProductRef("/product/top-liso-azul/")?.slug_hint).toBe("top-liso-azul");
+    expect(parseProductRef("/producto/top-falda-bordo/")?.slug_hint).toBe("top-falda-bordo");
     expect(parseProductRef("https://evil.example/product/x/")).toBeNull();
 
     const catalog = mockWoo();
@@ -47,7 +49,7 @@ describe("resolveProductIdentity", () => {
       const resolved = await resolveProductIdentity(catalog, ref);
       expect(resolved?.identity.parent_sku).toBe("001-TOP-AZU");
       expect(resolved?.identity.slug).toBe("top-liso-azul");
-      expect(resolved?.identity.canonical_url).toBe("https://horizonfit.com.ar/product/top-liso-azul/");
+      expect(resolved?.identity.canonical_url).toBe("https://horizonfit.com.ar/producto/top-liso-azul/");
       expect(resolved?.identity.product_id).toBe(99);
     }
     const variant = await resolveProductIdentity(catalog, "001-TOP-AZU-S");

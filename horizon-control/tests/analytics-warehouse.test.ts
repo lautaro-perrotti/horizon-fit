@@ -150,6 +150,7 @@ describe("analytics + competitors warehouse", () => {
 
   it("pagePathFromUrl only allows Horizon PDP paths", () => {
     expect(pagePathFromUrl("https://horizonfit.com.ar/product/top-liso-azul/")).toBe("/product/top-liso-azul/");
+    expect(pagePathFromUrl("https://horizonfit.com.ar/producto/top-falda-bordo/")).toBe("/producto/top-falda-bordo/");
     expect(pagePathFromUrl("https://evil.example/product/top-liso-azul/")).toBeNull();
     expect(pagePathFromUrl("https://horizonfit.com.ar/coleccion/")).toBeNull();
   });
@@ -195,7 +196,7 @@ describe("analytics + competitors warehouse", () => {
       getAccessToken: async () => "ya29.test",
       fetchImpl: async (_input, init) => {
         const body = typeof init?.body === "string" ? JSON.parse(init.body) : {};
-        expect(String(body.dimensionFilterGroups[0].filters[0].expression)).toContain("/product/top-liso-azul");
+        expect(String(body.dimensionFilterGroups[0].filters[0].expression)).toContain("/producto/top-liso-azul");
         if (body.dimensions) {
           return jsonResponse({ rows: [{ keys: ["top azul"], clicks: 40, impressions: 900, ctr: 0.044, position: 5.1 }] });
         }

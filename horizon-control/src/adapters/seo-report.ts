@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { pdpSlugFromPath } from "./product-identity.js";
 
 export const SEO_PAGE_LIMIT = 50;
 
@@ -68,11 +69,9 @@ function asIssue(raw: RawIssue | undefined): SeoIssue | null {
 
 export function productSlugFromUrl(url: string): string {
   try {
-    const pathname = new URL(url).pathname;
-    const match = pathname.match(/\/product\/([^/]+)\/?$/i);
-    return match ? decodeURIComponent(match[1]) : "";
+    return pdpSlugFromPath(new URL(url).pathname) ?? "";
   } catch {
-    return "";
+    return pdpSlugFromPath(url) ?? "";
   }
 }
 

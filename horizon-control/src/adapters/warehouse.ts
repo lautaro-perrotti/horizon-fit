@@ -28,6 +28,10 @@ export function shouldRefreshMetric(lastAt: number | null, now: number, ttlMs: n
   return lastAt == null || now - lastAt > ttlMs;
 }
 
+export function uniqueHosts(pages: Array<{ host: string }>): string[] {
+  return [...new Set(pages.map((page) => page.host).filter(Boolean))];
+}
+
 export function shouldScheduleSeoAudit(input: {
   busy: boolean;
   lastJob?: { status: string; finishedAt?: number | null; createdAt: number } | null;
@@ -359,8 +363,8 @@ export function createWarehouse(options: {
       upsertAlert({
         ruleId: "competitor_down",
         severity: "warning",
-        title: down.length ? `Competidores caídos: ${down.map((page) => page.host).join(", ")}` : "Competidores ok",
-        payload: { hosts: down.map((page) => page.host), count: down.length },
+        title: down.length ? `Competidores caídos: ${uniqueHosts(down).join(", ")}` : "Competidores ok",
+        payload: { hosts: uniqueHosts(down), urls: down.map((page) => page.url), count: down.length },
         open: down.length > 0,
       });
 
