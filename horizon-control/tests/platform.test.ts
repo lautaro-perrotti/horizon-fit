@@ -4,9 +4,22 @@ import { PlatformRepository } from '../src/platform/repository.js';
 import { initialDocument, documentSchema, applyOperations, findNode, variants } from '../src/platform/document.js';
 import { renderDocument } from '../src/platform/render.js';
 import { dispatchPlatform, type PlatformServices } from '../src/platform/commands.js';
-import { runAssistant } from '../src/platform/assistant.js';
+import { runAssistant, type ModelConfig } from '../src/platform/assistant.js';
 import { parseCsv, validateImport } from '../src/platform/catalog.js';
 import { createPlatformApp } from '../src/platform/app.js';
+import { createDb } from '../src/db/client.js';
+import { createModelGateway, type ProviderComplete } from '../src/ai/gateway.js';
+
+function studioModel(complete: ProviderComplete, overrides: Partial<ModelConfig> = {}): ModelConfig {
+  const { db } = createDb(':memory:');
+  return {
+    gateway: createModelGateway({ db, openaiKey: 'test-openai', complete: { openai: complete } }),
+    model: 'openai:gpt-4o-mini',
+    maxTokens: 16000,
+    maxIterations: 2,
+    ...overrides,
+  };
+}
 let repo: PlatformRepository, services: PlatformServices, storeId: string;
 beforeEach(() => { repo = new PlatformRepository(new Database(':memory:')); services = { repo, connections: {} }; storeId = repo.create('alice', 'Casa Sur', 'casa-sur', 'linen').id; });
 afterEach(() => repo.db.close());
@@ -29,10 +42,27 @@ describe('aislamiento y permisos', () => {
 describe('asistente y presupuesto', () => {
   test('una instrucción común edita el mismo documento con cero tokens', async () => { const result = await runAssistant(repo,'alice',storeId,{prompt:'hacé este título más chico',nodeId:'headline',revision:1}); expect(findNode(result.document,'headline').node.style.fontSize).toBe(72); expect(result.usage.inputTokens).toBe(0); expect(repo.usage(storeId)[0]).toMatchObject({status:'completed'}); });
   test('sin proveedor no finge una respuesta IA y conserva el borrador', async () => { await expect(runAssistant(repo,'alice',storeId,{prompt:'creá una sección editorial',revision:1})).rejects.toThrow('no está conectada'); expect(repo.document(storeId).revision).toBe(1); expect(repo.usage(storeId)[0]).toMatchObject({status:'failed'}); });
-  test('el modelo crea bloques estructurados y no recibe todo el catálogo', async () => { const mock = vi.fn(async (_url, init) => { expect(String(init?.body)).not.toContain('password'); return new Response(JSON.stringify({usage:{prompt_tokens:300,completion_tokens:100},choices:[{message:{content:JSON.stringify({message:'Agregué la sección',operations:[{op:'block.add',pageId:'home',block:{id:'new',name:'Nueva',type:'custom',visible:true,nodes:[{id:'new-title',tag:'h2',text:'Hola'}]}}]})}}]})); }) as unknown as typeof fetch;
-    const result = await runAssistant(repo,'alice',storeId,{prompt:'Nueva sección',revision:1},{endpoint:'https://model.invalid',apiKey:'test',model:'test',maxTokens:16000,maxIterations:2},mock); expect(result.document.pages[0].blocks).toHaveLength(3); expect(result.usage.outputTokens).toBe(100); });
-  test('un presupuesto insuficiente evita la llamada y conserva el borrador', async () => { const mock = vi.fn(); await expect(runAssistant(repo,'alice',storeId,{prompt:'Nueva sección',revision:1},{endpoint:'https://model.invalid',apiKey:'test',model:'test',maxTokens:100,maxIterations:2},mock as any)).rejects.toThrow('presupuesto'); expect(mock).not.toHaveBeenCalled(); expect(repo.document(storeId).revision).toBe(1); });
-  test('no puede publicar mediante una salida del modelo', async () => { const mock = vi.fn(async () => new Response(JSON.stringify({usage:{prompt_tokens:10,completion_tokens:10},choices:[{message:{content:JSON.stringify({message:'ok',operations:[{op:'design.publish',revision:1}]})}}]}))) as any; await expect(runAssistant(repo,'alice',storeId,{prompt:'publicar',revision:1},{endpoint:'https://model.invalid',apiKey:'test',model:'test',maxTokens:16000,maxIterations:2},mock)).rejects.toThrow('válida'); expect(mock).toHaveBeenCalledTimes(2); expect(repo.publicStore('casa-sur')).toBeUndefined(); });
+  test('el modelo crea bloques estructurados y no recibe todo el catálogo', async () => {
+    const complete = vi.fn<ProviderComplete>(async ({ messages }) => {
+      expect(JSON.stringify(messages)).not.toContain('password');
+      return { text: JSON.stringify({ message: 'Agregué la sección', operations: [{ op: 'block.add', pageId: 'home', block: { id: 'new', name: 'Nueva', type: 'custom', visible: true, nodes: [{ id: 'new-title', tag: 'h2', text: 'Hola' }] } }] }), input_tokens: 300, output_tokens: 100 };
+    });
+    const result = await runAssistant(repo, 'alice', storeId, { prompt: 'Nueva sección', revision: 1 }, studioModel(complete));
+    expect(result.document.pages[0].blocks).toHaveLength(3);
+    expect(result.usage.outputTokens).toBe(100);
+  });
+  test('un presupuesto insuficiente evita la llamada y conserva el borrador', async () => {
+    const complete = vi.fn<ProviderComplete>(async () => ({ text: '{}', input_tokens: 1, output_tokens: 1 }));
+    await expect(runAssistant(repo, 'alice', storeId, { prompt: 'Nueva sección', revision: 1 }, studioModel(complete, { maxTokens: 100 }))).rejects.toThrow('presupuesto');
+    expect(complete).not.toHaveBeenCalled();
+    expect(repo.document(storeId).revision).toBe(1);
+  });
+  test('no puede publicar mediante una salida del modelo', async () => {
+    const complete = vi.fn<ProviderComplete>(async () => ({ text: JSON.stringify({ message: 'ok', operations: [{ op: 'design.publish', revision: 1 }] }), input_tokens: 10, output_tokens: 10 }));
+    await expect(runAssistant(repo, 'alice', storeId, { prompt: 'publicar', revision: 1 }, studioModel(complete))).rejects.toThrow('válida');
+    expect(complete).toHaveBeenCalledTimes(2);
+    expect(repo.publicStore('casa-sur')).toBeUndefined();
+  });
 });
 describe('datos', () => {
   test('CSV admite comillas, saltos, BOM y mapeo', () => { expect(parseCsv('\ufeffsku,name\r\na,"Hola, mundo"')[1][1]).toBe('Hola, mundo'); const result=validateImport('codigo,titulo,precio,stock\nA,Remera,123.50,3',{sku:'codigo',name:'titulo',regular_price:'precio',stock_quantity:'stock'}); expect(result.errors).toEqual([]); expect(result.products[0].regular_price).toBe('123.50'); });

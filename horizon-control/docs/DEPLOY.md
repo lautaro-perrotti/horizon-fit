@@ -38,6 +38,8 @@ The process refuses to start if `HORIZON_BIND` is a public or wildcard address.
 
 Do **not** add a public nginx `server_name` for control. Do **not** open 8787 on the VPS public firewall.
 
+Studio (`PLATFORM_PORT` `:8790`) is local/pilot only in V1. Do not install its unit on the Horizon Fit host and do not proxy it on public nginx.
+
 ## Live smoke (from a tailnet PC, after Auth0)
 
 Use an **Admin** JWT (all read-only MVP scopes). Tokens never go in git.

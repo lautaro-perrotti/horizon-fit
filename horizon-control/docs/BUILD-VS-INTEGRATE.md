@@ -37,6 +37,7 @@ Horizon Control must not reconstruct mature products. Before any large feature: 
 | Competitor **segment** snapshots | BUILD | Thin allowlisted HTML probe. Not a crawler company. |
 | Audit log, scopes, deny-list | BUILD | Security boundary. |
 | Consulta shell (deterministic today) | BUILD | Later LLM **only** as a client of `insights.*`. |
+| Studio assistant / buyer copy | BUILD | Same `ModelGateway` as Control. `design.*` / Studio `catalog.*` stay on the Studio registry. Local `:8790` only. |
 
 ---
 
@@ -109,3 +110,5 @@ else:
 ```
 
 Do not add PostHog, Metabase, Windmill, or Tooljet in Phases A–H.
+
+Studio (`src/platform`, editor on `:8790`) is a local/pilot editor. V1 does **not** deploy it to the Horizon Fit VPS or public nginx. Assistant and buyer calls go through `ModelGateway` (shared usage table when `HORIZON_SQLITE_PATH` is set). There is no second OpenAI client outside `src/ai/providers.ts`.
