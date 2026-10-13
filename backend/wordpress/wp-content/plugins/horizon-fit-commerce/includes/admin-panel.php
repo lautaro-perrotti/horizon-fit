@@ -38,6 +38,7 @@ function hf_panel_render() {
         'paginas'  => __('Páginas del footer', 'horizon-fit-commerce'),
         'apariencia' => __('Apariencia', 'horizon-fit-commerce'),
         'seo'      => __('SEO', 'horizon-fit-commerce'),
+        'logistica' => __('Logística', 'horizon-fit-commerce'),
         'precios'  => __('Productos y precios', 'horizon-fit-commerce'),
     ];
     $current = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'inicio';
@@ -73,6 +74,11 @@ function hf_panel_render() {
                     break;
                 case 'seo':
                     hf_panel_tab_seo();
+                    break;
+                case 'logistica':
+                    if (function_exists('hf_transter_render_admin')) {
+                        hf_transter_render_admin();
+                    }
                     break;
                 case 'precios':
                     hf_panel_tab_precios();

@@ -45,6 +45,10 @@ services:
       WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
       HF_FRONTEND_HOST: ${HF_FRONTEND_HOST:-localhost:8088}
       HF_FRONTEND_SCHEME: ${HF_FRONTEND_SCHEME:-http}
+      # Credenciales opcionales de Transter. Si se omiten, pueden cargarse
+      # desde Horizon Fit -> Logística en WordPress.
+      HF_TRANSTER_EMAIL: ${HF_TRANSTER_EMAIL:-}
+      HF_TRANSTER_PASSWORD: ${HF_TRANSTER_PASSWORD:-}
       # El template vive dentro de un bind mount de directorio. A diferencia de
       # montar index.html como archivo, esto sigue viendo el archivo nuevo
       # cuando `git pull` lo reemplaza atómicamente.
@@ -106,6 +110,8 @@ services:
       WP_PUBLIC_SCHEME: ${WP_PUBLIC_SCHEME:-http}
       HF_FRONTEND_HOST: ${HF_FRONTEND_HOST:-localhost:8088}
       HF_FRONTEND_SCHEME: ${HF_FRONTEND_SCHEME:-http}
+      HF_TRANSTER_EMAIL: ${HF_TRANSTER_EMAIL:-}
+      HF_TRANSTER_PASSWORD: ${HF_TRANSTER_PASSWORD:-}
       HF_STOREFRONT_TEMPLATE_PATH: /workspace/index.html
     volumes:
       - horizon_fit_html:/var/www/html

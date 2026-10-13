@@ -35,6 +35,7 @@ require_once HF_COMMERCE_DIR . 'includes/info-pages-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/design-settings.php';
 require_once HF_COMMERCE_DIR . 'includes/storefront-seo-cache.php';
 require_once HF_COMMERCE_DIR . 'includes/meta-conversions-api.php';
+require_once HF_COMMERCE_DIR . 'includes/transter-integration.php';
 require_once HF_COMMERCE_DIR . 'includes/admin-panel.php';
 
 // La contraseña de las cuentas creadas durante el checkout la define el cliente
