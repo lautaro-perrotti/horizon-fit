@@ -387,8 +387,8 @@ function hf_transter_save_result($order, $result, $status) {
     $order->save_meta_data();
 }
 
-function hf_transter_send_order($order_id, $force = false) {
-    if (! hf_transter_is_enabled() || ! function_exists('wc_get_order')) {
+function hf_transter_send_order($order_id, $force = false, $allow_disabled = false) {
+    if ((! $allow_disabled && ! hf_transter_is_enabled()) || ($allow_disabled && ! hf_transter_is_configured()) || ! function_exists('wc_get_order')) {
         return false;
     }
     $order = wc_get_order(absint($order_id));
@@ -473,8 +473,8 @@ function hf_transter_send_order($order_id, $force = false) {
     }
 }
 
-function hf_transter_cancel_order($order_id) {
-    if (! hf_transter_is_enabled() || ! function_exists('wc_get_order')) {
+function hf_transter_cancel_order($order_id, $allow_disabled = false) {
+    if ((! $allow_disabled && ! hf_transter_is_enabled()) || ($allow_disabled && ! hf_transter_is_configured()) || ! function_exists('wc_get_order')) {
         return false;
     }
     $order = wc_get_order(absint($order_id));
@@ -514,9 +514,11 @@ function hf_transter_on_order_status_changed($order_id, $from, $to) {
 add_action('woocommerce_order_status_changed', 'hf_transter_on_order_status_changed', 40, 3);
 add_action('hf_transter_send_order_action', 'hf_transter_send_order', 10, 1);
 add_action('hf_transter_cancel_order_action', 'hf_transter_cancel_order', 10, 1);
+add_action('hf_transter_manual_send_order_action', 'hf_transter_manual_send_worker', 10, 1);
+add_action('hf_transter_manual_cancel_order_action', 'hf_transter_manual_cancel_worker', 10, 1);
 
 function hf_transter_order_actions($actions, $order) {
-    if (! $order instanceof WC_Order || ! hf_transter_is_enabled()) {
+    if (! $order instanceof WC_Order || ! hf_transter_is_configured()) {
         return $actions;
     }
     if (! $order->get_meta(HF_TRANSTER_SENT_AT_META, true)) {
@@ -529,10 +531,16 @@ function hf_transter_order_actions($actions, $order) {
 add_filter('woocommerce_order_actions', 'hf_transter_order_actions', 10, 2);
 
 function hf_transter_manual_send_action($order) {
-    hf_transter_schedule_action('hf_transter_send_order_action', $order->get_id());
+    hf_transter_schedule_action('hf_transter_manual_send_order_action', $order->get_id());
 }
 function hf_transter_manual_cancel_action($order) {
-    hf_transter_schedule_action('hf_transter_cancel_order_action', $order->get_id());
+    hf_transter_schedule_action('hf_transter_manual_cancel_order_action', $order->get_id());
+}
+function hf_transter_manual_send_worker($order_id) {
+    return hf_transter_send_order($order_id, false, true);
+}
+function hf_transter_manual_cancel_worker($order_id) {
+    return hf_transter_cancel_order($order_id, true);
 }
 add_action('woocommerce_order_action_hf_transter_send', 'hf_transter_manual_send_action');
 add_action('woocommerce_order_action_hf_transter_cancel', 'hf_transter_manual_cancel_action');
@@ -672,7 +680,7 @@ if (defined('WP_CLI') && WP_CLI) {
         if (! $order_id) {
             WP_CLI::error('Falta el ID del pedido.');
         }
-        $ok = hf_transter_send_order($order_id, ! empty($assoc_args['force']));
+        $ok = hf_transter_send_order($order_id, ! empty($assoc_args['force']), true);
         $ok ? WP_CLI::success('Pedido sincronizado con Transter.') : WP_CLI::error('No se pudo sincronizar. Revisar notas y logs.');
     });
     WP_CLI::add_command('horizon-fit transter cancel', static function ($args) {
@@ -680,7 +688,7 @@ if (defined('WP_CLI') && WP_CLI) {
         if (! $order_id) {
             WP_CLI::error('Falta el ID del pedido.');
         }
-        hf_transter_cancel_order($order_id) ? WP_CLI::success('Orden anulada en Transter.') : WP_CLI::error('No se pudo anular. Revisar notas y logs.');
+        hf_transter_cancel_order($order_id, true) ? WP_CLI::success('Orden anulada en Transter.') : WP_CLI::error('No se pudo anular. Revisar notas y logs.');
     });
     WP_CLI::add_command('horizon-fit transter check-sku', static function ($args) {
         $sku = trim((string) ($args[0] ?? ''));
