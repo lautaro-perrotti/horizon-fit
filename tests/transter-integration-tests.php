@@ -82,6 +82,12 @@ hf_transter_assert($sku_missing['ok'] === false && $sku_missing['code'] === 508,
 $network = hf_transter_parse_response(new WP_Error('timeout', 'Tiempo agotado'));
 hf_transter_assert($network['transport_error'] === true && $network['ok'] === false, 'Debe distinguir errores de transporte para reintentar.');
 
+$inventory_success = hf_transter_parse_response(array(
+    'response' => array('code' => 200),
+    'body' => json_encode(array(array('sku' => 'SKU-500-X', 'stock' => 2))),
+));
+hf_transter_assert($inventory_success['ok'] === true && $inventory_success['code'] === 200, 'Un 500 dentro de datos JSON no debe interpretarse como código de error.');
+
 $order_response = hf_transter_parse_response(array(
     'response' => array('code' => 200),
     'body' => json_encode(array(

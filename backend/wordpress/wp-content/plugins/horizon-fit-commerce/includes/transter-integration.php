@@ -283,6 +283,7 @@ function hf_transter_parse_response($response) {
     $http_code = (int) wp_remote_retrieve_response_code($response);
     $raw_body = trim((string) wp_remote_retrieve_body($response));
     $decoded = json_decode($raw_body, true);
+    $is_json = JSON_ERROR_NONE === json_last_error();
     $body = is_array($decoded) ? $decoded : array();
     $normalized_body = array();
     foreach ($body as $key => $value) {
@@ -295,7 +296,7 @@ function hf_transter_parse_response($response) {
             break;
         }
     }
-    if (! $code && preg_match('/\b(200|50[0-8])\b/', $raw_body, $match)) {
+    if (! $code && ! $is_json && preg_match('/\b(200|50[0-9]|51[0-1])\b/', $raw_body, $match)) {
         $code = (int) $match[1];
     }
     $message = '';
@@ -305,7 +306,9 @@ function hf_transter_parse_response($response) {
             break;
         }
     }
-    if ($message === '') {
+    if ($message === '' && $is_json) {
+        $message = __('Respuesta JSON recibida.', 'horizon-fit-commerce');
+    } elseif ($message === '') {
         $message = sanitize_text_field(wp_html_excerpt(wp_strip_all_tags($raw_body), 300, '...'));
     }
 
@@ -955,12 +958,20 @@ if (defined('WP_CLI') && WP_CLI) {
     WP_CLI::add_command('horizon-fit transter inventory', static function ($args, $assoc_args) {
         $owner = sanitize_email((string) ($assoc_args['owner'] ?? ''));
         $result = hf_transter_get_inventory($owner);
+        $inventory = is_array($result['body'] ?? null) ? $result['body'] : array();
+        $stock_units = 0;
+        foreach ($inventory as $row) {
+            if (is_array($row)) {
+                $stock_units += max(0, (int) ($row['stock'] ?? 0));
+            }
+        }
         WP_CLI::line(wp_json_encode(array(
             'ok' => ! empty($result['ok']),
             'http_code' => (int) ($result['http_code'] ?? 0),
             'code' => (int) ($result['code'] ?? 0),
             'message' => (string) ($result['message'] ?? ''),
-            'inventory' => $result['body'] ?? array(),
+            'inventory_items' => count($inventory),
+            'stock_units' => $stock_units,
         ), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         if (empty($result['ok'])) {
             WP_CLI::halt(1);
