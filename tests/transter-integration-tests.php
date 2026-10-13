@@ -42,17 +42,24 @@ $settings = hf_transter_normalize_settings(array(
     'enabled' => '1',
     'email' => ' logistica@example.com ',
     'get_sku_method' => 'delete',
+    'auto_sync' => '1',
+    'sync_interval' => 30,
     'create_statuses' => array('processing', 'garbage'),
 ));
 hf_transter_assert($settings['enabled'] === true, 'Debe normalizar enabled.');
 hf_transter_assert($settings['email'] === 'logistica@example.com', 'Debe sanear el email.');
 hf_transter_assert($settings['get_sku_method'] === 'DELETE', 'Debe permitir resolver la contradicción GetSKU con DELETE.');
+hf_transter_assert($settings['auto_sync'] === true && $settings['sync_interval'] === 30, 'Debe normalizar la sincronización automática.');
 hf_transter_assert($settings['create_statuses'] === array('processing'), 'Debe descartar estados no permitidos.');
 
 $map = hf_transter_parse_transport_map("# comentario\nflat_rate:3=Next Day|Next Day\nfree_shipping=Postal - Puerta a Puerta|Puerta a Puerta [hasta 96 Hs.]\nmalformed");
 hf_transter_assert(count($map) === 2, 'Debe ignorar comentarios y líneas inválidas.');
 hf_transter_assert($map['flat_rate:3']['id'] === 'Next Day', 'Debe mapear la instancia WooCommerce.');
 hf_transter_assert($map['free_shipping']['name'] === 'Puerta a Puerta [hasta 96 Hs.]', 'Debe conservar el nombre Transter.');
+
+$inventory_payload = hf_transter_inventory_payload(array('email' => 'api@example.com', 'password' => 'secret'), 'deposito@example.com');
+hf_transter_assert($inventory_payload['modelo'] === 'GetInventario', 'Debe usar el modelo GetInventario indicado por la v1.5.');
+hf_transter_assert($inventory_payload['inventario_de'] === 'deposito@example.com', 'Debe incluir inventario_de cuando se solicita un inventario autorizado.');
 
 $success = hf_transter_parse_response(array(
     'response' => array('code' => 200),
@@ -74,6 +81,24 @@ hf_transter_assert($sku_missing['ok'] === false && $sku_missing['code'] === 508,
 
 $network = hf_transter_parse_response(new WP_Error('timeout', 'Tiempo agotado'));
 hf_transter_assert($network['transport_error'] === true && $network['ok'] === false, 'Debe distinguir errores de transporte para reintentar.');
+
+$order_response = hf_transter_parse_response(array(
+    'response' => array('code' => 200),
+    'body' => json_encode(array(
+        'id' => '1161',
+        'estado' => array('code' => 'completed', 'txt' => 'Completado'),
+        'external_tracking' => 'TRK-123',
+        'external_courier' => 'Correo de prueba',
+        'items' => array(array('id' => 1, 'nombre' => 'Top Zenith', 'cantidad' => 1)),
+    )),
+));
+$order_data = hf_transter_parse_order_data($order_response);
+hf_transter_assert($order_data['status_code'] === 'completed', 'Debe leer el código de estado de GetOrden v1.5.');
+hf_transter_assert($order_data['status_text'] === 'Completado', 'Debe leer el texto de estado de GetOrden v1.5.');
+hf_transter_assert($order_data['external_tracking'] === 'TRK-123', 'Debe guardar el tracking externo documentado.');
+hf_transter_assert($order_data['external_courier'] === 'Correo de prueba', 'Debe guardar el courier externo documentado.');
+hf_transter_assert(hf_transter_is_terminal_status('completed') === true, 'Completed debe detener la sincronización.');
+hf_transter_assert(hf_transter_is_terminal_status('processing') === false, 'Processing debe continuar sincronizándose.');
 
 class HF_Test_Product {
     private $sku;
