@@ -908,6 +908,17 @@ function hf_commerce_register_admin_pages() {
         56
     );
 
+    // Keep the store panel as the main destination. Without this explicit
+    // first submenu, WordPress may make the newsletter CPT the parent link.
+    add_submenu_page(
+        'hf-panel',
+        __('Horizon Fit', 'horizon-fit-commerce'),
+        __('Panel de la tienda', 'horizon-fit-commerce'),
+        'manage_woocommerce',
+        'hf-panel',
+        'hf_panel_render'
+    );
+
     // Los antiguos submenu de WooCommerce (Seeder, Precios, Ajustes colección,
     // Footer, Barra de confianza, Elegí tu estilo, #HorizonFit) YA NO se
     // registran: todo se administra desde el panel "Horizon Fit", que invoca
