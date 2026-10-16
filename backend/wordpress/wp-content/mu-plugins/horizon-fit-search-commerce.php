@@ -19,6 +19,52 @@ function hf_search_text($value) {
     $value = html_entity_decode(wp_strip_all_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     return trim(preg_replace('/\s+/u', ' ', $value));
 }
+function hf_search_store_configured() {
+    return function_exists('hf_framework_config') && (bool) hf_framework_config();
+}
+
+function hf_search_brand_name() {
+    if (function_exists('hf_framework_name')) {
+        return (string) hf_framework_name();
+    }
+    return 'Horizon Fit';
+}
+
+function hf_search_title_with_brand($page_title) {
+    $page_title = trim((string) $page_title);
+    $brand = trim((string) hf_search_brand_name());
+    if ($page_title === '') {
+        return $brand;
+    }
+    if ($brand === '') {
+        return $page_title;
+    }
+    return $page_title . ' | ' . $brand;
+}
+
+function hf_search_public_product_url($slug) {
+    $slug = ltrim((string) $slug, '/');
+    if (function_exists('hf_storefront_public_url')) {
+        return hf_storefront_public_url('producto/' . $slug . '/');
+    }
+    if (hf_search_store_configured() && function_exists('hf_framework_origin')) {
+        $origin = rtrim((string) hf_framework_origin(), '/');
+        return $origin === '' ? '/producto/' . $slug . '/' : $origin . '/producto/' . $slug . '/';
+    }
+    return 'https://horizonfit.com.ar/producto/' . $slug . '/';
+}
+
+function hf_search_strip_client_brand($value) {
+    $value = (string) $value;
+    if (! hf_search_store_configured()) {
+        return $value;
+    }
+    $brand = trim((string) hf_search_brand_name());
+    $value = preg_replace('/\s*de Horizon Fit\b/iu', $brand !== '' ? ' de ' . $brand : '', $value);
+    $value = preg_replace('/Horizon Fit/iu', $brand, $value);
+    $value = preg_replace('~https?://(?:www\.)?horizonfit\.com\.ar~i', function_exists('hf_framework_origin') ? rtrim((string) hf_framework_origin(), '/') : '', $value);
+    return hf_search_text($value);
+}
 
 function hf_search_excerpt($value, $limit = 158) {
     $value = hf_search_text($value);
@@ -204,10 +250,10 @@ function hf_search_is_placeholder_title($value) {
 
 function hf_search_product_title($product) {
     $name = hf_search_product_name($product);
-    if ($name === '') {
-        return 'Horizon Fit';
+    $base = hf_search_title_with_brand($name);
+    if ($base === '') {
+        return '';
     }
-    $base = $name . ' | Horizon Fit';
     if (hf_search_strlen($base) <= 65) {
         return $base;
     }
@@ -250,16 +296,20 @@ function hf_search_product_meta_description($product) {
             }
         }
         $meta = hf_search_text(implode(' ', $pieces));
-        $horizon_count = preg_match_all('/horizon fit/iu', $meta);
-        if ($horizon_count > 1) {
-            $meta = preg_replace('/\s*de Horizon Fit\b/iu', '', $meta, 1);
-            $meta = hf_search_text($meta);
+        if (hf_search_store_configured()) {
+            $meta = hf_search_strip_client_brand($meta);
+        } else {
+            $horizon_count = preg_match_all('/horizon fit/iu', $meta);
+            if ($horizon_count > 1) {
+                $meta = preg_replace('/\s*de Horizon Fit\b/iu', '', $meta, 1);
+                $meta = hf_search_text($meta);
+            }
         }
         return hf_search_excerpt_phrase($meta, 155, 158);
     }
 
     $parts = array();
-    $lead = $name !== '' ? $name : 'Prenda Horizon Fit';
+    $lead = $name !== '' ? $name : (hf_search_store_configured() ? 'Producto' : 'Prenda Horizon Fit');
     $color = hf_search_product_color_value($product);
     if ($color !== '' && ! hf_search_contains($lead, $color)) {
         $lead .= ' en color ' . $color;
@@ -380,11 +430,22 @@ function hf_search_item_group_id($product) {
 }
 
 function hf_search_category_title($term) {
-    $candidate = hf_search_term_label($term) . ' | Horizon Fit';
+    $candidate = hf_search_title_with_brand(hf_search_term_label($term));
     return hf_search_strlen($candidate) <= 65 ? $candidate : hf_search_excerpt($candidate, 65);
 }
 
 function hf_search_category_description($term) {
+    if (hf_search_store_configured()) {
+        $existing = is_object($term) && isset($term->description) ? hf_search_strip_client_brand($term->description) : '';
+        if ($existing !== '') {
+            return hf_search_excerpt($existing, 158);
+        }
+        $brand = trim((string) hf_search_brand_name());
+        $copy = $brand !== ''
+            ? 'Descubrí ' . hf_search_term_label($term) . ' de ' . $brand . '. Consultá los productos disponibles en nuestra tienda.'
+            : 'Descubrí ' . hf_search_term_label($term) . '. Consultá los productos disponibles en nuestra tienda.';
+        return hf_search_excerpt($copy, 158);
+    }
     $existing = is_object($term) && isset($term->description) ? (string) $term->description : '';
     if (hf_search_useful_copy($existing)) {
         return hf_search_excerpt($existing, 158);
@@ -918,6 +979,31 @@ function hf_merchant_unique_mpn($sku, $product = null) {
     return $use_sku ? $sku : '';
 }
 
+function hf_merchant_catalog_notes() {
+    $brand = trim((string) hf_search_brand_name());
+    if (hf_search_store_configured()) {
+        $label = $brand !== '' ? $brand : 'esta tienda';
+        return array(
+            'identifier_exists' => 'Brand ' . $label . ' + MPN=SKU único solo si ownBrandManufacturer es true. Filtro hf_merchant_use_sku_as_mpn: si un producto es de un tercero, devolver false y no usar SKU como MPN. identifier_exists se omite si hay brand/MPN/GTIN.',
+            'size_system' => 'Omitido a propósito: Google no tiene AR y S/M/L son talles estándar. No se afirma US.',
+            'size_type' => 'Omitido salvo petite/maternity/plus/tall/big reales. regular es el default de Google.',
+            'shipping' => 'No se envía shipping en el feed hasta confirmar costo y plazo reales.',
+            'return_policy' => 'No se envía return_policy de Merchant Center salvo política explícita de la tienda.',
+            'item_group_id' => 'Fuente única: SKU padre o id estable. Schema y Merchant reutilizan hf_search_item_group_id().',
+            'search_titles' => 'Search usa {nombre Woo}' . ($brand !== '' ? ' | ' . $brand : '') . '. Merchant usa Nombre - Color - Talle. No se mezclan.',
+        );
+    }
+    return array(
+        'identifier_exists' => 'Brand Horizon Fit + MPN=SKU único cuando Horizon Fit actúa como fabricante. Filtro hf_merchant_use_sku_as_mpn: si un producto es de un tercero, devolver false y no usar SKU como MPN. identifier_exists se omite si hay brand/MPN/GTIN.',
+        'size_system' => 'Omitido a propósito: Google no tiene AR y S/M/L son talles estándar. No se afirma US.',
+        'size_type' => 'Omitido salvo petite/maternity/plus/tall/big reales. regular es el default de Google.',
+        'shipping' => 'No se envía shipping en el feed hasta confirmar costo y plazo reales.',
+        'return_policy' => 'No se envía return_policy de Merchant Center; la política pública de 15 días queda en schema y páginas.',
+        'item_group_id' => 'Fuente única: SKU padre color (001-TOP-AZU). Schema y Merchant reutilizan hf_search_item_group_id().',
+        'search_titles' => 'Search usa {nombre Woo} | Horizon Fit. Merchant usa Nombre - Color - Talle. No se mezclan.',
+    );
+}
+
 function hf_merchant_identifier_exists($brand, $mpn, $gtin) {
     if (trim((string) $gtin) !== '' || trim((string) $mpn) !== '' || trim((string) $brand) !== '') {
         return '';
@@ -978,9 +1064,7 @@ function hf_merchant_row($item, $parent = null) {
 
     $title = hf_merchant_compose_title($name, $color, $size);
 
-    $canonical = function_exists('hf_storefront_public_url')
-        ? hf_storefront_public_url('producto/' . $product->get_slug() . '/')
-        : 'https://horizonfit.com.ar/producto/' . $product->get_slug() . '/';
+    $canonical = hf_search_public_product_url($product->get_slug());
 
     $images = hf_merchant_image_urls($item, $parent);
     $sku = trim((string) $item->get_sku());
@@ -1028,7 +1112,7 @@ function hf_merchant_row($item, $parent = null) {
         'availability' => hf_merchant_availability($item),
         'price' => $price,
         'sale_price' => $sale,
-        'brand' => 'Horizon Fit',
+        'brand' => hf_search_brand_name(),
         'condition' => 'new',
         'color' => $color,
         'size' => hf_merchant_normalize_size($size) ?: $size,
@@ -1046,7 +1130,7 @@ function hf_merchant_row($item, $parent = null) {
         'google_product_category_label' => $category_mapping['google_product_category_label'],
         'gtin' => $has_valid_gtin ? $gtin : '',
         'mpn' => $mpn,
-        'identifier_exists' => hf_merchant_identifier_exists('Horizon Fit', $mpn, $has_valid_gtin ? $gtin : ''),
+        'identifier_exists' => hf_merchant_identifier_exists(hf_search_brand_name(), $mpn, $has_valid_gtin ? $gtin : ''),
     );
 
     $issues = array();
@@ -1417,15 +1501,7 @@ function hf_merchant_build_catalog_report($products) {
         'top_issues' => hf_merchant_top_issues($items),
         'top_issues_all' => hf_merchant_top_issues($items, true),
         'rules' => hf_merchant_issue_rules(),
-        'catalog_notes' => array(
-            'identifier_exists' => 'Brand Horizon Fit + MPN=SKU único cuando Horizon Fit actúa como fabricante. Filtro hf_merchant_use_sku_as_mpn: si un producto es de un tercero, devolver false y no usar SKU como MPN. identifier_exists se omite si hay brand/MPN/GTIN.',
-            'size_system' => 'Omitido a propósito: Google no tiene AR y S/M/L son talles estándar. No se afirma US.',
-            'size_type' => 'Omitido salvo petite/maternity/plus/tall/big reales. regular es el default de Google.',
-            'shipping' => 'No se envía shipping en el feed hasta confirmar costo y plazo reales.',
-            'return_policy' => 'No se envía return_policy de Merchant Center; la política pública de 15 días queda en schema y páginas.',
-            'item_group_id' => 'Fuente única: SKU padre color (001-TOP-AZU). Schema y Merchant reutilizan hf_search_item_group_id().',
-            'search_titles' => 'Search usa {nombre Woo} | Horizon Fit. Merchant usa Nombre - Color - Talle. No se mezclan.',
-        ),
+        'catalog_notes' => hf_merchant_catalog_notes(),
         'items' => $items,
     );
     return $report;
@@ -1676,13 +1752,21 @@ function hf_search_regenerate_commerce_artifacts() {
         ? hf_storefront_seo_dir()
         : trailingslashit(wp_upload_dir()['basedir']) . 'horizon-fit-seo';
 
-    $home_seo = function_exists('hf_storefront_home_seo_settings')
-        ? hf_storefront_home_seo_settings()
-        : array(
+    if (function_exists('hf_storefront_home_seo_settings')) {
+        $home_seo = hf_storefront_home_seo_settings();
+    } elseif (hf_search_store_configured()) {
+        $config = hf_framework_config();
+        $home_seo = array(
+            'title' => $config['seo']['title'] ?? hf_search_brand_name(),
+            'description' => $config['seo']['description'] ?? '',
+        );
+    } else {
+        $home_seo = array(
             'title' => 'Horizon Fit | Ropa deportiva y conjuntos',
             'description' => 'Descubrí activewear funcional de Horizon Fit: tops, calzas, shorts, camperas y conjuntos cómodos para entrenar y vivir en movimiento.',
         );
-    $home_title = (string) ($home_seo['title'] ?? 'Horizon Fit');
+    }
+    $home_title = (string) ($home_seo['title'] ?? (hf_search_store_configured() ? hf_search_brand_name() : 'Horizon Fit'));
     $home_description = (string) ($home_seo['description'] ?? '');
     hf_search_write_html(trailingslashit($seo_dir) . 'index.html', $home_title, hf_search_excerpt($home_description, 158));
 

@@ -1,0 +1,44 @@
+{
+  "slug": "casa-sur",
+  "name": "Casa Sur",
+  "storefrontUrl": "http://127.0.0.1:8920",
+  "apiUrl": "http://127.0.0.1:8921",
+  "ports": { "storefront": 8920, "api": 8921 },
+  "email": "hola@example.com",
+  "whatsappUrl": "",
+  "tagline": "Diseñado para acompañarte.",
+  "cache": { "maxAge": 30 },
+  "seo": { "title": "Casa Sur | Tienda online", "description": "Descubrí la colección de Casa Sur. Comprá online con envíos en Argentina." },
+  "tracking": { "enabled": false, "ga4Id": "", "googleAdsId": "", "googleAdsPurchaseLabel": "", "metaPixelId": "" },
+  "merchant": { "ownBrandManufacturer": false, "categoryMap": {}, "gender": "", "ageGroup": "" },
+  "payments": {
+    "headline": "",
+    "copy": "",
+    "installments": [],
+    "setDiscountPercent": 0
+  },
+  "shipping": {
+    "headline": "",
+    "copy": "",
+    "nationwide": false
+  },
+  "social": {
+    "handle": "",
+    "instagram": "",
+    "tiktok": "",
+    "facebook": "",
+    "spotify": ""
+  },
+  "infoPages": {
+    "/envios-y-entregas": { "title": "", "description": "", "body": "" },
+    "/cambios-y-devoluciones": { "title": "", "description": "", "body": "" },
+    "/guia-de-talles": { "title": "", "description": "", "body": "" },
+    "/medios-de-pago": { "title": "", "description": "", "body": "" },
+    "/terminos": { "title": "", "description": "", "body": "" },
+    "/privacidad": { "title": "", "description": "", "body": "" },
+    "/defensa-al-consumidor": { "title": "", "description": "", "body": "" },
+    "/quienes-somos": { "title": "", "description": "", "body": "" },
+    "/contacto": { "title": "", "description": "", "body": "" },
+    "/preguntas-frecuentes": { "title": "", "description": "", "body": "" }
+  }
+}

@@ -25,3 +25,6 @@ Thumbs.db
 
 # Generated audit reports
 reports/
+
+# Generated per-store runtimes contain private environment files.
+framework/instances/

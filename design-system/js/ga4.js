@@ -16,12 +16,15 @@
  *   item_variant = size token (S/M/L/…) or the full variation SKU.
  *
  * Events include the GA4 ecommerce funnel plus search, login, sign_up and leads.
- * Hits are sent only on horizonfit.com.ar. Local / IP hosts expose the same API as a no-op.
+ * Without STORE_CONFIG, hits are sent only on horizonfit.com.ar.
+ * With STORE_CONFIG, hits fire only when trackingEnabled, that store's IDs, and
+ * storefrontOrigin matches the current host. Local / IP hosts expose the same API as a no-op.
  */
 (function (window, document) {
   'use strict';
 
-  var MEASUREMENT_ID = 'G-8TL56B3B8X';
+  var storeConfig = window.HF_STOREFRONT_CONFIG || null;
+  var MEASUREMENT_ID = storeConfig ? (storeConfig.ga4Id || '') : 'G-8TL56B3B8X';
   var PURCHASE_STORAGE_PREFIX = 'hf-ga4-purchase:';
   var EVENT_STORAGE_PREFIX = 'hf-ga4-event:';
   var SIZE_TOKENS = {
@@ -35,8 +38,23 @@
     measurementId: MEASUREMENT_ID
   };
 
+  function storefrontHostMatches() {
+    if (!storeConfig) {
+      return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    }
+    if (!storeConfig.trackingEnabled) return false;
+    if (!(MEASUREMENT_ID || storeConfig.googleAdsId)) return false;
+    var origin = storeConfig.storefrontOrigin || '';
+    if (!origin) return false;
+    try {
+      return new URL(origin).hostname === (window.location.hostname || '');
+    } catch (error) {
+      return false;
+    }
+  }
+
   function isProductionHost() {
-    return /(^|\.)horizonfit\.com\.ar$/i.test(window.location.hostname || '');
+    return storefrontHostMatches();
   }
 
   function debugEnabled() {
@@ -142,7 +160,7 @@
     return {
       item_id: itemIdFromSku(sku, fallbackId),
       item_name: decodeName(product && product.name),
-      item_brand: 'Horizon Fit',
+      item_brand: storeConfig ? storeConfig.name : 'Horizon Fit',
       item_variant: size || variantSku || '',
       price: roundMoney(toMajor(rawPrice, currency)),
       quantity: Math.max(1, Number(quantity || 1))
@@ -159,7 +177,7 @@
     return {
       item_id: itemIdFromSku(sku, item && item.id),
       item_name: decodeName(item && item.name),
-      item_brand: 'Horizon Fit',
+      item_brand: storeConfig ? storeConfig.name : 'Horizon Fit',
       item_variant: size || String(sku || '').trim(),
       price: roundMoney(toMajor(rawPrice, priceCurrency)),
       quantity: Math.max(1, Number(item && item.quantity || 1))
@@ -267,15 +285,16 @@
   }
   window.gtag = window.gtag || gtag;
   gtag('js', new Date());
-  gtag('config', MEASUREMENT_ID, {
+  if (MEASUREMENT_ID) gtag('config', MEASUREMENT_ID, {
     anonymize_ip: true,
     currency: 'ARS'
   });
+  if (storeConfig && /^AW-\d+$/.test(storeConfig.googleAdsId || '')) gtag('config', storeConfig.googleAdsId);
 
   if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
     var script = document.createElement('script');
     script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + MEASUREMENT_ID;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + (MEASUREMENT_ID || storeConfig.googleAdsId);
     document.head.appendChild(script);
   }
 
@@ -430,6 +449,9 @@
       value: value,
       items: items
     });
+    if (storeConfig && storeConfig.googleAdsId && storeConfig.googleAdsPurchaseLabel) {
+      window.gtag('event', 'conversion', { send_to: storeConfig.googleAdsId + '/' + storeConfig.googleAdsPurchaseLabel, transaction_id: String(payload.orderNumber || orderId), value: value, currency: currencyCode(currency) });
+    }
   };
 
   window.hfGa4 = api;
