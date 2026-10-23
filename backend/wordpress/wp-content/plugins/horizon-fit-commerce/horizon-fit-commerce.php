@@ -24,6 +24,7 @@ require_once HF_COMMERCE_DIR . 'includes/featured-products-cache.php';
 require_once HF_COMMERCE_DIR . 'includes/product-payment-fields.php';
 require_once HF_COMMERCE_DIR . 'includes/product-size-table-fields.php';
 require_once HF_COMMERCE_DIR . 'includes/product-parent-sku.php';
+require_once HF_COMMERCE_DIR . 'includes/product-catalog-operational-data.php';
 require_once HF_COMMERCE_DIR . 'includes/checkout-fields.php';
 require_once HF_COMMERCE_DIR . 'includes/newsletter.php';
 require_once HF_COMMERCE_DIR . 'includes/menu-items.php';

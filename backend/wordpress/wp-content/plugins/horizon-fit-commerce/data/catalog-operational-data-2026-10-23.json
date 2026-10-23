@@ -1,0 +1,1242 @@
+{
+  "source_date": "2026-10-23",
+  "source_files": [
+    "guia_de_talles_ecommerce-v5.xlsx",
+    "Horizon Fit - Ingreso stock - copia.xlsx"
+  ],
+  "stock": [
+    {
+      "sku": "001-CAL-AZU-L",
+      "name": "Calza Dynamic blue - Azul - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "001-CAL-AZU-M",
+      "name": "Calza Dynamic blue - Azul - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "001-CAL-AZU-S",
+      "name": "Calza Dynamic blue - Azul - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-CAL-BLA-L",
+      "name": "Calza Dynamic white - Blanco - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "001-CAL-BLA-M",
+      "name": "Calza Dynamic white - Blanco - Talle M",
+      "quantity": 5
+    },
+    {
+      "sku": "001-CAL-BLA-S",
+      "name": "Calza Dynamic white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "001-CAL-CEL-L",
+      "name": "Calza Dynamic sky blue - Celeste - Talle L",
+      "quantity": 8
+    },
+    {
+      "sku": "001-CAL-CEL-M",
+      "name": "Calza Dynamic sky blue - Celeste - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "001-CAL-CEL-S",
+      "name": "Calza Dynamic sky blue - Celeste - Talle S",
+      "quantity": 10
+    },
+    {
+      "sku": "001-CAL-NEG-L",
+      "name": "Calza Dynamic black - Negro - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "001-CAL-NEG-M",
+      "name": "Calza Dynamic black - Negro - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "001-CAL-NEG-S",
+      "name": "Calza Dynamic black - Negro - Talle S",
+      "quantity": 7
+    },
+    {
+      "sku": "001-CAL-VER-L",
+      "name": "Calza Dynamic green - Verde - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "001-CAL-VER-M",
+      "name": "Calza Dynamic green - Verde - Talle M",
+      "quantity": 13
+    },
+    {
+      "sku": "001-CAL-VER-S",
+      "name": "Calza Dynamic green - Verde - Talle S",
+      "quantity": 9
+    },
+    {
+      "sku": "001-CAM-AZU-L",
+      "name": "Campera Dynamic blue - Azul - Talle L",
+      "quantity": 8
+    },
+    {
+      "sku": "001-CAM-AZU-M",
+      "name": "Campera Dynamic blue - Azul - Talle M",
+      "quantity": 12
+    },
+    {
+      "sku": "001-CAM-AZU-S",
+      "name": "Campera Dynamic blue - Azul - Talle S",
+      "quantity": 7
+    },
+    {
+      "sku": "001-CAM-BLA-L",
+      "name": "Campera Dynamic white - Blanco - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "001-CAM-BLA-M",
+      "name": "Campera Dynamic white - Blanco - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "001-CAM-BLA-S",
+      "name": "Campera Dynamic white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "001-CAM-NEG-L",
+      "name": "Campera Dynamic black - Negro - Talle L",
+      "quantity": 11
+    },
+    {
+      "sku": "001-CAM-NEG-M",
+      "name": "Campera Dynamic black - Negro - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "001-CAM-NEG-S",
+      "name": "Campera Dynamic black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-CAM-VER-L",
+      "name": "Campera Dynamic green - Verde - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "001-CAM-VER-M",
+      "name": "Campera Dynamic green - Verde - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "001-CAM-VER-S",
+      "name": "Campera Dynamic green - Verde - Talle S",
+      "quantity": 9
+    },
+    {
+      "sku": "001-SHO-AZU-L",
+      "name": "Short Dynamic blue - Azul - Talle L",
+      "quantity": 12
+    },
+    {
+      "sku": "001-SHO-AZU-M",
+      "name": "Short Dynamic blue - Azul - Talle M",
+      "quantity": 12
+    },
+    {
+      "sku": "001-SHO-AZU-S",
+      "name": "Short Dynamic blue - Azul - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-SHO-BLA-L",
+      "name": "Short Dynamic white - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "001-SHO-BLA-M",
+      "name": "Short Dynamic white - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "001-SHO-BLA-S",
+      "name": "Short Dynamic white - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "001-SHO-CEL-L",
+      "name": "Short Dynamic sky blue - Celeste - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "001-SHO-CEL-M",
+      "name": "Short Dynamic sky blue - Celeste - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "001-SHO-CEL-S",
+      "name": "Short Dynamic sky blue - Celeste - Talle S",
+      "quantity": 10
+    },
+    {
+      "sku": "001-SHO-NEG-L",
+      "name": "Short Dynamic black - Negro - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "001-SHO-NEG-M",
+      "name": "Short Dynamic black - Negro - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "001-SHO-NEG-S",
+      "name": "Short Dynamic black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-SHO-VER-L",
+      "name": "Short Dynamic green - Verde - Talle L",
+      "quantity": 11
+    },
+    {
+      "sku": "001-SHO-VER-M",
+      "name": "Short Dynamic green - Verde - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "001-SHO-VER-S",
+      "name": "Short Dynamic green - Verde - Talle S",
+      "quantity": 9
+    },
+    {
+      "sku": "001-TOP-AZU-L",
+      "name": "Top Dynamic blue - Azul - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "001-TOP-AZU-M",
+      "name": "Top Dynamic blue - Azul - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "001-TOP-AZU-S",
+      "name": "Top Dynamic blue - Azul - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-TOP-BLA-L",
+      "name": "Top Dynamic white - Blanco - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "001-TOP-BLA-M",
+      "name": "Top Dynamic white - Blanco - Talle M",
+      "quantity": 5
+    },
+    {
+      "sku": "001-TOP-BLA-S",
+      "name": "Top Dynamic white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "001-TOP-CEL-L",
+      "name": "Top Dynamic sky blue - Celeste - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "001-TOP-CEL-M",
+      "name": "Top Dynamic sky blue - Celeste - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "001-TOP-CEL-S",
+      "name": "Top Dynamic sky blue - Celeste - Talle S",
+      "quantity": 10
+    },
+    {
+      "sku": "001-TOP-NEG-L",
+      "name": "Top Dynamic black - Negro - Talle L",
+      "quantity": 11
+    },
+    {
+      "sku": "001-TOP-NEG-M",
+      "name": "Top Dynamic black - Negro - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "001-TOP-NEG-S",
+      "name": "Top Dynamic black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "001-TOP-VER-L",
+      "name": "Top Dynamic green - Verde - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "001-TOP-VER-M",
+      "name": "Top Dynamic green - Verde - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "001-TOP-VER-S",
+      "name": "Top Dynamic green - Verde - Talle S",
+      "quantity": 9
+    },
+    {
+      "sku": "002-CAL-CEL-L",
+      "name": "Calza Heaven sky blue - Celeste - Talle L",
+      "quantity": 4
+    },
+    {
+      "sku": "002-CAL-CEL-M",
+      "name": "Calza Heaven sky blue - Celeste - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "002-CAL-CEL-S",
+      "name": "Calza Heaven sky blue - Celeste - Talle S",
+      "quantity": 5
+    },
+    {
+      "sku": "002-CAL-NEG-L",
+      "name": "Calza Heaven black - Negro - Talle L",
+      "quantity": 7
+    },
+    {
+      "sku": "002-CAL-NEG-M",
+      "name": "Calza Heaven black - Negro - Talle M",
+      "quantity": 10
+    },
+    {
+      "sku": "002-CAL-NEG-S",
+      "name": "Calza Heaven black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "002-CAL-ROS-L",
+      "name": "Calza Heaven pink - Rosa - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "002-CAL-ROS-M",
+      "name": "Calza Heaven pink - Rosa - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "002-CAL-ROS-S",
+      "name": "Calza Heaven pink - Rosa - Talle S",
+      "quantity": 5
+    },
+    {
+      "sku": "002-SHO-CEL-L",
+      "name": "Short Heaven sky blue - Celeste - Talle L",
+      "quantity": 4
+    },
+    {
+      "sku": "002-SHO-CEL-M",
+      "name": "Short Heaven sky blue - Celeste - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "002-SHO-CEL-S",
+      "name": "Short Heaven sky blue - Celeste - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "002-SHO-NEG-L",
+      "name": "Short Heaven black - Negro - Talle L",
+      "quantity": 7
+    },
+    {
+      "sku": "002-SHO-NEG-M",
+      "name": "Short Heaven black - Negro - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "002-SHO-NEG-S",
+      "name": "Short Heaven black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "002-SHO-ROS-L",
+      "name": "Short Heaven pink - Talle L",
+      "quantity": 0
+    },
+    {
+      "sku": "002-SHO-ROS-M",
+      "name": "Short Heaven pink - Talle M",
+      "quantity": 1
+    },
+    {
+      "sku": "002-SHO-ROS-S",
+      "name": "Short Heaven pink - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "002-TOP-CEL-L",
+      "name": "Top Heaven sky blue - Celeste - Talle L",
+      "quantity": 4
+    },
+    {
+      "sku": "002-TOP-CEL-M",
+      "name": "Top Heaven sky blue - Celeste - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "002-TOP-CEL-S",
+      "name": "Top Heaven sky blue - Celeste - Talle S",
+      "quantity": 5
+    },
+    {
+      "sku": "002-TOP-NEG-L",
+      "name": "Top Heaven black - Negro - Talle L",
+      "quantity": 7
+    },
+    {
+      "sku": "002-TOP-NEG-M",
+      "name": "Top Heaven black - Negro - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "002-TOP-NEG-S",
+      "name": "Top Heaven black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "002-TOP-ROS-L",
+      "name": "Top Heaven pink - Rosa - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "002-TOP-ROS-M",
+      "name": "Top Heaven pink - Rosa - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "002-TOP-ROS-S",
+      "name": "Top Heaven pink - Rosa - Talle S",
+      "quantity": 5
+    },
+    {
+      "sku": "003-CAM-AZU-L",
+      "name": "Campera Vanguard blue - Azul - Talle L",
+      "quantity": 5
+    },
+    {
+      "sku": "003-CAM-AZU-M",
+      "name": "Campera Vanguard blue - Azul - Talle M",
+      "quantity": 8
+    },
+    {
+      "sku": "003-CAM-AZU-S",
+      "name": "Campera Vanguard blue - Azul - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "003-CAM-BLA-L",
+      "name": "Campera Vanguard white - Blanco - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "003-CAM-BLA-M",
+      "name": "Campera Vanguard white - Blanco - Talle M",
+      "quantity": 5
+    },
+    {
+      "sku": "003-CAM-BLA-S",
+      "name": "Campera Vanguard white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "003-CAM-NEG-L",
+      "name": "Campera Vanguard black - Negro - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "003-CAM-NEG-M",
+      "name": "Campera Vanguard black - Negro - Talle M",
+      "quantity": 14
+    },
+    {
+      "sku": "003-CAM-NEG-S",
+      "name": "Campera Vanguard black - Negro - Talle S",
+      "quantity": 7
+    },
+    {
+      "sku": "003-CAM-ROJ-L",
+      "name": "Campera Vanguard red - Rojo - Talle L",
+      "quantity": 5
+    },
+    {
+      "sku": "003-CAM-ROJ-M",
+      "name": "Campera Vanguard red - Rojo - Talle M",
+      "quantity": 8
+    },
+    {
+      "sku": "003-CAM-ROJ-S",
+      "name": "Campera Vanguard red - Rojo - Talle S",
+      "quantity": 3
+    },
+    {
+      "sku": "003-SHO-AZU-L",
+      "name": "Short Vanguard blue - Azul - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "003-SHO-AZU-M",
+      "name": "Short Vanguard blue - Azul - Talle M",
+      "quantity": 11
+    },
+    {
+      "sku": "003-SHO-AZU-S",
+      "name": "Short Vanguard blue - Azul - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "003-SHO-BLA-L",
+      "name": "Short Vanguard white - Blanco - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "003-SHO-BLA-M",
+      "name": "Short Vanguard white - Blanco - Talle M",
+      "quantity": 4
+    },
+    {
+      "sku": "003-SHO-BLA-S",
+      "name": "Short Vanguard white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "003-SHO-NEG-L",
+      "name": "Short Vanguard black - Negro - Talle L",
+      "quantity": 10
+    },
+    {
+      "sku": "003-SHO-NEG-M",
+      "name": "Short Vanguard black - Negro - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "003-SHO-NEG-S",
+      "name": "Short Vanguard black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "003-SHO-ROJ-L",
+      "name": "Short Vanguard red - Rojo - Talle L",
+      "quantity": 6
+    },
+    {
+      "sku": "003-SHO-ROJ-M",
+      "name": "Short Vanguard red - Rojo - Talle M",
+      "quantity": 8
+    },
+    {
+      "sku": "003-SHO-ROJ-S",
+      "name": "Short Vanguard red - Rojo - Talle S",
+      "quantity": 5
+    },
+    {
+      "sku": "003-TOP-AZU-L",
+      "name": "Top Vanguard blue - Azul - Talle L",
+      "quantity": 4
+    },
+    {
+      "sku": "003-TOP-AZU-M",
+      "name": "Top Vanguard blue - Azul - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "003-TOP-AZU-S",
+      "name": "Top Vanguard blue - Azul - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "003-TOP-BLA-L",
+      "name": "Top Vanguard white - Blanco - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "003-TOP-BLA-M",
+      "name": "Top Vanguard white - Blanco - Talle M",
+      "quantity": 5
+    },
+    {
+      "sku": "003-TOP-BLA-S",
+      "name": "Top Vanguard white - Blanco - Talle S",
+      "quantity": 2
+    },
+    {
+      "sku": "003-TOP-NEG-L",
+      "name": "Top Vanguard black - Negro - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "003-TOP-NEG-M",
+      "name": "Top Vanguard black - Negro - Talle M",
+      "quantity": 15
+    },
+    {
+      "sku": "003-TOP-NEG-S",
+      "name": "Top Vanguard black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "003-TOP-ROJ-L",
+      "name": "Top Vanguard red - Rojo - Talle L",
+      "quantity": 5
+    },
+    {
+      "sku": "003-TOP-ROJ-M",
+      "name": "Top Vanguard red - Rojo - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "003-TOP-ROJ-S",
+      "name": "Top Vanguard red - Rojo - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "004-FAL-AZU-L",
+      "name": "Falda Zenith blue - Azul - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "004-FAL-AZU-M",
+      "name": "Falda Zenith blue - Azul - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-FAL-AZU-S",
+      "name": "Falda Zenith blue - Azul - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "004-FAL-BOR-L",
+      "name": "Falda Zenith wine - Bordeaux - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "004-FAL-BOR-M",
+      "name": "Falda Zenith wine - Bordeaux - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-FAL-BOR-S",
+      "name": "Falda Zenith wine - Bordeaux - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "004-FAL-NEG-L",
+      "name": "Falda Zenith black - Negro - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "004-FAL-NEG-M",
+      "name": "Falda Zenith black - Negro - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-FAL-NEG-S",
+      "name": "Falda Zenith black - Negro - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "004-TOP-AZU-L",
+      "name": "Top Zenith blue - Azul - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "004-TOP-AZU-M",
+      "name": "Top Zenith blue - Azul - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-TOP-AZU-S",
+      "name": "Top Zenith blue - Azul - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "004-TOP-BOR-L",
+      "name": "Top Zenith wine - Bordeaux - Talle L",
+      "quantity": 3
+    },
+    {
+      "sku": "004-TOP-BOR-M",
+      "name": "Top Zenith wine - Bordeaux - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-TOP-BOR-S",
+      "name": "Top Zenith wine - Bordeaux - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "004-TOP-NEG-L",
+      "name": "Top Zenith black - Negro - Talle L",
+      "quantity": 2
+    },
+    {
+      "sku": "004-TOP-NEG-M",
+      "name": "Top Zenith black - Negro - Talle M",
+      "quantity": 3
+    },
+    {
+      "sku": "004-TOP-NEG-S",
+      "name": "Top Zenith black - Negro - Talle S",
+      "quantity": 0
+    },
+    {
+      "sku": "005-CAL-BLA-L",
+      "name": "Calza Destiny white - Blanco - Talle L",
+      "quantity": 6
+    },
+    {
+      "sku": "005-CAL-BLA-M",
+      "name": "Calza Destiny white - Blanco - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "005-CAL-BLA-S",
+      "name": "Calza Destiny white - Blanco - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "005-CAL-NEG-L",
+      "name": "Calza Destiny black - Negro - Talle L",
+      "quantity": 8
+    },
+    {
+      "sku": "005-CAL-NEG-M",
+      "name": "Calza Destiny black - Negro - Talle M",
+      "quantity": 12
+    },
+    {
+      "sku": "005-CAL-NEG-S",
+      "name": "Calza Destiny black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "005-SHO-BLA-L",
+      "name": "Short Destiny white - Blanco - Talle L",
+      "quantity": 7
+    },
+    {
+      "sku": "005-SHO-BLA-M",
+      "name": "Short Destiny white - Blanco - Talle M",
+      "quantity": 8
+    },
+    {
+      "sku": "005-SHO-BLA-S",
+      "name": "Short Destiny white - Blanco - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "005-SHO-NEG-L",
+      "name": "Short Destiny black - Negro - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "005-SHO-NEG-M",
+      "name": "Short Destiny black - Negro - Talle M",
+      "quantity": 13
+    },
+    {
+      "sku": "005-SHO-NEG-S",
+      "name": "Short Destiny black - Negro - Talle S",
+      "quantity": 6
+    },
+    {
+      "sku": "005-TOP-BLA-L",
+      "name": "Top Destiny white - Blanco - Talle L",
+      "quantity": 6
+    },
+    {
+      "sku": "005-TOP-BLA-M",
+      "name": "Top Destiny white - Blanco - Talle M",
+      "quantity": 9
+    },
+    {
+      "sku": "005-TOP-BLA-S",
+      "name": "Top Destiny white - Blanco - Talle S",
+      "quantity": 4
+    },
+    {
+      "sku": "005-TOP-NEG-L",
+      "name": "Top Destiny black - Negro - Talle L",
+      "quantity": 9
+    },
+    {
+      "sku": "005-TOP-NEG-M",
+      "name": "Top Destiny black - Negro - Talle M",
+      "quantity": 13
+    },
+    {
+      "sku": "005-TOP-NEG-S",
+      "name": "Top Destiny black - Negro - Talle S",
+      "quantity": 5
+    }
+  ],
+  "size_tables": {
+    "001-CAL": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          89,
+          90,
+          91
+        ],
+        [
+          "Contorno de Cintura",
+          56,
+          60,
+          64
+        ],
+        [
+          "Contorno de Cadera",
+          74,
+          78,
+          82
+        ]
+      ]
+    },
+    "001-CAM": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          40,
+          41,
+          42
+        ],
+        [
+          "Ancho de Hombros",
+          33,
+          34,
+          35
+        ],
+        [
+          "Largo de Manga",
+          66,
+          67,
+          68
+        ],
+        [
+          "Contorno de Busto",
+          80,
+          84,
+          88
+        ],
+        [
+          "Contorno de Ruedo / Cintura",
+          68,
+          72,
+          76
+        ]
+      ]
+    },
+    "001-SHO": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          35,
+          36,
+          37
+        ],
+        [
+          "Contorno de Cintura",
+          56,
+          60,
+          64
+        ],
+        [
+          "Contorno de Cadera",
+          74,
+          78,
+          82
+        ],
+        [
+          "Ruedo / Pierna (Contorno)",
+          41,
+          43,
+          45
+        ]
+      ]
+    },
+    "001-TOP": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          29,
+          30,
+          31
+        ],
+        [
+          "Contorno de Busto",
+          66,
+          70,
+          74
+        ],
+        [
+          "Contorno de Bajo Busto",
+          64,
+          68,
+          72
+        ]
+      ]
+    },
+    "002-CAL": {
+      "headers": [
+        "Medida (cm)",
+        "S (4)",
+        "M (6)",
+        "L (8)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          103,
+          104,
+          105
+        ],
+        [
+          "Contorno de Cintura",
+          57,
+          61,
+          65
+        ],
+        [
+          "Contorno de Cadera",
+          79,
+          83,
+          87
+        ]
+      ]
+    },
+    "002-SHO": {
+      "headers": [
+        "Medida (cm)",
+        "S (4)",
+        "M (6)",
+        "L (8)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          34.5,
+          35.5,
+          36.5
+        ],
+        [
+          "Contorno de Cintura",
+          58,
+          62,
+          66
+        ],
+        [
+          "Contorno de Cadera",
+          76,
+          80,
+          84
+        ]
+      ]
+    },
+    "002-TOP": {
+      "headers": [
+        "Medida (cm)",
+        "S (4)",
+        "M (6)",
+        "L (8)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          30,
+          31,
+          32
+        ],
+        [
+          "Contorno de Busto",
+          67,
+          71,
+          75
+        ],
+        [
+          "Contorno Bajo Busto",
+          58,
+          62,
+          66
+        ]
+      ]
+    },
+    "003-CAM": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          44.5,
+          45.5,
+          46.5
+        ],
+        [
+          "Ancho de Hombros",
+          56.5,
+          58,
+          59.5
+        ],
+        [
+          "Largo de Manga",
+          57,
+          58,
+          59
+        ],
+        [
+          "Contorno de Busto",
+          114,
+          118,
+          122
+        ],
+        [
+          "Contorno de Cintura",
+          79,
+          83,
+          87
+        ]
+      ]
+    },
+    "003-SHO": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          26,
+          27,
+          28
+        ],
+        [
+          "Contorno de Cintura",
+          74,
+          78,
+          82
+        ],
+        [
+          "Contorno de Cadera",
+          112,
+          116,
+          120
+        ]
+      ]
+    },
+    "003-TOP": {
+      "headers": [
+        "Medida (cm)",
+        "S (8)",
+        "M (10)",
+        "L (12)"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          30,
+          31,
+          32
+        ],
+        [
+          "Contorno de Busto",
+          72,
+          76,
+          80
+        ],
+        [
+          "Contorno de Bajo Busto / Cintura",
+          66,
+          70,
+          74
+        ]
+      ]
+    },
+    "004-FAL": {
+      "headers": [
+        "Medida (cm)",
+        "S",
+        "M",
+        "L"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          37,
+          38,
+          39
+        ],
+        [
+          "Contorno de Cintura",
+          64,
+          68,
+          72
+        ],
+        [
+          "Ruedo / Pierna",
+          42,
+          44,
+          46
+        ]
+      ]
+    },
+    "004-TOP": {
+      "headers": [
+        "Medida (cm)",
+        "S",
+        "M",
+        "L"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          32,
+          32.5,
+          33
+        ],
+        [
+          "Contorno de Busto",
+          70,
+          74,
+          78
+        ],
+        [
+          "Contorno de bajo busto",
+          64,
+          68,
+          72
+        ]
+      ]
+    },
+    "005-CAL": {
+      "headers": [
+        "Medida (cm)",
+        "S",
+        "M",
+        "L"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          88,
+          90,
+          92
+        ],
+        [
+          "Contorno de Cintura",
+          54,
+          58,
+          62
+        ],
+        [
+          "Contorno de Cadera",
+          71,
+          75,
+          79
+        ]
+      ]
+    },
+    "005-SHO": {
+      "headers": [
+        "Medida (cm)",
+        "S",
+        "M",
+        "L"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          34,
+          35,
+          36
+        ],
+        [
+          "Contorno de Cintura",
+          54,
+          58,
+          62
+        ],
+        [
+          "Contorno de Cadera",
+          71,
+          75,
+          79
+        ]
+      ]
+    },
+    "005-TOP": {
+      "headers": [
+        "Medida (cm)",
+        "S",
+        "M",
+        "L"
+      ],
+      "rows": [
+        [
+          "Largo Total",
+          31.5,
+          33.5,
+          34.5
+        ],
+        [
+          "Contorno de Busto",
+          69,
+          73,
+          77
+        ],
+        [
+          "Contorno Bajo Busto",
+          60,
+          64,
+          68
+        ]
+      ]
+    }
+  }
+}
+
