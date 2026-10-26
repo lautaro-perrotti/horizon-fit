@@ -2574,11 +2574,27 @@
     return `<p style="white-space: pre-line;">${blocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
   };
 
-  const productDescriptionHtml = (value) => renderSingleParagraphWithBreaks(
-    value,
-    'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.',
-    3
-  );
+  const productDescriptionHtml = (value) => {
+    const fallback = 'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.';
+    const preservedText = normalizeCopyText(value, fallback, true);
+    let blocks = preservedText
+      .split(/\n{2,}/)
+      .map(block => block.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+
+    if (blocks.length <= 1) {
+      const text = normalizeCopyText(value, fallback);
+      const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)
+        ?.map(sentence => sentence.trim())
+        .filter(Boolean) || [];
+      blocks = [];
+      for (let index = 0; index < sentences.length; index += 3) {
+        blocks.push(sentences.slice(index, index + 3).join(' '));
+      }
+    }
+
+    return blocks.map(block => `<p>${escapeHtml(block)}</p>`).join('');
+  };
 
   const careDescriptionHtml = (care = {}) => {
     const defaultText = [
@@ -3522,7 +3538,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
                 <p class="hf-product-item__transfer" hidden></p>
               </div>` : renderProductCardDivider();
 
-  const renderSizeTableHeader = (headers) => headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
+  const renderSizeTableHeader = (headers) => headers.map(header => `<th><span>${escapeHtml(header)}</span></th>`).join('');
 
   const renderSizeTableRows = (rows) => rows.map(row => {
     const cells = Array.isArray(row) ? row : [];

@@ -78,26 +78,27 @@
       </div>
     </section>
 
-    <section class="hf-pdp-view__details" aria-label="Detalle del producto">
-      <div class="hf-pdp-view__tabs hf-pdp-view__tabs--single" role="tablist" aria-label="Información del producto">
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>
-      </div>
-      <div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">
-        <h2 data-product-description-title>Descripción</h2>
-        <div data-product-description></div>
-      </div>
-    </section>
+    <section class="hf-pdp-view__details hf-pdp-view__details-grid" aria-label="Descripción y tabla de talles">
+      <article class="hf-pdp-detail-card hf-pdp-detail-card--description" aria-labelledby="hfPdpDescriptionTitle">
+        <header class="hf-pdp-detail-card__header">
+          <span class="hf-pdp-detail-card__dot" aria-hidden="true"></span>
+          <h2 id="hfPdpDescriptionTitle" data-product-description-title>Descripción</h2>
+        </header>
+        <div class="hf-pdp-detail-card__description-body">
+          <span class="hf-pdp-detail-card__accent" aria-hidden="true"></span>
+          <div class="hf-pdp-detail-card__copy" data-product-description></div>
+        </div>
+      </article>
 
-    <section class="hf-pdp-view__details hf-pdp-view__details--side" aria-label="Tabla de talles">
-      <div class="hf-pdp-view__tabs hf-pdp-view__tabs--single" role="tablist" aria-label="Tabla de talles">
-        <button class="hf-pdp-view__tab hf-pdp-view__tab--static" type="button" role="tab" aria-selected="true">Tabla de talles</button>
-      </div>
-      <div class="hf-pdp-view__panel is-active" data-product-panel="sizes" role="tabpanel">
-        <h2 data-product-size-title>Tabla de talles</h2>
+      <article class="hf-pdp-detail-card hf-pdp-detail-card--sizes" aria-labelledby="hfPdpSizeTitle">
+        <header class="hf-pdp-detail-card__header">
+          <span class="hf-pdp-detail-card__dot" aria-hidden="true"></span>
+          <h2 id="hfPdpSizeTitle" data-product-size-title>Tabla de talles</h2>
+        </header>
         <div class="hf-pdp-view__size-table-scroll">
           <table class="hf-pdp-view__size-table">
             <thead>
-              <tr data-product-size-table-head><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr>
+              <tr data-product-size-table-head><th><span>Talle</span></th><th><span>Busto</span></th><th><span>Cintura</span></th><th><span>Cadera</span></th></tr>
             </thead>
             <tbody data-product-size-table-body>
               <tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr>
@@ -106,24 +107,32 @@
             </tbody>
           </table>
         </div>
-      </div>
+        <p class="hf-pdp-detail-card__size-note">Medidas de la prenda en centímetros. Si estás entre dos talles, te recomendamos elegir el mayor.</p>
+      </article>
     </section>
 
     <section class="hf-pdp-view__details hf-pdp-view__details--mobile-tabs" aria-label="Detalle del producto en mobile">
       <div class="hf-pdp-view__tabs" role="tablist" aria-label="Información del producto">
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">Descripción</button>
-        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">Tabla de talles</button>
+        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="true" data-product-tab="description">
+          <span class="hf-pdp-detail-card__dot" aria-hidden="true"></span>
+          <span>Descripción</span>
+        </button>
+        <button class="hf-pdp-view__tab" type="button" role="tab" aria-selected="false" data-product-tab="sizes">
+          <span class="hf-pdp-detail-card__dot" aria-hidden="true"></span>
+          <span>Tabla de talles</span>
+        </button>
       </div>
       <div class="hf-pdp-view__panel is-active" data-product-panel="description" role="tabpanel">
-        <h2 data-product-description-title>Descripción</h2>
-        <div data-product-description></div>
+        <div class="hf-pdp-detail-card__description-body">
+          <span class="hf-pdp-detail-card__accent" aria-hidden="true"></span>
+          <div class="hf-pdp-detail-card__copy" data-product-description></div>
+        </div>
       </div>
       <div class="hf-pdp-view__panel" data-product-panel="sizes" role="tabpanel">
-        <h2 data-product-size-title>Tabla de talles</h2>
         <div class="hf-pdp-view__size-table-scroll">
           <table class="hf-pdp-view__size-table">
             <thead>
-              <tr data-product-size-table-head><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr>
+              <tr data-product-size-table-head><th><span>Talle</span></th><th><span>Busto</span></th><th><span>Cintura</span></th><th><span>Cadera</span></th></tr>
             </thead>
             <tbody data-product-size-table-body>
               <tr><td>S</td><td>84-90</td><td>64-70</td><td>90-96</td></tr>
@@ -132,6 +141,7 @@
             </tbody>
           </table>
         </div>
+        <p class="hf-pdp-detail-card__size-note">Medidas de la prenda en centímetros. Si estás entre dos talles, te recomendamos elegir el mayor.</p>
       </div>
     </section>
 
