@@ -3281,7 +3281,7 @@
         margin: 0;
         padding: 0 0 10px;
         font-family: var(--hf-pdp-description-font, 'LeagueSpartan', var(--font-sans));
-        font-size: var(--hf-pdp-description-size, 13.5px);
+        font-size: var(--hf-pdp-description-size, 14px);
         font-weight: var(--hf-pdp-description-weight, 400);
         line-height: 1.65;
         white-space: normal !important;
@@ -3339,14 +3339,12 @@
 
       .hf-pdp-view__size-table td:first-child {
         color: #1f1a24;
-        font-size: 14px;
         font-weight: 500;
         white-space: normal;
       }
 
       .hf-pdp-view__size-table td:not(:first-child) {
         color: #3c3542;
-        font-size: 14.5px;
         font-variant-numeric: tabular-nums;
       }
 
@@ -3405,7 +3403,7 @@
         background: transparent;
         color: #6b6272;
         font-family: 'Archivo', 'BlauerNue', var(--font-sans);
-        font-size: clamp(16px, 4.6vw, 18px);
+        font-size: 13px;
         font-style: italic;
         font-weight: 700;
         line-height: 1.1;
@@ -3486,12 +3484,12 @@
         }
 
         .hf-pdp-detail-card__copy p {
-          font-size: var(--hf-pdp-description-size, 13.5px);
-          line-height: 1.65;
+          font-size: min(var(--hf-pdp-description-size, 14px), 15px);
+          line-height: 1.58;
         }
 
         .hf-pdp-view__size-table {
-          font-size: 14px;
+          font-size: 13px;
         }
 
         .hf-pdp-view__size-table th,
@@ -3513,7 +3511,7 @@
           min-width: 30px;
           height: 30px;
           padding-inline: 6px;
-          font-size: 13px;
+          font-size: 12px;
         }
 
         .hf-pdp-view__size-table th:first-child span {
@@ -3522,7 +3520,7 @@
 
         .hf-pdp-detail-card__size-note {
           padding: 11px 16px;
-          font-size: 12.5px;
+          font-size: 12px;
         }
 
         .hf-pdp-view__details--mobile-tabs {
@@ -5722,7 +5720,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=pdp-type-20261026"></script>
+  <script src="/design-system/page-builder.js?v=pdp-details-20261026"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
