@@ -3466,7 +3466,7 @@
 
   const normalizeSizeTable = (product) => {
     const sizeTable = product?.sizeTable || {};
-    return {
+    const normalized = {
       title: sizeTable.title || product?.sizeTableTitle || DEFAULT_SIZE_TABLE.title,
       headers: Array.isArray(sizeTable.headers) && sizeTable.headers.length
         ? sizeTable.headers
@@ -3479,6 +3479,23 @@
           ? product.sizeTableRows
           : DEFAULT_SIZE_TABLE.rows
     };
+
+    const productName = String(product?.name || product?.title || '');
+    const isDynamicOrVanguardJacket = /campera\s+(dynamic|vanguard)/i.test(productName);
+
+    if (isDynamicOrVanguardJacket) {
+      normalized.headers = normalized.headers.map((header, index) => (
+        index === 0
+          ? header
+          : String(header).replace(/\s*\([^)]*\)\s*$/, '').trim()
+      ));
+      normalized.rows = normalized.rows.filter((row) => {
+        const label = String(row?.[0] || '').trim().toLowerCase();
+        return label !== 'ancho de hombros' && label !== 'largo de manga';
+      });
+    }
+
+    return normalized;
   };
 
   const renderLookItem = (item) => {

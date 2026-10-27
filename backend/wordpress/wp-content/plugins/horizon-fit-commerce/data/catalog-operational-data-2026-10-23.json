@@ -818,9 +818,9 @@
     "001-CAM": {
       "headers": [
         "Medida (cm)",
-        "S (8)",
-        "M (10)",
-        "L (12)"
+        "S",
+        "M",
+        "L"
       ],
       "rows": [
         [
@@ -828,18 +828,6 @@
           40,
           41,
           42
-        ],
-        [
-          "Ancho de Hombros",
-          33,
-          34,
-          35
-        ],
-        [
-          "Largo de Manga",
-          66,
-          67,
-          68
         ],
         [
           "Contorno de Busto",
@@ -1004,9 +992,9 @@
     "003-CAM": {
       "headers": [
         "Medida (cm)",
-        "S (8)",
-        "M (10)",
-        "L (12)"
+        "S",
+        "M",
+        "L"
       ],
       "rows": [
         [
@@ -1014,18 +1002,6 @@
           44.5,
           45.5,
           46.5
-        ],
-        [
-          "Ancho de Hombros",
-          56.5,
-          58,
-          59.5
-        ],
-        [
-          "Largo de Manga",
-          57,
-          58,
-          59
         ],
         [
           "Contorno de Busto",
