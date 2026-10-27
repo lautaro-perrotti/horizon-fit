@@ -3482,6 +3482,7 @@
 
     const productName = String(product?.name || product?.title || '');
     const isDynamicOrVanguardJacket = /campera\s+(dynamic|vanguard)/i.test(productName);
+    const isDynamicShort = /short\s+dynamic/i.test(productName);
 
     normalized.headers = normalized.headers.map((header, index) => (
       index === 0
@@ -3494,6 +3495,12 @@
         const label = String(row?.[0] || '').trim().toLowerCase();
         return label !== 'ancho de hombros' && label !== 'largo de manga';
       });
+    }
+
+    if (isDynamicShort) {
+      normalized.rows = normalized.rows.filter((row) => (
+        String(row?.[0] || '').trim().toLowerCase() !== 'ruedo / pierna (contorno)'
+      ));
     }
 
     return normalized;
