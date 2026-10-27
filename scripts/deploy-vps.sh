@@ -42,9 +42,10 @@ docker compose up -d --remove-orphans
 # artefacto; ambos necesitan poder reemplazarlo al regenerar SEO.
 chmod 666 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
 
-# Los archivos montados cambian sin que Compose recree el contenedor. Apache
-# necesita releer RewriteMap y cualquier ajuste de rutas, sin cortar servicio.
-docker exec horizon-fit-spa httpd -k graceful
+# Git puede reemplazar el inode de spa.conf. Un simple reload conservaría el
+# archivo antiguo del bind mount, por eso se recrea únicamente el storefront.
+# WordPress, la base y los procesos de pedidos permanecen intactos.
+docker compose up -d --no-deps --force-recreate spa
 
 for _ in {1..30}; do
   if docker inspect -f '{{.State.Running}}' horizon-fit-wpcli 2>/dev/null | grep -q true; then
