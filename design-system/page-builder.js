@@ -3483,12 +3483,13 @@
     const productName = String(product?.name || product?.title || '');
     const isDynamicOrVanguardJacket = /campera\s+(dynamic|vanguard)/i.test(productName);
 
+    normalized.headers = normalized.headers.map((header, index) => (
+      index === 0
+        ? header
+        : String(header).replace(/\s*\([^)]*\)\s*$/, '').trim()
+    ));
+
     if (isDynamicOrVanguardJacket) {
-      normalized.headers = normalized.headers.map((header, index) => (
-        index === 0
-          ? header
-          : String(header).replace(/\s*\([^)]*\)\s*$/, '').trim()
-      ));
       normalized.rows = normalized.rows.filter((row) => {
         const label = String(row?.[0] || '').trim().toLowerCase();
         return label !== 'ancho de hombros' && label !== 'largo de manga';
