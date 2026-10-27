@@ -38,8 +38,9 @@ docker compose up -d --remove-orphans
 
 # Git crea el mapa con el usuario del deploy. WordPress debe poder renovarlo
 # cuando cambie el slug de un producto desde el panel.
-chown 33:33 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
-chmod 664 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
+# Los contenedores WordPress (uid 33) y WP-CLI (uid 82) comparten este único
+# artefacto; ambos necesitan poder reemplazarlo al regenerar SEO.
+chmod 666 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
 
 for _ in {1..30}; do
   if docker inspect -f '{{.State.Running}}' horizon-fit-wpcli 2>/dev/null | grep -q true; then
