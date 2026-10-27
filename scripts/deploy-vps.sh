@@ -4,6 +4,7 @@ set -Eeuo pipefail
 REPO_DIR="${HF_REPO_DIR:-/root/horizon-fit}"
 BRANCH="${HF_DEPLOY_BRANCH:-main}"
 CACHE_FILE="backend/wordpress/wp-content/uploads/horizon-fit-cache/featured-products.json"
+PRODUCT_REDIRECT_MAP="backend/wordpress/wp-content/uploads/horizon-fit-seo/product-redirects.map"
 
 exec 9>/run/lock/horizon-fit-deploy.lock
 flock -n 9 || exit 0
@@ -20,6 +21,7 @@ fi
 # Esta caché es regenerada por WordPress y por eso siempre aparece modificada
 # en producción. Es el único cambio local que el despliegue puede descartar.
 git restore -- "$CACHE_FILE" 2>/dev/null || true
+git restore -- "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
 
 # `git merge --ff-only` conserva modificaciones operativas de la VPS (uploads,
 # logs, etc.). Si un commit remoto intentara pisar alguna, Git aborta antes de

@@ -1694,6 +1694,8 @@ function hf_search_regenerate_commerce_artifacts() {
         'order' => 'DESC',
     ));
 
+    hf_search_write_product_redirect_map($products, $seo_dir);
+
     foreach ($products as $product) {
         if (function_exists('hf_storefront_is_duplicate_copy_product') && hf_storefront_is_duplicate_copy_product($product)) {
             continue;
@@ -1721,6 +1723,119 @@ function hf_search_regenerate_commerce_artifacts() {
 
     return hf_merchant_write_artifacts($products);
 }
+
+/**
+ * Primer historial conocido, anterior a que se empezaran a registrar cambios
+ * de slug automáticamente. Se vincula por ID para que cada alias siga siempre
+ * a la URL canónica vigente del mismo producto.
+ */
+function hf_search_seed_product_redirects() {
+    return array(
+        'calsa-lisa-larga-negra'            => 133,
+        'calsa-lisa-larga-verde'            => 142,
+        'calsa-lisa-larga-celeste'          => 154,
+        'calsa-lisa-larga-blanca'           => 162,
+        'calsa-lisa-azul-larga'              => 172,
+        'calsa-larga-tiras-blancas-negra'    => 454,
+        'calsa-larga-tiras-blancas-celeste'  => 463,
+        'calsa-larga-tiras-blancas-rosa'     => 477,
+        'calsa-rejilla-negra'                => 510,
+        'calsa-rejilla-blanca'               => 527,
+    );
+}
+
+function hf_search_write_product_redirect_map($products, $seo_dir = '') {
+    if (! is_array($products)) {
+        return false;
+    }
+
+    if ($seo_dir === '') {
+        $seo_dir = function_exists('hf_storefront_seo_dir')
+            ? hf_storefront_seo_dir()
+            : trailingslashit(wp_upload_dir()['basedir']) . 'horizon-fit-seo';
+    }
+
+    wp_mkdir_p($seo_dir);
+
+    $products_by_id = array();
+    $current_slugs = array();
+    foreach ($products as $product) {
+        if (! is_object($product) || ! method_exists($product, 'get_id') || ! method_exists($product, 'get_slug')) {
+            continue;
+        }
+        $product_id = (int) $product->get_id();
+        $slug = sanitize_title((string) $product->get_slug());
+        if ($product_id <= 0 || $slug === '') {
+            continue;
+        }
+        $products_by_id[$product_id] = $product;
+        $current_slugs[$slug] = $product_id;
+    }
+
+    $aliases_by_id = array();
+    foreach (hf_search_seed_product_redirects() as $old_slug => $product_id) {
+        $aliases_by_id[(int) $product_id][] = $old_slug;
+    }
+
+    foreach ($products_by_id as $product_id => $product) {
+        $history = get_post_meta($product_id, '_hf_previous_product_slugs', true);
+        if (is_array($history)) {
+            $aliases_by_id[$product_id] = array_merge($aliases_by_id[$product_id] ?? array(), $history);
+        }
+
+        $wordpress_history = get_post_meta($product_id, '_wp_old_slug', false);
+        if (is_array($wordpress_history)) {
+            $aliases_by_id[$product_id] = array_merge($aliases_by_id[$product_id] ?? array(), $wordpress_history);
+        }
+    }
+
+    $redirects = array();
+    foreach ($aliases_by_id as $product_id => $aliases) {
+        if (! isset($products_by_id[$product_id])) {
+            continue;
+        }
+        $current_slug = sanitize_title((string) $products_by_id[$product_id]->get_slug());
+        foreach (array_unique(array_map('sanitize_title', $aliases)) as $old_slug) {
+            if ($old_slug === '' || $old_slug === $current_slug || isset($current_slugs[$old_slug])) {
+                continue;
+            }
+            $redirects[$old_slug] = '/producto/' . $current_slug . '/';
+        }
+    }
+
+    ksort($redirects, SORT_STRING);
+    $lines = array();
+    foreach ($redirects as $old_slug => $target) {
+        $lines[] = $old_slug . ' ' . $target;
+    }
+
+    return false !== file_put_contents(
+        trailingslashit($seo_dir) . 'product-redirects.map',
+        implode("\n", $lines) . ($lines ? "\n" : ''),
+        LOCK_EX
+    );
+}
+
+add_action('post_updated', static function ($post_id, $post_after, $post_before) {
+    if (
+        ! $post_after instanceof WP_Post
+        || ! $post_before instanceof WP_Post
+        || $post_after->post_type !== 'product'
+        || $post_before->post_name === ''
+        || $post_before->post_name === $post_after->post_name
+    ) {
+        return;
+    }
+
+    $history = get_post_meta($post_id, '_hf_previous_product_slugs', true);
+    $history = is_array($history) ? $history : array();
+    $history[] = sanitize_title($post_before->post_name);
+    $history = array_values(array_unique(array_filter($history)));
+    update_post_meta($post_id, '_hf_previous_product_slugs', $history);
+
+    // El cambio de URL queda protegido en la misma operación del guardado.
+    hf_search_regenerate_commerce_artifacts();
+}, 30, 3);
 
 add_action('hf_regenerate_storefront_seo_cache_event', 'hf_search_regenerate_commerce_artifacts', 20);
 add_action('updated_option', static function ($option) {
