@@ -2574,8 +2574,39 @@
     return `<p style="white-space: pre-line;">${blocks.map(block => escapeHtml(block)).join('\n\n')}</p>`;
   };
 
+  const renderProductDescriptionInlineHtml = (node) => {
+    if (!node) return '';
+    if (node.nodeType === 3) {
+      return escapeHtml(String(node.textContent || '').replace(/\s+/g, ' '));
+    }
+    if (node.nodeType !== 1) return '';
+
+    const tag = String(node.tagName || '').toLowerCase();
+    if (tag === 'script' || tag === 'style') return '';
+
+    const content = Array.from(node.childNodes)
+      .map(renderProductDescriptionInlineHtml)
+      .join('');
+
+    if (tag === 'strong' || tag === 'b') return `<strong>${content}</strong>`;
+    if (tag === 'em' || tag === 'i') return `<em>${content}</em>`;
+    return content;
+  };
+
   const productDescriptionHtml = (value) => {
     const fallback = 'Diseño, textura y comodidad en equilibrio. Este producto está pensado para acompañar cada movimiento sin perder estilo ni confort.';
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = decodeEntities(value || fallback);
+    const paragraphs = Array.from(wrapper.querySelectorAll('p'));
+
+    if (paragraphs.length) {
+      return paragraphs
+        .map(paragraph => Array.from(paragraph.childNodes).map(renderProductDescriptionInlineHtml).join('').trim())
+        .filter(Boolean)
+        .map(paragraph => `<p>${paragraph}</p>`)
+        .join('');
+    }
+
     const preservedText = normalizeCopyText(value, fallback, true);
     let blocks = preservedText
       .split(/\n{2,}/)
