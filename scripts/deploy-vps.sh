@@ -42,6 +42,10 @@ docker compose up -d --remove-orphans
 # artefacto; ambos necesitan poder reemplazarlo al regenerar SEO.
 chmod 666 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
 
+# Los archivos montados cambian sin que Compose recree el contenedor. Apache
+# necesita releer RewriteMap y cualquier ajuste de rutas, sin cortar servicio.
+docker exec horizon-fit-spa httpd -k graceful
+
 for _ in {1..30}; do
   if docker inspect -f '{{.State.Running}}' horizon-fit-wpcli 2>/dev/null | grep -q true; then
     break
