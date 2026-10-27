@@ -36,6 +36,11 @@ fi
 # código se ven inmediatamente a través de bind mounts de directorio.
 docker compose up -d --remove-orphans
 
+# Git crea el mapa con el usuario del deploy. WordPress debe poder renovarlo
+# cuando cambie el slug de un producto desde el panel.
+chown 33:33 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
+chmod 664 "$PRODUCT_REDIRECT_MAP" 2>/dev/null || true
+
 for _ in {1..30}; do
   if docker inspect -f '{{.State.Running}}' horizon-fit-wpcli 2>/dev/null | grep -q true; then
     break
