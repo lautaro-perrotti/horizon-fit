@@ -81,6 +81,10 @@ function hf_schedule_featured_products_cache_regeneration_from_meta($meta_id, $o
 }
 
 function hf_run_scheduled_featured_products_cache_regeneration() {
+  if (function_exists('hf_framework_config') && hf_framework_config() && empty($GLOBALS['hf_framework_rebuilding'])) {
+    hf_framework_schedule_rebuild();
+    return;
+  }
   if (empty($GLOBALS['hf_featured_products_cache_regeneration_scheduled'])) {
     return;
   }
@@ -144,6 +148,13 @@ function hf_featured_products_ensure_cors($cache_dir) {
     . "  Header set Pragma \"no-cache\"\n"
     . "  Header set Expires \"0\"\n"
     . "</IfModule>\n";
+  if (function_exists('hf_framework_config') && hf_framework_config()) {
+    $config = hf_framework_config();
+    $ttl = max(0, min(300, (int)($config['cache']['maxAge'] ?? 30)));
+    $rules = str_replace('no-cache, no-store, must-revalidate, max-age=0', 'public, max-age=' . $ttl . ', stale-while-revalidate=15', $rules);
+    $rules = str_replace('Header set Pragma "no-cache"', 'Header unset Pragma', $rules);
+    $rules = str_replace('Header set Access-Control-', 'Header always set Access-Control-', $rules);
+  }
   if (!file_exists($htaccess) || file_get_contents($htaccess) !== $rules) {
     @file_put_contents($htaccess, $rules);
     @chmod($htaccess, 0666);
@@ -167,10 +178,18 @@ function hf_featured_products_format_payment_amount($amount) {
 }
 
 function hf_featured_products_default_installments_count() {
+  if (function_exists('hf_framework_installments_count') && function_exists('hf_framework_config') && hf_framework_config()) {
+    return hf_framework_installments_count();
+  }
+  if (function_exists('hf_framework_config') && hf_framework_config()) {
+    $raw = hf_framework_config()['payments']['installments'] ?? 0;
+    return is_array($raw) ? 0 : (int) $raw;
+  }
   return 6;
 }
 
 function hf_catalog_display_name($name) {
+  if (function_exists('hf_framework_config') && hf_framework_config()) return trim((string)$name);
   $name = trim((string) $name);
   $name = preg_replace('/\bCalsa\b/u', 'Calza', $name);
   $name = preg_replace('/\bcalsa\b/u', 'calza', $name);
@@ -196,6 +215,8 @@ function hf_featured_products_is_duplicate_copy_product($product) {
 }
 
 function hf_featured_products_default_transfer_discount_percent() {
+  $config = function_exists('hf_framework_config') ? hf_framework_config() : array();
+  if ($config) return max(0, min(100, (float) ($config['payments']['transferDiscountPercent'] ?? 0)));
   return 10;
 }
 
@@ -220,35 +241,44 @@ function hf_featured_products_get_payment_number_meta($product_id, $parent_id, $
 }
 
 function hf_featured_products_get_installments_text($price, $product_id, $parent_id = 0) {
-  $installments_count = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_installments_count',
-    hf_featured_products_default_installments_count()
-  );
+  $configured = function_exists('hf_framework_config') && hf_framework_config();
+  $installments_count = $configured
+    ? hf_featured_products_default_installments_count()
+    : hf_featured_products_get_payment_number_meta(
+      $product_id,
+      $parent_id,
+      '_hf_installments_count',
+      hf_featured_products_default_installments_count()
+    );
 
   if ($installments_count && $installments_count > 0 && is_numeric($price) && (float) $price > 0) {
     $installment_amount = (float) $price / $installments_count;
     $installments_label = (int) $installments_count === 1 ? 'cuota' : 'cuotas';
-
-    return hf_featured_products_format_payment_amount($installment_amount)
+    $text = hf_featured_products_format_payment_amount($installment_amount)
       . ' en '
       . (int) $installments_count
       . ' '
-      . $installments_label
-      . ' sin interés';
+      . $installments_label;
+    if ($configured) {
+      $suffix = trim((string) (hf_framework_config()['payments']['installmentsSuffix'] ?? ''));
+      return $suffix !== '' ? ($text . ' ' . $suffix) : $text;
+    }
+    return $text . ' sin interés';
   }
 
   return '';
 }
 
 function hf_featured_products_get_transfer_text($price, $product_id, $parent_id = 0) {
-  $transfer_discount_percent = hf_featured_products_get_payment_number_meta(
-    $product_id,
-    $parent_id,
-    '_hf_transfer_discount_percent',
-    hf_featured_products_default_transfer_discount_percent()
-  );
+  $configured = function_exists('hf_framework_config') && hf_framework_config();
+  $transfer_discount_percent = $configured
+    ? hf_featured_products_default_transfer_discount_percent()
+    : hf_featured_products_get_payment_number_meta(
+      $product_id,
+      $parent_id,
+      '_hf_transfer_discount_percent',
+      hf_featured_products_default_transfer_discount_percent()
+    );
 
   if ($transfer_discount_percent !== null && $transfer_discount_percent > 0 && is_numeric($price) && (float) $price > 0) {
     $transfer_price = (float) $price * (1 - ($transfer_discount_percent / 100));
@@ -783,7 +813,9 @@ function hf_regenerate_product_cat_cache($cat_slug) {
   // completos y necesitan mantener ese orden (conjunto por conjunto), no el
   // orden por fecha de publicación. Se ordenan por menu_order (asignado al
   // armar la categoría) en vez de por fecha.
-  $manual_order_cats = ['basicos', 'diseno', 'urbano', 'prints'];
+  $manual_order_cats = (function_exists('hf_framework_config') && hf_framework_config())
+    ? []
+    : ['basicos', 'diseno', 'urbano', 'prints'];
   $orderby = in_array($cat_slug, $manual_order_cats, true) ? 'menu_order' : 'date';
   $order   = in_array($cat_slug, $manual_order_cats, true) ? 'ASC' : 'DESC';
 

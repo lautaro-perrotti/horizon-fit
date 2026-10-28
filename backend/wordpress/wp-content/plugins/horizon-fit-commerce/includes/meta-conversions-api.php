@@ -156,13 +156,20 @@ function hf_meta_capi_custom_data(WC_Order $order) {
     );
 }
 
+function hf_meta_capi_event_source_url(WC_Order $order) {
+    $origin = function_exists('hf_framework_origin') ? hf_framework_origin() : 'https://horizonfit.com.ar';
+    $origin = rtrim((string) $origin, '/');
+    $path = '/checkout/pedido-recibido/?order=' . $order->get_id();
+    return $origin === '' ? $path : $origin . $path;
+}
+
 function hf_meta_capi_purchase_event(WC_Order $order) {
     $paid_at = $order->get_date_paid();
     return array(
         'event_name' => 'Purchase',
         'event_time' => $paid_at ? $paid_at->getTimestamp() : time(),
         'event_id' => 'hf-order-' . $order->get_id(),
-        'event_source_url' => 'https://horizonfit.com.ar/checkout/pedido-recibido/?order=' . $order->get_id(),
+        'event_source_url' => hf_meta_capi_event_source_url($order),
         'action_source' => 'website',
         'user_data' => hf_meta_capi_user_data($order),
         'custom_data' => hf_meta_capi_custom_data($order),

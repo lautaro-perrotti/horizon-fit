@@ -103,6 +103,26 @@ function hf_commerce_subscribe_newsletter($email, $source = 'footer', $order_id 
     return array('subscriber_id' => (int) $subscriber_id, 'created' => true);
 }
 
+function hf_commerce_newsletter_success_message() {
+    $brand = function_exists('hf_framework_name') ? hf_framework_name() : 'Horizon Fit';
+    if (function_exists('hf_framework_configured') ? hf_framework_configured() : (function_exists('hf_framework_config') && hf_framework_config())) {
+        $configured = function_exists('hf_framework_config') ? hf_framework_config() : array();
+        $copy = trim((string) ($configured['newsletter']['successMessage'] ?? ''));
+        if ($copy !== '') {
+            return $copy;
+        }
+        if ($brand !== '') {
+            return sprintf(
+                /* translators: %s: store name */
+                __('¡Listo! Ya estás suscripta/o a las novedades de %s.', 'horizon-fit-commerce'),
+                $brand
+            );
+        }
+        return __('¡Listo! Ya estás suscripta/o a las novedades.', 'horizon-fit-commerce');
+    }
+    return __('¡Listo! Ya estás suscripta/o a las novedades de Horizon Fit.', 'horizon-fit-commerce');
+}
+
 function hf_commerce_newsletter_subscribe_rest(WP_REST_Request $request) {
     // Honeypot silencioso para bots. Los usuarios reales nunca completan este campo.
     if (trim((string) $request->get_param('company')) !== '') {
@@ -133,7 +153,7 @@ function hf_commerce_newsletter_subscribe_rest(WP_REST_Request $request) {
         'created'          => (bool) $result['created'],
         'alreadySubscribed' => ! $result['created'],
         'message'          => $result['created']
-            ? __('¡Listo! Ya estás suscripta/o a las novedades de Horizon Fit.', 'horizon-fit-commerce')
+            ? hf_commerce_newsletter_success_message()
             : __('Ese email ya estaba suscripto a nuestras novedades.', 'horizon-fit-commerce'),
     ));
     $response->set_status($result['created'] ? 201 : 200);
