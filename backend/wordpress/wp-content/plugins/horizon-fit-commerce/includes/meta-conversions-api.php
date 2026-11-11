@@ -24,9 +24,17 @@ function hf_meta_capi_settings() {
     return is_array($saved) ? $saved : array();
 }
 
+function hf_meta_tracking_provider() {
+    $settings = hf_meta_capi_settings();
+    $provider = (string) ($settings['meta_tracking_provider'] ?? 'custom');
+    return in_array($provider, array('custom', 'official'), true) ? $provider : 'custom';
+}
+
 function hf_meta_capi_is_configured() {
     $settings = hf_meta_capi_settings();
-    return ! empty($settings['meta_pixel_id']) && ! empty($settings['meta_capi_access_token']);
+    return hf_meta_tracking_provider() === 'custom'
+        && ! empty($settings['meta_pixel_id'])
+        && ! empty($settings['meta_capi_access_token']);
 }
 
 function hf_meta_capi_hash($value, $kind = 'text') {

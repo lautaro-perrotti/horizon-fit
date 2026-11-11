@@ -72,6 +72,7 @@ function hf_storefront_tracking_settings_defaults() {
         'meta_pixel_id' => '',
         'meta_capi_access_token' => '',
         'meta_capi_test_event_code' => '',
+        'meta_tracking_provider' => 'custom',
     );
 }
 
@@ -91,6 +92,9 @@ function hf_storefront_tracking_settings() {
         // never writes these values to the public JSON consumed by the SPA.
         'meta_capi_access_token' => trim((string) ($saved['meta_capi_access_token'] ?? $defaults['meta_capi_access_token'])),
         'meta_capi_test_event_code' => sanitize_text_field((string) ($saved['meta_capi_test_event_code'] ?? $defaults['meta_capi_test_event_code'])),
+        'meta_tracking_provider' => in_array(($saved['meta_tracking_provider'] ?? $defaults['meta_tracking_provider']), array('custom', 'official'), true)
+            ? $saved['meta_tracking_provider']
+            : $defaults['meta_tracking_provider'],
     );
 }
 
