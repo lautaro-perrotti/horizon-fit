@@ -85,6 +85,10 @@ function hf_storefront_tracking_settings() {
     $defaults = hf_storefront_tracking_settings_defaults();
     $saved = get_option('hf_tracking_settings', array());
     $saved = is_array($saved) ? $saved : array();
+    $meta_tracking_provider = (string) ($saved['meta_tracking_provider'] ?? $defaults['meta_tracking_provider']);
+    if (! in_array($meta_tracking_provider, array('custom', 'official'), true)) {
+        $meta_tracking_provider = $defaults['meta_tracking_provider'];
+    }
 
     return array(
         'meta_pixel_id' => hf_storefront_normalize_meta_pixel_id($saved['meta_pixel_id'] ?? $defaults['meta_pixel_id']),
@@ -92,9 +96,7 @@ function hf_storefront_tracking_settings() {
         // never writes these values to the public JSON consumed by the SPA.
         'meta_capi_access_token' => trim((string) ($saved['meta_capi_access_token'] ?? $defaults['meta_capi_access_token'])),
         'meta_capi_test_event_code' => sanitize_text_field((string) ($saved['meta_capi_test_event_code'] ?? $defaults['meta_capi_test_event_code'])),
-        'meta_tracking_provider' => in_array(($saved['meta_tracking_provider'] ?? $defaults['meta_tracking_provider']), array('custom', 'official'), true)
-            ? $saved['meta_tracking_provider']
-            : $defaults['meta_tracking_provider'],
+        'meta_tracking_provider' => $meta_tracking_provider,
     );
 }
 
