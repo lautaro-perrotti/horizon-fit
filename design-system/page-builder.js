@@ -5801,7 +5801,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
     if (images[0] && mainImage) {
       mainImage.src = images[0].url;
       mainImage.alt = images[0].alt || product.name || '';
-      mainMedia?.setAttribute('aria-label', `Ampliar foto 1 de ${images.length}`);
       mainImage.loading = 'eager';
       mainImage.decoding = 'async';
       mainImage.fetchPriority = 'high';
@@ -5842,126 +5841,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
     });
 
     const thumbs = $('[data-product-thumbs]');
-    const lightbox = $('[data-product-lightbox]');
-    const lightboxStage = $('[data-lightbox-stage]');
-    const lightboxImage = $('[data-lightbox-image]');
-    const lightboxCounter = $('[data-lightbox-counter]');
-    const lightboxPrev = $('[data-lightbox-prev]');
-    const lightboxNext = $('[data-lightbox-next]');
-    const lightboxCloseButtons = $$('[data-lightbox-close]');
-    const lightboxZoomIn = $('[data-lightbox-zoom-in]');
-    const lightboxZoomOut = $('[data-lightbox-zoom-out]');
-    let selectedImageIndex = 0;
-    let lightboxScale = 1;
-    let lightboxOffsetX = 0;
-    let lightboxOffsetY = 0;
-    let lightboxPointerId = null;
-    let lightboxDragStartX = 0;
-    let lightboxDragStartY = 0;
-    let lightboxStartOffsetX = 0;
-    let lightboxStartOffsetY = 0;
-    let lightboxPreviousFocus = null;
-
-    const updateLightboxTransform = () => {
-      if (!lightboxImage) return;
-      lightboxImage.style.transform = `translate3d(${lightboxOffsetX}px, ${lightboxOffsetY}px, 0) scale(${lightboxScale})`;
-      lightboxStage?.classList.toggle('is-zoomed', lightboxScale > 1);
-    };
-
-    const setLightboxZoom = (scale) => {
-      lightboxScale = Math.min(3, Math.max(1, scale));
-      if (lightboxScale === 1) {
-        lightboxOffsetX = 0;
-        lightboxOffsetY = 0;
-      }
-      updateLightboxTransform();
-    };
-
-    const setLightboxImage = (idx) => {
-      if (!images.length || !lightboxImage) return;
-      selectedImageIndex = (idx + images.length) % images.length;
-      const image = images[selectedImageIndex];
-      lightboxImage.src = image.url;
-      lightboxImage.alt = `${product.name || 'Producto'} foto ${selectedImageIndex + 1}`;
-      if (lightboxCounter) lightboxCounter.textContent = `${selectedImageIndex + 1} / ${images.length}`;
-      if (lightboxPrev) lightboxPrev.hidden = images.length < 2;
-      if (lightboxNext) lightboxNext.hidden = images.length < 2;
-      setLightboxZoom(1);
-    };
-
-    const openLightbox = () => {
-      if (!lightbox || !images.length) return;
-      lightboxPreviousFocus = document.activeElement;
-      setLightboxImage(selectedImageIndex);
-      lightbox.hidden = false;
-      document.body.classList.add('hf-lightbox-open');
-      lightbox.querySelector('.hf-pdp-lightbox__close')?.focus();
-    };
-
-    const closeLightbox = () => {
-      if (!lightbox) return;
-      lightbox.hidden = true;
-      document.body.classList.remove('hf-lightbox-open');
-      lightboxPreviousFocus?.focus?.();
-      lightboxPreviousFocus = null;
-    };
-
-    const setMainImage = (image, idx) => {
-      selectedImageIndex = idx;
-      if (mainImage) {
-        mainMedia?.classList.add('is-changing');
-        mainImage.src = image.url;
-        mainImage.alt = `${product.name || 'Producto'} foto ${idx + 1}`;
-        mainMedia?.setAttribute('aria-label', `Ampliar foto ${idx + 1} de ${images.length}`);
-        window.setTimeout(() => mainMedia?.classList.remove('is-changing'), 180);
-      }
-      if (lookImage) {
-        lookImage.src = image.url;
-        lookImage.alt = `${product.name || 'Producto'} look principal`;
-      }
-      $$('.hf-pdp-view__thumb').forEach(item => item.setAttribute('aria-current', 'false'));
-      $$('.hf-pdp-view__thumb')[idx]?.setAttribute('aria-current', 'true');
-      if (lightbox && !lightbox.hidden) setLightboxImage(idx);
-    };
-
-    mainMedia?.addEventListener('click', openLightbox);
-    lightboxCloseButtons.forEach(button => button.addEventListener('click', closeLightbox));
-    lightboxPrev?.addEventListener('click', () => setLightboxImage(selectedImageIndex - 1));
-    lightboxNext?.addEventListener('click', () => setLightboxImage(selectedImageIndex + 1));
-    lightboxZoomIn?.addEventListener('click', () => setLightboxZoom(lightboxScale + 0.5));
-    lightboxZoomOut?.addEventListener('click', () => setLightboxZoom(lightboxScale - 0.5));
-    lightboxImage?.addEventListener('click', () => setLightboxZoom(lightboxScale > 1 ? 1 : 2));
-    lightboxStage?.addEventListener('wheel', (event) => {
-      event.preventDefault();
-      setLightboxZoom(lightboxScale + (event.deltaY < 0 ? 0.25 : -0.25));
-    }, { passive: false });
-    lightboxStage?.addEventListener('pointerdown', (event) => {
-      if (lightboxScale <= 1) return;
-      lightboxPointerId = event.pointerId;
-      lightboxDragStartX = event.clientX;
-      lightboxDragStartY = event.clientY;
-      lightboxStartOffsetX = lightboxOffsetX;
-      lightboxStartOffsetY = lightboxOffsetY;
-      lightboxStage.setPointerCapture?.(event.pointerId);
-    });
-    lightboxStage?.addEventListener('pointermove', (event) => {
-      if (event.pointerId !== lightboxPointerId) return;
-      lightboxOffsetX = lightboxStartOffsetX + event.clientX - lightboxDragStartX;
-      lightboxOffsetY = lightboxStartOffsetY + event.clientY - lightboxDragStartY;
-      updateLightboxTransform();
-    });
-    ['pointerup', 'pointercancel', 'pointerleave'].forEach(type => {
-      lightboxStage?.addEventListener(type, (event) => {
-        if (event.pointerId === lightboxPointerId) lightboxPointerId = null;
-      });
-    });
-    document.addEventListener('keydown', (event) => {
-      if (!lightbox || lightbox.hidden) return;
-      if (event.key === 'Escape') closeLightbox();
-      if (event.key === 'ArrowLeft') setLightboxImage(selectedImageIndex - 1);
-      if (event.key === 'ArrowRight') setLightboxImage(selectedImageIndex + 1);
-    });
-
     images.forEach((image, idx) => {
       const btn = document.createElement('button');
       btn.className = 'hf-pdp-view__thumb';
@@ -5974,7 +5853,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
       img.alt = '';
       btn.appendChild(img);
       btn.addEventListener('click', () => {
-        setMainImage(image, idx);
+        if (mainImage) {
+          mainMedia?.classList.add('is-changing');
+          mainImage.src = image.url;
+          mainImage.alt = `${product.name || 'Producto'} foto ${idx + 1}`;
+          window.setTimeout(() => mainMedia?.classList.remove('is-changing'), 180);
+        }
+        if (lookImage) {
+          lookImage.src = image.url;
+          lookImage.alt = `${product.name || 'Producto'} look principal`;
+        }
+        $$('.hf-pdp-view__thumb').forEach(item => item.setAttribute('aria-current', 'false'));
+        btn.setAttribute('aria-current', 'true');
       });
       thumbs?.appendChild(btn);
     });
