@@ -72,6 +72,10 @@
 
   function installSnippet(id) {
     if (initialized || !id) return;
+    if (window.HF_META_PIXEL_INITIALIZED) {
+      initialized = true;
+      return;
+    }
     if (!window.fbq) {
       var fbq = function () {
         fbq.callMethod ? fbq.callMethod.apply(fbq, arguments) : fbq.queue.push(arguments);
@@ -91,6 +95,7 @@
     }
     window.fbq('init', id);
     window.fbq('track', 'PageView');
+    window.HF_META_PIXEL_INITIALIZED = true;
     initialized = true;
     logDebug('PageView', { pixelId: id });
   }
