@@ -530,6 +530,9 @@ function hf_commerce_get_checkout_order_summary(WP_REST_Request $request) {
         'id'            => (int) $order->get_id(),
         'number'        => (string) $order->get_order_number(),
         'status'        => (string) $order->get_status(),
+        // Meta for WooCommerce stores the shared browser/server Purchase
+        // identifier on the order. Expose it so the storefront can reuse it.
+        'metaEventId'   => (string) $order->get_meta('_meta_event_id', true),
         'paymentMethod' => (string) $order->get_payment_method(),
         'paymentLabel'  => hf_commerce_get_order_payment_label($order),
         'billingEmail'  => (string) $order->get_billing_email(),

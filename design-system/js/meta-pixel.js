@@ -392,6 +392,11 @@
         currency
       ));
       if (!items.length && !value) return;
+      var eventId = String(
+        payload.eventId
+          || (payload.orderSummary && payload.orderSummary.metaEventId)
+          || ''
+      ).trim();
       return sendEvent('Purchase', {
         content_ids: items.map(function (item) { return item.item_id; }),
         content_type: 'product',
@@ -400,9 +405,10 @@
         num_items: items.reduce(function (sum, item) { return sum + item.quantity; }, 0),
         value: value
       }, {
-        // The server-side Conversions API uses this exact identifier so Meta
-        // deduplicates browser and server Purchase events.
-        eventID: 'hf-order-' + String(orderId)
+        // Meta for WooCommerce stores the shared browser/server Purchase
+        // identifier on the order. Keep the legacy fallback for orders that
+        // predate the official integration metadata.
+        eventID: eventId || 'hf-order-' + String(orderId)
       });
     }
   };
