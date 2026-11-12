@@ -196,6 +196,14 @@
     return String((currency && (currency.currency_code || currency.currencyCode)) || 'ARS');
   }
 
+  function serverEventId(cart, eventName) {
+    var extensions = cart && cart.extensions;
+    var metaExtension = extensions && extensions['facebook-for-woocommerce'];
+    if (!metaExtension || (eventName && metaExtension.event !== eventName)) return '';
+    var params = metaExtension.params || {};
+    return String(params.event_id || params.eventId || '').trim();
+  }
+
   function roundMoney(value) {
     return Math.round(Number(value || 0) * 100) / 100;
   }
@@ -306,6 +314,7 @@
         ? itemFromCartItem(cartItem, cart && cart.totals)
         : itemFromProduct(product, variation, 1);
       if (!item.item_id) return;
+      var eventId = serverEventId(cart, 'AddToCart');
       return sendEvent('AddToCart', {
         content_ids: [item.item_id],
         content_name: item.item_name,
@@ -313,7 +322,7 @@
         contents: [metaItemFromGa4Item(item)],
         currency: currencyCode(cart && cart.totals) || 'ARS',
         value: roundMoney(item.price * item.quantity)
-      });
+      }, eventId ? { eventID: eventId } : undefined);
     },
     beginCheckout: function (cart) {
       var items = itemsFromCart(cart);
