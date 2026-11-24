@@ -5723,6 +5723,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let originY = 0.5;
     let pinch = null;
     let pageReleaseTimer = 0;
+    let desktopReleaseTimer = 0;
     const activePointers = new Map();
     let suppressTouchClickUntil = 0;
 
@@ -5769,19 +5770,27 @@ ${renderFeaturedSetPriceHtml(pricing)}
         document.body.style.transformOrigin = '';
       }, 380);
     };
-    const reset = () => {
+    const reset = (preserveDesktopOrigin = true) => {
+      const wasDesktopZoomed = zoomed();
+      window.clearTimeout(desktopReleaseTimer);
       button.setAttribute('aria-pressed', 'false');
       originX = 0.5;
       originY = 0.5;
       activePointers.clear();
       button.style.touchAction = '';
       photo.style.removeProperty('transform');
-      photo.style.transformOrigin = '50% 50%';
+      if (wasDesktopZoomed && preserveDesktopOrigin) {
+        desktopReleaseTimer = window.setTimeout(() => {
+          if (!zoomed() && !pinch) photo.style.transformOrigin = '50% 50%';
+        }, 440);
+      } else {
+        photo.style.transformOrigin = '50% 50%';
+      }
       releasePage();
     };
     const selectImage = image => {
       selected = image;
-      reset();
+      reset(false);
       button.setAttribute('aria-label', image.alt ? `Ampliar foto: ${image.alt}` : 'Ampliar foto del producto');
     };
 
