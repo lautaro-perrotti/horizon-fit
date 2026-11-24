@@ -5792,7 +5792,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const rect = photo.getBoundingClientRect();
       const overlay = document.createElement('div');
       const overlayImage = document.createElement('img');
-      const source = selected.fullUrl || photo.currentSrc || photo.src;
+      const source = photo.currentSrc || photo.src;
       overlay.className = 'hf-pinch-overlay';
       overlayImage.className = 'hf-pinch-overlay__image';
       overlayImage.src = source;
@@ -5802,11 +5802,22 @@ ${renderFeaturedSetPriceHtml(pricing)}
       overlayImage.style.width = `${rect.width}px`;
       overlayImage.style.height = `${rect.height}px`;
       overlayImage.style.transformOrigin = `${Math.max(0, Math.min(100, ((midpoint.clientX - rect.left) / rect.width) * 100))}% ${Math.max(0, Math.min(100, ((midpoint.clientY - rect.top) / rect.height) * 100))}%`;
+      overlayImage.addEventListener('error', () => {
+        if (pinchOverlay !== overlay) return;
+        overlay.remove();
+        pinchOverlay = null;
+        pinchOverlayImage = null;
+        photo.style.visibility = '';
+      }, { once: true });
       overlay.appendChild(overlayImage);
       document.body.appendChild(overlay);
       pinchOverlay = overlay;
       pinchOverlayImage = overlayImage;
-      photo.style.visibility = 'hidden';
+      const hideOriginal = () => {
+        if (pinchOverlay === overlay) photo.style.visibility = 'hidden';
+      };
+      if (overlayImage.complete && overlayImage.naturalWidth) hideOriginal();
+      else overlayImage.addEventListener('load', hideOriginal, { once: true });
     };
     const loadSelectedImage = () => {
       const image = selected;
