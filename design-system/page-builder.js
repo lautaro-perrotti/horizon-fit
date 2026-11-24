@@ -5729,7 +5729,29 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let pinchStartDistance = 0;
     let pinchStartMidpoint = null;
     let pinchZooming = false;
+    let pinchOverlay = null;
+    let pinchOverlayImage = null;
+    let pinchOverlayTimer = null;
     const zoomed = () => button.getAttribute('aria-pressed') === 'true';
+    const closePinchOverlay = () => {
+      if (pinchOverlayTimer) clearTimeout(pinchOverlayTimer);
+      if (!pinchOverlay || !pinchOverlayImage) {
+        photo.style.visibility = '';
+        return;
+      }
+
+      const overlay = pinchOverlay;
+      const overlayImage = pinchOverlayImage;
+      pinchOverlay = null;
+      pinchOverlayImage = null;
+      overlay.style.opacity = '0';
+      overlayImage.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
+      overlayImage.style.transform = 'translate3d(0, 0, 0) scale(1)';
+      pinchOverlayTimer = setTimeout(() => {
+        overlay.remove();
+        photo.style.visibility = '';
+      }, 240);
+    };
     const reset = () => {
       button.setAttribute('aria-pressed', 'false');
       originX = 0.5;
@@ -5742,6 +5764,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       pinchStartMidpoint = null;
       button.style.touchAction = '';
       button.classList.remove('is-pinch-zooming');
+      closePinchOverlay();
     };
     const selectImage = image => {
       selected = image;
@@ -5765,13 +5788,36 @@ ${renderFeaturedSetPriceHtml(pricing)}
       clientX: (first.clientX + second.clientX) / 2,
       clientY: (first.clientY + second.clientY) / 2
     });
+    const openPinchOverlay = midpoint => {
+      const rect = photo.getBoundingClientRect();
+      const overlay = document.createElement('div');
+      const overlayImage = document.createElement('img');
+      const source = selected.fullUrl || photo.currentSrc || photo.src;
+      overlay.className = 'hf-pinch-overlay';
+      overlayImage.className = 'hf-pinch-overlay__image';
+      overlayImage.src = source;
+      overlayImage.alt = photo.alt || '';
+      overlayImage.style.left = `${rect.left}px`;
+      overlayImage.style.top = `${rect.top}px`;
+      overlayImage.style.width = `${rect.width}px`;
+      overlayImage.style.height = `${rect.height}px`;
+      overlayImage.style.transformOrigin = `${Math.max(0, Math.min(100, ((midpoint.clientX - rect.left) / rect.width) * 100))}% ${Math.max(0, Math.min(100, ((midpoint.clientY - rect.top) / rect.height) * 100))}%`;
+      overlay.appendChild(overlayImage);
+      document.body.appendChild(overlay);
+      pinchOverlay = overlay;
+      pinchOverlayImage = overlayImage;
+      photo.style.visibility = 'hidden';
+    };
     const loadSelectedImage = () => {
       const image = selected;
       if (!image.fullUrl || image.fullUrl === photo.getAttribute('src')) return;
       const original = new Image();
       original.src = image.fullUrl;
       original.decode().then(() => {
-        if (selected === image && zoomed()) photo.src = image.fullUrl;
+        if (selected === image && zoomed()) {
+          photo.src = image.fullUrl;
+          if (pinchOverlayImage) pinchOverlayImage.src = image.fullUrl;
+        }
       }).catch(() => {});
     };
 
@@ -5826,9 +5872,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         drag = null;
         if (pinchZooming) {
           button.setAttribute('aria-pressed', 'true');
-          button.classList.add('is-pinch-zooming');
-          photo.style.transform = 'scale(1)';
-          photo.style.transformOrigin = '50% 50%';
+          openPinchOverlay(pinchStartMidpoint);
           loadSelectedImage();
         }
       } else if (activePointers.size === 1) {
@@ -5857,7 +5901,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const translateX = midpoint.clientX - (pinchStartMidpoint?.clientX || midpoint.clientX);
         const translateY = midpoint.clientY - (pinchStartMidpoint?.clientY || midpoint.clientY);
         const scale = Math.max(1, Math.min(3, distance / pinchStartDistance));
-        photo.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+        if (pinchOverlayImage) {
+          pinchOverlayImage.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+        }
       } else if (zoomed() && drag?.id === event.pointerId) {
         const dx = event.clientX - drag.x;
         const dy = event.clientY - drag.y;
