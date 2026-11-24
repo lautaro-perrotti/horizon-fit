@@ -5726,6 +5726,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let suppressNextTouchClick = false;
     const activePointers = new Map();
     let pinchStartDistance = 0;
+    let pinchStartMidpoint = null;
     let pinchZooming = false;
     const zoomed = () => button.getAttribute('aria-pressed') === 'true';
     const reset = () => {
@@ -5737,6 +5738,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       activePointers.clear();
       photo.style.removeProperty('transform');
       photo.style.transformOrigin = '50% 50%';
+      pinchStartMidpoint = null;
       button.style.touchAction = '';
       button.classList.remove('is-pinch-zooming');
     };
@@ -5803,13 +5805,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
       if (activePointers.size === 2) {
         const pointers = Array.from(activePointers.values());
         pinchStartDistance = pointerDistance(pointers[0], pointers[1]);
+        pinchStartMidpoint = pointerMidpoint(pointers[0], pointers[1]);
         pinchZooming = pinchStartDistance > 0;
         drag = null;
         if (pinchZooming) {
           button.setAttribute('aria-pressed', 'true');
           button.classList.add('is-pinch-zooming');
           photo.style.transform = 'scale(1)';
-          moveOrigin(pointerMidpoint(pointers[0], pointers[1]));
+          photo.style.transformOrigin = '50% 50%';
           loadSelectedImage();
         }
       } else if (activePointers.size === 1) {
@@ -5826,9 +5829,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
         const distance = pointerDistance(pointers[0], pointers[1]);
         if (!distance || !pinchStartDistance) return;
         event.preventDefault();
-        moveOrigin(pointerMidpoint(pointers[0], pointers[1]));
+        const midpoint = pointerMidpoint(pointers[0], pointers[1]);
+        const translateX = midpoint.clientX - (pinchStartMidpoint?.clientX || midpoint.clientX);
+        const translateY = midpoint.clientY - (pinchStartMidpoint?.clientY || midpoint.clientY);
         const scale = Math.max(1, Math.min(3, distance / pinchStartDistance));
-        photo.style.transform = `scale(${scale.toFixed(3)})`;
+        photo.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
       } else if (zoomed() && drag?.id === event.pointerId) {
         const dx = event.clientX - drag.x;
         const dy = event.clientY - drag.y;
