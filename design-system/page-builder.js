@@ -5735,7 +5735,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       pinchStartDistance = 0;
       pinchZooming = false;
       activePointers.clear();
-      photo.style.transform = 'scale(1)';
+      photo.style.removeProperty('transform');
       photo.style.transformOrigin = '50% 50%';
       button.style.touchAction = '';
       button.classList.remove('is-pinch-zooming');
