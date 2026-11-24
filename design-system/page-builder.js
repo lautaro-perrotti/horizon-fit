@@ -5721,56 +5721,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let selected = initialImage;
     let originX = 0.5;
     let originY = 0.5;
-    let drag = null;
-    let dragged = false;
-    let suppressNextTouchClick = false;
-    let suppressNextMouseClick = false;
+    let pinch = null;
     const activePointers = new Map();
-    let pinchStartDistance = 0;
-    let pinchStartMidpoint = null;
-    let pinchZooming = false;
-    let pinchOverlay = null;
-    let pinchOverlayImage = null;
-    let pinchOverlayTimer = null;
-    const zoomed = () => button.getAttribute('aria-pressed') === 'true';
-    const closePinchOverlay = () => {
-      if (pinchOverlayTimer) clearTimeout(pinchOverlayTimer);
-      if (!pinchOverlay || !pinchOverlayImage) {
-        photo.style.visibility = '';
-        return;
-      }
+    let suppressTouchClickUntil = 0;
 
-      const overlay = pinchOverlay;
-      const overlayImage = pinchOverlayImage;
-      pinchOverlay = null;
-      pinchOverlayImage = null;
-      overlay.style.opacity = '0';
-      overlayImage.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
-      overlayImage.style.transform = 'translate3d(0, 0, 0) scale(1)';
-      pinchOverlayTimer = setTimeout(() => {
-        overlay.remove();
-        photo.style.visibility = '';
-      }, 240);
-    };
-    const reset = () => {
-      button.setAttribute('aria-pressed', 'false');
-      originX = 0.5;
-      originY = 0.5;
-      pinchStartDistance = 0;
-      pinchZooming = false;
-      activePointers.clear();
-      photo.style.removeProperty('transform');
-      photo.style.transformOrigin = '50% 50%';
-      pinchStartMidpoint = null;
-      button.style.touchAction = '';
-      button.classList.remove('is-pinch-zooming');
-      closePinchOverlay();
-    };
-    const selectImage = image => {
-      selected = image;
-      reset();
-      button.setAttribute('aria-label', image.alt ? `Ampliar foto: ${image.alt}` : 'Ampliar foto del producto');
-    };
+    const zoomed = () => button.getAttribute('aria-pressed') === 'true';
     const moveOrigin = (x, y) => {
       originX = Math.max(0, Math.min(1, x));
       originY = Math.max(0, Math.min(1, y));
@@ -5780,179 +5735,127 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const { left, top, width, height } = button.getBoundingClientRect();
       moveOrigin((event.clientX - left) / width, (event.clientY - top) / height);
     };
-    const pointerDistance = (first, second) => Math.hypot(
-      second.clientX - first.clientX,
-      second.clientY - first.clientY
-    );
-    const pointerMidpoint = (first, second) => ({
-      clientX: (first.clientX + second.clientX) / 2,
-      clientY: (first.clientY + second.clientY) / 2
+    const distance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+    const midpoint = (a, b) => ({
+      clientX: (a.clientX + b.clientX) / 2,
+      clientY: (a.clientY + b.clientY) / 2
     });
-    const openPinchOverlay = midpoint => {
-      const rect = photo.getBoundingClientRect();
-      const overlay = document.createElement('div');
-      const overlayImage = document.createElement('img');
-      const source = photo.currentSrc || photo.src;
-      overlay.className = 'hf-pinch-overlay';
-      overlayImage.className = 'hf-pinch-overlay__image';
-      overlayImage.src = source;
-      overlayImage.alt = photo.alt || '';
-      overlayImage.style.left = `${rect.left}px`;
-      overlayImage.style.top = `${rect.top}px`;
-      overlayImage.style.width = `${rect.width}px`;
-      overlayImage.style.height = `${rect.height}px`;
-      overlayImage.style.transformOrigin = `${Math.max(0, Math.min(100, ((midpoint.clientX - rect.left) / rect.width) * 100))}% ${Math.max(0, Math.min(100, ((midpoint.clientY - rect.top) / rect.height) * 100))}%`;
-      overlayImage.addEventListener('error', () => {
-        if (pinchOverlay !== overlay) return;
-        overlay.remove();
-        pinchOverlay = null;
-        pinchOverlayImage = null;
-        photo.style.visibility = '';
-      }, { once: true });
-      overlay.appendChild(overlayImage);
-      document.body.appendChild(overlay);
-      pinchOverlay = overlay;
-      pinchOverlayImage = overlayImage;
-    };
     const loadSelectedImage = () => {
       const image = selected;
       if (!image.fullUrl || image.fullUrl === photo.getAttribute('src')) return;
-      const original = new Image();
-      original.src = image.fullUrl;
-      original.decode().then(() => {
+      const preload = new Image();
+      preload.src = image.fullUrl;
+      preload.decode().then(() => {
         if (selected === image && zoomed()) {
           photo.src = image.fullUrl;
-          if (pinchOverlayImage) pinchOverlayImage.src = image.fullUrl;
+          if (pinch?.image) pinch.image.src = image.fullUrl;
         }
       }).catch(() => {});
+    };
+    const closePinch = () => {
+      if (!pinch) return;
+      const current = pinch;
+      pinch = null;
+      current.overlay.style.opacity = '0';
+      current.image.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
+      current.image.style.transform = 'translate3d(0, 0, 0) scale(1)';
+      setTimeout(() => current.overlay.remove(), 240);
+    };
+    const reset = () => {
+      button.setAttribute('aria-pressed', 'false');
+      originX = 0.5;
+      originY = 0.5;
+      activePointers.clear();
+      button.style.touchAction = '';
+      photo.style.removeProperty('transform');
+      photo.style.transformOrigin = '50% 50%';
+      closePinch();
+    };
+    const openPinch = center => {
+      const rect = photo.getBoundingClientRect();
+      const overlay = document.createElement('div');
+      const image = document.createElement('img');
+      image.className = 'hf-pinch-overlay__image';
+      image.src = photo.currentSrc || photo.src;
+      image.alt = photo.alt || '';
+      image.style.left = `${rect.left}px`;
+      image.style.top = `${rect.top}px`;
+      image.style.width = `${rect.width}px`;
+      image.style.height = `${rect.height}px`;
+      image.style.transformOrigin = `${Math.max(0, Math.min(100, ((center.clientX - rect.left) / rect.width) * 100))}% ${Math.max(0, Math.min(100, ((center.clientY - rect.top) / rect.height) * 100))}%`;
+      overlay.className = 'hf-pinch-overlay';
+      overlay.appendChild(image);
+      document.body.appendChild(overlay);
+      pinch = { overlay, image, startDistance: 0, startCenter: center };
+    };
+    const selectImage = image => {
+      selected = image;
+      reset();
+      button.setAttribute('aria-label', image.alt ? `Ampliar foto: ${image.alt}` : 'Ampliar foto del producto');
     };
 
     selectImage(initialImage);
 
+    // Desktop stays on the original click-to-zoom behavior.
     button.addEventListener('click', event => {
-      if (suppressNextMouseClick) {
-        suppressNextMouseClick = false;
+      if (Date.now() < suppressTouchClickUntil) {
         event.preventDefault();
         return;
       }
-      if (suppressNextTouchClick) {
-        suppressNextTouchClick = false;
-        event.preventDefault();
-        return;
-      }
-      if (dragged && event.detail) return;
       if (zoomed()) {
         reset();
         return;
       }
       if (!photo.complete || !photo.naturalWidth) return;
-
       if (event.detail) pointAt(event);
       else moveOrigin(0.5, 0.5);
       button.setAttribute('aria-pressed', 'true');
-
       loadSelectedImage();
     });
 
     button.addEventListener('pointerdown', event => {
-      dragged = false;
-      if (event.pointerType === 'mouse') {
-        if (!photo.complete || !photo.naturalWidth) return;
-        suppressNextMouseClick = true;
-        pointAt(event);
-        button.setAttribute('aria-pressed', 'true');
-        loadSelectedImage();
-        const { width, height } = button.getBoundingClientRect();
-        drag = { id: event.pointerId, x: event.clientX, y: event.clientY, originX, originY, width, height };
-        button.setPointerCapture(event.pointerId);
-        return;
-      }
-      suppressNextTouchClick = true;
+      if (event.pointerType === 'mouse') return;
+      suppressTouchClickUntil = Date.now() + 1000;
       button.style.touchAction = 'none';
       activePointers.set(event.pointerId, event);
-      if (activePointers.size === 2) {
-        const pointers = Array.from(activePointers.values());
-        pinchStartDistance = pointerDistance(pointers[0], pointers[1]);
-        pinchStartMidpoint = pointerMidpoint(pointers[0], pointers[1]);
-        pinchZooming = pinchStartDistance > 0;
-        drag = null;
-        if (pinchZooming) {
-          button.setAttribute('aria-pressed', 'true');
-          openPinchOverlay(pinchStartMidpoint);
-          loadSelectedImage();
-        }
-      } else if (activePointers.size === 1) {
-        const { width, height } = button.getBoundingClientRect();
-        drag = { id: event.pointerId, x: event.clientX, y: event.clientY, originX, originY, width, height };
-      }
       button.setPointerCapture(event.pointerId);
+      if (activePointers.size !== 2) return;
+      const pointers = Array.from(activePointers.values());
+      const startCenter = midpoint(pointers[0], pointers[1]);
+      const startDistance = distance(pointers[0], pointers[1]);
+      if (!startDistance) return;
+      openPinch(startCenter);
+      pinch.startDistance = startDistance;
+      pinch.startCenter = startCenter;
+      button.setAttribute('aria-pressed', 'true');
+      loadSelectedImage();
     });
+
     button.addEventListener('pointermove', event => {
       if (event.pointerType === 'mouse') {
-        if (!zoomed() || drag?.id !== event.pointerId) return;
-        const dx = event.clientX - drag.x;
-        const dy = event.clientY - drag.y;
-        dragged ||= Math.hypot(dx, dy) > 6;
-        if (dragged) moveOrigin(drag.originX - dx / drag.width, drag.originY - dy / drag.height);
+        if (zoomed()) pointAt(event);
         return;
       }
-      if (!activePointers.has(event.pointerId)) return;
+      if (!activePointers.has(event.pointerId) || !pinch) return;
       activePointers.set(event.pointerId, event);
-      if (pinchZooming && activePointers.size >= 2) {
-        const pointers = Array.from(activePointers.values());
-        const distance = pointerDistance(pointers[0], pointers[1]);
-        if (!distance || !pinchStartDistance) return;
-        event.preventDefault();
-        const midpoint = pointerMidpoint(pointers[0], pointers[1]);
-        const translateX = midpoint.clientX - (pinchStartMidpoint?.clientX || midpoint.clientX);
-        const translateY = midpoint.clientY - (pinchStartMidpoint?.clientY || midpoint.clientY);
-        const scale = Math.max(1, Math.min(3, distance / pinchStartDistance));
-        if (pinchOverlayImage) {
-          pinchOverlayImage.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
-        }
-      } else if (zoomed() && drag?.id === event.pointerId) {
-        const dx = event.clientX - drag.x;
-        const dy = event.clientY - drag.y;
-        dragged ||= Math.hypot(dx, dy) > 6;
-        if (dragged) moveOrigin(drag.originX - dx / drag.width, drag.originY - dy / drag.height);
-      }
+      if (activePointers.size < 2) return;
+      const pointers = Array.from(activePointers.values());
+      const currentCenter = midpoint(pointers[0], pointers[1]);
+      const currentDistance = distance(pointers[0], pointers[1]);
+      const scale = Math.max(1, Math.min(3, currentDistance / pinch.startDistance));
+      event.preventDefault();
+      pinch.image.style.transform = `translate3d(${(currentCenter.clientX - pinch.startCenter.clientX).toFixed(1)}px, ${(currentCenter.clientY - pinch.startCenter.clientY).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
     });
+
     const finishTouch = event => {
-      if (event.pointerType === 'mouse') {
-        const wasZoomed = zoomed();
-        if (drag?.id === event.pointerId) drag = null;
-        if (wasZoomed) reset();
-        suppressNextMouseClick = true;
-        return;
-      }
+      if (event.pointerType === 'mouse') return;
       activePointers.delete(event.pointerId);
-      const wasZoomed = zoomed();
-      drag = null;
-      if (pinchZooming || wasZoomed) {
-        reset();
-        suppressNextTouchClick = true;
-      } else if (event.type === 'pointercancel') {
-        button.style.touchAction = '';
-        suppressNextTouchClick = false;
-      } else {
-        button.style.touchAction = '';
-      }
+      reset();
     };
     button.addEventListener('pointerup', finishTouch);
     button.addEventListener('pointercancel', finishTouch);
     button.addEventListener('lostpointercapture', event => {
-      activePointers.delete(event.pointerId);
-      if (event.pointerType === 'mouse') {
-        if (drag?.id === event.pointerId) drag = null;
-        if (zoomed()) reset();
-        suppressNextMouseClick = true;
-        return;
-      }
-      if (drag?.id === event.pointerId) drag = null;
-      if (event.pointerType !== 'mouse' && pinchZooming) {
-        reset();
-        suppressNextTouchClick = false;
-      }
+      if (event.pointerType !== 'mouse') finishTouch(event);
     });
 
     const keyboardPan = { ArrowLeft: [-0.15, 0], ArrowRight: [0.15, 0], ArrowUp: [0, -0.15], ArrowDown: [0, 0.15] };
