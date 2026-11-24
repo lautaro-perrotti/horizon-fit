@@ -5723,8 +5723,14 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let originY = 0.5;
     let drag = null;
     let dragged = false;
+    let suppressNextTouchClick = false;
     const zoomed = () => button.getAttribute('aria-pressed') === 'true';
-    const reset = () => button.setAttribute('aria-pressed', 'false');
+    const reset = () => {
+      button.setAttribute('aria-pressed', 'false');
+      originX = 0.5;
+      originY = 0.5;
+      photo.style.transformOrigin = '50% 50%';
+    };
     const selectImage = image => {
       selected = image;
       reset();
@@ -5743,6 +5749,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
     selectImage(initialImage);
 
     button.addEventListener('click', event => {
+      if (suppressNextTouchClick) {
+        suppressNextTouchClick = false;
+        event.preventDefault();
+        return;
+      }
       if (dragged && event.detail) return;
       if (zoomed()) {
         reset();
@@ -5783,6 +5794,17 @@ ${renderFeaturedSetPriceHtml(pricing)}
         if (dragged) moveOrigin(drag.originX - dx / drag.width, drag.originY - dy / drag.height);
       }
     });
+    const finishTouch = event => {
+      if (event.pointerType === 'mouse') return;
+      const wasZoomed = zoomed();
+      drag = null;
+      if (wasZoomed) {
+        reset();
+        suppressNextTouchClick = true;
+      }
+    };
+    button.addEventListener('pointerup', finishTouch);
+    button.addEventListener('pointercancel', finishTouch);
     button.addEventListener('lostpointercapture', event => {
       if (drag?.id === event.pointerId) drag = null;
     });
