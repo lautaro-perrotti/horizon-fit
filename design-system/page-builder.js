@@ -5738,6 +5738,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       photo.style.transform = 'scale(1)';
       photo.style.transformOrigin = '50% 50%';
       button.style.touchAction = '';
+      button.classList.remove('is-pinch-zooming');
     };
     const selectImage = image => {
       selected = image;
@@ -5806,6 +5807,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
         drag = null;
         if (pinchZooming) {
           button.setAttribute('aria-pressed', 'true');
+          button.classList.add('is-pinch-zooming');
           photo.style.transform = 'scale(1)';
           moveOrigin(pointerMidpoint(pointers[0], pointers[1]));
           loadSelectedImage();

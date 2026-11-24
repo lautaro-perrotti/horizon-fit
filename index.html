@@ -2928,6 +2928,18 @@
         transition-duration: 280ms, 200ms;
       }
 
+      .hf-pdp-view__main.is-pinch-zooming {
+        z-index: 20;
+        overflow: visible;
+      }
+
+      .hf-pdp-view__main.is-pinch-zooming img {
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 24px 70px rgba(15, 15, 15, 0.28);
+        transition: none !important;
+      }
+
       .hf-pdp-view__main.is-changing img {
         opacity: 0;
         transform: scale(1.018);
@@ -5764,7 +5776,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=pdp-pinch-zoom-20261124-1"></script>
+  <script src="/design-system/page-builder.js?v=pdp-pinch-zoom-20261124-2"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');
