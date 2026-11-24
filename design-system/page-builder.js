@@ -5722,6 +5722,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let originX = 0.5;
     let originY = 0.5;
     let pinch = null;
+    let pageReleaseTimer = 0;
     const activePointers = new Map();
     let suppressTouchClickUntil = 0;
 
@@ -5746,20 +5747,22 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const preload = new Image();
       preload.src = image.fullUrl;
       preload.decode().then(() => {
-        if (selected === image && zoomed()) {
+        if (selected === image && (zoomed() || pinch)) {
           photo.src = image.fullUrl;
-          if (pinch?.image) pinch.image.src = image.fullUrl;
         }
       }).catch(() => {});
     };
-    const closePinch = () => {
+    const releasePage = () => {
       if (!pinch) return;
-      const current = pinch;
       pinch = null;
-      current.overlay.style.opacity = '0';
-      current.image.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
-      current.image.style.transform = 'translate3d(0, 0, 0) scale(1)';
-      setTimeout(() => current.overlay.remove(), 240);
+      window.clearTimeout(pageReleaseTimer);
+      document.body.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
+      document.body.style.transform = 'none';
+      pageReleaseTimer = window.setTimeout(() => {
+        document.body.style.transition = '';
+        document.body.style.transform = '';
+        document.body.style.transformOrigin = '';
+      }, 240);
     };
     const reset = () => {
       button.setAttribute('aria-pressed', 'false');
@@ -5769,24 +5772,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       button.style.touchAction = '';
       photo.style.removeProperty('transform');
       photo.style.transformOrigin = '50% 50%';
-      closePinch();
-    };
-    const openPinch = center => {
-      const rect = photo.getBoundingClientRect();
-      const overlay = document.createElement('div');
-      const image = document.createElement('img');
-      image.className = 'hf-pinch-overlay__image';
-      image.src = photo.currentSrc || photo.src;
-      image.alt = photo.alt || '';
-      image.style.left = `${rect.left}px`;
-      image.style.top = `${rect.top}px`;
-      image.style.width = `${rect.width}px`;
-      image.style.height = `${rect.height}px`;
-      image.style.transformOrigin = `${Math.max(0, Math.min(100, ((center.clientX - rect.left) / rect.width) * 100))}% ${Math.max(0, Math.min(100, ((center.clientY - rect.top) / rect.height) * 100))}%`;
-      overlay.className = 'hf-pinch-overlay';
-      overlay.appendChild(image);
-      document.body.appendChild(overlay);
-      pinch = { overlay, image, startDistance: 0, startCenter: center };
+      releasePage();
     };
     const selectImage = image => {
       selected = image;
@@ -5824,10 +5810,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const startCenter = midpoint(pointers[0], pointers[1]);
       const startDistance = distance(pointers[0], pointers[1]);
       if (!startDistance) return;
-      openPinch(startCenter);
-      pinch.startDistance = startDistance;
-      pinch.startCenter = startCenter;
-      button.setAttribute('aria-pressed', 'true');
+      pinch = { startDistance, startCenter };
+      window.clearTimeout(pageReleaseTimer);
+      document.body.style.transition = 'none';
+      const bodyRect = document.body.getBoundingClientRect();
+      document.body.style.transformOrigin = `${startCenter.clientX - bodyRect.left}px ${startCenter.clientY - bodyRect.top}px`;
       loadSelectedImage();
     });
 
@@ -5844,7 +5831,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const currentDistance = distance(pointers[0], pointers[1]);
       const scale = Math.max(1, Math.min(3, currentDistance / pinch.startDistance));
       event.preventDefault();
-      pinch.image.style.transform = `translate3d(${(currentCenter.clientX - pinch.startCenter.clientX).toFixed(1)}px, ${(currentCenter.clientY - pinch.startCenter.clientY).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+      document.body.style.transform = `translate3d(${(currentCenter.clientX - pinch.startCenter.clientX).toFixed(1)}px, ${(currentCenter.clientY - pinch.startCenter.clientY).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
     });
 
     const finishTouch = event => {
