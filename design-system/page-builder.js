@@ -5745,23 +5745,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const { left, top, width, height } = button.getBoundingClientRect();
       moveOrigin((event.clientX - left) / width, (event.clientY - top) / height);
     };
-    const activateZoom = event => {
-      if (!photo.complete || !photo.naturalWidth) return false;
-
-      if (event?.type === 'pointerdown' || event?.detail) pointAt(event);
-      else moveOrigin(0.5, 0.5);
-      button.setAttribute('aria-pressed', 'true');
-
-      const image = selected;
-      if (image.fullUrl && image.fullUrl !== photo.getAttribute('src')) {
-        const original = new Image();
-        original.src = image.fullUrl;
-        original.decode().then(() => {
-          if (selected === image && zoomed()) photo.src = image.fullUrl;
-        }).catch(() => {});
-      }
-      return true;
-    };
 
     selectImage(initialImage);
 
@@ -5776,14 +5759,26 @@ ${renderFeaturedSetPriceHtml(pricing)}
         reset();
         return;
       }
-      activateZoom(event);
+      if (!photo.complete || !photo.naturalWidth) return;
+
+      if (event.detail) pointAt(event);
+      else moveOrigin(0.5, 0.5);
+      button.setAttribute('aria-pressed', 'true');
+
+      const image = selected;
+      if (image.fullUrl && image.fullUrl !== photo.getAttribute('src')) {
+        const original = new Image();
+        original.src = image.fullUrl;
+        original.decode().then(() => {
+          if (selected === image && zoomed()) photo.src = image.fullUrl;
+        }).catch(() => {});
+      }
     });
 
     button.addEventListener('pointerdown', event => {
       if (!event.isPrimary) return;
       dragged = false;
-      if (event.pointerType === 'mouse') return;
-      if (!zoomed()) activateZoom(event);
+      if (!zoomed() || event.pointerType === 'mouse') return;
       const { width, height } = button.getBoundingClientRect();
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, originX, originY, width, height };
       button.setPointerCapture(event.pointerId);
@@ -5811,12 +5806,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     button.addEventListener('pointerup', finishTouch);
     button.addEventListener('pointercancel', finishTouch);
     button.addEventListener('lostpointercapture', event => {
-      if (drag?.id !== event.pointerId) return;
-      drag = null;
-      if (event.pointerType !== 'mouse' && zoomed()) {
-        reset();
-        suppressNextTouchClick = true;
-      }
+      if (drag?.id === event.pointerId) drag = null;
     });
 
     const keyboardPan = { ArrowLeft: [-0.15, 0], ArrowRight: [0.15, 0], ArrowUp: [0, -0.15], ArrowDown: [0, 0.15] };
