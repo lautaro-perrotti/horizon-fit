@@ -2890,27 +2890,54 @@
 
       .hf-pdp-view__main {
         position: relative;
+        width: 100%;
         overflow: hidden;
+        padding: 0;
+        border: 0;
         border-radius: 8px;
         background: #f3f3f3;
         aspect-ratio: 4 / 5;
-        touch-action: pan-y;
+        cursor: zoom-in;
         user-select: none;
       }
 
+      .hf-pdp-view__main:focus-visible {
+        outline: 2px solid var(--hf-primary);
+        outline-offset: 2px;
+      }
+
       .hf-pdp-view__main img {
+        display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
+        pointer-events: none;
         opacity: 1;
         transform: scale(1);
         transition: opacity 280ms var(--ease), transform 420ms var(--ease);
         will-change: opacity, transform;
       }
 
+      .hf-pdp-view__main[aria-pressed="true"] {
+        cursor: zoom-out;
+        touch-action: none;
+      }
+
+      .hf-pdp-view__main[aria-pressed="true"] img {
+        transform: scale(2);
+        transition-duration: 280ms, 200ms;
+      }
+
       .hf-pdp-view__main.is-changing img {
         opacity: 0;
         transform: scale(1.018);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hf-pdp-view__main img,
+        .hf-pdp-view__main[aria-pressed="true"] img {
+          transition: none;
+        }
       }
 
       .hf-pdp-view__thumbs {
@@ -5737,7 +5764,7 @@
   <script src="/design-system/components/marquee/marquee.js?v=20260619"></script>
   <script src="/design-system/components/carousel/carousel.js?v=20260619"></script>
   <script src="/design-system/components/trust-bar/trust-bar.js?v=20260619"></script>
-  <script src="/design-system/page-builder.js?v=pdp-description-emphasis-20261026"></script>
+  <script src="/design-system/page-builder.js?v=pdp-inline-zoom-20261124"></script>
   <script>
     function updateSetMobileCarouselNavTop() {
       var carousel = document.getElementById('setMobileCarousel');

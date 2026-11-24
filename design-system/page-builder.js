@@ -5717,6 +5717,92 @@ ${renderFeaturedSetPriceHtml(pricing)}
     sectionEl.prepend(style);
   };
 
+  const setupProductImageZoom = (button, photo, initialImage) => {
+    let selected = initialImage;
+    let originX = 0.5;
+    let originY = 0.5;
+    let drag = null;
+    let dragged = false;
+    const zoomed = () => button.getAttribute('aria-pressed') === 'true';
+    const reset = () => button.setAttribute('aria-pressed', 'false');
+    const selectImage = image => {
+      selected = image;
+      reset();
+      button.setAttribute('aria-label', image.alt ? `Ampliar foto: ${image.alt}` : 'Ampliar foto del producto');
+    };
+    const moveOrigin = (x, y) => {
+      originX = Math.max(0, Math.min(1, x));
+      originY = Math.max(0, Math.min(1, y));
+      photo.style.transformOrigin = `${originX * 100}% ${originY * 100}%`;
+    };
+    const pointAt = event => {
+      const { left, top, width, height } = button.getBoundingClientRect();
+      moveOrigin((event.clientX - left) / width, (event.clientY - top) / height);
+    };
+
+    selectImage(initialImage);
+
+    button.addEventListener('click', event => {
+      if (dragged && event.detail) return;
+      if (zoomed()) {
+        reset();
+        return;
+      }
+      if (!photo.complete || !photo.naturalWidth) return;
+
+      if (event.detail) pointAt(event);
+      else moveOrigin(0.5, 0.5);
+      button.setAttribute('aria-pressed', 'true');
+
+      const image = selected;
+      if (image.fullUrl && image.fullUrl !== photo.getAttribute('src')) {
+        const original = new Image();
+        original.src = image.fullUrl;
+        original.decode().then(() => {
+          if (selected === image && zoomed()) photo.src = image.fullUrl;
+        }).catch(() => {});
+      }
+    });
+
+    button.addEventListener('pointerdown', event => {
+      if (!event.isPrimary) return;
+      dragged = false;
+      if (!zoomed() || event.pointerType === 'mouse') return;
+      const { width, height } = button.getBoundingClientRect();
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, originX, originY, width, height };
+      button.setPointerCapture(event.pointerId);
+    });
+    button.addEventListener('pointermove', event => {
+      if (!zoomed()) return;
+      if (event.pointerType === 'mouse') {
+        pointAt(event);
+      } else if (drag?.id === event.pointerId) {
+        const dx = event.clientX - drag.x;
+        const dy = event.clientY - drag.y;
+        dragged ||= Math.hypot(dx, dy) > 6;
+        if (dragged) moveOrigin(drag.originX - dx / drag.width, drag.originY - dy / drag.height);
+      }
+    });
+    button.addEventListener('lostpointercapture', event => {
+      if (drag?.id === event.pointerId) drag = null;
+    });
+
+    const keyboardPan = { ArrowLeft: [-0.15, 0], ArrowRight: [0.15, 0], ArrowUp: [0, -0.15], ArrowDown: [0, 0.15] };
+    button.addEventListener('keydown', event => {
+      if (!zoomed()) return;
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+        reset();
+      } else if (Object.hasOwn(keyboardPan, event.key)) {
+        event.preventDefault();
+        const [dx, dy] = keyboardPan[event.key];
+        moveOrigin(originX + dx, originY + dy);
+      }
+    });
+
+    return selectImage;
+  };
+
   const renderProductPage = async (root, products, html, wpSettings = null) => {
     if (!products || !html) {
       [products, html] = await Promise.all([
@@ -5761,6 +5847,9 @@ ${renderFeaturedSetPriceHtml(pricing)}
     const images = getProductImages(product);
     const mainImage = $('[data-product-main-image]');
     const mainMedia = $('[data-product-main]');
+    const selectZoomImage = mainMedia && mainImage && images[0]
+      ? setupProductImageZoom(mainMedia, mainImage, images[0])
+      : null;
     const lookImage = $('[data-product-look-image]');
     const lookTag = $('[data-product-look-tag]');
     const lookList = $('[data-product-look-list]');
@@ -5854,6 +5943,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
       btn.appendChild(img);
       btn.addEventListener('click', () => {
         if (mainImage) {
+          selectZoomImage?.(image);
           mainMedia?.classList.add('is-changing');
           mainImage.src = image.url;
           mainImage.alt = `${product.name || 'Producto'} foto ${idx + 1}`;
