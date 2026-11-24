@@ -5807,10 +5807,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     button.addEventListener('pointerdown', event => {
       if (event.pointerType === 'mouse') return;
       suppressTouchClickUntil = Date.now() + 1000;
-      button.style.touchAction = 'none';
+      button.style.touchAction = 'pan-y';
       activePointers.set(event.pointerId, event);
       button.setPointerCapture(event.pointerId);
       if (activePointers.size !== 2) return;
+      event.preventDefault();
+      button.style.touchAction = 'none';
       const pointers = Array.from(activePointers.values());
       const startCenter = midpoint(pointers[0], pointers[1]);
       const startDistance = distance(pointers[0], pointers[1]);
