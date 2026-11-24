@@ -5754,8 +5754,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
     };
     const releasePage = () => {
       if (!pinch) return;
+      const currentTransform = document.body.style.transform || 'none';
       pinch = null;
       window.clearTimeout(pageReleaseTimer);
+      document.body.style.transformOrigin = '0 0';
+      document.body.style.transition = 'none';
+      document.body.style.transform = currentTransform;
+      void document.body.offsetWidth;
       document.body.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
       document.body.style.transform = 'none';
       pageReleaseTimer = window.setTimeout(() => {
@@ -5810,11 +5815,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const startCenter = midpoint(pointers[0], pointers[1]);
       const startDistance = distance(pointers[0], pointers[1]);
       if (!startDistance) return;
-      pinch = { startDistance, startCenter };
+      const bodyRect = document.body.getBoundingClientRect();
+      const startCenterLocal = {
+        x: startCenter.clientX - bodyRect.left,
+        y: startCenter.clientY - bodyRect.top
+      };
+      pinch = { startDistance, startCenterLocal, bodyLeft: bodyRect.left, bodyTop: bodyRect.top };
       window.clearTimeout(pageReleaseTimer);
       document.body.style.transition = 'none';
-      const bodyRect = document.body.getBoundingClientRect();
-      document.body.style.transformOrigin = `${startCenter.clientX - bodyRect.left}px ${startCenter.clientY - bodyRect.top}px`;
+      document.body.style.transformOrigin = '0 0';
+      document.body.style.transform = 'none';
       loadSelectedImage();
     });
 
@@ -5830,8 +5840,16 @@ ${renderFeaturedSetPriceHtml(pricing)}
       const currentCenter = midpoint(pointers[0], pointers[1]);
       const currentDistance = distance(pointers[0], pointers[1]);
       const scale = Math.max(1, Math.min(3, currentDistance / pinch.startDistance));
+      const currentCenterLocal = {
+        x: currentCenter.clientX - pinch.bodyLeft,
+        y: currentCenter.clientY - pinch.bodyTop
+      };
+      const deltaX = currentCenterLocal.x - pinch.startCenterLocal.x;
+      const deltaY = currentCenterLocal.y - pinch.startCenterLocal.y;
+      const translateX = pinch.startCenterLocal.x + deltaX - (pinch.startCenterLocal.x * scale);
+      const translateY = pinch.startCenterLocal.y + deltaY - (pinch.startCenterLocal.y * scale);
       event.preventDefault();
-      document.body.style.transform = `translate3d(${(currentCenter.clientX - pinch.startCenter.clientX).toFixed(1)}px, ${(currentCenter.clientY - pinch.startCenter.clientY).toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
+      document.body.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`;
     });
 
     const finishTouch = event => {
