@@ -5813,11 +5813,6 @@ ${renderFeaturedSetPriceHtml(pricing)}
       document.body.appendChild(overlay);
       pinchOverlay = overlay;
       pinchOverlayImage = overlayImage;
-      const hideOriginal = () => {
-        if (pinchOverlay === overlay) photo.style.visibility = 'hidden';
-      };
-      if (overlayImage.complete && overlayImage.naturalWidth) hideOriginal();
-      else overlayImage.addEventListener('load', hideOriginal, { once: true });
     };
     const loadSelectedImage = () => {
       const image = selected;
