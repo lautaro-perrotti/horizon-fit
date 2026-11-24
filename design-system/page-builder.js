@@ -5724,6 +5724,7 @@ ${renderFeaturedSetPriceHtml(pricing)}
     let drag = null;
     let dragged = false;
     let suppressNextTouchClick = false;
+    let suppressNextMouseClick = false;
     const activePointers = new Map();
     let pinchStartDistance = 0;
     let pinchStartMidpoint = null;
@@ -5777,6 +5778,11 @@ ${renderFeaturedSetPriceHtml(pricing)}
     selectImage(initialImage);
 
     button.addEventListener('click', event => {
+      if (suppressNextMouseClick) {
+        suppressNextMouseClick = false;
+        event.preventDefault();
+        return;
+      }
       if (suppressNextTouchClick) {
         suppressNextTouchClick = false;
         event.preventDefault();
@@ -5797,8 +5803,18 @@ ${renderFeaturedSetPriceHtml(pricing)}
     });
 
     button.addEventListener('pointerdown', event => {
-      if (event.pointerType === 'mouse') return;
       dragged = false;
+      if (event.pointerType === 'mouse') {
+        if (!photo.complete || !photo.naturalWidth) return;
+        suppressNextMouseClick = true;
+        pointAt(event);
+        button.setAttribute('aria-pressed', 'true');
+        loadSelectedImage();
+        const { width, height } = button.getBoundingClientRect();
+        drag = { id: event.pointerId, x: event.clientX, y: event.clientY, originX, originY, width, height };
+        button.setPointerCapture(event.pointerId);
+        return;
+      }
       suppressNextTouchClick = true;
       button.style.touchAction = 'none';
       activePointers.set(event.pointerId, event);
@@ -5822,7 +5838,15 @@ ${renderFeaturedSetPriceHtml(pricing)}
       button.setPointerCapture(event.pointerId);
     });
     button.addEventListener('pointermove', event => {
-      if (event.pointerType === 'mouse' || !activePointers.has(event.pointerId)) return;
+      if (event.pointerType === 'mouse') {
+        if (!zoomed() || drag?.id !== event.pointerId) return;
+        const dx = event.clientX - drag.x;
+        const dy = event.clientY - drag.y;
+        dragged ||= Math.hypot(dx, dy) > 6;
+        if (dragged) moveOrigin(drag.originX - dx / drag.width, drag.originY - dy / drag.height);
+        return;
+      }
+      if (!activePointers.has(event.pointerId)) return;
       activePointers.set(event.pointerId, event);
       if (pinchZooming && activePointers.size >= 2) {
         const pointers = Array.from(activePointers.values());
@@ -5842,7 +5866,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
       }
     });
     const finishTouch = event => {
-      if (event.pointerType === 'mouse') return;
+      if (event.pointerType === 'mouse') {
+        const wasZoomed = zoomed();
+        if (drag?.id === event.pointerId) drag = null;
+        if (wasZoomed) reset();
+        suppressNextMouseClick = true;
+        return;
+      }
       activePointers.delete(event.pointerId);
       const wasZoomed = zoomed();
       drag = null;
@@ -5860,6 +5890,12 @@ ${renderFeaturedSetPriceHtml(pricing)}
     button.addEventListener('pointercancel', finishTouch);
     button.addEventListener('lostpointercapture', event => {
       activePointers.delete(event.pointerId);
+      if (event.pointerType === 'mouse') {
+        if (drag?.id === event.pointerId) drag = null;
+        if (zoomed()) reset();
+        suppressNextMouseClick = true;
+        return;
+      }
       if (drag?.id === event.pointerId) drag = null;
       if (event.pointerType !== 'mouse' && pinchZooming) {
         reset();
