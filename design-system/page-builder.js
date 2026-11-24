@@ -5761,13 +5761,13 @@ ${renderFeaturedSetPriceHtml(pricing)}
       document.body.style.transition = 'none';
       document.body.style.transform = currentTransform;
       void document.body.offsetWidth;
-      document.body.style.transition = 'transform 220ms cubic-bezier(.22,1,.36,1)';
+      document.body.style.transition = 'transform 360ms cubic-bezier(.22,1,.36,1)';
       document.body.style.transform = 'none';
       pageReleaseTimer = window.setTimeout(() => {
         document.body.style.transition = '';
         document.body.style.transform = '';
         document.body.style.transformOrigin = '';
-      }, 240);
+      }, 380);
     };
     const reset = () => {
       button.setAttribute('aria-pressed', 'false');
