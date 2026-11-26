@@ -5565,9 +5565,10 @@ ${renderFeaturedSetPriceHtml(pricing)}
           }
         };
 
-        trackGa4('addShippingInfo', cart);
-        trackGa4('addPaymentInfo', cart, paymentMethod);
-        trackMetaPixel('addPaymentInfo', cart, paymentMethod);
+        const checkoutAnalyticsCart = commerceState.cart || {};
+        trackGa4('addShippingInfo', checkoutAnalyticsCart);
+        trackGa4('addPaymentInfo', checkoutAnalyticsCart, paymentMethod);
+        trackMetaPixel('addPaymentInfo', checkoutAnalyticsCart, paymentMethod);
 
         try {
           const response = await storeApiFetch('/checkout', { method: 'POST', body });
